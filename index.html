@@ -8,8 +8,7 @@
     <style>
         body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; }
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
-        .emerald-text { color: #00FF41; text-shadow: 0 0 8px rgba(0, 255, 65, 0.3); }
-        .oxblood-text { color: #FF3131; }
+        .emerald-text { color: #00FF41; }
     </style>
 </head>
 <body class="p-6">
@@ -21,17 +20,6 @@
         <button onclick="togglePrivacy()" class="p-3 vault-card text-[10px] tracking-widest uppercase">Stealth</button>
     </header>
 
-    <div class="grid grid-cols-2 gap-4 mb-8">
-        <div class="vault-card p-4">
-            <p class="text-[#71717A] text-[9px] uppercase mb-1">Assets</p>
-            <p class="emerald-text font-bold">ONLINE</p>
-        </div>
-        <div class="vault-card p-4">
-            <p class="text-[#71717A] text-[9px] uppercase mb-1">Liabilities</p>
-            <p class="oxblood-text font-bold">STABLE</p>
-        </div>
-    </div>
-
     <div class="space-y-4">
         <button onclick="addEntry()" class="w-full vault-card p-5 flex justify-between items-center text-left">
             <div>
@@ -40,18 +28,10 @@
             </div>
             <span class="text-xl">⚡</span>
         </button>
-        <button onclick="resetVault()" class="w-full vault-card p-5 flex justify-between items-center text-left">
-            <div>
-                <p class="text-xs font-bold uppercase text-[#71717A]">Reset Vault</p>
-                <p class="text-[10px] text-[#71717A]">Clear Local Data</p>
-            </div>
-            <span class="text-xl">🗑️</span>
-        </button>
     </div>
 
     <script>
         let stealth = false;
-        // Load balance from phone/laptop storage or default to 0
         let balance = parseFloat(localStorage.getItem('vault_balance')) || 0;
 
         function updateDisplay() {
@@ -66,28 +46,12 @@
         function addEntry() {
             const amount = prompt("Enter deposit amount (₦):");
             if (amount && !isNaN(amount)) {
-                const numAmount = parseFloat(amount);
-                balance += numAmount;
+                balance += parseFloat(amount);
                 localStorage.setItem('vault_balance', balance);
                 updateDisplay();
-                
-                const bills = (numAmount * 0.4).toLocaleString();
-                const savings = (numAmount * 0.4).toLocaleString();
-                const life = (numAmount * 0.2).toLocaleString();
-                
-                alert(`Split Applied:\n- Bills (40%): ₦${bills}\n- Savings (40%): ₦${savings}\n- Lifestyle (20%): ₦${life}`);
+                alert("Vault Updated Successfully.");
             }
         }
-
-        function resetVault() {
-            if(confirm("Are you sure? This wipes your local balance.")) {
-                balance = 0;
-                localStorage.removeItem('vault_balance');
-                updateDisplay();
-            }
-        }
-
-        // Initialize display on load
         updateDisplay();
     </script>
 </body>
