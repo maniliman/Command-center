@@ -4,64 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Financial Command Center</title>
-    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0A0A0B; color: #EDEDED; -webkit-tap-highlight-color: transparent; }
-        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 16px; }
+        body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; }
+        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
+        .emerald-text { color: #00FF41; text-shadow: 0 0 8px rgba(0, 255, 65, 0.3); }
+        .oxblood-text { color: #FF3131; }
     </style>
 </head>
-<body class="p-6 font-mono">
-    <div id="app">
-        <header class="mb-8 flex justify-between items-start pt-4">
+<body class="p-6">
+    <header class="mb-10 flex justify-between items-start pt-4">
+        <div>
+            <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase">Global Net Worth</p>
+            <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter">₦0.00</h1>
+        </div>
+        <button onclick="togglePrivacy()" class="p-3 vault-card text-[10px] tracking-widest uppercase">Stealth</button>
+    </header>
+
+    <div class="grid grid-cols-2 gap-4 mb-8">
+        <div class="vault-card p-4">
+            <p class="text-[#71717A] text-[9px] uppercase mb-1">Assets</p>
+            <p class="emerald-text font-bold">ONLINE</p>
+        </div>
+        <div class="vault-card p-4">
+            <p class="text-[#71717A] text-[9px] uppercase mb-1">Liabilities</p>
+            <p class="oxblood-text font-bold">STABLE</p>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <button onclick="addEntry()" class="w-full vault-card p-5 flex justify-between items-center text-left">
             <div>
-                <p class="text-[#71717A] text-[10px] tracking-widest uppercase">Global Net Worth</p>
-                <h1 id="networth" class="text-4xl font-bold mt-2">₦0.00</h1>
+                <p class="text-xs font-bold uppercase emerald-text">Quick Entry (40/40/20)</p>
+                <p class="text-[10px] text-[#71717A]">Add Funds & Auto-Allocate</p>
             </div>
-            <button onclick="togglePrivacy()" class="p-3 vault-card text-xs">STEALTH</button>
-        </header>
-
-        <div class="grid grid-cols-2 gap-4">
-            <div class="vault-card p-4 text-center">
-                <p class="text-[#71717A] text-[9px] uppercase">Assets</p>
-                <p class="text-[#00FF41]">ACTIVE</p>
+            <span class="text-xl">⚡</span>
+        </button>
+        <button onclick="resetVault()" class="w-full vault-card p-5 flex justify-between items-center text-left">
+            <div>
+                <p class="text-xs font-bold uppercase text-[#71717A]">Reset Vault</p>
+                <p class="text-[10px] text-[#71717A]">Clear Local Data</p>
             </div>
-            <div class="vault-card p-4 text-center">
-                <p class="text-[#71717A] text-[9px] uppercase">Loans</p>
-                <p class="text-[#FF3131]">STABLE</p>
-            </div>
-        </div>
-
-        <div class="mt-8 space-y-4">
-            <button onclick="addEntry()" class="w-full p-4 vault-card text-[#00FF41] font-bold text-sm uppercase">Quick Entry (40/40/20)</button>
-            <button onclick="window.location.reload()" class="w-full p-4 vault-card text-[#71717A] text-xs uppercase">Sync Vault</button>
-        </div>
+            <span class="text-xl">🗑️</span>
+        </button>
     </div>
 
     <script>
         let stealth = false;
-        // This replaces the fixed balance with real data from your phone
-let balance = parseFloat(localStorage.getItem('vault_balance')) || 0;
+        // Load balance from phone/laptop storage or default to 0
+        let balance = parseFloat(localStorage.getItem('vault_balance')) || 0;
 
-function updateDisplay() {
-    document.getElementById('networth').innerText = stealth ? "••••••" : "₦" + balance.toLocaleString();
-}
+        function updateDisplay() {
+            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + balance.toLocaleString();
+        }
 
-function addEntry() {
-    const amount = prompt("Enter deposit amount:");
-    if (amount) {
-        balance += parseFloat(amount);
-        localStorage.setItem('vault_balance', balance); // Saves to your phone
-        updateDisplay();
-        alert("Tactical Split: Bills: ₦" + (amount * 0.4) + " | Savings: ₦" + (amount * 0.4));
-    }
-} // Example
         function togglePrivacy() {
             stealth = !stealth;
-            document.getElementById('networth').innerText = stealth ? "••••••" : "₦" + balance.toLocaleString();
+            updateDisplay();
         }
-        // Initialize logic for PWA
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+
+        function addEntry() {
+            const amount = prompt("Enter deposit amount (₦):");
+            if (amount && !isNaN(amount)) {
+                const numAmount = parseFloat(amount);
+                balance += numAmount;
+                localStorage.setItem('vault_balance', balance);
+                updateDisplay();
+                
+                const bills = (numAmount * 0.4).toLocaleString();
+                const savings = (numAmount * 0.4).toLocaleString();
+                const life = (numAmount * 0.2).toLocaleString();
+                
+                alert(`Split Applied:\n- Bills (40%): ₦${bills}\n- Savings (40%): ₦${savings}\n- Lifestyle (20%): ₦${life}`);
+            }
+        }
+
+        function resetVault() {
+            if(confirm("Are you sure? This wipes your local balance.")) {
+                balance = 0;
+                localStorage.removeItem('vault_balance');
+                updateDisplay();
+            }
+        }
+
+        // Initialize display on load
+        updateDisplay();
     </script>
 </body>
 </html>
