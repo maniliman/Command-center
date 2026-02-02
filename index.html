@@ -40,7 +40,22 @@
 
     <script>
         let stealth = false;
-        let balance = 1500000; // Example
+        // This replaces the fixed balance with real data from your phone
+let balance = parseFloat(localStorage.getItem('vault_balance')) || 0;
+
+function updateDisplay() {
+    document.getElementById('networth').innerText = stealth ? "••••••" : "₦" + balance.toLocaleString();
+}
+
+function addEntry() {
+    const amount = prompt("Enter deposit amount:");
+    if (amount) {
+        balance += parseFloat(amount);
+        localStorage.setItem('vault_balance', balance); // Saves to your phone
+        updateDisplay();
+        alert("Tactical Split: Bills: ₦" + (amount * 0.4) + " | Savings: ₦" + (amount * 0.4));
+    }
+} // Example
         function togglePrivacy() {
             stealth = !stealth;
             document.getElementById('networth').innerText = stealth ? "••••••" : "₦" + balance.toLocaleString();
