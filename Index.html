@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Financial Command Center</title>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0A0A0B; color: #EDEDED; -webkit-tap-highlight-color: transparent; }
+        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 16px; }
+    </style>
+</head>
+<body class="p-6 font-mono">
+    <div id="app">
+        <header class="mb-8 flex justify-between items-start pt-4">
+            <div>
+                <p class="text-[#71717A] text-[10px] tracking-widest uppercase">Global Net Worth</p>
+                <h1 id="networth" class="text-4xl font-bold mt-2">₦0.00</h1>
+            </div>
+            <button onclick="togglePrivacy()" class="p-3 vault-card text-xs">STEALTH</button>
+        </header>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="vault-card p-4 text-center">
+                <p class="text-[#71717A] text-[9px] uppercase">Assets</p>
+                <p class="text-[#00FF41]">ACTIVE</p>
+            </div>
+            <div class="vault-card p-4 text-center">
+                <p class="text-[#71717A] text-[9px] uppercase">Loans</p>
+                <p class="text-[#FF3131]">STABLE</p>
+            </div>
+        </div>
+
+        <div class="mt-8 space-y-4">
+            <button onclick="addEntry()" class="w-full p-4 vault-card text-[#00FF41] font-bold text-sm uppercase">Quick Entry (40/40/20)</button>
+            <button onclick="window.location.reload()" class="w-full p-4 vault-card text-[#71717A] text-xs uppercase">Sync Vault</button>
+        </div>
+    </div>
+
+    <script>
+        let stealth = false;
+        let balance = 1500000; // Example
+        function togglePrivacy() {
+            stealth = !stealth;
+            document.getElementById('networth').innerText = stealth ? "••••••" : "₦" + balance.toLocaleString();
+        }
+        // Initialize logic for PWA
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+    </script>
+</body>
+</html>
