@@ -3,184 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Command Center</title>
+    <title>Sovereign Command</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; }
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
-        .progress-bg { background: #262629; height: 6px; border-radius: 3px; overflow: hidden; }
-        .progress-fill { background: #00FF41; height: 100%; transition: width 0.4s ease; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 50; align-items: flex-end; }
-        .modal.active { display: flex; }
+        .gold-text { color: #FFD700; }
+        .menu-btn { width: 100%; padding: 20px; border-radius: 12px; background: #161618; border: 1px solid #262629; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        .view-container { display: none; }
+        .view-container.active { display: block; }
     </style>
 </head>
 <body class="p-6">
-    <header class="mb-6 flex justify-between items-start pt-4">
-        <div>
-            <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase">Global Net Worth</p>
-            <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter">₦0</h1>
+
+    <div id="view-menu" class="view-container active">
+        <header class="mb-10 pt-4">
+            <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase">Sovereign Vault</p>
+            <h1 id="main-nw" class="text-4xl font-bold mt-2 tracking-tighter">₦0</h1>
+        </header>
+
+        <div class="space-y-4">
+            <button onclick="showView('view-assets')" class="menu-btn">
+                <span>💰 Assets & Cash</span>
+                <span class="text-[#71717A]">→</span>
+            </button>
+            <button onclick="showView('view-goals')" class="menu-btn">
+                <span>🎯 Strategic Goals</span>
+                <span class="text-[#71717A]">→</span>
+            </button>
+            <button onclick="showView('view-debt')" class="menu-btn">
+                <span>⚖️ Debtors & Creditors</span>
+                <span class="text-[#71717A]">→</span>
+            </button>
+            <button onclick="showView('view-history')" class="menu-btn">
+                <span>📜 Global Ledger</span>
+                <span class="text-[#71717A]">→</span>
+            </button>
         </div>
-        <button onclick="togglePrivacy()" class="p-3 vault-card text-[10px] tracking-widest uppercase text-[#71717A]">Stealth</button>
-    </header>
-
-    <div id="goal-container" class="space-y-4 mb-8">
-        <p class="text-[10px] uppercase text-[#71717A] mb-2 tracking-widest">Target Envelopes</p>
-    </div>
-    
-    <button onclick="createNewGoal()" class="w-full border border-dashed border-[#262629] p-3 rounded-xl text-[10px] uppercase text-[#71717A] mb-10">+ New Target Envelope</button>
-
-    <div class="grid grid-cols-2 gap-4 mb-10">
-        <button onclick="openSelector('IN')" class="vault-card p-5 text-center border-emerald-900/20">
-            <p class="text-[10px] font-bold uppercase emerald-text mb-1">Deposit</p>
-            <span class="text-xl">💰</span>
-        </button>
-        <button onclick="openSelector('OUT')" class="vault-card p-5 text-center border-red-900/20">
-            <p class="text-[10px] font-bold uppercase oxblood-text mb-1">Spend</p>
-            <span class="text-xl">💸</span>
-        </button>
     </div>
 
-    <div class="vault-card p-5">
-        <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase mb-4">Tactical Ledger</p>
-        <div id="ledger-list" class="space-y-3"></div>
-    </div>
-
-    <div id="selector" class="modal p-6">
-        <div class="w-full bg-[#161618] rounded-t-3xl p-6 border-t border-[#262629] max-h-[80vh] overflow-y-auto">
-            <p id="selector-title" class="text-[10px] uppercase text-[#71717A] mb-4 tracking-widest">Where is this money going?</p>
-            <div id="envelope-options" class="space-y-3 mb-6"></div>
-            <button onclick="closeSelector()" class="w-full p-4 text-xs uppercase text-[#71717A]">Cancel</button>
+    <div id="view-assets" class="view-container">
+        <button onclick="showView('view-menu')" class="mb-6 text-[#71717A] text-xs">← BACK TO MENU</button>
+        <h2 class="text-xl font-bold mb-6">Asset Management</h2>
+        <div class="vault-card p-6 mb-6">
+            <p class="text-[10px] uppercase text-[#71717A]">Liquid Cash</p>
+            <p id="asset-total" class="text-2xl font-bold emerald-text mt-1">₦0</p>
         </div>
+        <div class="grid grid-cols-2 gap-4">
+            <button onclick="logTx('IN', 'gen')" class="vault-card p-4 text-center border-emerald-900/30">Deposit</button>
+            <button onclick="logTx('OUT', 'gen')" class="vault-card p-4 text-center border-red-900/30">Spend</button>
+        </div>
+    </div>
+
+    <div id="view-goals" class="view-container">
+        <button onclick="showView('view-menu')" class="mb-6 text-[#71717A] text-xs">← BACK TO MENU</button>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold">Target Envelopes</h2>
+            <button onclick="createGoal()" class="emerald-text text-xs">+ NEW</button>
+        </div>
+        <div id="goals-list" class="space-y-4"></div>
+    </div>
+
+    <div id="view-debt" class="view-container">
+        <button onclick="showView('view-menu')" class="mb-6 text-[#71717A] text-xs">← BACK TO MENU</button>
+        <h2 class="text-xl font-bold mb-6">Liability & Credit</h2>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="vault-card p-4">
+                <p class="text-[8px] uppercase text-[#71717A]">Owed to Me</p>
+                <p id="total-debtors" class="emerald-text text-sm font-bold">₦0</p>
+            </div>
+            <div class="vault-card p-4">
+                <p class="text-[8px] uppercase text-[#71717A]">Owed to Others</p>
+                <p id="total-creditors" class="oxblood-text text-sm font-bold">₦0</p>
+            </div>
+        </div>
+        <div class="space-y-4">
+            <button onclick="logTx('DEBTOR', 'debt')" class="w-full vault-card p-4 text-left">➕ Add Debtor (Person owes me)</button>
+            <button onclick="logTx('CREDITOR', 'debt')" class="w-full vault-card p-4 text-left">➖ Add Creditor (I owe person)</button>
+        </div>
+    </div>
+
+    <div id="view-history" class="view-container">
+        <button onclick="showView('view-menu')" class="mb-6 text-[#71717A] text-xs">← BACK TO MENU</button>
+        <h2 class="text-xl font-bold mb-6">Global History</h2>
+        <div id="master-ledger" class="space-y-3"></div>
     </div>
 
     <script>
-        let stealth = false;
-        let pendingAction = null;
-        let history = JSON.parse(localStorage.getItem('vh_history')) || [];
-        // 'gen' is the hidden Global Net Worth bucket
-        let goals = JSON.parse(localStorage.getItem('vh_goals')) || [];
+        let history = JSON.parse(localStorage.getItem('sov_history')) || [];
+        let goals = JSON.parse(localStorage.getItem('sov_goals')) || [];
+
+        function showView(viewId) {
+            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            updateDisplay();
+        }
 
         function updateDisplay() {
-            let totalCash = 0;
-            const goalBalances = {};
-            goals.forEach(g => goalBalances[g.id] = 0);
+            let nw = 0; let assets = 0; let debtors = 0; let creditors = 0;
+            const goalBals = {}; goals.forEach(g => goalBals[g.id] = 0);
 
             history.forEach(item => {
-                if (item.type === 'IN') {
-                    totalCash += item.amount;
-                    if (goalBalances.hasOwnProperty(item.goalId)) goalBalances[item.goalId] += item.amount;
-                } else {
-                    totalCash -= item.amount;
-                    if (goalBalances.hasOwnProperty(item.goalId)) goalBalances[item.goalId] -= item.amount;
-                }
+                if (item.type === 'IN') { assets += item.amount; nw += item.amount; if(goalBals.hasOwnProperty(item.goalId)) goalBals[item.goalId] += item.amount; }
+                if (item.type === 'OUT') { assets -= item.amount; nw -= item.amount; if(goalBals.hasOwnProperty(item.goalId)) goalBals[item.goalId] -= item.amount; }
+                if (item.type === 'DEBTOR') { debtors += item.amount; nw += item.amount; }
+                if (item.type === 'CREDITOR') { creditors += item.amount; nw -= item.amount; }
             });
 
-            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + totalCash.toLocaleString();
-            
-            // Only render visual bars for created goals, not the general vault
-            document.getElementById('goal-container').innerHTML = goals.length > 0 ? goals.map(g => {
-                const bal = goalBalances[g.id] || 0;
-                const percent = g.target > 0 ? Math.min((bal / g.target) * 100, 100) : 0;
-                return `
-                    <div class="vault-card p-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-[10px] font-bold uppercase">${g.name}</span>
-                            <span class="text-[10px] emerald-text font-bold">${Math.floor(percent)}%</span>
-                        </div>
-                        <div class="progress-bg mb-2"><div class="progress-fill" style="width: ${percent}%"></div></div>
-                        <div class="flex justify-between text-[8px] text-[#71717A]">
-                            <span>Saved: ₦${bal.toLocaleString()}</span>
-                            <span>Target: ₦${g.target.toLocaleString()}</span>
-                        </div>
-                    </div>`;
-            }).join('') : '<p class="text-[10px] text-[#3F3F46]">No active targets. All funds in General Vault.</p>';
+            document.getElementById('main-nw').innerText = "₦" + nw.toLocaleString();
+            if(document.getElementById('asset-total')) document.getElementById('asset-total').innerText = "₦" + assets.toLocaleString();
+            if(document.getElementById('total-debtors')) document.getElementById('total-debtors').innerText = "₦" + debtors.toLocaleString();
+            if(document.getElementById('total-creditors')) document.getElementById('total-creditors').innerText = "₦" + creditors.toLocaleString();
 
-            document.getElementById('ledger-list').innerHTML = history.slice().reverse().map((item, idx) => {
+            // Goals Rendering
+            document.getElementById('goals-list').innerHTML = goals.map(g => {
+                const bal = goalBals[g.id] || 0;
+                const pct = g.target > 0 ? Math.min((bal/g.target)*100, 100) : 0;
+                return `<div class="vault-card p-4">
+                    <div class="flex justify-between text-xs mb-2"><span>${g.name}</span><span class="emerald-text font-bold">${Math.floor(pct)}%</span></div>
+                    <div class="h-1 bg-[#262629] rounded-full overflow-hidden"><div class="h-full bg-[#00FF41]" style="width:${pct}%"></div></div>
+                    <div class="flex justify-between text-[10px] mt-2 text-[#71717A]"><span>₦${bal.toLocaleString()}</span><span>Goal: ₦${g.target.toLocaleString()}</span></div>
+                    <button onclick="logTx('IN', '${g.id}')" class="mt-3 text-[10px] emerald-text uppercase">Add Funds</button>
+                </div>`;
+            }).join('');
+
+            // History Rendering
+            document.getElementById('master-ledger').innerHTML = history.slice().reverse().map((item, idx) => {
                 const realIdx = history.length - 1 - idx;
-                const goalRef = goals.find(g => g.id === item.goalId);
-                const label = goalRef ? goalRef.name : 'General Vault';
-                return `
-                    <div class="flex justify-between items-center border-b border-[#262629] pb-2">
-                        <div class="flex flex-col">
-                            <span class="text-[8px] uppercase text-[#71717A] font-mono">${item.date} | ${item.time}</span>
-                            <span class="text-[7px] uppercase text-[#4B5563] mb-1">${label}</span>
-                            <span class="text-[10px] ${item.type === 'IN' ? 'emerald-text' : 'oxblood-text'} font-bold">
-                                ${item.type === 'IN' ? '+' : '-'} ₦${item.amount.toLocaleString()}
-                            </span>
-                        </div>
-                        <button onclick="deleteEntry(${realIdx})" class="text-[#71717A] text-lg px-2">×</button>
-                    </div>`;
+                return `<div class="flex justify-between border-b border-[#262629] pb-2 items-center text-[10px]">
+                    <div><p class="text-[#71717A]">${item.date} | ${item.type}</p><p class="font-bold">₦${item.amount.toLocaleString()}</p></div>
+                    <button onclick="deleteTx(${realIdx})" class="text-red-900/50 px-2">×</button>
+                </div>`;
             }).join('');
         }
 
-        function openSelector(type) {
-            pendingAction = type;
-            document.getElementById('selector-title').innerText = type === 'IN' ? "Deposit Destination" : "Spend From Which Fund?";
-            const optDiv = document.getElementById('envelope-options');
-            
-            // Start with General Vault as the first option
-            let html = `
-                <button onclick="executeAction('gen')" class="w-full vault-card p-4 text-left border-dashed border-[#3F3F46]">
-                    <span class="text-xs uppercase font-bold text-white">General Vault</span>
-                    <p class="text-[8px] text-[#71717A] mt-1">Updates Net Worth only</p>
-                </button>
-            `;
-
-            // Add all other specific goals
-            html += goals.map(g => `
-                <button onclick="executeAction('${g.id}')" class="w-full vault-card p-4 text-left flex justify-between items-center">
-                    <div>
-                        <span class="text-xs uppercase">${g.name}</span>
-                        <p class="text-[8px] text-[#71717A] mt-1">Envelope Target</p>
-                    </div>
-                    <span class="text-[10px] text-[#71717A]">₦${g.target.toLocaleString()}</span>
-                </button>
-            `).join('');
-
-            optDiv.innerHTML = html;
-            document.getElementById('selector').classList.add('active');
+        function logTx(type, goalId) {
+            const amount = prompt(`Enter amount for ${type}:`);
+            if (!amount || isNaN(amount)) return;
+            const now = new Date();
+            history.push({
+                type, amount: parseFloat(amount), goalId,
+                date: now.toLocaleDateString('en-GB', {day:'2-digit', month:'short'}),
+                time: now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'})
+            });
+            localStorage.setItem('sov_history', JSON.stringify(history));
+            updateDisplay();
         }
 
-        function executeAction(goalId) {
-            const label = goalId === 'gen' ? 'General Vault' : goals.find(g => g.id === goalId).name;
-            const amount = prompt(`Amount to ${pendingAction === 'IN' ? 'Deposit to' : 'Spend from'} ${label} (₦):`);
-            if (amount && !isNaN(amount)) {
-                const now = new Date();
-                history.push({
-                    type: pendingAction,
-                    amount: parseFloat(amount),
-                    goalId: goalId,
-                    date: now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }),
-                    time: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-                });
-                localStorage.setItem('vh_history', JSON.stringify(history));
-                updateDisplay();
-            }
-            closeSelector();
-        }
-
-        function createNewGoal() {
-            const name = prompt("What are you saving for?");
-            const target = prompt("Target Amount (₦):");
+        function createGoal() {
+            const name = prompt("Goal Name:");
+            const target = prompt("Target (₦):");
             if (name && target) {
                 goals.push({ id: 'g' + Date.now(), name, target: parseFloat(target) });
-                localStorage.setItem('vh_goals', JSON.stringify(goals));
+                localStorage.setItem('sov_goals', JSON.stringify(goals));
                 updateDisplay();
             }
         }
 
-        function deleteEntry(idx) {
-            if (confirm("Delete this transaction?")) {
-                history.splice(idx, 1);
-                localStorage.setItem('vh_history', JSON.stringify(history));
-                updateDisplay();
-            }
+        function deleteTx(idx) {
+            if(confirm("Delete?")) { history.splice(idx, 1); localStorage.setItem('sov_history', JSON.stringify(history)); updateDisplay(); }
         }
 
-        function closeSelector() { document.getElementById('selector').classList.remove('active'); }
-        function togglePrivacy() { stealth = !stealth; updateDisplay(); }
         updateDisplay();
     </script>
 </body>
