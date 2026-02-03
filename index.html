@@ -3,163 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Sovereign Command</title>
+    <title>Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #050505; color: #fff; font-family: ui-monospace, monospace; margin: 0; }
-        /* Solid containers to prevent "dead clicks" */
-        .view-frame { display: none; padding: 20px; padding-bottom: 120px; }
-        .view-frame.active { display: block; }
-        .stat-box { background: #111; border: 2px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 15px; }
-        .money { font-weight: bold; color: #00FF41; }
-        .debt-text { color: #ff3131; }
-        
-        /* Tactical Nav Dock */
-        .nav-dock { position: fixed; bottom: 0; left: 0; right: 0; height: 80px; background: #000; border-top: 2px solid #222; display: flex; align-items: center; z-index: 1000; }
-        .nav-btn { flex: 1; height: 100%; border: none; background: none; color: #666; font-size: 10px; font-weight: bold; }
-        .nav-btn.active { color: #fff; border-top: 2px solid #00FF41; }
-        
-        /* The Center Action Button */
-        .center-fab { width: 60px; height: 60px; background: #fff; color: #000; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; border: none; position: relative; top: -20px; box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
-
-        /* Tactical Action Menu */
-        #action-menu { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; flex-direction: column; justify-content: center; padding: 30px; }
-        #action-menu.open { display: flex; }
-        .menu-item { background: #111; border: 2px solid #333; padding: 18px; border-radius: 12px; margin-bottom: 10px; text-align: left; font-weight: bold; color: #fff; font-size: 14px; }
-        
-        .stealth .money, .stealth .debt-text { filter: blur(10px); }
+        body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; }
+        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
+        .emerald-text { color: #00FF41; text-shadow: 0 0 8px rgba(0, 255, 65, 0.2); }
+        .oxblood-text { color: #FF3131; text-shadow: 0 0 8px rgba(255, 49, 49, 0.2); }
+        .fade-in { animation: fadeIn 0.4s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body id="app-body">
-
-    <header class="p-6 flex justify-between items-center border-b border-[#222]">
+<body class="p-6 pb-24">
+    <header class="mb-8 flex justify-between items-start pt-4">
         <div>
-            <p class="text-[8px] tracking-[0.3em] text-zinc-500 uppercase">Vault Elite</p>
-            <h2 id="page-title" class="text-lg font-bold">DASHBOARD</h2>
+            <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase">True Net Worth</p>
+            <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter italic">₦0.00</h1>
         </div>
-        <button onclick="toggleStealth()" class="bg-[#111] px-4 py-2 rounded-lg text-[10px] font-bold border border-[#333]">STEALTH</button>
+        <button onclick="togglePrivacy()" class="p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800">Stealth</button>
     </header>
 
-    <main>
-        <div id="v-home" class="view-frame active">
-            <div class="stat-box text-center">
-                <p class="text-[10px] text-zinc-500 mb-1 uppercase">Total Portfolio</p>
-                <h1 id="total-nw" class="money text-4xl tracking-tighter">₦0</h1>
-            </div>
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <div class="stat-box mb-0">
-                    <p class="text-[8px] text-zinc-500 uppercase">Cash Assets</p>
-                    <p id="total-assets" class="money text-sm">₦0</p>
-                </div>
-                <div class="stat-box mb-0">
-                    <p class="text-[8px] text-zinc-500 uppercase">Net Liability</p>
-                    <p id="total-debt" class="debt-text text-sm">₦0</p>
-                </div>
-            </div>
-            <p class="text-[10px] font-bold text-zinc-600 mb-3 uppercase tracking-widest">Target Envelopes</p>
-            <div id="goals-list"></div>
+    <div class="flex gap-4 mb-8">
+        <button onclick="addEntry('asset')" class="flex-1 vault-card p-4 text-center border-b-2 border-emerald-900/50">
+            <p class="text-[9px] uppercase text-[#71717A] mb-1">Add Asset</p>
+            <p class="emerald-text font-bold text-xl">+</p>
+        </button>
+        <button onclick="addEntry('liability')" class="flex-1 vault-card p-4 text-center border-b-2 border-red-900/50">
+            <p class="text-[9px] uppercase text-[#71717A] mb-1">Add Loan</p>
+            <p class="oxblood-text font-bold text-xl">-</p>
+        </button>
+    </div>
+
+    <div id="ledger-feed" class="space-y-4">
         </div>
 
-        <div id="v-people" class="view-frame">
-            <h3 class="text-xl font-bold mb-6">People Ledger</h3>
-            <div id="people-list" class="space-y-3"></div>
-        </div>
-
-        <div id="v-audit" class="view-frame">
-            <h3 class="text-xl font-bold mb-6">Audit Log</h3>
-            <div id="audit-list" class="space-y-2"></div>
-        </div>
-    </main>
-
-    <nav class="nav-dock">
-        <button class="nav-btn active" onclick="navTo('home')">HOME</button>
-        <button class="nav-btn" onclick="navTo('people')">PEOPLE</button>
-        <button class="center-fab" onclick="openMenu()">+</button>
-        <button class="nav-btn" onclick="navTo('audit')">AUDIT</button>
-        <button class="nav-btn" onclick="resetApp()" style="color:#333">RESET</button>
-    </nav>
-
-    <div id="action-menu">
-        <p class="text-center text-zinc-500 text-[10px] uppercase tracking-[0.4em] mb-10">Select Operation</p>
-        <button class="menu-item" onclick="op('IN', 'gen')">💰 DEPOSIT ASSETS (SALARY/GIFT)</button>
-        <button class="menu-item" onclick="op('OUT', 'gen')">💸 SPEND ASSETS</button>
-        <button class="menu-item" onclick="opDebt('DEBTOR')">🤝 I LENT MONEY (DEBTOR)</button>
-        <button class="menu-item" onclick="opDebt('CREDITOR')">⚖️ I BORROWED MONEY (CREDITOR)</button>
-        <button class="menu-item" onclick="opGoal()" style="border-color:#00FF41">🎯 CREATE NEW ENVELOPE</button>
-        <button onclick="closeMenu()" class="mt-10 text-zinc-500 uppercase text-[10px] font-bold text-center">Cancel</button>
+    <div class="fixed bottom-6 left-6 right-6">
+        <button onclick="resetVault()" class="w-full p-3 text-[9px] uppercase tracking-[0.2em] text-zinc-600">Reset All Data</button>
     </div>
 
     <script>
-        let store = JSON.parse(localStorage.getItem('sov_v8_final')) || { txs: [], goals: [] };
+        let stealth = false;
+        let ledger = JSON.parse(localStorage.getItem('vault_ledger')) || [];
 
-        function navTo(view) {
-            document.querySelectorAll('.view-frame').forEach(f => f.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('v-' + view).classList.add('active');
-            document.getElementById('page-title').innerText = view.toUpperCase();
-            // Find which button was clicked to set active
-            event.currentTarget.classList.add('active');
-            refresh();
-        }
+        function updateDisplay() {
+            const feed = document.getElementById('ledger-feed');
+            feed.innerHTML = '';
+            let total = 0;
 
-        function openMenu() { document.getElementById('action-menu').classList.add('open'); }
-        function closeMenu() { document.getElementById('action-menu').classList.remove('open'); }
-        function toggleStealth() { document.getElementById('app-body').classList.toggle('stealth'); }
+            if (ledger.length === 0) {
+                feed.innerHTML = '<p class="text-center text-zinc-600 text-xs mt-10">No records found. Initialize vault.</p>';
+            }
 
-        function refresh() {
-            let nw = 0, cash = 0, debtors = 0, creditors = 0;
-            const gBals = {}; store.goals.forEach(g => gBals[g.id] = 0);
-            const people = {};
+            ledger.forEach((item, index) => {
+                const isAsset = item.type === 'asset';
+                total += isAsset ? item.amount : -item.amount;
 
-            store.txs.forEach(t => {
-                const a = parseFloat(t.amount);
-                if (t.type === 'IN') { cash += a; nw += a; if(gBals.hasOwnProperty(t.goalId)) gBals[t.goalId] += a; }
-                if (t.type === 'OUT') { cash -= a; nw -= a; }
-                if (t.type === 'DEBTOR') { debtors += a; nw += a; }
-                if (t.type === 'CREDITOR') { creditors += a; nw -= a; }
-                
-                if (t.person) {
-                    if(!people[t.person]) people[t.person] = 0;
-                    people[t.person] += (t.type === 'DEBTOR' ? a : -a);
-                }
+                feed.innerHTML += `
+                    <div class="vault-card p-5 flex justify-between items-center fade-in border-l-4 ${isAsset ? 'border-emerald-500' : 'border-red-500'}">
+                        <div class="flex flex-col">
+                            <p class="text-[10px] text-[#71717A] uppercase mb-1">${item.type}</p>
+                            <p class="text-sm font-bold">${item.name}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="${isAsset ? 'emerald-text' : 'oxblood-text'} font-bold">
+                                ${isAsset ? '+' : '-'} ₦${stealth ? '••••' : item.amount.toLocaleString()}
+                            </p>
+                            <button onclick="deleteItem(${index})" class="text-[9px] text-zinc-700 mt-2 uppercase">Delete</button>
+                        </div>
+                    </div>
+                `;
             });
 
-            document.getElementById('total-nw').innerText = "₦" + nw.toLocaleString();
-            document.getElementById('total-assets').innerText = "₦" + cash.toLocaleString();
-            document.getElementById('total-debt').innerText = "₦" + (creditors - debtors).toLocaleString();
-
-            document.getElementById('goals-list').innerHTML = store.goals.map(g => {
-                const bal = gBals[g.id] || 0;
-                const pct = g.target > 0 ? Math.min((bal/g.target)*100, 100) : 0;
-                return `<div class="stat-box"><div class="flex justify-between text-[10px] mb-2"><b>${g.name}</b><span>${Math.floor(pct)}%</span></div><div style="height:4px; background:#222;"><div style="height:100%; width:${pct}%; background:#00FF41"></div></div><div class="flex justify-between text-[8px] text-zinc-500 mt-2"><span>₦${bal.toLocaleString()}</span><span>Goal: ₦${g.target.toLocaleString()}</span></div></div>`;
-            }).join('');
-
-            document.getElementById('people-list').innerHTML = Object.keys(people).map(p => `
-                <div class="stat-box flex justify-between items-center">
-                    <div><p class="text-[8px] text-zinc-500 uppercase">Contractor</p><p class="font-bold">${p}</p></div>
-                    <p class="${people[p] > 0 ? 'money' : 'debt-text'} font-bold">₦${Math.abs(people[p]).toLocaleString()}</p>
-                </div>
-            `).join('') || '<p class="text-center text-zinc-700 text-xs">No entries.</p>';
-
-            document.getElementById('audit-list').innerHTML = store.txs.slice().reverse().map((t, i) => `
-                <div class="stat-box flex justify-between items-center py-3">
-                    <div><p class="text-[8px] text-zinc-500">${t.date} | ${t.type}</p><p class="text-xs font-bold">₦${t.amount.toLocaleString()}</p></div>
-                    <button onclick="delTx(${store.txs.length - 1 - i})" class="text-zinc-800 text-lg">×</button>
-                </div>
-            `).join('');
+            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + total.toLocaleString();
         }
 
-        function op(type, gid) {
-            const amt = prompt("Amount (₦):");
-            const src = (type === 'IN') ? prompt("Source (Salary, Business, etc):", "Salary") : null;
-            if(amt) {
-                if(type === 'IN' && gid === 'gen' && store.goals.length > 0) {
-                    const choice = prompt("Target Envelope? \n" + store.goals.map((g,i) => i+': '+g.name).join('\n'));
-                    if(store.goals[choice]) gid = store.goals[choice].id;
-                }
-                save(type, amt, gid, { source: src });
+        function addEntry(type) {
+            const name = prompt(`Entry Name (e.g., ${type === 'asset' ? 'Real Estate' : 'Bank Loan'}):`);
+            const amount = prompt("Amount (₦):");
+            if (name && amount && !isNaN(amount)) {
+                ledger.push({ name, amount: parseFloat(amount), type });
+                saveAndRefresh();
             }
-            closeMenu();
         }
 
-        function opDebt(type) {
+        function deleteItem(index) {
+            if(confirm("Delete this record?")) {
+                ledger.splice(index, 1);
+                saveAndRefresh();
+            }
+        }
+
+        function resetVault() {
+            if(confirm("DANGER: This will wipe all saved assets and loans. Proceed?")) {
+                ledger = [];
+                saveAndRefresh();
+            }
+        }
+
+        function saveAndRefresh() {
+            localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+            updateDisplay();
+        }
+
+        function togglePrivacy() {
+            stealth = !stealth;
+            updateDisplay();
+        }
+
+        // Initialize PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
