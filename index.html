@@ -6,163 +6,118 @@
     <title>Sovereign Command</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #050505; color: #FAFAFA; font-family: ui-monospace, monospace; -webkit-tap-highlight-color: transparent; }
-        .glass { background: #121212; border: 1px solid #262626; border-radius: 20px; }
-        .nav-bar { background: rgba(10, 10, 10, 0.95); border-top: 1px solid #262626; backdrop-filter: blur(10px); }
-        .fab { width: 60px; height: 60px; background: #00FF41; color: #000; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; transform: translateY(-20px); box-shadow: 0 10px 20px rgba(0,255,65,0.2); }
-        .view { display: none; }
+        body { background-color: #000; color: #fff; font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; }
+        .view { display: none; padding: 20px; padding-bottom: 120px; }
         .view.active { display: block; }
-        .stealth-mode .money-text { filter: blur(12px); }
-        #fab-menu { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 1000; flex-direction: column; justify-content: center; padding: 24px; overflow-y: auto; }
-        #fab-menu.active { display: flex; }
+        
+        /* Fixed Header */
+        .header-hud { position: sticky; top: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 100; padding: 20px; border-bottom: 1px solid #222; }
+        
+        /* Card Styling - High Contrast for Utility */
+        .stat-card { background: #111; border: 1px solid #333; border-radius: 16px; padding: 20px; margin-bottom: 15px; }
+        .money { font-family: 'Courier New', Courier, monospace; font-weight: bold; }
+        .stealth .money { filter: blur(10px); }
+
+        /* Navigation Bar - Bulletproof Logic */
+        .nav-dock { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: #0A0A0A; border-top: 1px solid #333; display: flex; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
+        .nav-item { flex: 1; text-align: center; background: none; border: none; color: #666; font-size: 10px; text-transform: uppercase; font-weight: bold; }
+        .nav-item.active { color: #00FF41; }
+        
+        /* The Action Button - Anchored and Accessible */
+        .action-circle { width: 60px; height: 60px; background: #fff; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; border: none; margin-top: -40px; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+
+        /* Full Screen Menu */
+        #menu-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; flex-direction: column; padding: 30px; }
+        #menu-overlay.open { display: flex; }
+        .menu-btn { background: #111; border: 1px solid #333; padding: 20px; border-radius: 12px; margin-bottom: 10px; text-align: left; font-weight: bold; }
     </style>
 </head>
-<body class="pb-32">
+<body id="main-body">
 
-    <header class="p-6 flex justify-between items-center">
+    <div class="header-hud flex justify-between items-center">
         <div>
-            <p class="text-[10px] tracking-[0.4em] text-zinc-600 uppercase">Sovereign Elite</p>
-            <h1 class="text-2xl font-bold tracking-tighter">COMMAND</h1>
+            <p style="font-size: 8px; letter-spacing: 3px; color: #666;">SOVEREIGN ELITE</p>
+            <h2 id="view-title" style="font-size: 18px; font-weight: 800; margin: 0;">DASHBOARD</h2>
         </div>
-        <button onclick="toggleStealth()" class="glass p-3 text-[10px] font-bold">STEALTH</button>
-    </header>
-
-    <main class="px-6">
-        <div id="view-home" class="view active">
-            <div class="glass p-8 mb-6 text-center">
-                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">Net Portfolio</p>
-                <p id="total-nw" class="money-text text-4xl font-bold tracking-tighter">₦0</p>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="glass p-4" onclick="changeView('view-assets')">
-                    <p class="text-[8px] text-zinc-500 uppercase">Liquid Cash</p>
-                    <p id="stat-assets" class="money-text text-sm font-bold text-[#00FF41]">₦0</p>
-                </div>
-                <div class="glass p-4" onclick="changeView('view-debt')">
-                    <p class="text-[8px] text-zinc-500 uppercase">Net Liability</p>
-                    <p id="stat-debt" class="money-text text-sm font-bold text-red-500">₦0</p>
-                </div>
-            </div>
-
-            <p class="text-[10px] font-bold uppercase tracking-widest mb-4">Sinking Funds</p>
-            <div id="dash-goals" class="space-y-3"></div>
-        </div>
-
-        <div id="view-debt" class="view">
-            <h2 class="text-2xl font-bold mb-6">People Ledger</h2>
-            <div id="debt-list" class="space-y-4"></div>
-        </div>
-
-        <div id="view-history" class="view">
-            <h2 class="text-2xl font-bold mb-6">Audit Log</h2>
-            <div id="full-history" class="space-y-3"></div>
-        </div>
-    </main>
-
-    <div id="fab-menu">
-        <p class="text-center text-zinc-500 text-[10px] uppercase tracking-[0.5em] mb-10">Strategic Operations</p>
-        <div class="grid gap-4">
-            <button onclick="logDeposit()" class="glass p-6 text-left flex justify-between">
-                <span>💰 Smart Deposit</span> <span class="text-[#00FF41]">+</span>
-            </button>
-            <button onclick="logSpend()" class="glass p-6 text-left flex justify-between">
-                <span>💸 Spend Funds</span> <span class="text-red-500">-</span>
-            </button>
-            <button onclick="logDebt('DEBTOR')" class="glass p-6 text-left flex justify-between text-zinc-300">
-                <span>🤝 I Lent Money</span> <span>📈</span>
-            </button>
-            <button onclick="logDebt('CREDITOR')" class="glass p-6 text-left flex justify-between text-zinc-300">
-                <span>⚖️ I Borrowed Money</span> <span>📉</span>
-            </button>
-            <button onclick="handleCreateGoal()" class="glass p-6 text-left flex justify-between border-zinc-800">
-                <span>🎯 New Target</span> <span>+</span>
-            </button>
-        </div>
-        <button onclick="toggleMenu()" class="mt-12 text-zinc-600 text-[10px] uppercase tracking-widest text-center w-full">Cancel</button>
+        <button onclick="toggleStealth()" style="background: #222; padding: 8px 15px; border-radius: 8px; font-size: 10px; font-weight: bold;">STEALTH</button>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 h-20 nav-bar flex justify-around items-center px-6 z-50">
-        <button onclick="changeView('view-home')" class="flex flex-col items-center">
-            <span class="text-xl">🏛️</span>
-            <span class="text-[8px] uppercase mt-1">Dash</span>
-        </button>
-        <button onclick="changeView('view-debt')" class="flex flex-col items-center">
-            <span class="text-xl">👥</span>
-            <span class="text-[8px] uppercase mt-1">People</span>
-        </button>
-        <button onclick="toggleMenu()" class="fab">+</button>
-        <button onclick="changeView('view-history')" class="flex flex-col items-center">
-            <span class="text-xl">📜</span>
-            <span class="text-[8px] uppercase mt-1">Audit</span>
-        </button>
+    <div id="view-home" class="view active">
+        <div class="stat-card text-center" style="border-color: #444;">
+            <p style="font-size: 10px; color: #666; margin-bottom: 5px;">NET PORTFOLIO</p>
+            <h1 id="total-nw" class="money text-4xl">₦0</h1>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+            <div class="stat-card" style="margin-bottom: 0;">
+                <p style="font-size: 8px; color: #666;">CASH</p>
+                <p id="cash-assets" class="money text-[#00FF41]">₦0</p>
+            </div>
+            <div class="stat-card" style="margin-bottom: 0;">
+                <p style="font-size: 8px; color: #666;">DEBT</p>
+                <p id="net-debt" class="money text-red-500">₦0</p>
+            </div>
+        </div>
+
+        <p style="font-size: 10px; font-weight: bold; color: #444; margin-bottom: 15px;">ACTIVE TARGETS</p>
+        <div id="goals-container"></div>
+    </div>
+
+    <div id="view-people" class="view">
+        <h3 style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">People Ledger</h3>
+        <div id="people-container" class="space-y-4"></div>
+    </div>
+
+    <div id="view-audit" class="view">
+        <h3 style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Audit History</h3>
+        <div id="history-container" class="space-y-2"></div>
+    </div>
+
+    <nav class="nav-dock">
+        <button class="nav-item active" onclick="navigate('home')">DASH</button>
+        <button class="nav-item" onclick="navigate('people')">PEOPLE</button>
+        <button class="action-circle" onclick="toggleOverlay()">+</button>
+        <button class="nav-item" onclick="navigate('audit')">AUDIT</button>
+        <button class="nav-item" onclick="clearAllData()" style="color: #333;">RESET</button>
     </nav>
 
+    <div id="menu-overlay">
+        <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 30px;">TACTICAL MENU</h2>
+        <button class="menu-btn" onclick="logDeposit()">💰 DEPOSIT ASSETS</button>
+        <button class="menu-btn" onclick="logSpend()">💸 SPEND ASSETS</button>
+        <button class="menu-btn" onclick="logDebt('DEBTOR')">🤝 I LENT MONEY</button>
+        <button class="menu-btn" onclick="logDebt('CREDITOR')">⚖️ I BORROWED MONEY</button>
+        <button class="menu-btn" onclick="createNewGoal()">🎯 NEW ENVELOPE</button>
+        <button onclick="toggleOverlay()" style="margin-top: 30px; color: #666; font-weight: bold;">CLOSE</button>
+    </div>
+
     <script>
-        let history = JSON.parse(localStorage.getItem('sov_v6_history')) || [];
-        let goals = JSON.parse(localStorage.getItem('sov_v6_goals')) || [];
+        let db = JSON.parse(localStorage.getItem('sov_v7_data')) || { history: [], goals: [] };
 
-        function changeView(id) {
+        function navigate(view) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            toggleMenu(false);
-            updateUI();
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('view-' + view).classList.add('active');
+            document.getElementById('view-title').innerText = view.toUpperCase();
+            refreshUI();
         }
 
-        function toggleMenu(force) {
-            const menu = document.getElementById('fab-menu');
-            if(force === false) menu.classList.remove('active');
-            else menu.classList.toggle('active');
+        function toggleOverlay() { 
+            const overlay = document.getElementById('menu-overlay');
+            overlay.classList.toggle('open');
         }
 
-        function toggleStealth() { document.body.classList.toggle('stealth-mode'); }
+        function toggleStealth() { document.getElementById('main-body').classList.toggle('stealth'); }
 
-        function updateUI() {
-            let nw = 0, assets = 0, debtors = 0, creditors = 0;
-            const gBals = {}; goals.forEach(g => gBals[g.id] = 0);
+        function refreshUI() {
+            let nw = 0, cash = 0, debtors = 0, creditors = 0;
+            const goalBals = {}; db.goals.forEach(g => goalBals[g.id] = 0);
             const people = {};
 
-            history.forEach(item => {
-                const a = parseFloat(item.amount);
-                if (item.type === 'IN') { assets += a; nw += a; if(gBals.hasOwnProperty(item.goalId)) gBals[item.goalId] += a; }
-                if (item.type === 'OUT') { assets -= a; nw -= a; if(gBals.hasOwnProperty(item.goalId)) gBals[item.goalId] -= a; }
-                if (item.type === 'DEBTOR' || item.type === 'CREDITOR') {
-                    if (item.type === 'DEBTOR') { debtors += a; nw += a; }
-                    else { creditors += a; nw -= a; }
-                    
-                    if(!people[item.person]) people[item.person] = { balance: 0, type: item.type, terms: item.terms };
-                    people[item.person].balance += (item.type === 'DEBTOR' ? a : -a);
+            db.history.forEach(item => {
+                const amt = parseFloat(item.amount);
+                if (item.type === 'IN') { 
+                    cash += amt; nw += amt; 
+                    if(goalBals.hasOwnProperty(item.goalId)) goalBals[item.goalId] += amt; 
                 }
-            });
-
-            document.getElementById('total-nw').innerText = "₦" + nw.toLocaleString();
-            document.getElementById('stat-assets').innerText = "₦" + assets.toLocaleString();
-            document.getElementById('stat-debt').innerText = "₦" + (creditors - debtors).toLocaleString();
-
-            const dashGoals = document.getElementById('dash-goals');
-            dashGoals.innerHTML = goals.map(g => {
-                const bal = gBals[g.id] || 0;
-                const pct = g.target > 0 ? Math.min((bal/g.target)*100, 100) : 0;
-                return `<div class="glass p-4"><div class="flex justify-between text-[10px] mb-2 font-bold uppercase"><span>${g.name}</span><span class="text-[#00FF41]">${Math.floor(pct)}%</span></div><div class="h-1 bg-zinc-900 rounded-full overflow-hidden"><div class="h-full bg-[#00FF41]" style="width:${pct}%"></div></div></div>`;
-            }).join('');
-
-            const dList = document.getElementById('debt-list');
-            dList.innerHTML = Object.keys(people).map(p => {
-                const data = people[p];
-                return `<div class="glass p-5">
-                    <p class="text-[10px] text-zinc-500 uppercase">${data.balance > 0 ? 'Owes Me' : 'I Owe'}</p>
-                    <div class="flex justify-between items-end mt-1">
-                        <span class="text-lg font-bold">${p}</span>
-                        <span class="text-sm font-bold ${data.balance > 0 ? 'text-[#00FF41]' : 'text-red-500'}">₦${Math.abs(data.balance).toLocaleString()}</span>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-zinc-800 text-[9px] text-zinc-500 space-y-1">
-                        <p>TERMS: ${data.terms.mode} | INT: ${data.terms.rate}%</p>
-                        <p>DUE: ${data.terms.due || 'No Deadline'}</p>
-                    </div>
-                </div>`;
-            }).join('') || '<p class="text-center text-zinc-700 py-10">No active debt relations.</p>';
-
-            document.getElementById('full-history').innerHTML = history.slice().reverse().map((item, idx) => {
-                const realIdx = history.length - 1 - idx;
-                return `<div class="glass p-4 flex justify-between items-center"><div><p class="text-[8px] text-zinc-600 uppercase">${item.date} | ${item.type} (${item.source || 'General'})</p><p class="text-sm font-bold">₦${item.amount.toLocaleString()}</p></div><button onclick="deleteTx(${realIdx})" class="text-zinc-800 text-xl px-2">×</button></div>`;
-            }).join
+                if (item.type ===
