@@ -211,4 +211,42 @@
 
         function toggleMenu() { document.getElementById('menu-overlay').classList.toggle('menu-open'); }
         function toggleCashFields() {
-            const type = document
+            const type = document.getElementById('form-type').value;
+            const fields = document.getElementById('cash-fields');
+            type === 'Cash' ? fields.classList.remove('hidden') : fields.classList.add('hidden');
+        }
+
+        function submitEntry() {
+            const name = document.getElementById('form-name').value;
+            const amount = parseFloat(document.getElementById('form-amount').value);
+            const type = document.getElementById('form-type').value;
+            if (!name || isNaN(amount)) return;
+
+            const now = new Date();
+            const timestamp = now.toLocaleDateString() + ' @ ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            let entry = { name, amount, type, timestamp };
+            if (type === 'Cash') {
+                entry.bills = amount * 0.40;
+                entry.savings = amount * (parseFloat(document.getElementById('form-save-pct').value)/100);
+                entry.lifestyle = amount * (parseFloat(document.getElementById('form-life-pct').value)/100);
+            }
+            ledger.push(entry);
+            localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+            updateDisplay(); toggleMenu();
+        }
+
+        function deleteItem(index) {
+            if(confirm("Permanently delete this record?")) {
+                ledger.splice(index, 1);
+                localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+                updateDisplay();
+            }
+        }
+
+        function resetVault() { if(confirm("Purge all data?")) { ledger = []; localStorage.setItem('vault_ledger', JSON.stringify(ledger)); updateDisplay(); } }
+        function togglePrivacy() { stealth = !stealth; updateDisplay(); }
+        updateDisplay();
+    </script>
+</body>
+</html>
