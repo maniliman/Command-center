@@ -10,7 +10,8 @@
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; position: relative; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
-        .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 12px; border-radius: 8px; width: 100%; outline: none; font-size: 14px; }
+        .gold-text { color: #FFD700; }
+        .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 14px; border-radius: 8px; width: 100%; outline: none; }
         
         #dashboard-content { position: relative; z-index: 1; padding: 24px; }
         .stealth-btn { position: relative; z-index: 100 !important; pointer-events: auto !important; }
@@ -24,8 +25,7 @@
             background: rgba(0,0,0,0.98); 
             backdrop-filter: blur(25px); 
             padding: 24px;
-            padding-top: 60px;
-            overflow-y: auto;
+            padding-top: 80px;
         }
         .menu-open { display: flex !important; flex-direction: column; align-items: center; }
         .preview-box { background: rgba(0, 255, 65, 0.05); border: 1px dashed rgba(0, 255, 65, 0.2); border-radius: 8px; padding: 12px; width: 100%; }
@@ -81,6 +81,12 @@
             <div id="debt-list" class="px-5 pb-5 space-y-2 border-t border-zinc-900 pt-4 text-[11px]"></div>
         </details>
 
+        <div class="mb-12 border-t border-zinc-900 pt-8">
+            <p class="text-gold-text text-[10px] tracking-[0.3em] uppercase font-black mb-6">Fiduciary Bookkeeping (External Funds)</p>
+            <div id="fiduciary-view" class="space-y-4">
+                </div>
+        </div>
+
         <details class="vault-card group mb-10 border-zinc-800">
             <summary class="p-5 flex justify-between items-center list-none cursor-pointer bg-zinc-900/30 rounded-t-xl">
                 <span class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Master Ledger (Audit Trail)</span>
@@ -88,34 +94,35 @@
             </summary>
             <div id="master-history" class="p-5 space-y-4 bg-zinc-900/10 border-t border-zinc-800"></div>
         </details>
+
+        <button onclick="resetVault()" class="w-full mt-10 p-4 text-[9px] uppercase tracking-widest text-zinc-800 border border-zinc-900 rounded-lg">Purge Vault Data</button>
     </div>
 
-    <button onclick="toggleMenu()" class="fab-button w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-3xl font-bold">+</button>
+    <button onclick="toggleMenu()" class="fab-button w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-3xl font-bold active:scale-90">+</button>
 
     <div id="menu-overlay">
         <div class="w-full space-y-6 max-w-sm mx-auto">
             <h2 class="text-xl font-bold uppercase tracking-tighter">New Entry</h2>
             <div class="space-y-4">
-                <input id="form-name" class="input-dark" placeholder="Label">
-                <input id="form-amount" type="number" class="input-dark" placeholder="Amount (₦)" oninput="liveValidate()">
-                <select id="form-type" class="input-dark" onchange="toggleCashFields()">
-                    <option value="Asset">Fixed Asset</option>
-                    <option value="Cash">Liquid Cash</option>
-                    <option value="Liability">Liability</option>
-                    <option value="Debtor">Debtor</option>
+                <select id="entry-mode" class="input-dark" onchange="toggleFormFields()">
+                    <option value="Personal">Personal (Wealth)</option>
+                    <option value="Fiduciary">Fiduciary (Others)</option>
                 </select>
+                <input id="form-name" class="input-dark" placeholder="Name/Contributor">
+                <input id="form-amount" type="number" class="input-dark" placeholder="Amount (₦)" oninput="liveValidate()">
+                
+                <div id="personal-options">
+                    <select id="form-type" class="input-dark" onchange="toggleCashFields()">
+                        <option value="Asset">Fixed Asset</option>
+                        <option value="Cash">Liquid Cash</option>
+                        <option value="Liability">Liability</option>
+                    </select>
+                </div>
 
                 <div id="cash-fields" class="hidden space-y-4 pt-4 border-t border-zinc-800">
-                    <p class="text-[9px] text-zinc-500 uppercase font-black">Fluid Allocation %</p>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div><label class="text-[8px] text-zinc-500 uppercase block mb-1">Bills</label><input id="form-bills-pct" type="number" class="input-dark" value="40" oninput="liveValidate()"></div>
-                        <div><label class="text-[8px] text-zinc-500 uppercase block mb-1">Savings</label><input id="form-save-pct" type="number" class="input-dark" value="40" oninput="liveValidate()"></div>
-                        <div><label class="text-[8px] text-zinc-500 uppercase block mb-1">Life</label><input id="form-life-pct" type="number" class="input-dark" value="20" oninput="liveValidate()"></div>
-                    </div>
-                    <div id="live-preview" class="preview-box space-y-2 text-[10px]">
-                        <div class="flex justify-between"><span>To Bills:</span><span id="prev-bills" class="emerald-text font-bold">₦0</span></div>
-                        <div class="flex justify-between"><span>To Savings:</span><span id="prev-save">₦0</span></div>
-                        <div class="flex justify-between"><span>To Life:</span><span id="prev-life">₦0</span></div>
+                    <div class="flex gap-4">
+                        <div class="flex-1"><label class="text-[9px] text-zinc-500 uppercase font-bold">Savings %</label><input id="form-save-pct" type="number" class="input-dark" value="40" oninput="liveValidate()"></div>
+                        <div class="flex-1"><label class="text-[9px] text-zinc-500 uppercase font-bold">Spend %</label><input id="form-life-pct" type="number" class="input-dark" value="20" oninput="liveValidate()"></div>
                     </div>
                 </div>
             </div>
@@ -129,77 +136,98 @@
     <script>
         let stealth = false;
         let ledger = JSON.parse(localStorage.getItem('vault_ledger')) || [];
+        let fLedger = JSON.parse(localStorage.getItem('fiduciary_ledger')) || [];
 
         function updateDisplay() {
-            let assetsSum = 0, debtSum = 0, billsSum = 0, savingsSum = 0, lifestyleSum = 0, totalCash = 0;
-            const assetList = document.getElementById('asset-list'), debtList = document.getElementById('debt-list'), masterHistory = document.getElementById('master-history');
-            assetList.innerHTML = ''; debtList.innerHTML = ''; masterHistory.innerHTML = '';
+            let assetsSum = 0, debtSum = 0, bSum = 0, sSum = 0, lSum = 0, tCash = 0;
+            const assetList = document.getElementById('asset-list'), debtList = document.getElementById('debt-list'), masterHistory = document.getElementById('master-history'), fView = document.getElementById('fiduciary-view');
+            assetList.innerHTML = ''; debtList.innerHTML = ''; masterHistory.innerHTML = ''; fView.innerHTML = '';
 
+            // Update Personal
             ledger.slice().reverse().forEach((item, originalIndex) => {
                 const index = ledger.length - 1 - originalIndex;
-                const isAssetGroup = (item.type === 'Asset' || item.type === 'Cash' || item.type === 'Debtor');
-                if(isAssetGroup) assetsSum += item.amount; else debtSum += item.amount;
-                
-                if(item.type === 'Cash') {
-                    totalCash += item.amount;
-                    billsSum += item.bills || 0;
-                    savingsSum += item.savings || 0;
-                    lifestyleSum += item.lifestyle || 0;
-                }
-
-                const listHTML = `<div class="flex justify-between items-center py-2 border-b border-zinc-900 last:border-0"><span class="text-zinc-500">${item.name}</span><span class="${isAssetGroup ? 'emerald-text' : 'oxblood-text'}">₦${stealth ? '••••' : item.amount.toLocaleString()}</span></div>`;
-                const auditHTML = `<div class="p-3 border border-zinc-800 rounded-lg mb-2"><div class="flex justify-between items-start mb-2"><p class="text-[8px] text-zinc-600 uppercase font-bold">${item.timestamp}</p><button onclick="deleteItem(${index})" class="text-zinc-800 px-2 font-black">×</button></div><div class="flex justify-between items-center"><span class="text-xs font-bold uppercase">${item.name}</span><span class="${isAssetGroup ? 'emerald-text' : 'oxblood-text'} font-mono text-xs">₦${stealth ? '••••' : item.amount.toLocaleString()}</span></div></div>`;
-
-                masterHistory.innerHTML += auditHTML;
-                if (isAssetGroup) assetList.innerHTML += listHTML; else debtList.innerHTML += listHTML;
+                const isAsset = (item.type === 'Asset' || item.type === 'Cash');
+                if(isAsset) assetsSum += item.amount; else debtSum += item.amount;
+                if(item.type === 'Cash') { tCash += item.amount; bSum += item.bills; sSum += item.savings; lSum += item.lifestyle; }
+                const listHTML = `<div class="flex justify-between items-center py-2 border-b border-zinc-900 last:border-0"><span class="text-zinc-500">${item.name}</span><span class="${isAsset ? 'emerald-text' : 'oxblood-text'}">₦${stealth ? '••••' : item.amount.toLocaleString()}</span></div>`;
+                masterHistory.innerHTML += `<div class="p-3 border border-zinc-800 rounded-lg mb-4"><div class="flex justify-between mb-2 text-[8px] text-zinc-600 font-bold uppercase"><span>${item.timestamp}</span><button onclick="deleteItem(${index}, 'Personal')">×</button></div><div class="flex justify-between items-center"><span class="text-xs font-bold uppercase">${item.name}</span><span class="${isAsset ? 'emerald-text' : 'oxblood-text'} font-mono text-xs">₦${stealth ? '••••' : item.amount.toLocaleString()}</span></div></div>`;
+                if (isAsset) assetList.innerHTML += listHTML; else debtList.innerHTML += listHTML;
             });
 
-            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + (assetsSum - debtSum).toLocaleString();
-            document.getElementById('inv-assets-total').innerText = stealth ? "••••" : "₦" + assetsSum.toLocaleString();
-            document.getElementById('inv-debt-total').innerText = stealth ? "••••" : "₦" + debtSum.toLocaleString();
-            document.getElementById('total-cash').innerText = stealth ? "••••" : "₦" + totalCash.toLocaleString();
-            document.getElementById('alloc-bills').innerText = stealth ? "••••" : "₦" + billsSum.toLocaleString();
-            document.getElementById('alloc-savings').innerText = stealth ? "••••" : "₦" + savingsSum.toLocaleString();
-            document.getElementById('alloc-life').innerText = stealth ? "••••" : "₦" + lifestyleSum.toLocaleString();
-            
-            // The 40/40/20 Internal Bills Split
-            document.getElementById('bills-emerge').innerText = stealth ? "••••" : "₦" + (billsSum * 0.4).toLocaleString();
-            document.getElementById('bills-ops').innerText = stealth ? "••••" : "₦" + (billsSum * 0.4).toLocaleString();
-            document.getElementById('bills-buffer').innerText = stealth ? "••••" : "₦" + (billsSum * 0.2).toLocaleString();
+            // Update Fiduciary
+            const groups = fLedger.reduce((acc, item) => {
+                if (!acc[item.name]) acc[item.name] = { total: 0, items: [] };
+                acc[item.name].total += item.amount;
+                acc[item.name].items.push(item);
+                return acc;
+            }, {});
+
+            for (const name in groups) {
+                fView.innerHTML += `
+                    <details class="vault-card group">
+                        <summary class="p-5 flex justify-between items-center list-none cursor-pointer">
+                            <span class="text-xs font-bold uppercase">${name}</span>
+                            <span class="gold-text font-bold text-xs font-mono">₦${stealth ? '••••' : groups[name].total.toLocaleString()}</span>
+                        </summary>
+                        <div class="px-5 pb-5 space-y-3 border-t border-zinc-900 pt-4">
+                            ${groups[name].items.map(i => `<div class="flex justify-between text-[10px]"><span class="text-zinc-500">${i.timestamp}</span><span class="gold-text">₦${i.amount.toLocaleString()}</span></div>`).join('')}
+                        </div>
+                    </details>`;
+            }
+
+            document.getElementById('networth').innerText = "₦" + (assetsSum - debtSum).toLocaleString();
+            document.getElementById('inv-assets-total').innerText = "₦" + assetsSum.toLocaleString();
+            document.getElementById('inv-debt-total').innerText = "₦" + debtSum.toLocaleString();
+            document.getElementById('total-cash').innerText = "₦" + tCash.toLocaleString();
+            document.getElementById('alloc-bills').innerText = "₦" + bSum.toLocaleString();
+            document.getElementById('alloc-savings').innerText = "₦" + sSum.toLocaleString();
+            document.getElementById('alloc-life').innerText = "₦" + lSum.toLocaleString();
+            document.getElementById('bills-emerge').innerText = "₦" + (bSum * 0.4).toLocaleString();
+            document.getElementById('bills-ops').innerText = "₦" + (bSum * 0.4).toLocaleString();
+            document.getElementById('bills-buffer').innerText = "₦" + (bSum * 0.2).toLocaleString();
         }
 
-        function liveValidate() {
-            const amount = parseFloat(document.getElementById('form-amount').value) || 0;
-            const bPct = parseFloat(document.getElementById('form-bills-pct').value) || 0;
-            const sPct = parseFloat(document.getElementById('form-save-pct').value) || 0;
-            const lPct = parseFloat(document.getElementById('form-life-pct').value) || 0;
-            document.getElementById('prev-bills').innerText = "₦" + (amount * (bPct / 100)).toLocaleString();
-            document.getElementById('prev-save').innerText = "₦" + (amount * (sPct / 100)).toLocaleString();
-            document.getElementById('prev-life').innerText = "₦" + (amount * (lPct / 100)).toLocaleString();
+        function toggleFormFields() {
+            const mode = document.getElementById('entry-mode').value;
+            document.getElementById('personal-options').classList.toggle('hidden', mode === 'Fiduciary');
+            document.getElementById('cash-fields').classList.add('hidden');
         }
 
-        function toggleMenu() { document.getElementById('menu-overlay').classList.toggle('menu-open'); }
         function toggleCashFields() {
             const type = document.getElementById('form-type').value;
             document.getElementById('cash-fields').classList.toggle('hidden', type !== 'Cash');
         }
 
         function submitEntry() {
-            const name = document.getElementById('form-name').value, amount = parseFloat(document.getElementById('form-amount').value), type = document.getElementById('form-type').value;
+            const mode = document.getElementById('entry-mode').value, name = document.getElementById('form-name').value, amount = parseFloat(document.getElementById('form-amount').value);
             if (!name || isNaN(amount)) return;
-            const timestamp = new Date().toLocaleDateString() + ' @ ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            let entry = { name, amount, type, timestamp };
-            if (type === 'Cash') {
-                entry.bills = amount * (parseFloat(document.getElementById('form-bills-pct').value)/100);
-                entry.savings = amount * (parseFloat(document.getElementById('form-save-pct').value)/100);
-                entry.lifestyle = amount * (parseFloat(document.getElementById('form-life-pct').value)/100);
+            const timestamp = new Date().toLocaleDateString() + ' @ ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            
+            if (mode === 'Personal') {
+                const type = document.getElementById('form-type').value;
+                let entry = { name, amount, type, timestamp };
+                if (type === 'Cash') {
+                    entry.bills = amount * 0.40;
+                    entry.savings = amount * (parseFloat(document.getElementById('form-save-pct').value)/100);
+                    entry.lifestyle = amount * (parseFloat(document.getElementById('form-life-pct').value)/100);
+                }
+                ledger.push(entry); localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+            } else {
+                fLedger.push({ name, amount, timestamp }); localStorage.setItem('fiduciary_ledger', JSON.stringify(fLedger));
             }
-            ledger.push(entry); localStorage.setItem('vault_ledger', JSON.stringify(ledger));
             updateDisplay(); toggleMenu();
         }
 
-        function deleteItem(index) { if(confirm("Delete?")) { ledger.splice(index, 1); localStorage.setItem('vault_ledger', JSON.stringify(ledger)); updateDisplay(); } }
-        function resetVault() { if(confirm("Purge?")) { ledger = []; localStorage.setItem('vault_ledger', JSON.stringify(ledger)); updateDisplay(); } }
+        function deleteItem(index, type) {
+            if(confirm("Delete?")) {
+                if(type === 'Personal') ledger.splice(index, 1);
+                localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+                localStorage.setItem('fiduciary_ledger', JSON.stringify(fLedger));
+                updateDisplay();
+            }
+        }
+
+        function toggleMenu() { document.getElementById('menu-overlay').classList.toggle('menu-open'); }
         function togglePrivacy() { stealth = !stealth; updateDisplay(); }
         updateDisplay();
     </script>
