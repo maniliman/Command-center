@@ -6,131 +6,115 @@
     <title>Sovereign Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --accent: #00FF41; --bg: #050505; --card: rgba(23, 23, 23, 0.7); }
-        body { background-color: var(--bg); color: #FAFAFA; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
-        .glass { background: var(--card); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; }
-        .nav-blur { background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(15px); border-top: 1px solid rgba(255,255,255,0.1); }
-        .fab-main { width: 64px; height: 64px; background: white; color: black; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); transform: translateY(-30px); display: flex; align-items: center; justify-content: center; font-size: 32px; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .fab-main:active { transform: translateY(-30px) scale(0.9); }
-        .view { display: none; opacity: 0; transform: translateY(10px); transition: 0.3s ease; }
-        .view.active { display: block; opacity: 1; transform: translateY(0); }
-        .stealth-active .money { filter: blur(8px); pointer-events: none; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; padding: 40px 24px; flex-direction: column; justify-content: center; }
-        .modal.active { display: flex; }
+        body { background-color: #050505; color: #FAFAFA; font-family: ui-monospace, monospace; -webkit-tap-highlight-color: transparent; }
+        .glass { background: #121212; border: 1px solid #262626; border-radius: 20px; }
+        .nav-bar { background: rgba(10, 10, 10, 0.95); border-top: 1px solid #262626; backdrop-filter: blur(10px); }
+        .fab { width: 60px; height: 60px; background: #00FF41; color: #000; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; transform: translateY(-20px); box-shadow: 0 10px 20px rgba(0,255,65,0.2); }
+        .view { display: none; }
+        .view.active { display: block; }
+        .stealth-mode .money-text { filter: blur(10px); }
+        /* Tactical Menu Overlay */
+        #fab-menu { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 1000; flex-direction: column; justify-content: center; padding: 24px; }
+        #fab-menu.active { display: flex; }
     </style>
 </head>
 <body class="pb-32">
 
-    <header class="p-6 pt-10 flex justify-between items-center">
+    <header class="p-6 flex justify-between items-center">
         <div>
-            <p class="text-[10px] tracking-[0.4em] text-zinc-500 uppercase">Sovereign Elite</p>
-            <h1 class="text-3xl font-bold tracking-tighter">Command</h1>
+            <p class="text-[10px] tracking-[0.4em] text-zinc-600 uppercase">Sovereign Elite</p>
+            <h1 class="text-2xl font-bold tracking-tighter">COMMAND</h1>
         </div>
-        <button onclick="toggleStealth()" class="w-10 h-10 glass flex items-center justify-center text-lg">👁️</button>
+        <button onclick="toggleStealth()" class="glass p-3 text-sm">STEALTH</button>
     </header>
 
     <main class="px-6">
-        <section id="view-home" class="view active">
+        <div id="view-home" class="view active">
             <div class="glass p-8 mb-6 text-center">
-                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">Net Worth Portfolio</p>
-                <p id="total-nw" class="money text-5xl font-bold tracking-tighter">₦0</p>
+                <p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">Portfolio Worth</p>
+                <p id="total-nw" class="money-text text-4xl font-bold tracking-tighter">₦0</p>
             </div>
-
+            
             <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="glass p-5">
-                    <p class="text-zinc-500 text-[9px] uppercase tracking-widest mb-1">Assets</p>
-                    <p id="stat-assets" class="money text-lg font-bold text-[#00FF41]">₦0</p>
+                <div class="glass p-4">
+                    <p class="text-[8px] text-zinc-500 uppercase">Cash Assets</p>
+                    <p id="stat-assets" class="money-text text-sm font-bold text-[#00FF41]">₦0</p>
                 </div>
-                <div class="glass p-5">
-                    <p class="text-zinc-500 text-[9px] uppercase tracking-widest mb-1">Debt</p>
-                    <p id="stat-debt" class="money text-lg font-bold text-red-500">₦0</p>
-                </div>
-            </div>
-
-            <h3 class="text-xs font-bold uppercase tracking-widest mb-4 px-2">Portfolio Envelopes</h3>
-            <div id="dash-goals" class="space-y-4"></div>
-        </section>
-
-        <section id="view-debt" class="view">
-            <h2 class="text-3xl font-bold mb-8 tracking-tight text-center">Liability Ledger</h2>
-            <div class="glass p-6 space-y-4 mb-6">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs text-zinc-500 uppercase">Debtors (Receivable)</span>
-                    <span id="debtor-total" class="money text-[#00FF41] font-bold">₦0</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs text-zinc-500 uppercase">Creditors (Payable)</span>
-                    <span id="creditor-total" class="money text-red-500 font-bold">₦0</span>
+                <div class="glass p-4">
+                    <p class="text-[8px] text-zinc-500 uppercase">Net Debt</p>
+                    <p id="stat-debt" class="money-text text-sm font-bold text-red-500">₦0</p>
                 </div>
             </div>
-            <p class="text-[10px] text-zinc-500 text-center uppercase">Add entries via the Tactical Menu (+)</p>
-        </section>
 
-        <section id="view-history" class="view">
-            <h2 class="text-3xl font-bold mb-8 tracking-tight">Audit Log</h2>
+            <p class="text-[10px] font-bold uppercase tracking-widest mb-4">Target Envelopes</p>
+            <div id="dash-goals" class="space-y-3"></div>
+        </div>
+
+        <div id="view-history" class="view">
+            <h2 class="text-2xl font-bold mb-6">Audit Log</h2>
             <div id="full-history" class="space-y-3"></div>
-        </section>
+        </div>
     </main>
 
-    <div id="fab-menu" class="modal">
-        <h2 class="text-zinc-500 text-xs uppercase tracking-[0.5em] mb-12 text-center">Tactical Actions</h2>
+    <div id="fab-menu">
+        <p class="text-center text-zinc-500 text-[10px] uppercase tracking-[0.5em] mb-10">Tactical Actions</p>
         <div class="grid gap-4">
-            <button onclick="action('IN', 'gen')" class="glass p-6 text-left flex justify-between items-center">
-                <span>💰 Deposit to Assets</span>
-                <span class="text-[#00FF41]">+</span>
+            <button onclick="performAction('IN', 'gen')" class="glass p-6 text-left flex justify-between">
+                <span>💰 Deposit Assets</span> <span class="text-[#00FF41]">+</span>
             </button>
-            <button onclick="action('OUT', 'gen')" class="glass p-6 text-left flex justify-between items-center text-red-500">
-                <span>💸 Spend Assets</span>
-                <span>−</span>
+            <button onclick="performAction('OUT', 'gen')" class="glass p-6 text-left flex justify-between">
+                <span>💸 Spend Assets</span> <span class="text-red-500">-</span>
             </button>
-            <button onclick="action('DEBTOR', 'debt')" class="glass p-6 text-left flex justify-between items-center">
-                <span>📈 Add Debtor (Owes Me)</span>
-                <span>🤝</span>
+            <button onclick="performAction('DEBTOR', 'debt')" class="glass p-6 text-left flex justify-between text-zinc-400">
+                <span>📈 Person Owes Me</span> <span>🤝</span>
             </button>
-            <button onclick="action('CREDITOR', 'debt')" class="glass p-6 text-left flex justify-between items-center">
-                <span>📉 Add Creditor (I Owe)</span>
-                <span>⚖️</span>
+            <button onclick="performAction('CREDITOR', 'debt')" class="glass p-6 text-left flex justify-between text-zinc-400">
+                <span>📉 I Owe Person</span> <span>⚖️</span>
             </button>
-            <button onclick="createGoal()" class="glass p-6 text-left flex justify-between items-center border-emerald-500/30">
-                <span>🎯 Create New Envelope</span>
-                <span>🏁</span>
+            <button onclick="handleCreateGoal()" class="glass p-6 text-left flex justify-between border-dashed border-[#00FF41]/30">
+                <span>🎯 New Goal</span> <span>+</span>
             </button>
         </div>
-        <button onclick="toggleFAB()" class="mt-12 text-zinc-500 uppercase text-[10px] tracking-widest">Close Menu</button>
+        <button onclick="toggleMenu()" class="mt-12 text-zinc-600 text-[10px] uppercase tracking-widest text-center w-full">Close</button>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 h-24 nav-blur flex justify-around items-center px-6 z-50">
-        <button onclick="showView('view-home')" class="flex flex-col items-center">
+    <nav class="fixed bottom-0 left-0 right-0 h-20 nav-bar flex justify-around items-center px-6 z-50">
+        <button onclick="changeView('view-home')" class="flex flex-col items-center">
             <span class="text-xl">🏛️</span>
-            <span class="text-[8px] uppercase tracking-widest mt-1 text-zinc-500">Dash</span>
+            <span class="text-[8px] uppercase mt-1">Dash</span>
         </button>
         
-        <button onclick="toggleFAB()" class="fab-main">+</button>
+        <button onclick="toggleMenu()" class="fab">+</button>
 
-        <button onclick="showView('view-history')" class="flex flex-col items-center">
+        <button onclick="changeView('view-history')" class="flex flex-col items-center">
             <span class="text-xl">📜</span>
-            <span class="text-[8px] uppercase tracking-widest mt-1 text-zinc-500">Logs</span>
+            <span class="text-[8px] uppercase mt-1">Logs</span>
         </button>
     </nav>
 
     <script>
-        let history = JSON.parse(localStorage.getItem('sov_v4_history')) || [];
-        let goals = JSON.parse(localStorage.getItem('sov_v4_goals')) || [];
+        let history = JSON.parse(localStorage.getItem('sov_v5_history')) || [];
+        let goals = JSON.parse(localStorage.getItem('sov_v5_goals')) || [];
 
-        function showView(id) {
+        function changeView(id) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            window.scrollTo(0,0);
             updateUI();
         }
 
-        function toggleFAB() { document.getElementById('fab-menu').classList.toggle('active'); }
+        function toggleMenu() {
+            const menu = document.getElementById('fab-menu');
+            menu.classList.toggle('active');
+        }
 
-        function toggleStealth() { document.body.classList.toggle('stealth-active'); }
+        function toggleStealth() {
+            document.body.classList.toggle('stealth-mode');
+        }
 
         function updateUI() {
             let nw = 0, assets = 0, debtors = 0, creditors = 0;
-            const gBals = {}; goals.forEach(g => gBals[g.id] = 0);
+            const gBals = {}; 
+            goals.forEach(g => gBals[g.id] = 0);
 
             history.forEach(item => {
                 const a = parseFloat(item.amount);
@@ -143,36 +127,57 @@
             document.getElementById('total-nw').innerText = "₦" + nw.toLocaleString();
             document.getElementById('stat-assets').innerText = "₦" + assets.toLocaleString();
             document.getElementById('stat-debt').innerText = "₦" + (creditors - debtors).toLocaleString();
-            document.getElementById('debtor-total').innerText = "₦" + debtors.toLocaleString();
-            document.getElementById('creditor-total').innerText = "₦" + creditors.toLocaleString();
 
-            const gList = document.getElementById('dash-goals');
-            gList.innerHTML = goals.map(g => {
+            const dashGoals = document.getElementById('dash-goals');
+            dashGoals.innerHTML = goals.map(g => {
                 const bal = gBals[g.id] || 0;
                 const pct = g.target > 0 ? Math.min((bal/g.target)*100, 100) : 0;
-                return `<div class="glass p-5">
-                    <div class="flex justify-between mb-3 text-[10px] font-bold uppercase"><span>${g.name}</span><span class="text-[#00FF41]">${Math.floor(pct)}%</span></div>
-                    <div class="h-1 bg-zinc-800 rounded-full overflow-hidden"><div class="h-full bg-[#00FF41]" style="width:${pct}%"></div></div>
-                    <div class="flex justify-between mt-3 text-[9px] text-zinc-500"><span>₦${bal.toLocaleString()} saved</span><span>Goal: ₦${g.target.toLocaleString()}</span></div>
+                return `<div class="glass p-4">
+                    <div class="flex justify-between text-[10px] mb-2 font-bold uppercase"><span>${g.name}</span><span class="text-[#00FF41]">${Math.floor(pct)}%</span></div>
+                    <div class="h-1 bg-zinc-900 rounded-full overflow-hidden"><div class="h-full bg-[#00FF41]" style="width:${pct}%"></div></div>
+                    <div class="flex justify-between mt-2 text-[9px] text-zinc-600"><span>₦${bal.toLocaleString()}</span><span>Target ₦${g.target.toLocaleString()}</span></div>
                 </div>`;
-            }).join('') || '<p class="text-center text-zinc-600 text-xs py-4">No active envelopes. Create one in the Tactical Menu.</p>';
+            }).join('') || '<p class="text-[10px] text-zinc-700 py-4">No active envelopes.</p>';
 
             document.getElementById('full-history').innerHTML = history.slice().reverse().map((item, idx) => {
                 const realIdx = history.length - 1 - idx;
-                return `<div class="glass p-4 flex justify-between items-center"><div class="flex flex-col">
-                    <span class="text-[8px] text-zinc-500 uppercase">${item.date} | ${item.type}</span>
-                    <span class="money font-bold">₦${item.amount.toLocaleString()}</span></div>
-                <button onclick="deleteTx(${realIdx})" class="text-zinc-700 text-xl">×</button></div>`;
+                return `<div class="glass p-4 flex justify-between items-center">
+                    <div><p class="text-[8px] text-zinc-600 uppercase">${item.date} | ${item.type}</p><p class="text-sm font-bold">₦${item.amount.toLocaleString()}</p></div>
+                    <button onclick="deleteTx(${realIdx})" class="text-zinc-800 text-xl px-2">×</button>
+                </div>`;
             }).join('');
         }
 
-        function action(type, goalId) {
-            const amount = prompt(`Tactical ${type} amount (₦):`);
-            if (!amount || isNaN(amount)) return;
-            history.push({ type, amount: parseFloat(amount), goalId, date: new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'}) });
-            localStorage.setItem('sov_v4_history', JSON.stringify(history));
-            updateUI();
-            if(document.getElementById('fab-menu').classList.contains('active')) toggleFAB();
+        function performAction(type, goalId) {
+            const amount = prompt(`Amount (₦):`);
+            if (amount && !isNaN(amount)) {
+                history.push({ type, amount: parseFloat(amount), goalId, date: new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'}) });
+                localStorage.setItem('sov_v5_history', JSON.stringify(history));
+                updateUI();
+                if(document.getElementById('fab-menu').classList.contains('active')) toggleMenu();
+            }
         }
 
-        function
+        function handleCreateGoal() {
+            const name = prompt("Envelope Name:");
+            const target = prompt("Target Amount (₦):");
+            if (name && target) {
+                goals.push({ id: 'g' + Date.now(), name, target: parseFloat(target) });
+                localStorage.setItem('sov_v5_goals', JSON.stringify(goals));
+                updateUI();
+                toggleMenu();
+            }
+        }
+
+        function deleteTx(idx) {
+            if(confirm("Permanently delete?")) {
+                history.splice(idx, 1);
+                localStorage.setItem('sov_v5_history', JSON.stringify(history));
+                updateUI();
+            }
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
