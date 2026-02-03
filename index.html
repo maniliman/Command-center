@@ -12,7 +12,6 @@
         .oxblood-text { color: #FF3131; }
         .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 14px; border-radius: 8px; width: 100%; outline: none; }
         
-        /* Layer Priority Fix */
         #dashboard-content { position: relative; z-index: 1; padding: 24px; }
         .stealth-btn { position: relative; z-index: 100 !important; pointer-events: auto !important; }
         .fab-button { position: fixed; bottom: 32px; right: 32px; z-index: 500 !important; pointer-events: auto !important; box-shadow: 0 0 25px rgba(0, 255, 65, 0.4); }
@@ -26,9 +25,13 @@
             backdrop-filter: blur(25px); 
             padding: 24px;
             padding-top: 80px;
+            overflow-y: auto;
         }
         .menu-open { display: flex !important; flex-direction: column; align-items: center; }
         .preview-box { background: rgba(0, 255, 65, 0.05); border: 1px dashed rgba(0, 255, 65, 0.2); border-radius: 8px; padding: 12px; width: 100%; }
+        
+        /* Calendar Styling */
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
     </style>
 </head>
 <body class="pb-60">
@@ -88,8 +91,7 @@
                 <span class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Master Ledger (Audit Trail)</span>
                 <span class="text-zinc-700 group-open:rotate-180 transition-transform text-[10px]">▼</span>
             </summary>
-            <div id="master-history" class="p-5 space-y-4 bg-zinc-900/10 border-t border-zinc-800">
-                </div>
+            <div id="master-history" class="p-5 space-y-4 bg-zinc-900/10 border-t border-zinc-800"></div>
         </details>
 
         <button onclick="resetVault()" class="w-full mt-10 p-4 text-[9px] uppercase tracking-widest text-zinc-800 border border-zinc-900 rounded-lg">Purge Vault Data</button>
@@ -98,16 +100,18 @@
     <button onclick="toggleMenu()" class="fab-button w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-3xl font-bold active:scale-90">+</button>
 
     <div id="menu-overlay">
-        <div class="w-full space-y-6 max-w-sm mx-auto">
+        <div class="w-full space-y-6 max-w-sm mx-auto pb-20">
             <h2 class="text-xl font-bold uppercase tracking-tighter">New Entry</h2>
             <div class="space-y-4">
-                <input id="form-name" class="input-dark" placeholder="Label">
+                <input id="form-name" class="input-dark" placeholder="Name/Description">
                 <input id="form-amount" type="number" class="input-dark" placeholder="Amount (₦)" oninput="liveValidate()">
-                <select id="form-type" class="input-dark" onchange="toggleCashFields()">
+                <select id="form-type" class="input-dark" onchange="toggleSpecialFields()">
                     <option value="Asset">Fixed Asset</option>
                     <option value="Cash">Liquid Cash</option>
-                    <option value="Liability">Liability</option>
+                    <option value="Liability">Liability/Creditor</option>
+                    <option value="Debtor">Debtor (Owed to Me)</option>
                 </select>
+
                 <div id="cash-fields" class="hidden space-y-4 pt-4 border-t border-zinc-800">
                     <div class="flex gap-4">
                         <div class="flex-1"><label class="text-[9px] text-zinc-500 uppercase font-bold">Savings %</label><input id="form-save-pct" type="number" class="input-dark" value="40" oninput="liveValidate()"></div>
@@ -117,6 +121,13 @@
                         <div class="flex justify-between"><span>Bills (40%):</span><span id="prev-bills" class="emerald-text font-bold">₦0</span></div>
                         <div class="flex justify-between"><span>Savings:</span><span id="prev-save">₦0</span></div>
                         <div class="flex justify-between"><span>Spend:</span><span id="prev-life">₦0</span></div>
+                    </div>
+                </div>
+
+                <div id="debt-fields" class="hidden space-y-4 pt-4 border-t border-zinc-800">
+                    <div class="flex gap-4">
+                        <div class="flex-1"><label class="text-[9px] text-zinc-500 uppercase font-bold">Interest %</label><input id="form-interest" type="number" class="input-dark" value="0"></div>
+                        <div class="flex-1"><label class="text-[9px] text-zinc-500 uppercase font-bold">Due Date</label><input id="form-due" type="date" class="input-dark"></div>
                     </div>
                 </div>
             </div>
@@ -141,10 +152,12 @@
 
             ledger.slice().reverse().forEach((item, originalIndex) => {
                 const index = ledger.length - 1 - originalIndex;
-                const isAsset = (item.type === 'Asset' || item.type === 'Cash');
-                const isDebt = (item.type === 'Liability');
+                const interestAmt = (item.amount * (item.interest || 0) / 100);
+                const effectiveAmount = item.amount + interestAmt;
+
+                const isAssetGroup = (item.type === 'Asset' || item.type === 'Cash' || item.type === 'Debtor');
+                if(isAssetGroup) assetsSum += effectiveAmount; else debtSum += effectiveAmount;
                 
-                if(isAsset) assetsSum += item.amount; else debtSum += item.amount;
                 if(item.type === 'Cash') {
                     totalCash += item.amount;
                     billsSum += item.bills || 0;
@@ -152,7 +165,7 @@
                     lifestyleSum += item.lifestyle || 0;
                 }
 
-                const listHTML = `<div class="flex justify-between items-center py-2 border-b border-zinc-900 last:border-0"><span class="text-zinc-500">${item.name}</span><span class="${isAsset ? 'emerald-text' : 'oxblood-text'}">₦${stealth ? '••••' : item.amount.toLocaleString()}</span></div>`;
+                const listHTML = `<div class="flex justify-between items-center py-2 border-b border-zinc-900 last:border-0"><span class="text-zinc-500">${item.name}</span><span class="${isAssetGroup ? 'emerald-text' : 'oxblood-text'}">₦${stealth ? '••••' : effectiveAmount.toLocaleString()}</span></div>`;
                 
                 const auditHTML = `
                     <div class="p-3 border border-zinc-800 rounded-lg">
@@ -160,14 +173,16 @@
                             <p class="text-[8px] text-zinc-600 uppercase font-bold">${item.timestamp}</p>
                             <button onclick="deleteItem(${index})" class="text-zinc-800 hover:text-red-500 px-2 font-black">×</button>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold uppercase">${item.name}</span>
-                            <span class="${isAsset ? 'emerald-text' : 'oxblood-text'} font-mono text-xs">₦${stealth ? '••••' : item.amount.toLocaleString()}</span>
+                        <p class="text-xs font-bold uppercase tracking-tight">${item.name}</p>
+                        ${item.dueDate ? `<p class="text-[8px] text-zinc-500 mt-1 uppercase font-bold">Due: ${item.dueDate} | Interest: ${item.interest}%</p>` : ''}
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-[7px] text-zinc-600 uppercase tracking-widest">${item.type}</span>
+                            <span class="${isAssetGroup ? 'emerald-text' : 'oxblood-text'} font-mono text-xs">₦${stealth ? '••••' : effectiveAmount.toLocaleString()}</span>
                         </div>
                     </div>`;
 
                 masterHistory.innerHTML += auditHTML;
-                if (isAsset) assetList.innerHTML += listHTML; else debtList.innerHTML += listHTML;
+                if (isAssetGroup) assetList.innerHTML += listHTML; else debtList.innerHTML += listHTML;
             });
 
             document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + (assetsSum - debtSum).toLocaleString();
@@ -182,6 +197,12 @@
             document.getElementById('bills-buffer').innerText = stealth ? "••••" : "₦" + (billsSum * 0.2).toLocaleString();
         }
 
+        function toggleSpecialFields() {
+            const type = document.getElementById('form-type').value;
+            document.getElementById('cash-fields').classList.toggle('hidden', type !== 'Cash');
+            document.getElementById('debt-fields').classList.toggle('hidden', type !== 'Liability' && type !== 'Debtor');
+        }
+
         function liveValidate() {
             const amount = parseFloat(document.getElementById('form-amount').value) || 0;
             const sPct = parseFloat(document.getElementById('form-save-pct').value) || 0;
@@ -192,11 +213,6 @@
         }
 
         function toggleMenu() { document.getElementById('menu-overlay').classList.toggle('menu-open'); }
-        function toggleCashFields() {
-            const type = document.getElementById('form-type').value;
-            const fields = document.getElementById('cash-fields');
-            type === 'Cash' ? fields.classList.remove('hidden') : fields.classList.add('hidden');
-        }
 
         function submitEntry() {
             const name = document.getElementById('form-name').value;
@@ -207,7 +223,15 @@
             const now = new Date();
             const timestamp = now.toLocaleDateString() + ' @ ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-            let entry = { name, amount, type, timestamp };
+            let entry = { 
+                name, 
+                amount, 
+                type, 
+                timestamp,
+                interest: parseFloat(document.getElementById('form-interest').value) || 0,
+                dueDate: document.getElementById('form-due').value || null
+            };
+
             if (type === 'Cash') {
                 entry.bills = amount * 0.40;
                 entry.savings = amount * (parseFloat(document.getElementById('form-save-pct').value)/100);
@@ -219,7 +243,7 @@
         }
 
         function deleteItem(index) {
-            if(confirm("Confirm deletion from Audit Trail?")) {
+            if(confirm("Confirm deletion?")) {
                 ledger.splice(index, 1);
                 localStorage.setItem('vault_ledger', JSON.stringify(ledger));
                 updateDisplay();
