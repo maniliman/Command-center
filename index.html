@@ -50,70 +50,15 @@
         let history = JSON.parse(localStorage.getItem('vault_history')) || [];
 
         function updateDisplay() {
-            // Calculate totals from history
             let currentBalance = 0;
             let currentLoans = 0;
             
+            // Fixed loop logic
             history.forEach(item => {
-                if (type === 'IN') currentBalance += item.amount;
-                if (type === 'DEBT') currentLoans = item.amount; // Sets the current debt level
+                if (item.type === 'IN') currentBalance += item.amount;
+                if (item.type === 'DEBT') currentLoans = item.amount;
             });
 
             const netWorth = currentBalance - currentLoans;
             document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netWorth.toLocaleString();
-            document.getElementById('loan-display').innerText = "Current Debt: ₦" + currentLoans.toLocaleString();
-            
-            const list = document.getElementById('ledger-list');
-            list.innerHTML = history.slice().reverse().map((item, index) => {
-                const actualIndex = history.length - 1 - index;
-                return `
-                <div class="ledger-item pb-2 flex justify-between items-center">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] uppercase text-[#71717A]">${item.date}</span>
-                        <span class="${item.type === 'IN' ? 'emerald-text' : 'oxblood-text'} text-[10px] font-bold">
-                            ${item.type === 'IN' ? '+' : 'DEBT:'} ₦${item.amount.toLocaleString()}
-                        </span>
-                    </div>
-                    <button onclick="deleteEntry(${actualIndex})" class="text-[#71717A] hover:text-white px-2 text-lg">×</button>
-                </div>
-            `}).join('');
-        }
-
-        function togglePrivacy() {
-            stealth = !stealth;
-            updateDisplay();
-        }
-
-        function addEntry() {
-            const amount = prompt("Enter deposit amount (₦):");
-            if (amount && !isNaN(amount)) {
-                saveTransaction('IN', parseFloat(amount));
-            }
-        }
-
-        function addLoan() {
-            const amount = prompt("Enter total debt amount (₦):");
-            if (amount && !isNaN(amount)) {
-                saveTransaction('DEBT', parseFloat(amount));
-            }
-        }
-
-        function saveTransaction(type, amount) {
-            const date = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
-            history.push({ type, amount, date });
-            localStorage.setItem('vault_history', JSON.stringify(history));
-            updateDisplay();
-        }
-
-        function deleteEntry(index) {
-            if(confirm("Remove this entry from the ledger?")) {
-                history.splice(index, 1);
-                localStorage.setItem('vault_history', JSON.stringify(history));
-                updateDisplay();
-            }
-        }
-
-        updateDisplay();
-    </script>
-</body>
-</html>
+            document.getElementById('loan-display').innerText = "Current Debt:
