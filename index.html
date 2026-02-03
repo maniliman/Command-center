@@ -11,9 +11,10 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --safe-top: env(safe-area-inset-top, 50px); }
+        :root { --safe-top: env(safe-area-inset-top, 60px); }
         body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; margin: 0; padding: 0; }
         
+        /* Drop the header significantly */
         .action-layer { 
             padding-top: var(--safe-top); 
             padding-bottom: 20px;
@@ -37,13 +38,10 @@
         .overlay { 
             display: none; position: fixed; inset: 0; z-index: 10000 !important; 
             background: rgba(0,0,0,0.98); backdrop-filter: blur(25px); 
-            padding: 24px; padding-top: calc(var(--safe-top) + 20px); overflow-y: auto;
+            padding: 24px; padding-top: calc(var(--safe-top) + 40px); overflow-y: auto;
         }
         .overlay-open { display: flex !important; flex-direction: column; }
 
-        .progress-bar { background: #262629; border-radius: 4px; height: 6px; overflow: hidden; margin-top: 4px; }
-        .progress-fill { background: #00FF41; height: 100%; transition: width 0.6s ease; }
-        
         summary { cursor: pointer; list-style: none; outline: none; }
     </style>
 </head>
@@ -51,36 +49,37 @@
 
     <div class="action-layer px-6 flex justify-between items-end">
         <div>
-            <p class="text-[9px] tracking-[0.4em] uppercase font-black text-emerald-500/50">Sovereign Vault</p>
+            <p class="text-[9px] tracking-[0.4em] uppercase font-black text-emerald-500/50">Sovereign Command</p>
             <h1 id="networth" class="text-3xl font-bold mt-1 tracking-tighter">₦0.00</h1>
         </div>
         <div class="flex gap-2">
             <button onclick="toggleOverlay('intel-overlay')" class="p-3 vault-card text-[14px] border border-zinc-800">📊</button>
             <button onclick="toggleOverlay('settings-overlay')" class="p-3 vault-card text-[14px] border border-zinc-800">⚙️</button>
-            <button id="stealth-trigger" onclick="togglePrivacy()" class="p-3 vault-card text-[10px] uppercase border border-zinc-800 font-bold">Stealth</button>
+            <button id="stealth-trigger" onclick="togglePrivacy()" class="p-3 vault-card text-[9px] uppercase border border-zinc-800 font-bold">Stealth</button>
         </div>
     </div>
 
-    <div id="dashboard-content" class="px-6 space-y-6 mt-6">
+    <div id="dashboard-content" class="px-6 space-y-6 mt-8">
+        
         <div class="vault-card p-6 border border-emerald-900/20">
             <div class="flex justify-between items-center mb-6">
-                <p class="text-[10px] uppercase tracking-widest font-black text-zinc-500">Liquid Engine</p>
+                <p class="text-[10px] uppercase tracking-widest font-black text-zinc-500">Tactical Split</p>
                 <span id="total-cash" class="text-sm emerald-text font-mono font-bold">₦0</span>
             </div>
-            <div class="space-y-4">
-                <div class="flex justify-between text-xs font-bold uppercase"><span>Bills</span><span id="alloc-bills">₦0</span></div>
-                <div class="flex justify-between text-xs font-bold uppercase"><span>Savings</span><span id="alloc-savings">₦0</span></div>
-                <div class="flex justify-between text-xs font-bold uppercase"><span>Spend</span><span id="alloc-life">₦0</span></div>
+            <div class="space-y-4 font-bold uppercase">
+                <div class="flex justify-between text-xs"><span>Bills (40%)</span><span id="alloc-bills">₦0</span></div>
+                <div class="flex justify-between text-xs"><span>Savings (40%)</span><span id="alloc-savings">₦0</span></div>
+                <div class="flex justify-between text-xs"><span>Spend (20%)</span><span id="alloc-life">₦0</span></div>
             </div>
         </div>
 
         <details class="vault-card group border border-emerald-900/10" open>
-            <summary class="p-5 flex justify-between items-center"><span class="text-[10px] uppercase font-black tracking-widest">Assets</span><span id="inv-assets-total" class="text-sm font-bold emerald-text">₦0</span></summary>
+            <summary class="p-5 flex justify-between items-center"><span class="text-[10px] uppercase font-black tracking-widest">Fixed Wealth</span><span id="inv-assets-total" class="text-sm font-bold emerald-text">₦0</span></summary>
             <div id="multi-tier-assets" class="px-5 pb-5 space-y-3 border-t border-zinc-900 pt-4"></div>
         </details>
 
         <details class="vault-card group border border-red-900/20" open>
-            <summary class="p-5 flex justify-between items-center"><span class="text-[10px] uppercase font-black tracking-widest oxblood-text">Outflow</span><span id="inv-expenses-total" class="text-sm font-bold oxblood-text">₦0</span></summary>
+            <summary class="p-5 flex justify-between items-center"><span class="text-[10px] uppercase font-black tracking-widest oxblood-text">Expenses</span><span id="inv-expenses-total" class="text-sm font-bold oxblood-text">₦0</span></summary>
             <div id="multi-tier-expenses" class="px-5 pb-5 space-y-3 border-t border-zinc-900 pt-4"></div>
         </details>
 
@@ -92,44 +91,9 @@
 
     <button onclick="toggleOverlay('entry-overlay')" class="fab-button">+</button>
 
-    <div id="intel-overlay" class="overlay">
-        <div class="w-full max-w-sm mx-auto space-y-8 pb-32">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-bold uppercase tracking-tighter">Intel Suite</h2>
-                <button onclick="toggleOverlay('intel-overlay')" class="text-zinc-600 font-bold uppercase text-[10px]">Close</button>
-            </div>
-
-            <div class="vault-card p-5 space-y-6">
-                <div>
-                    <div class="flex justify-between text-[10px] font-bold uppercase mb-1"><span>Liquidity Ratio</span><span id="txt-liq-ratio">0%</span></div>
-                    <div class="progress-bar"><div id="bar-liq" class="progress-fill" style="width: 0%"></div></div>
-                </div>
-                <div>
-                    <div class="flex justify-between text-[10px] font-bold uppercase mb-1"><span>Debt/Expense Load</span><span id="txt-debt-ratio">0%</span></div>
-                    <div class="progress-bar"><div id="bar-debt" class="progress-fill !bg-red-500" style="width: 0%"></div></div>
-                </div>
-            </div>
-
-            <div class="space-y-4">
-                <p class="text-[9px] uppercase font-black text-zinc-500">Fiduciary & Expense Auditor</p>
-                <input id="intel-search" oninput="runIntelligenceQuery()" class="input-dark" placeholder="Search Contributor or Category...">
-                <div id="intel-summary-box" class="hidden p-4 vault-card border-emerald-500/30">
-                    <p class="text-[8px] uppercase text-zinc-500">Query Result Total</p>
-                    <p id="intel-query-total" class="text-xl font-bold emerald-text">₦0.00</p>
-                </div>
-                <div id="intel-results" class="space-y-2 max-h-60 overflow-y-auto"></div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="downloadCSV()" class="p-4 vault-card text-[9px] font-black uppercase border border-zinc-800">Export CSV</button>
-                <button onclick="window.print()" class="p-4 vault-card text-[9px] font-black uppercase border border-zinc-800">Generate PDF</button>
-            </div>
-        </div>
-    </div>
-
     <div id="entry-overlay" class="overlay">
         <div class="w-full max-w-sm mx-auto space-y-6 pb-20">
-            <h2 class="text-xl font-bold uppercase tracking-tighter">Transaction</h2>
+            <h2 class="text-2xl font-bold uppercase tracking-tighter">Authorize</h2>
             <div class="space-y-4">
                 <select id="form-category" class="input-dark" onchange="handleCatChange()">
                     <option value="Income">Liquid Cash [+]</option>
@@ -139,8 +103,8 @@
                     <option value="Fiduciary">Fiduciary [💼]</option>
                 </select>
                 <input id="form-date" type="date" class="input-dark">
-                <input id="form-name" class="input-dark" placeholder="Description/Name">
-                <input id="form-amount" type="number" class="input-dark" placeholder="Amount (₦)">
+                <input id="form-name" class="input-dark" placeholder="Description/Contributor">
+                <input id="form-amount" type="number" class="input-dark" placeholder="0.00">
                 <div id="fixed-asset-fields" class="hidden">
                     <select id="asset-type" class="input-dark"><option value="Stocks">Stocks</option><option value="Property">Property</option><option value="Vehicles">Vehicles</option></select>
                 </div>
@@ -153,20 +117,29 @@
                     <select id="trans-dest" class="input-dark"><option value="savings">To Savings</option><option value="lifestyle">To Spend</option><option value="bills">To Bills</option></select>
                 </div>
             </div>
-            <button onclick="submitEntry()" class="w-full bg-emerald-500 p-4 rounded-xl text-black font-black uppercase">Authorize</button>
+            <button onclick="submitEntry()" class="w-full bg-emerald-500 p-4 rounded-xl text-black font-black uppercase mt-4">Execute</button>
             <button onclick="toggleOverlay('entry-overlay')" class="w-full text-zinc-600 uppercase text-[10px] font-bold">Cancel</button>
+        </div>
+    </div>
+
+    <div id="intel-overlay" class="overlay">
+        <div class="w-full max-w-sm mx-auto space-y-6">
+            <h2 class="text-xl font-bold uppercase tracking-tighter">Intelligence</h2>
+            <input id="intel-search" oninput="runIntelligenceQuery()" class="input-dark" placeholder="Query Ledger...">
+            <div id="intel-results" class="space-y-2"></div>
+            <button onclick="toggleOverlay('intel-overlay')" class="w-full text-zinc-600 uppercase text-[10px] font-bold">Back</button>
         </div>
     </div>
 
     <div id="settings-overlay" class="overlay">
         <div class="w-full max-w-sm mx-auto space-y-8">
             <h2 class="text-xl font-bold uppercase tracking-tighter">Settings</h2>
-            <input id="set-new-pin" type="password" maxlength="4" class="input-dark" placeholder="Set New PIN">
+            <input id="set-new-pin" type="password" maxlength="4" class="input-dark" placeholder="Set 4-Digit PIN">
             <button onclick="updatePin()" class="w-full bg-zinc-800 p-4 rounded uppercase font-bold text-[10px]">Update PIN</button>
             <button onclick="exportData()" class="w-full bg-emerald-500/10 text-emerald-500 p-4 rounded uppercase font-bold text-[10px]">Export Backup</button>
             <button onclick="importData()" class="w-full border border-zinc-800 p-4 rounded uppercase font-bold text-[10px]">Restore Backup</button>
-            <button onclick="securePurge()" class="w-full p-4 mt-20 text-red-900 border border-red-900 rounded uppercase font-bold text-[10px]">Wipe All Data</button>
-            <button onclick="toggleOverlay('settings-overlay')" class="w-full text-zinc-600 uppercase text-[10px] font-bold">Back</button>
+            <button onclick="securePurge()" class="w-full p-4 mt-10 text-red-900 border border-red-900 rounded uppercase font-bold text-[10px]">Wipe Data</button>
+            <button onclick="toggleOverlay('settings-overlay')" class="w-full text-zinc-600 uppercase text-[10px] font-bold text-center">Back</button>
         </div>
     </div>
 
@@ -209,23 +182,14 @@
             }, {});
             for (const n in fGroups) fL.innerHTML += `<div class="flex justify-between text-[11px] font-bold"><span>${n}</span><span class="text-yellow-500">₦${mask(fGroups[n].total)}</span></div>`;
 
-            const cashT = liq.bills + liq.savings + liq.lifestyle;
             document.getElementById('alloc-bills').innerText = "₦" + mask(liq.bills);
             document.getElementById('alloc-savings').innerText = "₦" + mask(liq.savings);
             document.getElementById('alloc-life').innerText = "₦" + mask(liq.lifestyle);
-            document.getElementById('total-cash').innerText = "₦" + mask(cashT);
+            document.getElementById('total-cash').innerText = "₦" + mask(liq.bills + liq.savings + liq.lifestyle);
             document.getElementById('inv-expenses-total').innerText = "₦" + mask(eSum);
             document.getElementById('inv-assets-total').innerText = "₦" + mask(aSum);
             document.getElementById('f-total-header').innerText = "₦" + mask(fGlobal);
             document.getElementById('networth').innerText = "₦" + mask(aSum - eSum);
-
-            // INTEL PROGRESS
-            const lRatio = aSum > 0 ? (cashT / aSum) * 100 : 0;
-            document.getElementById('bar-liq').style.width = lRatio + "%";
-            document.getElementById('txt-liq-ratio').innerText = Math.round(lRatio) + "%";
-            const eRatio = aSum > 0 ? (eSum / aSum) * 100 : 0;
-            document.getElementById('bar-debt').style.width = Math.min(eRatio, 100) + "%";
-            document.getElementById('txt-debt-ratio').innerText = Math.round(eRatio) + "%";
         }
 
         function handleCatChange() {
@@ -267,24 +231,18 @@
         function runIntelligenceQuery() {
             const q = document.getElementById('intel-search').value.toLowerCase();
             const res = document.getElementById('intel-results');
-            const summaryBox = document.getElementById('intel-summary-box');
-            res.innerHTML = ''; let total = 0;
-            if(!q) { summaryBox.classList.add('hidden'); return; }
-            summaryBox.classList.remove('hidden');
+            res.innerHTML = '';
             [...ledger, ...fLedger].forEach(i => {
-                if(i.name.toLowerCase().includes(q) || (i.tier && i.tier.toLowerCase().includes(q))) {
-                    total += Math.abs(parseFloat(i.amount));
+                if(i.name.toLowerCase().includes(q)) {
                     res.innerHTML += `<div class="flex justify-between p-3 vault-card text-[10px] font-bold uppercase"><span>${i.name}</span><span class="${i.amount < 0 ? 'oxblood-text' : 'emerald-text'}">₦${mask(i.amount)}</span></div>`;
                 }
             });
-            document.getElementById('intel-query-total').innerText = "₦" + total.toLocaleString();
         }
 
         function updatePin() { const p = document.getElementById('set-new-pin').value; if(p.length===4){localStorage.setItem('vault_pin',p);userPin=p;alert("Updated.");} }
         function securePurge() { if(prompt("PIN:")===userPin){localStorage.clear();location.reload();} }
         function exportData() { prompt("Key:", btoa(JSON.stringify({ledger, fLedger}))); }
         function importData() { const k = prompt("Key:"); if(k){ const p = JSON.parse(atob(k)); ledger=p.ledger; fLedger=p.fLedger; updateDisplay(); } }
-        function downloadCSV() { let csv = "Date,Name,Amount\n"; [...ledger, ...fLedger].forEach(i => csv += `${i.date},${i.name},${i.amount}\n`); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='Vault.csv'; a.click(); }
 
         updateDisplay();
     </script>
