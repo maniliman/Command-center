@@ -7,14 +7,36 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; overflow-x: hidden; }
-        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; position: relative; z-index: 10; }
+        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
         
-        /* Layering Fixes for Button Response */
-        .stealth-btn { position: relative; z-index: 50 !important; }
-        .fab-button { position: fixed; bottom: 32px; right: 32px; z-index: 100 !important; }
-        #menu-overlay { display: none; position: fixed; inset: 0; z-index: 200 !important; background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); }
+        /* The Fix: Force buttons to the very front and ensure they are clickable */
+        .stealth-btn { 
+            position: relative; 
+            z-index: 100 !important; 
+            pointer-events: all !important; 
+            cursor: pointer;
+        }
+        
+        .fab-button { 
+            position: fixed; 
+            bottom: 32px; 
+            right: 32px; 
+            z-index: 999 !important; 
+            pointer-events: all !important;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        #menu-overlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            z-index: 1000 !important; 
+            background: rgba(0,0,0,0.98); 
+            backdrop-filter: blur(20px);
+        }
         .menu-open { display: flex !important; }
     </style>
 </head>
@@ -26,7 +48,7 @@
                 <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase font-bold">Global Net Worth</p>
                 <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter italic">₦0.00</h1>
             </div>
-            <button onclick="togglePrivacy()" class="stealth-btn p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800 active:bg-zinc-700">
+            <button onclick="togglePrivacy()" class="stealth-btn p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800 active:bg-emerald-900/20">
                 Stealth
             </button>
         </header>
@@ -34,20 +56,20 @@
         <div class="grid grid-cols-2 gap-4 mb-8">
             <div class="vault-card p-4 border-l-2 border-emerald-500">
                 <p class="text-[#71717A] text-[9px] uppercase mb-1 font-bold">Total Assets</p>
-                <p id="total-assets" class="emerald-text font-bold text-lg">₦0</p>
+                <p id="total-assets" class="emerald-text font-bold text-lg font-mono">₦0</p>
             </div>
             <div class="vault-card p-4 border-l-2 border-red-500">
                 <p class="text-[#71717A] text-[9px] uppercase mb-1 font-bold">Total Debt</p>
-                <p id="total-debt" class="oxblood-text font-bold text-lg">₦0</p>
+                <p id="total-debt" class="oxblood-text font-bold text-lg font-mono">₦0</p>
             </div>
         </div>
 
         <div class="vault-card p-5 mb-8 border border-emerald-900/20">
-            <p class="text-[#71717A] text-[9px] uppercase tracking-widest font-black mb-6 underline decoration-emerald-500">Tactical Cash Split</p>
+            <p class="text-[#71717A] text-[9px] uppercase tracking-widest font-black mb-6">Tactical Cash Split</p>
             <div class="space-y-4">
-                <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Bills (40%)</span><span id="alloc-bills">₦0</span></div>
-                <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Savings (40%)</span><span id="alloc-savings" class="text-emerald-500/80">₦0</span></div>
-                <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Lifestyle (20%)</span><span id="alloc-life">₦0</span></div>
+                <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Bills (40%)</span><span id="alloc-bills" class="font-mono">₦0</span></div>
+                <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Savings (40%)</span><span id="alloc-savings" class="text-emerald-500/80 font-mono">₦0</span></div>
+                <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Lifestyle (20%)</span><span id="alloc-life" class="font-mono">₦0</span></div>
                 <div class="border-t border-emerald-500/20 pt-4 flex justify-between items-center">
                     <span class="text-[10px] text-zinc-400 uppercase font-bold">Cash Balance</span>
                     <span id="total-cash" class="text-sm font-bold emerald-text font-mono">₦0</span>
@@ -65,19 +87,100 @@
             <div id="debt-list" class="px-5 pb-5 space-y-2 border-t border-zinc-800 pt-4 text-[11px]"></div>
         </details>
 
-        <button onclick="resetVault()" class="w-full mt-10 p-4 text-[9px] uppercase tracking-widest text-zinc-800 border border-zinc-900 rounded-lg">Reset Dashboard</button>
+        <button onclick="resetVault()" class="w-full mt-10 p-4 text-[9px] uppercase tracking-widest text-zinc-800 border border-zinc-900 rounded-lg active:bg-red-900/10">Reset Vault</button>
     </div>
 
-    <button onclick="toggleMenu()" class="fab-button w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-3xl shadow-2xl font-bold">+</button>
+    <button onclick="toggleMenu()" class="fab-button w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-3xl font-bold active:scale-90 transition-transform">
+        +
+    </button>
 
     <div id="menu-overlay" class="flex-col items-center justify-center p-8">
         <div class="w-full space-y-4 max-w-sm">
-            <button onclick="addEntry('Cash')" class="w-full vault-card p-6 text-left border-l-4 border-emerald-500"><p class="emerald-text font-bold uppercase text-xs">Add Liquid Cash</p></button>
+            <button onclick="addEntry('Cash')" class="w-full vault-card p-6 text-left border-l-4 border-emerald-500 active:bg-zinc-800"><p class="emerald-text font-bold uppercase text-xs">Add Liquid Cash</p></button>
             <button onclick="addEntry('Asset')" class="w-full vault-card p-6 text-left border-l-4 border-zinc-600"><p class="text-zinc-300 font-bold uppercase text-xs">Add Fixed Asset</p></button>
             <button onclick="addEntry('Liability')" class="w-full vault-card p-6 text-left border-l-4 border-red-500"><p class="oxblood-text font-bold uppercase text-xs">Add Liability</p></button>
-            <button onclick="toggleMenu()" class="w-full p-6 text-zinc-600 text-[10px] uppercase tracking-widest text-center mt-6">Close</button>
+            <button onclick="toggleMenu()" class="w-full p-6 text-zinc-600 text-[10px] uppercase tracking-widest text-center mt-6">Return to Dashboard</button>
         </div>
     </div>
 
     <script>
         let stealth = false;
+        let ledger = JSON.parse(localStorage.getItem('vault_ledger')) || [];
+
+        function updateDisplay() {
+            let assetsSum = 0; let debtSum = 0; let cashSum = 0;
+            const assetList = document.getElementById('asset-list');
+            const debtList = document.getElementById('debt-list');
+            assetList.innerHTML = ''; debtList.innerHTML = '';
+
+            ledger.forEach((item, index) => {
+                const isAsset = (item.type === 'Asset' || item.type === 'Cash');
+                const isDebt = (item.type === 'Liability');
+
+                if(isAsset) assetsSum += item.amount; 
+                if(isDebt) debtSum += item.amount;
+                if(item.type === 'Cash') cashSum += item.amount;
+
+                const target = isAsset ? assetList : debtList;
+                target.innerHTML += `
+                    <div class="flex justify-between items-center py-2 border-b border-zinc-900 last:border-0">
+                        <span class="text-zinc-400 font-bold uppercase text-[9px]">${item.name}</span>
+                        <div class="flex items-center gap-4">
+                            <span class="${isAsset ? 'emerald-text' : 'oxblood-text'} font-mono">₦${stealth ? '••••' : item.amount.toLocaleString()}</span>
+                            <button onclick="deleteItem(${index})" class="text-zinc-800 px-2 font-black">×</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + (assetsSum - debtSum).toLocaleString();
+            document.getElementById('total-assets').innerText = stealth ? "••••" : "₦" + assetsSum.toLocaleString();
+            document.getElementById('total-debt').innerText = stealth ? "••••" : "₦" + debtSum.toLocaleString();
+            document.getElementById('total-cash').innerText = stealth ? "••••" : "₦" + cashSum.toLocaleString();
+
+            document.getElementById('alloc-bills').innerText = stealth ? "••••" : "₦" + (cashSum * 0.4).toLocaleString();
+            document.getElementById('alloc-savings').innerText = stealth ? "••••" : "₦" + (cashSum * 0.4).toLocaleString();
+            document.getElementById('alloc-life').innerText = stealth ? "••••" : "₦" + (cashSum * 0.2).toLocaleString();
+        }
+
+        function toggleMenu() { 
+            const overlay = document.getElementById('menu-overlay');
+            overlay.classList.toggle('menu-open');
+        }
+
+        function addEntry(type) {
+            const name = prompt(`Label this ${type}:`);
+            const amount = prompt("Value (₦):");
+            if (name && amount && !isNaN(amount)) {
+                ledger.push({ name, amount: parseFloat(amount), type });
+                localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+                updateDisplay();
+                toggleMenu();
+            }
+        }
+
+        function deleteItem(index) {
+            if(confirm("Delete entry?")) {
+                ledger.splice(index, 1);
+                localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+                updateDisplay();
+            }
+        }
+
+        function resetVault() {
+            if(confirm("Wipe all data and start from ₦0?")) {
+                ledger = [];
+                localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+                updateDisplay();
+            }
+        }
+
+        function togglePrivacy() { 
+            stealth = !stealth; 
+            updateDisplay(); 
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
