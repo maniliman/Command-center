@@ -4,112 +4,187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Sovereign Vault</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --safe-top: env(safe-area-inset-top, 60px); }
-        body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; margin: 0; padding: 0; }
-        
-        .click-layer { position: relative; z-index: 10; padding-top: var(--safe-top); padding-bottom: 200px; }
-        
-        .overlay { 
-            position: fixed; inset: 0; z-index: -1; opacity: 0;
-            background: rgba(10, 10, 11, 0.99); backdrop-filter: blur(30px); 
-            padding: 30px; padding-top: calc(var(--safe-top) + 20px);
-            transition: opacity 0.2s ease; overflow-y: auto; pointer-events: none;
-        }
-        .overlay-open { z-index: 9999 !important; opacity: 1; pointer-events: auto !important; }
-
-        .fab-container { position: fixed; bottom: 40px; left: 0; right: 0; padding: 0 30px; display: flex; justify-content: space-between; z-index: 10000; pointer-events: none; }
-        .fab-btn { width: 70px; height: 70px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; border: none; pointer-events: auto !important; cursor: pointer; }
-        .fab-add { background: #00FF41; color: black; box-shadow: 0 0 30px rgba(0, 255, 65, 0.3); }
-        .fab-back { background: #161618; color: #EDEDED; border: 1px solid #262629; display: none; }
-
+        :root { --safe-top: env(safe-area-inset-top, 50px); }
+        body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; margin: 0; padding: 0; overflow-x: hidden; }
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; margin-bottom: 16px; width: 100%; }
-        .card-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer !important; width: 100%; pointer-events: auto; }
-        .card-content { display: block; padding: 0 20px 20px 20px; border-top: 1px solid #262629; padding-top: 16px; }
-        
-        .rect-border-emerald { border: 2px solid #00FF41; background: rgba(0, 255, 65, 0.05); }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
         .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 18px; border-radius: 12px; width: 100%; outline: none; }
+        .fab-btn { position: fixed; bottom: 40px; width: 70px; height: 70px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: bold; border: none; cursor: pointer; z-index: 1000; }
+        .view-hidden { display: none !important; }
     </style>
 </head>
-<body>
+<body class="p-6" style="padding-top: calc(var(--safe-top) + 20px);">
 
-    <div class="click-layer">
-        <div class="px-8 flex justify-between items-center mb-8">
-            <div class="flex gap-4">
-                <button onclick="openOverlay('intel-overlay')" class="w-12 h-12 vault-card flex items-center justify-center border-zinc-700 m-0 pointer-events-auto">📊</button>
-                <button onclick="openOverlay('settings-overlay')" class="w-12 h-12 vault-card flex items-center justify-center border-zinc-700 m-0 pointer-events-auto">⚙️</button>
+    <div id="view-dashboard" class="space-y-6">
+        <div class="flex justify-between items-center mb-10">
+            <div class="flex gap-3">
+                <button onclick="showView('view-intel')" class="w-12 h-12 vault-card flex items-center justify-center border-zinc-700 m-0">📊</button>
+                <button onclick="showView('view-settings')" class="w-12 h-12 vault-card flex items-center justify-center border-zinc-700 m-0">⚙️</button>
             </div>
-            <button onclick="toggleStealth()" id="stealth-btn" class="px-4 py-2 border border-emerald-500/50 rounded-full text-[10px] font-black uppercase tracking-widest pointer-events-auto">Stealth: OFF</button>
+            <button onclick="toggleStealth()" id="stealth-btn" class="px-4 py-2 border border-emerald-500/40 rounded-full text-[10px] font-black uppercase">Stealth: OFF</button>
         </div>
 
         <div class="text-center mb-10">
-            <p class="text-[11px] uppercase text-zinc-500 font-bold mb-1">Total Sovereign Wealth</p>
+            <p class="text-[11px] uppercase text-zinc-500 font-bold mb-1">Total Net Worth</p>
             <h1 id="networth" class="text-6xl font-black tracking-tighter emerald-text">₦0.00</h1>
         </div>
 
-        <div class="px-6">
-            <div class="vault-card rect-border-emerald">
-                <div class="card-header">
-                    <span class="text-[12px] font-black uppercase text-emerald-500">Tactical Liquidity</span>
-                    <span id="total-cash" class="text-xl font-black emerald-text">₦0</span>
-                </div>
-                <div class="card-content">
-                    <div class="space-y-4 font-bold uppercase text-xs">
-                        <div class="flex justify-between border-b border-zinc-800 pb-2"><span>Bills Ledger</span><span id="alloc-bills">₦0</span></div>
-                        <div class="flex justify-between border-b border-zinc-800 pb-2"><span>Savings Ledger</span><span id="alloc-savings">₦0</span></div>
-                        <div class="flex justify-between"><span>Spend Ledger</span><span id="alloc-life">₦0</span></div>
-                    </div>
-                </div>
+        <div class="vault-card p-6 border-2 border-emerald-500 shadow-lg shadow-emerald-500/5">
+            <p class="text-[10px] uppercase font-black text-emerald-500 mb-6">Tactical Liquidity</p>
+            <div class="space-y-4 font-bold text-xs uppercase">
+                <div class="flex justify-between border-b border-zinc-900 pb-2"><span>Bills Ledger</span><span id="alloc-bills">₦0</span></div>
+                <div class="flex justify-between border-b border-zinc-900 pb-2"><span>Savings Ledger</span><span id="alloc-savings">₦0</span></div>
+                <div class="flex justify-between"><span>Spend Ledger</span><span id="alloc-life">₦0</span></div>
             </div>
+        </div>
 
-            <div class="vault-card">
-                <div class="card-header"><span class="text-[11px] font-black uppercase text-zinc-500">Master Audit History</span></div>
-                <div id="master-audit-trail" class="card-content space-y-3 max-h-80 overflow-y-auto text-[11px]">
-                    <p class="text-zinc-600 text-center py-4 italic">No transactions recorded</p>
-                </div>
-            </div>
-
-            <div class="vault-card opacity-50">
-                <div class="card-header"><span class="text-[11px] font-black uppercase text-yellow-500">Fiduciary Ledger</span><span id="f-total-header" class="text-lg">₦0</span></div>
-                <div id="fiduciary-content" class="card-content space-y-2 text-xs"></div>
-            </div>
+        <div class="vault-card p-6">
+            <p class="text-[10px] uppercase font-black text-zinc-500 mb-4">Master Audit History</p>
+            <div id="master-audit-trail" class="space-y-3 max-h-80 overflow-y-auto text-[11px]"></div>
         </div>
     </div>
 
-    <div class="fab-container">
-        <button id="fab-back" onclick="closeAll()" class="fab-btn fab-back">✕</button>
-        <button id="fab-add" onclick="openOverlay('entry-overlay')" class="fab-btn fab-add">+</button>
+    <div id="view-entry" class="view-hidden space-y-8">
+        <h2 class="text-4xl font-black uppercase tracking-tighter">Authorize</h2>
+        <select id="form-category" class="input-dark" onchange="handleEntryType()">
+            <option value="Income">Liquid Cash [+]</option>
+            <option value="Expense">Expense/Debit [-]</option>
+            <option value="Fiduciary">Fiduciary [💼]</option>
+        </select>
+        <input id="form-name" class="input-dark" placeholder="Description">
+        <input id="form-amount" type="number" class="input-dark" placeholder="Total (₦)">
+        
+        <div id="manual-split-ui" class="vault-card p-5 border-emerald-500/30">
+            <p class="text-[10px] font-bold text-zinc-500 uppercase mb-4">Manual Split Override</p>
+            <div class="grid grid-cols-3 gap-2">
+                <input id="split-bills" type="number" class="input-dark !p-3 text-xs" placeholder="Bills">
+                <input id="split-save" type="number" class="input-dark !p-3 text-xs" placeholder="Save">
+                <input id="split-life" type="number" class="input-dark !p-3 text-xs" placeholder="Spend">
+            </div>
+        </div>
+        <button onclick="executeEntry()" class="w-full bg-emerald-500 p-6 rounded-2xl text-black font-black uppercase text-lg">Execute</button>
     </div>
 
-    <div id="entry-overlay" class="overlay">
-        <div class="w-full max-w-sm mx-auto space-y-6 pb-32">
-            <h2 class="text-4xl font-black uppercase tracking-tighter">Authorize</h2>
-            <select id="form-category" class="input-dark" onchange="handleCatChange()">
-                <option value="Income">Liquid Cash Inflow [+]</option>
-                <option value="Expense">Expense/Outflow [-]</option>
-                <option value="Fiduciary">Fiduciary/Third Party [💼]</option>
-            </select>
-            <input id="form-name" class="input-dark" placeholder="Description/Contributor">
-            <input id="form-amount" type="number" class="input-dark" placeholder="Total Amount (₦)">
+    <div id="view-intel" class="view-hidden space-y-8">
+        <h2 class="text-4xl font-black uppercase tracking-tighter">Auditor</h2>
+        <div class="p-8 vault-card border-emerald-500/50 bg-emerald-500/5 text-center">
+            <p class="text-[10px] font-black text-zinc-500 uppercase mb-2">Query Total</p>
+            <p id="intel-total" class="text-4xl font-black emerald-text">₦0.00</p>
+        </div>
+        <input id="intel-search" oninput="runAudit()" class="input-dark text-center" placeholder="Search Person or Date...">
+        <div id="intel-results" class="space-y-3"></div>
+    </div>
+
+    <div id="view-settings" class="view-hidden space-y-10">
+        <h2 class="text-4xl font-black uppercase tracking-tighter">Registry</h2>
+        <button onclick="localStorage.clear(); location.reload();" class="w-full p-6 text-red-900 border border-red-900 rounded font-black uppercase text-xs">Purge All Data</button>
+    </div>
+
+    <button id="fab-add" onclick="showView('view-entry')" class="fab-btn bg-emerald-500 text-black right-6">+</button>
+    <button id="fab-back" onclick="showView('view-dashboard')" class="fab-btn bg-zinc-900 text-white left-6 view-hidden">✕</button>
+
+    <script>
+        let stealth = false;
+        let ledger = JSON.parse(localStorage.getItem('vault_ledger')) || [];
+        let fLedger = JSON.parse(localStorage.getItem('fiduciary_ledger')) || [];
+
+        function showView(viewId) {
+            ['view-dashboard', 'view-entry', 'view-intel', 'view-settings'].forEach(id => {
+                document.getElementById(id).classList.add('view-hidden');
+            });
+            document.getElementById(viewId).classList.remove('view-hidden');
+            document.getElementById('fab-add').classList.toggle('view-hidden', viewId !== 'view-dashboard');
+            document.getElementById('fab-back').classList.toggle('view-hidden', viewId === 'view-dashboard');
+            if(viewId === 'view-dashboard') updateUI();
+        }
+
+        function toggleStealth() {
+            stealth = !stealth;
+            document.getElementById('stealth-btn').innerText = stealth ? "Stealth: ON" : "Stealth: OFF";
+            document.getElementById('stealth-btn').classList.toggle('bg-emerald-500', stealth);
+            updateUI();
+        }
+
+        function mask(val) { return stealth ? "••••" : (parseFloat(val) || 0).toLocaleString(); }
+
+        function updateUI() {
+            let aSum = 0, eSum = 0, liq = { bills: 0, savings: 0, lifestyle: 0 };
+            const trail = document.getElementById('master-audit-trail');
+            trail.innerHTML = '';
+
+            ledger.slice().reverse().forEach(item => {
+                const val = parseFloat(item.amount) || 0;
+                liq.bills += (parseFloat(item.bills) || 0);
+                liq.savings += (parseFloat(item.savings) || 0);
+                liq.lifestyle += (parseFloat(item.lifestyle) || 0);
+                if (val < 0) eSum += Math.abs(val); else aSum += val;
+
+                trail.innerHTML += `<div class="flex justify-between border-b border-zinc-900 py-3">
+                    <span>${item.date} <b>${item.name}</b></span>
+                    <span class="${val < 0 ? 'oxblood-text' : 'emerald-text'} font-bold">₦${mask(val)}</span>
+                </div>`;
+            });
+
+            document.getElementById('alloc-bills').innerText = "₦" + mask(liq.bills);
+            document.getElementById('alloc-savings').innerText = "₦" + mask(liq.savings);
+            document.getElementById('alloc-life').innerText = "₦" + mask(liq.lifestyle);
+            document.getElementById('total-cash').innerText = "₦" + mask(liq.bills + liq.savings + liq.lifestyle);
+            document.getElementById('networth').innerText = "₦" + mask(aSum - eSum);
+            if (ledger.length === 0) trail.innerHTML = '<p class="text-zinc-600 text-center py-4 italic">No transactions recorded</p>';
+        }
+
+        function handleEntryType() {
+            const cat = document.getElementById('form-category').value;
+            document.getElementById('manual-split-ui').style.display = (cat === 'Income') ? 'block' : 'none';
+        }
+
+        function executeEntry() {
+            const cat = document.getElementById('form-category').value;
+            const name = document.getElementById('form-name').value;
+            const amount = parseFloat(document.getElementById('form-amount').value);
+            if (!name || isNaN(amount)) return;
+
+            const d = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+
+            if (cat === 'Income') {
+                const mb = parseFloat(document.getElementById('split-bills').value) || 0;
+                const ms = parseFloat(document.getElementById('split-save').value) || 0;
+                const ml = parseFloat(document.getElementById('split-life').value) || 0;
+                let entry = { name, amount, date: d };
+                if (mb + ms + ml > 0) { entry.bills = mb; entry.savings = ms; entry.lifestyle = ml; }
+                else { entry.bills = amount * 0.4; entry.savings = amount * 0.4; entry.lifestyle = amount * 0.2; }
+                ledger.push(entry);
+            } else if (cat === 'Expense') {
+                ledger.push({ name, amount: -amount, bills: -amount, date: d });
+            } else {
+                fLedger.push({ name, amount, date: d });
+            }
+
+            localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+            localStorage.setItem('fiduciary_ledger', JSON.stringify(fLedger));
             
-            <div id="manual-split-ui" class="p-5 vault-card border-emerald-500/30">
-                <p class="text-[10px] font-bold text-zinc-500 uppercase mb-4">Distribution Override</p>
-                <div class="grid grid-cols-3 gap-3">
-                    <input id="split-bills" type="number" class="input-dark !p-3 text-xs" placeholder="Bills">
-                    <input id="split-save" type="number" class="input-dark !p-3 text-xs" placeholder="Save">
-                    <input id="split-life" type="number" class="input-dark !p-3 text-xs" placeholder="Spend">
-                </div>
-            </div>
-            <button onclick="submitEntry()" class="w-full bg-emerald-500 p-6 rounded-2xl text-black font-black uppercase tracking-widest">Execute</button>
-        </div>
-    </div>
+            ['form-name', 'form-amount', 'split-bills', 'split-save', 'split-life'].forEach(id => document.getElementById(id).value = '');
+            showView('view-dashboard');
+        }
 
-    <div id="intel-overlay" class="overlay">
-        <div class="w-full max-w-sm mx-auto space-y-8 pb-32 text-center">
-            <h2 class="text-4xl font-black uppercase tracking-tighter">Auditor</h2>
-            <div class="p-8 vault-card border-emerald-500/50 bg-emerald-500/5">
-                <p class="text-[10px] font-black text-zinc-500 uppercase">Calculated Auditor
+        function runAudit() {
+            const q = document.getElementById('intel-search').value.toLowerCase();
+            const res = document.getElementById('intel-results'); res.innerHTML = ''; let total = 0;
+            if(!q) return;
+            [...ledger, ...fLedger].forEach(i => {
+                if(i.name.toLowerCase().includes(q)) {
+                    total += Math.abs(parseFloat(i.amount));
+                    res.innerHTML += `<div class="p-4 vault-card flex justify-between uppercase text-xs"><span>${i.name}</span><span class="emerald-text">₦${Math.abs(i.amount).toLocaleString()}</span></div>`;
+                }
+            });
+            document.getElementById('intel-total').innerText = "₦" + total.toLocaleString();
+        }
+
+        updateUI();
+        handleEntryType();
+    </script>
+</body>
+</html>
