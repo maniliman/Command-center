@@ -8,37 +8,27 @@
     <link rel="icon" href="https://img.icons8.com/nolan/64/safe.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/nolan/128/safe.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; overflow-x: hidden; margin: 0; padding: 0; }
-        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; position: relative; }
+        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
         .gold-text { color: #FFD700; }
         .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 12px; border-radius: 8px; width: 100%; outline: none; font-size: 14px; }
         
-        /* Layering Architecture */
         #dashboard-content { position: relative; z-index: 10; padding: 24px; }
-        .stealth-btn { position: relative; z-index: 1000 !important; pointer-events: auto !important; cursor: pointer; }
-        .stealth-active { background: #00FF41 !important; color: #000 !important; box-shadow: 0 0 15px rgba(0, 255, 65, 0.5); }
-        .fab-button { 
-            position: fixed; bottom: 32px; right: 32px; 
-            z-index: 5000 !important; pointer-events: auto !important;
-            box-shadow: 0 0 25px rgba(0, 255, 65, 0.4); 
-        }
+        .stealth-btn { position: relative; z-index: 1000 !important; cursor: pointer; }
+        .stealth-active { background: #00FF41 !important; color: #000 !important; }
+        .fab-button { position: fixed; bottom: 32px; right: 32px; z-index: 5000 !important; box-shadow: 0 0 25px rgba(0, 255, 65, 0.4); }
 
-        #menu-overlay { 
-            display: none; position: fixed; inset: 0; z-index: 9000 !important; 
-            background: rgba(0,0,0,0.98); backdrop-filter: blur(25px); 
-            padding: 24px; padding-top: 60px; overflow-y: auto;
-        }
-        .menu-open { display: flex !important; flex-direction: column; align-items: center; }
+        .overlay { display: none; position: fixed; inset: 0; z-index: 9000 !important; background: rgba(0,0,0,0.98); backdrop-filter: blur(25px); padding: 24px; padding-top: 60px; overflow-y: auto; }
+        .overlay-open { display: flex !important; flex-direction: column; }
         
         summary { cursor: pointer; outline: none; list-style: none; }
         summary::-webkit-details-marker { display: none; }
-        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        .toggle-label { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #161618; border-radius: 8px; margin-bottom: 8px; }
     </style>
 </head>
 <body class="pb-60">
@@ -49,23 +39,18 @@
                 <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase font-bold text-emerald-500/80">Sovereign Financials</p>
                 <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter">₦0.00</h1>
             </div>
-            <button id="stealth-trigger" onclick="togglePrivacy()" class="stealth-btn p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800">
-                Stealth
-            </button>
+            <div class="flex gap-2">
+                <button onclick="toggleOverlay('settings-overlay')" class="p-3 vault-card text-[10px] uppercase border border-zinc-800">⚙️</button>
+                <button id="stealth-trigger" onclick="togglePrivacy()" class="stealth-btn p-3 vault-card text-[10px] uppercase border border-zinc-800">Stealth</button>
+            </div>
         </header>
 
-        <div class="vault-card p-5 mb-8 border border-emerald-900/20">
+        <div id="sec-cash" class="vault-card p-5 mb-8 border border-emerald-900/20">
             <p class="text-[#71717A] text-[9px] uppercase tracking-widest font-black mb-6 underline decoration-emerald-500 underline-offset-4">Tactical Cash Split</p>
             <div class="space-y-4 font-bold">
                 <details class="group">
-                    <summary class="flex justify-between items-center list-none cursor-pointer">
-                        <span class="text-xs text-zinc-500 uppercase">Bills Account</span>
-                        <div class="flex items-center gap-2">
-                            <span id="alloc-bills" class="text-xs emerald-text">₦0</span>
-                            <span class="text-[8px] text-zinc-700 group-open:rotate-180 transition-transform">▼</span>
-                        </div>
-                    </summary>
-                    <div class="mt-3 pl-4 space-y-2 border-l border-emerald-900/30 pt-2 text-[10px] text-zinc-500 uppercase font-bold">
+                    <summary class="flex justify-between items-center"><span class="text-xs text-zinc-500">Bills Account</span><span id="alloc-bills" class="text-xs emerald-text">₦0</span></summary>
+                    <div class="mt-3 pl-4 space-y-2 border-l border-emerald-900/30 text-[10px] text-zinc-500 uppercase">
                         <div class="flex justify-between"><span>Emergency (40%)</span><span id="bills-emerge">₦0</span></div>
                         <div class="flex justify-between"><span>Operational (40%)</span><span id="bills-ops">₦0</span></div>
                         <div class="flex justify-between"><span>Buffer (20%)</span><span id="bills-buffer">₦0</span></div>
@@ -73,70 +58,77 @@
                 </details>
                 <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Savings Account</span><span id="alloc-savings">₦0</span></div>
                 <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Spend Account</span><span id="alloc-life">₦0</span></div>
-                <div class="border-t border-zinc-800 pt-4 flex justify-between items-center font-bold text-sm"><span class="text-[10px] text-zinc-400 uppercase">Cash Total</span><span id="total-cash" class="emerald-text font-mono">₦0</span></div>
+                <div class="border-t border-zinc-800 pt-4 flex justify-between items-center text-sm"><span class="text-[10px] text-zinc-400 uppercase">Total Cash</span><span id="total-cash" class="emerald-text font-mono">₦0</span></div>
             </div>
         </div>
 
-        <details class="vault-card group mb-4 border-emerald-900/20">
-            <summary class="p-5 flex justify-between items-center">
-                <span class="text-[10px] uppercase tracking-widest font-black">Asset Inventory</span>
-                <span id="inv-assets-total" class="text-sm font-bold emerald-text">₦0</span>
-            </summary>
+        <details id="sec-assets" class="vault-card group mb-4 border-emerald-900/20">
+            <summary class="p-5 flex justify-between items-center"><span class="text-[10px] uppercase tracking-widest font-black">Asset Inventory</span><span id="inv-assets-total" class="text-sm font-bold emerald-text">₦0</span></summary>
             <div id="multi-tier-assets" class="px-5 pb-5 space-y-3 border-t border-zinc-900 pt-4"></div>
         </details>
 
-        <details class="vault-card group mb-4 border-red-900/20">
-            <summary class="p-5 flex justify-between items-center">
-                <span class="text-[10px] uppercase tracking-widest font-black oxblood-text">Liability Ledger</span>
-                <span id="inv-debt-total" class="text-sm font-bold oxblood-text">₦0</span>
-            </summary>
+        <details id="sec-liabilities" class="vault-card group mb-4 border-red-900/20">
+            <summary class="p-5 flex justify-between items-center"><span class="text-[10px] uppercase tracking-widest font-black oxblood-text">Liability Ledger</span><span id="inv-debt-total" class="text-sm font-bold oxblood-text">₦0</span></summary>
             <div id="debt-list" class="px-5 pb-5 space-y-2 border-t border-zinc-900 pt-4 text-[11px]"></div>
         </details>
 
-        <details class="vault-card group mb-12 border-gold-text/20">
-            <summary class="p-5 flex justify-between items-center">
-                <span class="text-[10px] uppercase tracking-widest font-black gold-text">Fiduciary Ledger</span>
-                <span id="f-total-header" class="text-sm font-bold gold-text">₦0</span>
-            </summary>
+        <details id="sec-fiduciary" class="vault-card group mb-12 border-gold-text/20">
+            <summary class="p-5 flex justify-between items-center"><span class="text-[10px] uppercase tracking-widest font-black gold-text">Fiduciary Ledger</span><span id="f-total-header" class="text-sm font-bold gold-text">₦0</span></summary>
             <div id="fiduciary-main-list" class="px-5 pb-5 space-y-4 border-t border-zinc-900 pt-4"></div>
         </details>
 
-        <details class="vault-card group mb-12 border-zinc-800">
-            <summary class="p-5 flex justify-between items-center bg-zinc-900/20">
-                <span class="text-[10px] uppercase tracking-widest font-black text-zinc-500">Master Audit Trail</span>
-                <span class="text-zinc-700 text-[10px]">▼</span>
-            </summary>
+        <details id="sec-audit" class="vault-card group mb-12 border-zinc-800">
+            <summary class="p-5 flex justify-between items-center bg-zinc-900/20"><span class="text-[10px] uppercase font-black text-zinc-500">Audit Trail</span><span class="text-zinc-700 text-[10px]">▼</span></summary>
             <div id="master-history" class="p-5 space-y-4 bg-zinc-900/10 border-t border-zinc-800"></div>
         </details>
-
-        <button onclick="securePurge()" class="w-full p-4 text-[9px] uppercase tracking-widest text-zinc-800 border border-zinc-900 rounded-lg">Purge Data (PIN 0000)</button>
     </div>
 
-    <button onclick="toggleMenu()" class="fab-button w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-4xl font-bold">+</button>
+    <div id="settings-overlay" class="overlay">
+        <div class="w-full max-w-sm mx-auto space-y-8">
+            <h2 class="text-xl font-bold uppercase tracking-tighter">Command Settings</h2>
+            
+            <section>
+                <p class="text-[9px] text-zinc-500 uppercase mb-3 font-bold">Feature Toggles</p>
+                <div class="toggle-label"><span>Cash Split</span><input type="checkbox" checked onchange="toggleSection('sec-cash', this)"></div>
+                <div class="toggle-label"><span>Assets</span><input type="checkbox" checked onchange="toggleSection('sec-assets', this)"></div>
+                <div class="toggle-label"><span>Liabilities</span><input type="checkbox" checked onchange="toggleSection('sec-liabilities', this)"></div>
+                <div class="toggle-label"><span>Fiduciary</span><input type="checkbox" checked onchange="toggleSection('sec-fiduciary', this)"></div>
+                <div class="toggle-label"><span>Audit Trail</span><input type="checkbox" checked onchange="toggleSection('sec-audit', this)"></div>
+            </section>
 
-    <div id="menu-overlay">
+            <section>
+                <p class="text-[9px] text-zinc-500 uppercase mb-3 font-bold">Security Update</p>
+                <input id="set-new-pin" type="password" maxlength="4" class="input-dark w-full mb-2" placeholder="New 4-Digit PIN">
+                <button onclick="updatePin()" class="w-full bg-zinc-800 p-3 rounded text-[10px] uppercase font-bold">Save PIN</button>
+            </section>
+
+            <section>
+                <p class="text-[9px] text-zinc-500 uppercase mb-3 font-bold">Manual Sync (Backup)</p>
+                <button onclick="exportData()" class="w-full bg-emerald-500/20 text-emerald-500 p-4 rounded text-[10px] uppercase font-bold mb-2">Generate Recovery Key</button>
+                <button onclick="importData()" class="w-full border border-zinc-800 p-4 rounded text-[10px] uppercase font-bold">Import Key</button>
+            </section>
+
+            <button onclick="toggleOverlay('settings-overlay')" class="w-full p-4 text-zinc-500 uppercase text-[10px] font-bold text-center">Close Settings</button>
+        </div>
+    </div>
+
+    <button onclick="toggleOverlay('entry-overlay')" class="fab-button w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-4xl font-bold">+</button>
+
+    <div id="entry-overlay" class="overlay">
         <div class="w-full space-y-6 max-w-sm mx-auto pb-10">
             <h2 class="text-xl font-bold uppercase tracking-tighter">New Entry</h2>
             <div class="space-y-4">
-                <select id="form-category" class="input-dark" onchange="toggleFormFields()">
-                    <option value="Personal">Personal wealth</option>
-                    <option value="Fiduciary">Fiduciary Contribution</option>
-                </select>
+                <select id="form-category" class="input-dark" onchange="toggleFormFields()"><option value="Personal">Personal</option><option value="Fiduciary">Fiduciary</option></select>
                 <input id="form-date" type="date" class="input-dark">
                 <input id="form-name" class="input-dark" placeholder="Label / Contributor">
                 <input id="form-amount" type="number" class="input-dark" placeholder="Amount (₦)">
                 <div id="personal-fields">
-                    <select id="form-type" class="input-dark" onchange="toggleCashFields()">
-                        <option value="Cash">Cash (Fluid Split)</option>
-                        <option value="Stocks">Stocks</option>
-                        <option value="Property">Property</option>
-                        <option value="Liability">Liability (I Owe)</option>
-                    </select>
+                    <select id="form-type" class="input-dark"><option value="Cash">Cash</option><option value="Stocks">Stocks</option><option value="Property">Property</option><option value="Liability">Liability</option></select>
                 </div>
             </div>
             <div class="pt-6 space-y-3">
                 <button onclick="submitEntry()" class="w-full bg-emerald-500 p-4 rounded-xl text-black font-bold uppercase text-xs">Authorize</button>
-                <button onclick="toggleMenu()" class="w-full p-4 text-zinc-500 uppercase text-[10px] font-bold text-center">Back</button>
+                <button onclick="toggleOverlay('entry-overlay')" class="w-full p-4 text-zinc-500 uppercase text-[10px] font-bold text-center">Back</button>
             </div>
         </div>
     </div>
@@ -145,6 +137,8 @@
         let stealth = false;
         let ledger = JSON.parse(localStorage.getItem('vault_ledger')) || [];
         let fLedger = JSON.parse(localStorage.getItem('fiduciary_ledger')) || [];
+        let userPin = localStorage.getItem('vault_pin') || "0000";
+
         document.getElementById('form-date').valueAsDate = new Date();
 
         function mask(val) { return stealth ? "••••" : (parseFloat(val) || 0).toLocaleString(); }
@@ -159,8 +153,7 @@
             ledger.slice().sort((a,b) => new Date(b.rawDate) - new Date(a.rawDate)).forEach((item, idx) => {
                 const val = parseFloat(item.amount) || 0;
                 if (item.type === 'Liability') {
-                    dSum += val;
-                    dList.innerHTML += `<div class="flex justify-between py-1 border-b border-zinc-900"><span>${item.name}</span><span class="oxblood-text">₦${mask(val)}</span></div>`;
+                    dSum += val; dList.innerHTML += `<div class="flex justify-between py-1 border-b border-zinc-900 last:border-0"><span>${item.name}</span><span class="oxblood-text">₦${mask(val)}</span></div>`;
                 } else if (item.type === 'Cash') {
                     tCash += val; bBal += (item.bills || 0); sBal += (item.savings || 0); lBal += (item.lifestyle || 0); aSum += val;
                 } else {
@@ -200,14 +193,32 @@
             document.getElementById('bills-buffer').innerText = "₦" + mask(bBal * 0.2);
         }
 
-        function togglePrivacy() { 
-            stealth = !stealth; 
-            document.getElementById('stealth-trigger').classList.toggle('stealth-active', stealth);
-            updateDisplay(); 
+        function toggleOverlay(id) { document.getElementById(id).classList.toggle('overlay-open'); }
+        function toggleSection(id, el) { document.getElementById(id).style.display = el.checked ? 'block' : 'none'; }
+        function togglePrivacy() { stealth = !stealth; document.getElementById('stealth-trigger').classList.toggle('stealth-active', stealth); updateDisplay(); }
+
+        function updatePin() {
+            const pin = document.getElementById('set-new-pin').value;
+            if(pin.length === 4) { localStorage.setItem('vault_pin', pin); userPin = pin; alert("PIN Updated."); }
         }
-        function toggleFormFields() { document.getElementById('personal-fields').classList.toggle('hidden', document.getElementById('form-category').value === 'Fiduciary'); }
-        function toggleCashFields() {}
-        function toggleMenu() { document.getElementById('menu-overlay').classList.toggle('menu-open'); }
+
+        function exportData() {
+            const data = btoa(JSON.stringify({ledger, fLedger}));
+            prompt("COPY YOUR RECOVERY KEY:", data);
+        }
+
+        function importData() {
+            const key = prompt("PASTE RECOVERY KEY:");
+            if(key) {
+                try {
+                    const parsed = JSON.parse(atob(key));
+                    ledger = parsed.ledger; fLedger = parsed.fLedger;
+                    localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+                    localStorage.setItem('fiduciary_ledger', JSON.stringify(fLedger));
+                    updateDisplay();
+                } catch(e) { alert("Invalid Key."); }
+            }
+        }
 
         function submitEntry() {
             const cat = document.getElementById('form-category').value, name = document.getElementById('form-name').value, amount = parseFloat(document.getElementById('form-amount').value), dateVal = document.getElementById('form-date').value;
@@ -221,10 +232,11 @@
             } else {
                 fLedger.push({ name, amount, date: entryDate, rawDate: dateVal }); localStorage.setItem('fiduciary_ledger', JSON.stringify(fLedger));
             }
-            updateDisplay(); toggleMenu();
+            updateDisplay(); toggleOverlay('entry-overlay');
         }
+
         function deleteItem(index, type) { if(confirm("Delete?")) { ledger.splice(index, 1); localStorage.setItem('vault_ledger', JSON.stringify(ledger)); updateDisplay(); } }
-        function securePurge() { const pin = prompt("PIN:"); if(pin === "0000") { localStorage.clear(); location.reload(); } }
+        function securePurge() { const pin = prompt("PIN:"); if(pin === userPin) { localStorage.clear(); location.reload(); } }
         updateDisplay();
     </script>
 </body>
