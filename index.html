@@ -25,7 +25,10 @@
         .fab-add { background: #00FF41; color: black; box-shadow: 0 0 30px rgba(0, 255, 65, 0.3); }
         .fab-back { background: #161618; color: #EDEDED; border: 1px solid #262629; display: none; }
 
-        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 20px; overflow: hidden; margin-bottom: 16px; }
+        /* FIXED: Symmetrical Rectangular Cards */
+        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+        .rect-border-emerald { border: 1px solid #00FF41; background: rgba(0, 255, 65, 0.02); }
+        
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
         .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 18px; border-radius: 12px; width: 100%; outline: none; }
@@ -33,7 +36,6 @@
         summary { cursor: pointer; list-style: none; outline: none; display: flex; justify-content: space-between; align-items: center; width: 100%; }
         summary::-webkit-details-marker { display: none; }
         
-        /* Tactical Split Alignment Fix */
         .split-row { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #262629; padding-bottom: 8px; }
     </style>
 </head>
@@ -53,9 +55,9 @@
         </div>
 
         <div class="px-6">
-            <details class="vault-card border-l-8 border-emerald-500" open>
+            <details class="vault-card rect-border-emerald" open>
                 <summary class="p-6">
-                    <span class="text-[11px] font-black uppercase text-zinc-500">Tactical Split</span>
+                    <span class="text-[11px] font-black uppercase text-emerald-500">Tactical Split</span>
                     <span id="total-cash" class="text-xl font-black emerald-text">₦0</span>
                 </summary>
                 <div class="px-6 pb-6 space-y-4 pt-4">
@@ -118,7 +120,7 @@
             </select>
 
             <div id="bulk-fid-fields" class="hidden space-y-4">
-                <p class="text-[10px] text-zinc-500 uppercase font-bold">Format: Name, Amount (One per line)</p>
+                <p class="text-[10px] text-zinc-500 uppercase font-bold">Format: Name, Amount</p>
                 <textarea id="bulk-input" class="input-dark h-40" placeholder="Ogbonna, 50000&#10;Kaku, 25000"></textarea>
             </div>
 
@@ -140,10 +142,10 @@
         <div class="w-full max-w-sm mx-auto space-y-8 pb-32">
             <h2 class="text-4xl font-black uppercase tracking-tighter">Auditor</h2>
             <div class="vault-card p-8 border-emerald-500/50 bg-emerald-500/5">
-                <p class="text-[10px] font-black text-zinc-500 uppercase">Calculated Auditor Total</p>
+                <p class="text-[10px] font-black text-zinc-500 uppercase">Calculated Total</p>
                 <p id="intel-total" class="text-4xl font-black emerald-text">₦0.00</p>
             </div>
-            <input id="intel-search" oninput="runQuery()" class="input-dark text-center" placeholder="Search Contributor or Category...">
+            <input id="intel-search" oninput="runQuery()" class="input-dark text-center" placeholder="Search Person or Tier...">
             <div id="intel-results" class="space-y-3"></div>
             <button onclick="downloadCSV()" class="w-full py-4 border border-zinc-800 rounded uppercase font-bold text-[10px]">Export CSV</button>
         </div>
@@ -153,17 +155,17 @@
         <div class="w-full max-w-sm mx-auto space-y-10">
             <h2 class="text-3xl font-black uppercase tracking-tighter">Registry</h2>
             <div class="vault-card p-6 space-y-4">
-                <p class="text-[10px] uppercase font-bold text-zinc-500">Security PIN</p>
                 <input id="set-new-pin" type="password" maxlength="4" class="input-dark" placeholder="Update 4-Digit PIN">
                 <button onclick="updatePin()" class="w-full bg-zinc-800 p-4 rounded uppercase font-bold text-xs">Save PIN</button>
             </div>
             <button onclick="exportData()" class="w-full border border-zinc-800 p-5 rounded font-black uppercase text-xs">Backup</button>
             <button onclick="importData()" class="w-full border border-zinc-800 p-5 rounded font-black uppercase text-xs">Restore</button>
-            <button onclick="securePurge()" class="w-full p-5 mt-20 text-red-900 border border-red-900 rounded font-black uppercase text-xs">Wipe Data</button>
+            <button onclick="securePurge()" class="w-full p-5 mt-20 text-red-900 border border-red-900 rounded font-black uppercase text-xs">Purge All Data</button>
         </div>
     </div>
 
     <script>
+        // CLEAN START: Load data or initialize empty arrays
         let ledger = JSON.parse(localStorage.getItem('vault_ledger')) || [];
         let fLedger = JSON.parse(localStorage.getItem('fiduciary_ledger')) || [];
         let userPin = localStorage.getItem('vault_pin') || "0000";
@@ -243,7 +245,10 @@
                 const name = document.getElementById('form-name').value, amount = parseFloat(document.getElementById('form-amount').value);
                 if (cat === 'Income') ledger.push({ name, amount, bills: amount*0.4, savings: amount*0.4, lifestyle: amount*0.2, date: d, type: 'Liquid Cash' });
                 else if (cat === 'FixedAsset') ledger.push({ name, amount, type: document.getElementById('asset-type').value, date: d });
-                else if (cat === 'Fiduciary') fLedger.push({ name, amount, date: d });
+                else if (cat === 'Expense') {
+                    const src = document.getElementById('form-source').value, tier = document.getElementById('expense-tier').value;
+                    ledger.push({ name, amount: -amount, [src]: -amount, tier, date: d });
+                } else if (cat === 'Fiduciary') fLedger.push({ name, amount, date: d });
             }
 
             localStorage.setItem('vault_ledger', JSON.stringify(ledger));
@@ -265,7 +270,7 @@
         }
 
         function updatePin() { const p = document.getElementById('set-new-pin').value; if(p.length===4){localStorage.setItem('vault_pin',p);userPin=p;alert("PIN Saved.");} }
-        function securePurge() { if(prompt("PIN:")===userPin){localStorage.clear();location.reload();} }
+        function securePurge() { if(confirm("Wipe all data?")) { localStorage.clear(); location.reload(); } }
         function exportData() { prompt("Key:", btoa(JSON.stringify({ledger, fLedger}))); }
         function importData() { const k = prompt("Key:"); if(k){ const p = JSON.parse(atob(k)); ledger=p.ledger; fLedger=p.fLedger; updateDisplay(); } }
 
