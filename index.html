@@ -10,6 +10,7 @@
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
+        .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 12px; border-radius: 8px; width: 100%; font-size: 14px; }
         
         .stealth-btn { position: relative; z-index: 100 !important; pointer-events: all !important; }
         .fab-button { position: fixed; bottom: 32px; right: 32px; z-index: 999 !important; pointer-events: all !important; box-shadow: 0 0 20px rgba(0, 255, 65, 0.3); }
@@ -64,17 +65,53 @@
             <div id="debt-list" class="px-5 pb-5 space-y-2 border-t border-zinc-800 pt-4 text-[11px]"></div>
         </details>
 
-        <button onclick="resetVault()" class="w-full mt-10 p-4 text-[9px] uppercase tracking-widest text-zinc-800 border border-zinc-900 rounded-lg active:bg-zinc-800">Reset Dashboard</button>
+        <button onclick="resetVault()" class="w-full mt-10 p-4 text-[9px] uppercase tracking-widest text-zinc-800 border border-zinc-900 rounded-lg">Reset Dashboard</button>
     </div>
 
     <button onclick="toggleMenu()" class="fab-button w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-3xl font-bold active:scale-90 transition-transform">+</button>
 
-    <div id="menu-overlay" class="flex-col items-center justify-center p-8">
-        <div class="w-full space-y-4 max-w-sm">
-            <button onclick="addCashEntry()" class="w-full vault-card p-6 text-left border-l-4 border-emerald-500 active:bg-zinc-800"><p class="emerald-text font-bold uppercase text-xs">Add Liquid Cash</p></button>
-            <button onclick="addEntry('Asset')" class="w-full vault-card p-6 text-left border-l-4 border-zinc-600 active:bg-zinc-800"><p class="text-zinc-300 font-bold uppercase text-xs">Add Fixed Asset</p></button>
-            <button onclick="addEntry('Liability')" class="w-full vault-card p-6 text-left border-l-4 border-red-500 active:bg-zinc-800"><p class="oxblood-text font-bold uppercase text-xs">Add Liability</p></button>
-            <button onclick="toggleMenu()" class="w-full p-6 text-zinc-600 text-[10px] uppercase tracking-widest text-center mt-6">Close</button>
+    <div id="menu-overlay" class="flex-col items-center justify-start p-8 pt-20 overflow-y-auto">
+        <div class="w-full space-y-6 max-w-sm">
+            <h2 class="text-xl font-bold mb-4 uppercase tracking-tighter">Add New Entry</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Entry Name</label>
+                    <input id="form-name" class="input-dark" placeholder="e.g. Salary, Plot 4, Bank Loan">
+                </div>
+                <div>
+                    <label class="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Value (₦)</label>
+                    <input id="form-amount" type="number" class="input-dark" placeholder="0.00">
+                </div>
+                <div>
+                    <label class="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Entry Category</label>
+                    <select id="form-type" class="input-dark" onchange="toggleCashFields()">
+                        <option value="Asset">Fixed Asset</option>
+                        <option value="Cash">Liquid Cash</option>
+                        <option value="Liability">Liability</option>
+                    </select>
+                </div>
+                
+                <div id="cash-fields" class="hidden space-y-4 pt-4 border-t border-zinc-800">
+                    <p class="text-[10px] text-emerald-500 font-bold uppercase">Cash Allocation Settings</p>
+                    <div class="flex gap-4">
+                        <div class="flex-1 text-[10px] text-zinc-500">Bills: 40% (Fixed)</div>
+                        <div class="flex-1">
+                            <label class="text-[9px] uppercase text-zinc-500 block mb-1">Savings %</label>
+                            <input id="form-save-pct" type="number" class="input-dark" placeholder="40">
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-[9px] uppercase text-zinc-500 block mb-1">Life %</label>
+                            <input id="form-life-pct" type="number" class="input-dark" placeholder="20">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 space-y-3">
+                <button onclick="submitEntry()" class="w-full bg-emerald-500 p-4 rounded-xl text-black font-bold uppercase text-xs tracking-widest">Authorize Entry</button>
+                <button onclick="toggleMenu()" class="w-full p-4 text-zinc-500 uppercase text-[10px] tracking-widest">Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -82,18 +119,9 @@
         let stealth = false;
         let ledger = JSON.parse(localStorage.getItem('vault_ledger')) || [];
 
-        // Legacy cleanup: Move old balance into the new ledger system
-        const oldBalance = parseFloat(localStorage.getItem('vault_balance'));
-        if (!isNaN(oldBalance) && oldBalance > 0) {
-            ledger.push({ name: "Legacy Balance", amount: oldBalance, type: 'Asset' });
-            localStorage.removeItem('vault_balance'); // Clear the old slot
-            localStorage.setItem('vault_ledger', JSON.stringify(ledger));
-        }
-
         function updateDisplay() {
             let assetsSum = 0; let debtSum = 0; 
             let billsSum = 0; let savingsSum = 0; let lifestyleSum = 0; let totalCash = 0;
-            
             const assetList = document.getElementById('asset-list');
             const debtList = document.getElementById('debt-list');
             assetList.innerHTML = ''; debtList.innerHTML = '';
@@ -101,17 +129,14 @@
             ledger.forEach((item, index) => {
                 const isAsset = (item.type === 'Asset' || item.type === 'Cash');
                 const isDebt = (item.type === 'Liability');
-                
                 if(isAsset) assetsSum += item.amount; 
                 if(isDebt) debtSum += item.amount;
-                
                 if(item.type === 'Cash') {
                     totalCash += item.amount;
                     billsSum += item.bills || 0;
                     savingsSum += item.savings || 0;
                     lifestyleSum += item.lifestyle || 0;
                 }
-
                 const target = isAsset ? assetList : debtList;
                 target.innerHTML += `
                     <div class="flex justify-between items-center py-2 border-b border-zinc-900 last:border-0">
@@ -124,74 +149,17 @@
                 `;
             });
 
-            const netWorthValue = assetsSum - debtSum;
-            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netWorthValue.toLocaleString();
+            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + (assetsSum - debtSum).toLocaleString();
             document.getElementById('total-assets').innerText = stealth ? "••••" : "₦" + assetsSum.toLocaleString();
             document.getElementById('total-debt').innerText = stealth ? "••••" : "₦" + debtSum.toLocaleString();
             document.getElementById('total-cash').innerText = stealth ? "••••" : "₦" + totalCash.toLocaleString();
-
             document.getElementById('alloc-bills').innerText = stealth ? "••••" : "₦" + billsSum.toLocaleString();
             document.getElementById('alloc-savings').innerText = stealth ? "••••" : "₦" + savingsSum.toLocaleString();
             document.getElementById('alloc-life').innerText = stealth ? "••••" : "₦" + lifestyleSum.toLocaleString();
         }
 
-        function toggleMenu() { document.getElementById('menu-overlay').classList.toggle('menu-open'); }
-
-        function addCashEntry() {
-            const name = prompt("Cash Source:");
-            const amount = parseFloat(prompt("Amount (₦):"));
-            if (!name || isNaN(amount)) return;
-
-            const billsPct = 40;
-            const savePct = parseFloat(prompt("Percentage for Savings?"));
-            const lifePct = parseFloat(prompt("Percentage for Lifestyle?"));
-
-            if (isNaN(savePct) || isNaN(lifePct)) return;
-
-            ledger.push({
-                name,
-                amount,
-                type: 'Cash',
-                bills: (amount * (billsPct / 100)),
-                savings: (amount * (savePct / 100)),
-                lifestyle: (amount * (lifePct / 100))
-            });
-            saveAndRefresh();
-        }
-
-        function addEntry(type) {
-            const name = prompt(`Label this ${type}:`);
-            const amount = prompt("Value (₦):");
-            if (name && amount && !isNaN(amount)) {
-                ledger.push({ name, amount: parseFloat(amount), type });
-                saveAndRefresh();
-            }
-        }
-
-        function deleteItem(index) {
-            if(confirm("Delete entry?")) {
-                ledger.splice(index, 1);
-                saveAndRefresh();
-            }
-        }
-
-        function resetVault() {
-            if(confirm("Wipe all data?")) {
-                ledger = [];
-                localStorage.setItem('vault_ledger', JSON.stringify(ledger));
-                updateDisplay();
-            }
-        }
-
-        function saveAndRefresh() {
-            localStorage.setItem('vault_ledger', JSON.stringify(ledger));
-            updateDisplay();
-            const overlay = document.getElementById('menu-overlay');
-            if (overlay.classList.contains('menu-open')) toggleMenu();
-        }
-
-        function togglePrivacy() { stealth = !stealth; updateDisplay(); }
-        updateDisplay();
-    </script>
-</body>
-</html>
+        function toggleMenu() { 
+            const menu = document.getElementById('menu-overlay');
+            menu.classList.toggle('menu-open');
+            // Clear inputs when opening
+            if(menu.classList.
