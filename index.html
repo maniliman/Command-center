@@ -6,13 +6,11 @@
     <title>Sovereign Command</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #050505; color: #FAFAFA; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #050505; color: #FAFAFA; font-family: -apple-system, system-ui, sans-serif; }
         .glass { background: rgba(22, 22, 24, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; }
-        .fab { position: fixed; bottom: 30px; right: 24px; width: 60px; height: 60px; border-radius: 30px; background: #FAFAFA; color: #000; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; transition: transform 0.2s; }
-        .fab:active { transform: scale(0.9); }
-        .view-container { display: none; animation: fadeIn 0.3s ease; }
+        .fab { position: fixed; bottom: 30px; right: 24px; width: 64px; height: 64px; border-radius: 32px; background: #00FF41; color: #000; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; z-index: 100; box-shadow: 0 10px 30px rgba(0, 255, 65, 0.2); }
+        .view-container { display: none; }
         .view-container.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .progress-bar { height: 6px; background: #1A1A1A; border-radius: 3px; overflow: hidden; }
         .progress-fill { background: #00FF41; height: 100%; transition: width 0.5s ease; }
     </style>
@@ -31,105 +29,83 @@
                 <p id="dash-assets" class="text-lg font-bold text-[#00FF41]">₦0</p>
             </div>
             <div class="glass p-5" onclick="showView('view-debt')">
-                <p class="text-zinc-500 text-[9px] uppercase tracking-widest mb-1">Net Liabilities</p>
+                <p class="text-zinc-500 text-[9px] uppercase tracking-widest mb-1">Debt Status</p>
                 <p id="dash-debt" class="text-lg font-bold text-red-500">₦0</p>
             </div>
         </div>
 
-        <div class="glass p-6 mb-8" onclick="showView('view-goals')">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xs font-bold uppercase tracking-widest">Active Targets</h3>
-                <span class="text-zinc-500 text-xs">→</span>
-            </div>
-            <div id="dash-goals-preview" class="space-y-4">
-                <p class="text-xs text-zinc-600">No active goals set.</p>
-            </div>
+        <div class="glass p-6 mb-6" onclick="showView('view-goals')">
+            <p class="text-xs font-bold uppercase tracking-widest mb-4">Savings Targets</p>
+            <div id="dash-goals-preview" class="space-y-4"></div>
         </div>
 
-        <div class="grid grid-cols-1 gap-3">
-            <button onclick="showView('view-history')" class="glass p-4 text-left text-xs uppercase tracking-widest flex justify-between">
-                <span>Transaction History</span>
-                <span>📋</span>
-            </button>
-        </div>
+        <button onclick="showView('view-history')" class="w-full glass p-5 flex justify-between items-center">
+            <span class="text-xs uppercase tracking-widest">Global History</span>
+            <span>📋</span>
+        </button>
     </div>
 
     <div id="view-assets" class="view-container">
-        <button onclick="showView('view-dashboard')" class="mb-8 flex items-center text-zinc-500 text-xs tracking-widest">
-            <span class="mr-2">←</span> DASHBOARD
-        </button>
-        <h2 class="text-3xl font-bold mb-8 tracking-tight">Liquid Assets</h2>
-        <div class="glass p-8 mb-6 text-center">
-            <p class="text-zinc-500 text-[10px] uppercase tracking-widest mb-2">Available Balance</p>
-            <p id="asset-total" class="text-4xl font-bold">₦0</p>
+        <button onclick="showView('view-dashboard')" class="mb-8 text-zinc-500 text-xs">← BACK TO DASHBOARD</button>
+        <h2 class="text-3xl font-bold mb-8">Cash Assets</h2>
+        <div class="glass p-10 text-center mb-6">
+            <p id="asset-total" class="text-5xl font-bold">₦0</p>
         </div>
         <div class="grid grid-cols-2 gap-4">
-            <button onclick="quickAction('IN', 'gen')" class="glass p-6 text-center border-zinc-800">
-                <p class="text-[10px] font-bold uppercase mb-1">Add Cash</p>
-                <span class="text-2xl">💰</span>
-            </button>
-            <button onclick="quickAction('OUT', 'gen')" class="glass p-6 text-center border-zinc-800">
-                <p class="text-[10px] font-bold uppercase mb-1">Spend Cash</p>
-                <span class="text-2xl">💸</span>
-            </button>
+            <button onclick="quickAction('IN', 'gen')" class="glass p-6 text-emerald-500 font-bold uppercase text-xs tracking-widest">Deposit</button>
+            <button onclick="quickAction('OUT', 'gen')" class="glass p-6 text-red-500 font-bold uppercase text-xs tracking-widest">Spend</button>
         </div>
     </div>
 
     <div id="view-goals" class="view-container">
-        <button onclick="showView('view-dashboard')" class="mb-8 flex items-center text-zinc-500 text-xs tracking-widest">
-            <span class="mr-2">←</span> DASHBOARD
-        </button>
-        <div class="flex justify-between items-end mb-8">
-            <h2 class="text-3xl font-bold tracking-tight">Envelopes</h2>
-            <button onclick="createGoal()" class="text-[#00FF41] text-xs font-bold tracking-widest uppercase">Create +</button>
+        <button onclick="showView('view-dashboard')" class="mb-8 text-zinc-500 text-xs">← BACK TO DASHBOARD</button>
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold">Goals</h2>
+            <button onclick="createGoal()" class="text-emerald-500 text-xs font-bold uppercase tracking-widest">+ NEW</button>
         </div>
         <div id="full-goals-list" class="space-y-4"></div>
     </div>
 
     <div id="view-debt" class="view-container">
-        <button onclick="showView('view-dashboard')" class="mb-8 flex items-center text-zinc-500 text-xs tracking-widest">
-            <span class="mr-2">←</span> DASHBOARD
-        </button>
-        <h2 class="text-3xl font-bold mb-8 tracking-tight">Debt Tracking</h2>
-        <div class="glass p-6 mb-6">
-            <div class="flex justify-between mb-2">
-                <span class="text-xs text-zinc-500 uppercase tracking-widest">Debtors (Owe Me)</span>
-                <span id="debtor-total" class="text-sm font-bold text-[#00FF41]">₦0</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-xs text-zinc-500 uppercase tracking-widest">Creditors (I Owe)</span>
-                <span id="creditor-total" class="text-sm font-bold text-red-500">₦0</span>
-            </div>
+        <button onclick="showView('view-dashboard')" class="mb-8 text-zinc-500 text-xs">← BACK TO DASHBOARD</button>
+        <h2 class="text-3xl font-bold mb-8">Debt Ledger</h2>
+        <div class="glass p-6 space-y-4 mb-6">
+            <div class="flex justify-between"><span class="text-xs text-zinc-500 uppercase">Debtors (Owe Me)</span><span id="debtor-total" class="emerald-text font-bold text-sm">₦0</span></div>
+            <div class="flex justify-between"><span class="text-xs text-zinc-500 uppercase">Creditors (I Owe)</span><span id="creditor-total" class="oxblood-text font-bold text-sm">₦0</span></div>
         </div>
-        <div class="space-y-3">
-            <button onclick="quickAction('DEBTOR', 'debt')" class="w-full glass p-5 text-left text-xs uppercase tracking-widest">➕ Add Someone who owes me</button>
-            <button onclick="quickAction('CREDITOR', 'debt')" class="w-full glass p-5 text-left text-xs uppercase tracking-widest">➖ Add Someone I owe</button>
+        <div class="grid gap-4">
+            <button onclick="quickAction('DEBTOR', 'debt')" class="glass p-5 text-left text-xs uppercase tracking-widest">Add Debtor</button>
+            <button onclick="quickAction('CREDITOR', 'debt')" class="glass p-5 text-left text-xs uppercase tracking-widest">Add Creditor</button>
         </div>
     </div>
 
     <div id="view-history" class="view-container">
-        <button onclick="showView('view-dashboard')" class="mb-8 flex items-center text-zinc-500 text-xs tracking-widest">
-            <span class="mr-2">←</span> DASHBOARD
-        </button>
-        <h2 class="text-3xl font-bold mb-8 tracking-tight">History</h2>
-        <div id="full-history-list" class="space-y-4"></div>
+        <button onclick="showView('view-dashboard')" class="mb-8 text-zinc-500 text-xs">← BACK TO DASHBOARD</button>
+        <h2 class="text-3xl font-bold mb-8">Audit Log</h2>
+        <div id="full-history-list" class="space-y-3"></div>
     </div>
 
-    <div class="fab" onclick="showQuickAdd()">+</div>
+    <div class="fab" onclick="handleFAB()">+</div>
 
     <script>
-        let history = JSON.parse(localStorage.getItem('sov_v2_history')) || [];
-        let goals = JSON.parse(localStorage.getItem('sov_v2_goals')) || [];
+        let history = JSON.parse(localStorage.getItem('sov_v3_history')) || [];
+        let goals = JSON.parse(localStorage.getItem('sov_v3_goals')) || [];
 
         function showView(id) {
             document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            window.scrollTo(0,0);
             updateUI();
         }
 
+        function handleFAB() {
+            const active = document.querySelector('.view-container.active').id;
+            if (active === 'view-goals') createGoal();
+            else if (active === 'view-debt') quickAction('DEBTOR', 'debt');
+            else quickAction('IN', 'gen');
+        }
+
         function updateUI() {
-            let nw = 0; let assets = 0; let debtors = 0; let creditors = 0;
+            let nw = 0, assets = 0, debtors = 0, creditors = 0;
             const goalBals = {}; goals.forEach(g => goalBals[g.id] = 0);
 
             history.forEach(item => {
@@ -140,78 +116,60 @@
                 if (item.type === 'CREDITOR') { creditors += amt; nw -= amt; }
             });
 
-            // Main Dashboard Updates
             document.getElementById('dash-nw').innerText = "₦" + nw.toLocaleString();
             document.getElementById('dash-assets').innerText = "₦" + assets.toLocaleString();
             document.getElementById('dash-debt').innerText = "₦" + (creditors - debtors).toLocaleString();
+            document.getElementById('asset-total').innerText = "₦" + assets.toLocaleString();
+            document.getElementById('debtor-total').innerText = "₦" + debtors.toLocaleString();
+            document.getElementById('creditor-total').innerText = "₦" + creditors.toLocaleString();
 
-            // Preview Goals on Dash
-            const goalPreview = document.getElementById('dash-goals-preview');
-            goalPreview.innerHTML = goals.length > 0 ? goals.slice(0,2).map(g => {
+            const preview = document.getElementById('dash-goals-preview');
+            preview.innerHTML = goals.length > 0 ? goals.slice(0,2).map(g => {
                 const bal = goalBals[g.id] || 0;
                 const pct = g.target > 0 ? Math.min((bal/g.target)*100, 100) : 0;
-                return `<div class="mb-2"><div class="flex justify-between text-[10px] mb-1"><span>${g.name}</span><span>${Math.floor(pct)}%</span></div>
+                return `<div><div class="flex justify-between text-[10px] mb-1"><span>${g.name}</span><span>${Math.floor(pct)}%</span></div>
                 <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div></div>`;
-            }).join('') : '<p class="text-[10px] text-zinc-600">No active goals.</p>';
+            }).join('') : '<p class="text-[10px] text-zinc-600 uppercase">Set a Target Envelope</p>';
 
-            // Sub-view Updates
-            if(document.getElementById('asset-total')) document.getElementById('asset-total').innerText = "₦" + assets.toLocaleString();
-            if(document.getElementById('debtor-total')) document.getElementById('debtor-total').innerText = "₦" + debtors.toLocaleString();
-            if(document.getElementById('creditor-total')) document.getElementById('creditor-total').innerText = "₦" + creditors.toLocaleString();
-
-            // Full Goals List
             document.getElementById('full-goals-list').innerHTML = goals.map(g => {
                 const bal = goalBals[g.id] || 0;
                 const pct = g.target > 0 ? Math.min((bal/g.target)*100, 100) : 0;
-                return `<div class="glass p-5">
-                    <div class="flex justify-between mb-3"><span class="text-xs font-bold uppercase">${g.name}</span><span class="text-xs font-mono font-bold text-[#00FF41]">${Math.floor(pct)}%</span></div>
-                    <div class="progress-bar mb-3"><div class="progress-fill" style="width:${pct}%"></div></div>
-                    <div class="flex justify-between text-[10px] text-zinc-500 mb-4"><span>Saved: ₦${bal.toLocaleString()}</span><span>Target: ₦${g.target.toLocaleString()}</span></div>
-                    <button onclick="quickAction('IN', '${g.id}')" class="text-[10px] font-bold text-[#00FF41] uppercase mr-4">Add Funds</button>
-                    <button onclick="deleteGoal('${g.id}')" class="text-[10px] font-bold text-red-900 uppercase">Remove Goal</button>
-                </div>`;
+                return `<div class="glass p-5"><div class="flex justify-between mb-3 text-xs uppercase font-bold"><span>${g.name}</span><span class="text-[#00FF41]">${Math.floor(pct)}%</span></div>
+                <div class="progress-bar mb-3"><div class="progress-fill" style="width:${pct}%"></div></div>
+                <div class="flex justify-between text-[10px] text-zinc-500 mb-4"><span>₦${bal.toLocaleString()}</span><span>Goal: ₦${g.target.toLocaleString()}</span></div>
+                <button onclick="quickAction('IN', '${g.id}')" class="text-emerald-500 text-[10px] font-bold mr-4">DEPOSIT</button>
+                <button onclick="deleteGoal('${g.id}')" class="text-red-900 text-[10px] font-bold">REMOVE</button></div>`;
             }).join('');
 
-            // History List
             document.getElementById('full-history-list').innerHTML = history.slice().reverse().map((item, idx) => {
                 const realIdx = history.length - 1 - idx;
-                return `<div class="glass p-4 flex justify-between items-center">
-                    <div><p class="text-zinc-500 text-[9px] uppercase">${item.date} | ${item.type}</p><p class="text-sm font-bold">₦${item.amount.toLocaleString()}</p></div>
-                    <button onclick="deleteTx(${realIdx})" class="text-zinc-700 text-lg px-2">×</button>
-                </div>`;
+                return `<div class="glass p-4 flex justify-between items-center"><div><p class="text-zinc-500 text-[9px] uppercase">${item.date} | ${item.type}</p><p class="text-sm font-bold">₦${item.amount.toLocaleString()}</p></div>
+                <button onclick="deleteTx(${realIdx})" class="text-zinc-700 text-2xl px-2">×</button></div>`;
             }).join('');
-        }
-
-        function showQuickAdd() {
-            // Context-aware quick add
-            const activeView = document.querySelector('.view-container.active').id;
-            if(activeView === 'view-goals') createGoal();
-            else if(activeView === 'view-debt') quickAction('DEBTOR', 'debt');
-            else quickAction('IN', 'gen');
         }
 
         function quickAction(type, goalId) {
             const amount = prompt(`Amount for ${type}:`);
             if (!amount || isNaN(amount)) return;
-            const now = new Date();
-            history.push({
-                type, amount: parseFloat(amount), goalId,
-                date: now.toLocaleDateString('en-GB', {day:'2-digit', month:'short'}),
-                time: now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'})
-            });
-            localStorage.setItem('sov_v2_history', JSON.stringify(history));
+            history.push({ type, amount: parseFloat(amount), goalId, date: new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'}) });
+            localStorage.setItem('sov_v3_history', JSON.stringify(history));
             updateUI();
         }
 
         function createGoal() {
-            const name = prompt("Envelope/Goal Name:");
+            const name = prompt("Goal Name:");
             const target = prompt("Target (₦):");
             if (name && target) {
                 goals.push({ id: 'g' + Date.now(), name, target: parseFloat(target) });
-                localStorage.setItem('sov_v2_goals', JSON.stringify(goals));
+                localStorage.setItem('sov_v3_goals', JSON.stringify(goals));
                 updateUI();
             }
         }
 
-        function deleteTx(idx) { if(confirm("Permanently delete this entry?")) { history.splice(idx, 1); localStorage.setItem('sov_v2_history', JSON.stringify(history)); updateUI(); } }
-        function deleteGoal(id) { if(confirm("Remove goal and unassign funds?")) { goals = goals.filter(g
+        function deleteTx(idx) { if(confirm("Delete?")) { history.splice(idx, 1); localStorage.setItem('sov_v3_history', JSON.stringify(history)); updateUI(); } }
+        function deleteGoal(id) { if(confirm("Remove goal?")) { goals = goals.filter(g => g.id !== id); localStorage.setItem('sov_v3_goals', JSON.stringify(goals)); updateUI(); } }
+
+        updateUI();
+    </script>
+</body>
+</html>
