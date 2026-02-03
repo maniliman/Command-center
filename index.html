@@ -106,7 +106,8 @@
                 <select id="form-type" class="input-dark" onchange="toggleCashFields()">
                     <option value="Asset">Fixed Asset</option>
                     <option value="Cash">Liquid Cash</option>
-                    <option value="Liability">Liability</option>
+                    <option value="Liability">Liability (I Owe)</option>
+                    <option value="Debtor">Debtor (Owes Me)</option>
                 </select>
                 <div id="cash-fields" class="hidden space-y-4 pt-4 border-t border-zinc-800">
                     <div class="flex gap-4">
@@ -141,10 +142,10 @@
 
             ledger.slice().reverse().forEach((item, originalIndex) => {
                 const index = ledger.length - 1 - originalIndex;
-                const isAsset = (item.type === 'Asset' || item.type === 'Cash');
-                const isDebt = (item.type === 'Liability');
+                const isAssetGroup = (item.type === 'Asset' || item.type === 'Cash' || item.type === 'Debtor');
+                const isDebtGroup = (item.type === 'Liability');
                 
-                if(isAsset) assetsSum += item.amount; else debtSum += item.amount;
+                if(isAssetGroup) assetsSum += item.amount; else debtSum += item.amount;
                 if(item.type === 'Cash') {
                     totalCash += item.amount;
                     billsSum += item.bills || 0;
@@ -152,7 +153,7 @@
                     lifestyleSum += item.lifestyle || 0;
                 }
 
-                const listHTML = `<div class="flex justify-between items-center py-2 border-b border-zinc-900 last:border-0"><span class="text-zinc-500">${item.name}</span><span class="${isAsset ? 'emerald-text' : 'oxblood-text'}">₦${stealth ? '••••' : item.amount.toLocaleString()}</span></div>`;
+                const listHTML = `<div class="flex justify-between items-center py-2 border-b border-zinc-900 last:border-0"><span class="text-zinc-500">${item.name}</span><span class="${isAssetGroup ? 'emerald-text' : 'oxblood-text'}">₦${stealth ? '••••' : item.amount.toLocaleString()}</span></div>`;
                 
                 const auditHTML = `
                     <div class="p-3 border border-zinc-800 rounded-lg">
@@ -161,13 +162,13 @@
                             <button onclick="deleteItem(${index})" class="text-zinc-800 hover:text-red-500 px-2 font-black">×</button>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold uppercase">${item.name}</span>
-                            <span class="${isAsset ? 'emerald-text' : 'oxblood-text'} font-mono text-xs">₦${stealth ? '••••' : item.amount.toLocaleString()}</span>
+                            <span class="text-xs font-bold uppercase">${item.name} <small class="text-[7px] opacity-40 ml-1">${item.type}</small></span>
+                            <span class="${isAssetGroup ? 'emerald-text' : 'oxblood-text'} font-mono text-xs">₦${stealth ? '••••' : item.amount.toLocaleString()}</span>
                         </div>
                     </div>`;
 
                 masterHistory.innerHTML += auditHTML;
-                if (isAsset) assetList.innerHTML += listHTML; else debtList.innerHTML += listHTML;
+                if (isAssetGroup) assetList.innerHTML += listHTML; else debtList.innerHTML += listHTML;
             });
 
             document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + (assetsSum - debtSum).toLocaleString();
