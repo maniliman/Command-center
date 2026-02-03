@@ -10,14 +10,13 @@
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
-        .ledger-item { border-bottom: 1px solid #262629; }
     </style>
 </head>
 <body class="p-6">
     <header class="mb-10 flex justify-between items-start pt-4">
         <div>
             <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase">True Net Worth</p>
-            <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter">₦0.00</h1>
+            <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter">₦0</h1>
         </div>
         <button onclick="togglePrivacy()" class="p-3 vault-card text-[10px] tracking-widest uppercase">Stealth</button>
     </header>
@@ -25,8 +24,8 @@
     <div class="space-y-4 mb-10">
         <button onclick="addEntry()" class="w-full vault-card p-5 flex justify-between items-center text-left">
             <div>
-                <p class="text-xs font-bold uppercase emerald-text">Quick Entry (40/40/20)</p>
-                <p id="split-display" class="text-[10px] text-[#71717A]">Add Funds & Auto-Allocate</p>
+                <p class="text-xs font-bold uppercase emerald-text">Quick Entry</p>
+                <p class="text-[10px] text-[#71717A]">Add Funds to Vault</p>
             </div>
             <span class="text-xl">⚡</span>
         </button>
@@ -34,15 +33,15 @@
         <button onclick="addLoan()" class="w-full vault-card p-5 flex justify-between items-center text-left border-dashed border-red-900/30">
             <div>
                 <p class="text-xs font-bold uppercase oxblood-text">Debt Destroyer</p>
-                <p id="loan-display" class="text-[10px] text-[#71717A]">Log Liabilities</p>
+                <p class="text-[10px] text-[#71717A]">Log Liabilities</p>
             </div>
             <span class="text-xl">📉</span>
         </button>
     </div>
 
     <div class="vault-card p-5">
-        <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase mb-4">Tactical Ledger</p>
-        <div id="ledger-list" class="space-y-3 max-h-60 overflow-y-auto"></div>
+        <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase mb-4">Ledger</p>
+        <div id="ledger-list" class="space-y-3"></div>
     </div>
 
     <script>
@@ -50,15 +49,61 @@
         let history = JSON.parse(localStorage.getItem('vault_history')) || [];
 
         function updateDisplay() {
-            let currentBalance = 0;
-            let currentLoans = 0;
-            
-            // Fixed loop logic
+            let totalIn = 0;
+            let currentDebt = 0;
+
             history.forEach(item => {
-                if (item.type === 'IN') currentBalance += item.amount;
-                if (item.type === 'DEBT') currentLoans = item.amount;
+                if (item.type === 'IN') totalIn += item.amount;
+                if (item.type === 'DEBT') currentDebt = item.amount;
             });
 
-            const netWorth = currentBalance - currentLoans;
-            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netWorth.toLocaleString();
-            document.getElementById('loan-display').innerText = "Current Debt:
+            const netValue = totalIn - currentDebt;
+            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netValue.toLocaleString();
+            
+            const list = document.getElementById('ledger-list');
+            list.innerHTML = history.slice().reverse().map((item, idx) => {
+                const realIdx = history.length - 1 - idx;
+                return `
+                    <div class="flex justify-between items-center border-b border-[#262629] pb-2">
+                        <span class="text-[10px] uppercase text-[#71717A]">${item.date}</span>
+                        <span class="text-[10px] ${item.type === 'IN' ? 'emerald-text' : 'oxblood-text'}">
+                            ${item.type === 'IN' ? '+' : 'DEBT:'} ₦${item.amount.toLocaleString()}
+                        </span>
+                        <button onclick="deleteEntry(${realIdx})" class="text-white bg-red-900/40 px-2 py-1 rounded text-[10px]">×</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function togglePrivacy() { stealth = !stealth; updateDisplay(); }
+
+        function addEntry() {
+            const val = prompt("Enter amount (₦):");
+            if (val && !isNaN(val)) {
+                const date = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+                history.push({ type: 'IN', amount: parseFloat(val), date: date });
+                localStorage.setItem('vault_history', JSON.stringify(history));
+                updateDisplay();
+            }
+        }
+
+        function addLoan() {
+            const val = prompt("Enter debt (₦):");
+            if (val && !isNaN(val)) {
+                const date = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+                history.push({ type: 'DEBT', amount: parseFloat(val), date: date });
+                localStorage.setItem('vault_history', JSON.stringify(history));
+                updateDisplay();
+            }
+        }
+
+        function deleteEntry(index) {
+            history.splice(index, 1);
+            localStorage.setItem('vault_history', JSON.stringify(history));
+            updateDisplay();
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
