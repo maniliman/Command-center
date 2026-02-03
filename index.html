@@ -27,7 +27,7 @@
         .oxblood-text { color: #FF3131; }
         
         /* Stealth Styling */
-        .stealth-active .maskable { filter: blur(8px); pointer-events: none; user-select: none; }
+        .stealth-active .maskable { filter: blur(12px); pointer-events: none; }
     </style>
 </head>
 <body id="main-body" class="p-6" style="padding-top: calc(var(--safe-top) + 20px);">
@@ -70,43 +70,13 @@
             </div>
         </div>
 
-        <div id="feat-expenses" class="vault-card border-red-900/40">
-            <div id="expense-node" class="p-6">
-                <div class="flex justify-between items-center cursor-pointer" onclick="toggleNode('expense-node')">
-                    <span class="text-[11px] font-black uppercase oxblood-text flex items-center gap-2">Expense Ledger <span class="chevron">▼</span></span>
-                    <span id="ex-display" class="text-lg font-black oxblood-text maskable">₦0</span>
-                </div>
-                <div id="expense-list" class="sub-drawer space-y-2 text-[10px] uppercase"></div>
-            </div>
-        </div>
-
-        <div id="feat-assets" class="vault-card">
-            <div id="asset-node" class="p-6">
-                <div class="flex justify-between items-center cursor-pointer" onclick="toggleNode('asset-node')">
-                    <span class="text-[11px] font-black uppercase text-zinc-500 flex items-center gap-2">Asset Inventory <span class="chevron">▼</span></span>
-                    <span id="as-display" class="text-lg font-black emerald-text maskable">₦0</span>
-                </div>
-                <div id="asset-list" class="sub-drawer space-y-2 text-[10px] uppercase"></div>
-            </div>
-        </div>
-
-        <div id="feat-fiduciary" class="vault-card border-yellow-900/30">
-            <div id="fiduciary-node" class="p-6">
-                <div class="flex justify-between items-center cursor-pointer" onclick="toggleNode('fiduciary-node')">
-                    <span class="text-[11px] font-black uppercase text-yellow-500 flex items-center gap-2">Fiduciary Ledger <span class="chevron">▼</span></span>
-                    <span id="f-display" class="text-lg font-black text-yellow-500 maskable">₦0</span>
-                </div>
-                <div id="fiduciary-list" class="sub-drawer space-y-2 text-[10px] uppercase"></div>
-            </div>
-        </div>
-
-        <div id="feat-audit" class="vault-card opacity-50">
+        <div id="feat-audit" class="vault-card">
             <div id="audit-node" class="p-6">
                 <div class="flex justify-between items-center cursor-pointer" onclick="toggleNode('audit-node')">
                     <span class="text-[11px] font-black uppercase text-zinc-500">Master Audit History</span>
                     <span class="chevron">▼</span>
                 </div>
-                <div id="audit-history" class="sub-drawer space-y-3 max-h-64 overflow-y-auto text-[10px]"></div>
+                <div id="audit-history" class="sub-drawer space-y-3 max-h-80 overflow-y-auto text-[10px]"></div>
             </div>
         </div>
     </div>
@@ -121,21 +91,18 @@
                 <option value="fiduciary">Fiduciary Ledger [💼]</option>
             </select>
             
-            <div class="space-y-2">
-                <label class="text-[9px] uppercase font-black text-zinc-500 ml-2">Transaction Date & Time</label>
-                <input id="e-datetime" type="datetime-local" class="input-dark">
-            </div>
-
-            <input id="e-name" class="input-dark" placeholder="Description/Reference">
-            <input id="e-amount" type="number" class="input-dark" placeholder="Amount (₦)">
+            <input id="e-datetime" type="datetime-local" class="input-dark">
+            <input id="e-name" class="input-dark" placeholder="Description">
+            <input id="e-amount" type="number" class="input-dark" placeholder="Total Amount (₦)">
             
             <div id="m-split-box" class="vault-card p-6 border-emerald-500/20">
-                <p class="text-[10px] font-bold text-zinc-500 uppercase mb-4">Manual Distribution Override</p>
+                <p class="text-[10px] font-bold text-zinc-500 uppercase mb-4">Manual % Distribution</p>
                 <div class="grid grid-cols-3 gap-3">
-                    <input id="ms-bills" type="number" class="input-dark !p-3 text-xs" placeholder="Bills">
-                    <input id="ms-save" type="number" class="input-dark !p-3 text-xs" placeholder="Save">
-                    <input id="ms-spend" type="number" class="input-dark !p-3 text-xs" placeholder="Spend">
+                    <div><label class="text-[8px] uppercase">Bills %</label><input id="ps-bills" type="number" class="input-dark !p-3 text-xs" placeholder="40"></div>
+                    <div><label class="text-[8px] uppercase">Save %</label><input id="ps-save" type="number" class="input-dark !p-3 text-xs" placeholder="40"></div>
+                    <div><label class="text-[8px] uppercase">Spend %</label><input id="ps-life" type="number" class="input-dark !p-3 text-xs" placeholder="20"></div>
                 </div>
+                <p class="text-[8px] text-zinc-500 mt-4 text-center">Calculated split must total 100%</p>
             </div>
             <button onclick="execute()" class="w-full bg-emerald-500 p-6 rounded-2xl text-black font-black uppercase tracking-widest">Execute</button>
         </div>
@@ -143,11 +110,15 @@
 
     <div id="settings-view" class="view-hidden space-y-10">
         <h2 class="text-4xl font-black uppercase tracking-tighter">System</h2>
+        
         <div class="vault-card p-6 space-y-4">
-            <p class="text-[10px] font-black uppercase text-zinc-500">Security Control</p>
-            <input id="new-pin" type="password" maxlength="4" class="input-dark" placeholder="Update 4-Digit PIN">
-            <button onclick="savePin()" class="w-full bg-zinc-800 p-4 rounded-xl text-xs font-black uppercase">Update PIN</button>
+            <p class="text-[10px] font-black uppercase text-zinc-500">Visible Features</p>
+            <div class="space-y-4 text-xs font-bold uppercase">
+                <div class="flex justify-between"><span>Tactical Engine</span><input type="checkbox" id="t-tactical" checked onchange="toggleFeat('feat-tactical', this.checked)"></div>
+                <div class="flex justify-between"><span>Audit History</span><input type="checkbox" id="t-audit" checked onchange="toggleFeat('feat-audit', this.checked)"></div>
+            </div>
         </div>
+
         <button onclick="wipeData()" class="w-full p-6 text-red-900 border border-red-900 rounded-2xl font-black uppercase text-xs">Purge All Records</button>
     </div>
 
@@ -155,16 +126,12 @@
     <button id="f-back" onclick="changeView('dashboard-view')" class="fab-btn bg-zinc-800 text-white left-8 view-hidden">✕</button>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('sov_vault_temporal')) || [];
+        let db = JSON.parse(localStorage.getItem('sov_vault_perc')) || [];
         let isStealth = false;
 
         function toggleNode(id) { document.getElementById(id).classList.toggle('open'); }
-
-        function toggleStealth() {
-            isStealth = !isStealth;
-            document.body.classList.toggle('stealth-active', isStealth);
-            document.getElementById('stealth-trigger').innerText = isStealth ? "🕶️" : "👁️";
-        }
+        function toggleStealth() { isStealth = !isStealth; document.body.classList.toggle('stealth-active', isStealth); }
+        function toggleFeat(id, show) { document.getElementById(id).classList.toggle('view-hidden', !show); }
 
         function changeView(id) {
             ['dashboard-view', 'entry-view', 'settings-view'].forEach(v => document.getElementById(v).classList.add('view-hidden'));
@@ -196,46 +163,35 @@
             let entry = { name, total: amt, type, date: dateStr, time: timeStr, rawDate: dt };
 
             if (type === 'income') {
-                const mb = parseFloat(document.getElementById('ms-bills').value) || 0, 
-                      ms = parseFloat(document.getElementById('ms-save').value) || 0, 
-                      ml = parseFloat(document.getElementById('ms-spend').value) || 0;
-                if (mb+ms+ml > 0) { entry.b = mb; entry.s = ms; entry.l = ml; }
-                else { entry.b = amt*0.4; entry.s = amt*0.4; entry.l = amt*0.2; }
+                const pb = parseFloat(document.getElementById('ps-bills').value) || 40, 
+                      ps = parseFloat(document.getElementById('ps-save').value) || 40, 
+                      pl = parseFloat(document.getElementById('ps-life').value) || 20;
+                
+                entry.b = amt * (pb / 100); 
+                entry.s = amt * (ps / 100); 
+                entry.l = amt * (pl / 100);
             } else if (type === 'expense') { 
                 entry.total = -amt; entry.b = -amt; 
             }
 
             db.push(entry);
             db.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
-            localStorage.setItem('sov_vault_temporal', JSON.stringify(db));
+            localStorage.setItem('sov_vault_perc', JSON.stringify(db));
             
-            ['e-name','e-amount','ms-bills','ms-save','ms-spend'].forEach(i => document.getElementById(i).value = '');
+            ['e-name','e-amount','ps-bills','ps-save','ps-life'].forEach(i => document.getElementById(i).value = '');
             changeView('dashboard-view');
         }
 
         function render() {
-            let nw=0, tc=0, b=0, s=0, l=0, as=0, f=0, ex=0;
-            const trail = document.getElementById('audit-history'), 
-                  al = document.getElementById('asset-list'), 
-                  fl = document.getElementById('fiduciary-list'),
-                  el = document.getElementById('expense-list');
-            
-            trail.innerHTML = ''; al.innerHTML = ''; fl.innerHTML = ''; el.innerHTML = '';
+            let nw=0, tc=0, b=0, s=0, l=0;
+            const trail = document.getElementById('audit-history');
+            trail.innerHTML = '';
             
             db.slice().reverse().forEach(i => {
                 nw += i.total;
-                if(i.type === 'income') {
+                if(i.type === 'income' || i.type === 'expense') {
                     tc += i.total; b += (i.b||0); s += (i.s||0); l += (i.l||0);
-                    al.innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-900"><span>${i.name}</span><span class="maskable">₦${i.total.toLocaleString()}</span></div>`;
-                } else if(i.type === 'expense') {
-                    tc += i.total; b += (i.b||0); s += (i.s||0); l += (i.l||0); ex += Math.abs(i.total);
-                    el.innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-900"><span>${i.name}</span><span class="oxblood-text maskable">₦${Math.abs(i.total).toLocaleString()}</span></div>`;
-                } else if(i.type === 'asset') { 
-                    as += i.total; al.innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-900"><span>${i.name}</span><span class="maskable">₦${i.total.toLocaleString()}</span></div>`;
-                } else if(i.type === 'fiduciary') { 
-                    f += i.total; fl.innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-900"><span>${i.name}</span><span class="maskable">₦${i.total.toLocaleString()}</span></div>`; 
                 }
-
                 trail.innerHTML += `<div class="flex justify-between py-3 border-b border-zinc-900">
                     <span class="text-zinc-500">${i.date} <small>${i.time}</small> <b class="text-white ml-2">${i.name}</b></span>
                     <span class="${i.total < 0 ? 'oxblood-text' : 'emerald-text'} font-bold maskable">₦${Math.abs(i.total).toLocaleString()}</span>
@@ -247,16 +203,12 @@
             document.getElementById('b-total').innerText = "₦" + b.toLocaleString();
             document.getElementById('s-total').innerText = "₦" + s.toLocaleString();
             document.getElementById('l-total').innerText = "₦" + l.toLocaleString();
-            document.getElementById('as-display').innerText = "₦" + as.toLocaleString();
-            document.getElementById('f-display').innerText = "₦" + f.toLocaleString();
-            document.getElementById('ex-display').innerText = "₦" + ex.toLocaleString();
-            
             document.getElementById('b-core').innerText = "₦" + (b * 0.4).toLocaleString();
             document.getElementById('b-reserve').innerText = "₦" + (b * 0.4).toLocaleString();
             document.getElementById('b-ops').innerText = "₦" + (b * 0.2).toLocaleString();
         }
 
-        function wipeData() { if(confirm("Purge all records?")) { localStorage.clear(); location.reload(); } }
+        function wipeData() { if(confirm("Purge records?")) { localStorage.clear(); location.reload(); } }
         function updateEntryFields() { document.getElementById('m-split-box').style.display = (document.getElementById('e-type').value === 'income') ? 'block' : 'none'; }
 
         render(); updateEntryFields();
