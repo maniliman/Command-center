@@ -42,30 +42,41 @@
 
     <div class="vault-card p-5">
         <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase mb-4">Tactical Ledger</p>
-        <div id="ledger-list" class="space-y-3 max-h-60 overflow-y-auto">
-            </div>
+        <div id="ledger-list" class="space-y-3 max-h-60 overflow-y-auto"></div>
     </div>
 
     <script>
         let stealth = false;
-        let balance = parseFloat(localStorage.getItem('vault_balance')) || 0;
-        let loans = parseFloat(localStorage.getItem('vault_loans')) || 0;
         let history = JSON.parse(localStorage.getItem('vault_history')) || [];
 
         function updateDisplay() {
-            const netWorth = balance - loans;
+            // Calculate totals from history
+            let currentBalance = 0;
+            let currentLoans = 0;
+            
+            history.forEach(item => {
+                if (type === 'IN') currentBalance += item.amount;
+                if (type === 'DEBT') currentLoans = item.amount; // Sets the current debt level
+            });
+
+            const netWorth = currentBalance - currentLoans;
             document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netWorth.toLocaleString();
-            document.getElementById('loan-display').innerText = "Current Debt: ₦" + loans.toLocaleString();
+            document.getElementById('loan-display').innerText = "Current Debt: ₦" + currentLoans.toLocaleString();
             
             const list = document.getElementById('ledger-list');
-            list.innerHTML = history.slice().reverse().map(item => `
-                <div class="ledger-item pb-2 flex justify-between">
-                    <span class="text-[10px] uppercase">${item.date}</span>
-                    <span class="${item.type === 'IN' ? 'emerald-text' : 'oxblood-text'} text-[10px] font-bold">
-                        ${item.type === 'IN' ? '+' : '-'} ₦${item.amount.toLocaleString()}
-                    </span>
+            list.innerHTML = history.slice().reverse().map((item, index) => {
+                const actualIndex = history.length - 1 - index;
+                return `
+                <div class="ledger-item pb-2 flex justify-between items-center">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase text-[#71717A]">${item.date}</span>
+                        <span class="${item.type === 'IN' ? 'emerald-text' : 'oxblood-text'} text-[10px] font-bold">
+                            ${item.type === 'IN' ? '+' : 'DEBT:'} ₦${item.amount.toLocaleString()}
+                        </span>
+                    </div>
+                    <button onclick="deleteEntry(${actualIndex})" class="text-[#71717A] hover:text-white px-2 text-lg">×</button>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function togglePrivacy() {
@@ -76,31 +87,32 @@
         function addEntry() {
             const amount = prompt("Enter deposit amount (₦):");
             if (amount && !isNaN(amount)) {
-                const num = parseFloat(amount);
-                balance += num;
-                saveTransaction('IN', num);
+                saveTransaction('IN', parseFloat(amount));
             }
         }
 
         function addLoan() {
             const amount = prompt("Enter total debt amount (₦):");
             if (amount && !isNaN(amount)) {
-                const num = parseFloat(amount);
-                loans = num;
-                saveTransaction('DEBT', num);
+                saveTransaction('DEBT', parseFloat(amount));
             }
         }
 
         function saveTransaction(type, amount) {
             const date = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
             history.push({ type, amount, date });
-            localStorage.setItem('vault_balance', balance);
-            localStorage.setItem('vault_loans', loans);
             localStorage.setItem('vault_history', JSON.stringify(history));
             updateDisplay();
         }
 
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+        function deleteEntry(index) {
+            if(confirm("Remove this entry from the ledger?")) {
+                history.splice(index, 1);
+                localStorage.setItem('vault_history', JSON.stringify(history));
+                updateDisplay();
+            }
+        }
+
         updateDisplay();
     </script>
 </body>
