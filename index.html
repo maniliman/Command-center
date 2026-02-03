@@ -44,7 +44,7 @@
         <div class="vault-card p-5 mb-8 border border-emerald-900/20">
             <p class="text-[#71717A] text-[9px] uppercase tracking-widest font-black mb-6 underline decoration-emerald-500 underline-offset-4">Tactical Cash Split</p>
             <div class="space-y-4">
-                <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Bills / Compulsory (40/40/20)</span><span id="alloc-bills" class="font-mono text-emerald-500">₦0</span></div>
+                <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Bills / Compulsory (40%)</span><span id="alloc-bills" class="font-mono text-emerald-500">₦0</span></div>
                 <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Custom Savings</span><span id="alloc-savings" class="font-mono">₦0</span></div>
                 <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Lifestyle Spend</span><span id="alloc-life" class="font-mono">₦0</span></div>
                 <div class="border-t border-emerald-500/20 pt-4 flex justify-between items-center">
@@ -82,6 +82,14 @@
         let stealth = false;
         let ledger = JSON.parse(localStorage.getItem('vault_ledger')) || [];
 
+        // Legacy cleanup: Move old balance into the new ledger system
+        const oldBalance = parseFloat(localStorage.getItem('vault_balance'));
+        if (!isNaN(oldBalance) && oldBalance > 0) {
+            ledger.push({ name: "Legacy Balance", amount: oldBalance, type: 'Asset' });
+            localStorage.removeItem('vault_balance'); // Clear the old slot
+            localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+        }
+
         function updateDisplay() {
             let assetsSum = 0; let debtSum = 0; 
             let billsSum = 0; let savingsSum = 0; let lifestyleSum = 0; let totalCash = 0;
@@ -93,6 +101,7 @@
             ledger.forEach((item, index) => {
                 const isAsset = (item.type === 'Asset' || item.type === 'Cash');
                 const isDebt = (item.type === 'Liability');
+                
                 if(isAsset) assetsSum += item.amount; 
                 if(isDebt) debtSum += item.amount;
                 
@@ -115,7 +124,8 @@
                 `;
             });
 
-            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + (assetsSum - debtSum).toLocaleString();
+            const netWorthValue = assetsSum - debtSum;
+            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netWorthValue.toLocaleString();
             document.getElementById('total-assets').innerText = stealth ? "••••" : "₦" + assetsSum.toLocaleString();
             document.getElementById('total-debt').innerText = stealth ? "••••" : "₦" + debtSum.toLocaleString();
             document.getElementById('total-cash').innerText = stealth ? "••••" : "₦" + totalCash.toLocaleString();
@@ -128,13 +138,13 @@
         function toggleMenu() { document.getElementById('menu-overlay').classList.toggle('menu-open'); }
 
         function addCashEntry() {
-            const name = prompt("Cash Source (e.g. Salary):");
+            const name = prompt("Cash Source:");
             const amount = parseFloat(prompt("Amount (₦):"));
             if (!name || isNaN(amount)) return;
 
-            const billsPct = 40; // Fixed 40% for compulsory as per your logic
-            const savePct = parseFloat(prompt("Percentage for Savings? (e.g. 40):"));
-            const lifePct = parseFloat(prompt("Percentage for Lifestyle? (e.g. 20):"));
+            const billsPct = 40;
+            const savePct = parseFloat(prompt("Percentage for Savings?"));
+            const lifePct = parseFloat(prompt("Percentage for Lifestyle?"));
 
             if (isNaN(savePct) || isNaN(lifePct)) return;
 
@@ -150,7 +160,7 @@
         }
 
         function addEntry(type) {
-            const name = prompt(`Name of ${type}:`);
+            const name = prompt(`Label this ${type}:`);
             const amount = prompt("Value (₦):");
             if (name && amount && !isNaN(amount)) {
                 ledger.push({ name, amount: parseFloat(amount), type });
@@ -168,7 +178,8 @@
         function resetVault() {
             if(confirm("Wipe all data?")) {
                 ledger = [];
-                saveAndRefresh();
+                localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+                updateDisplay();
             }
         }
 
