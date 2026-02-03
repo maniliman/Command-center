@@ -10,7 +10,7 @@
         :root { --safe-top: env(safe-area-inset-top, 60px); }
         body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; margin: 0; padding: 0; }
         
-        .page-layer { position: relative; padding-top: var(--safe-top); padding-bottom: 150px; }
+        .page-layer { position: relative; padding-top: var(--safe-top); padding-bottom: 150px; z-index: 10; }
         
         .overlay { 
             position: fixed; inset: 0; z-index: -1; opacity: 0;
@@ -26,19 +26,19 @@
         .fab-back { background: #161618; color: #EDEDED; border: 1px solid #262629; display: none; }
 
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; margin-bottom: 16px; }
-        .card-header { padding: 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; width: 100%; }
-        .card-content { display: none; padding: 0 24px 24px 24px; border-top: 1px solid #262629; padding-top: 16px; }
+        .card-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; width: 100%; }
+        .card-content { display: none; padding: 0 20px 20px 20px; border-top: 1px solid #262629; padding-top: 16px; }
         .content-open { display: block !important; }
         
-        .rect-border-emerald { border: 1px solid #00FF41; background: rgba(0, 255, 65, 0.02); }
+        .rect-border-emerald { border: 2px solid #00FF41; background: rgba(0, 255, 65, 0.05); }
         .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 18px; border-radius: 12px; width: 100%; outline: none; }
     </style>
 </head>
 <body>
 
     <div class="page-layer">
-        <div class="px-8 text-center mb-10">
-            <div class="flex justify-between items-center mb-10">
+        <div class="px-8 text-center mb-8">
+            <div class="flex justify-between items-center mb-8">
                 <p class="text-[10px] tracking-[0.4em] uppercase font-black text-emerald-500/40">Sovereign Command</p>
                 <div class="flex gap-4">
                     <button onclick="toggleOverlay('intel-overlay')" class="w-12 h-12 vault-card flex items-center justify-center border-zinc-800">📊</button>
@@ -52,14 +52,14 @@
         <div class="px-6">
             <div class="vault-card rect-border-emerald">
                 <div class="card-header" onclick="toggleCard('split-content')">
-                    <span class="text-[11px] font-black uppercase text-emerald-500">Tactical Split</span>
+                    <span class="text-[12px] font-black uppercase text-emerald-500 tracking-widest">Tactical Engine</span>
                     <span id="total-cash" class="text-xl font-black emerald-text">₦0</span>
                 </div>
-                <div id="split-content" class="card-content">
+                <div id="split-content" class="card-content content-open">
                     <div class="space-y-4 font-bold uppercase text-xs">
-                        <div class="flex justify-between border-b border-zinc-900 pb-2"><span>Bills Account</span><span id="alloc-bills">₦0</span></div>
-                        <div class="flex justify-between border-b border-zinc-900 pb-2"><span>Savings Account</span><span id="alloc-savings">₦0</span></div>
-                        <div class="flex justify-between"><span>Spend Account</span><span id="alloc-life">₦0</span></div>
+                        <div class="flex justify-between border-b border-zinc-800 pb-2"><span>Bills Account (40%)</span><span id="alloc-bills">₦0</span></div>
+                        <div class="flex justify-between border-b border-zinc-800 pb-2"><span>Savings Account (40%)</span><span id="alloc-savings">₦0</span></div>
+                        <div class="flex justify-between"><span>Spend Account (20%)</span><span id="alloc-life">₦0</span></div>
                     </div>
                 </div>
             </div>
@@ -67,33 +67,25 @@
             <div class="vault-card">
                 <div class="card-header" onclick="toggleCard('asset-content')">
                     <span class="text-[11px] font-black uppercase text-zinc-500">Wealth Inventory</span>
-                    <span id="inv-assets-total" class="text-xl font-black emerald-text">₦0</span>
+                    <span id="inv-assets-total" class="text-lg font-black emerald-text">₦0</span>
                 </div>
                 <div id="asset-content" class="card-content space-y-3"></div>
             </div>
 
-            <div class="vault-card border-red-900/20">
+            <div class="vault-card">
                 <div class="card-header" onclick="toggleCard('expense-content')">
-                    <span class="text-[11px] font-black uppercase text-red-500">Expense Ledger</span>
-                    <span id="inv-expenses-total" class="text-xl font-black text-red-500">₦0</span>
+                    <span class="text-[11px] font-black uppercase text-red-500">Outflow</span>
+                    <span id="inv-expenses-total" class="text-lg font-black text-red-500">₦0</span>
                 </div>
                 <div id="expense-content" class="card-content space-y-3"></div>
             </div>
 
-            <div class="vault-card border-yellow-900/20">
+            <div class="vault-card">
                 <div class="card-header" onclick="toggleCard('fiduciary-content')">
-                    <span class="text-[11px] font-black uppercase text-yellow-500">Fiduciary</span>
-                    <span id="f-total-header" class="text-xl font-black text-yellow-500">₦0</span>
+                    <span class="text-[11px] font-black uppercase text-yellow-500">Fiduciary Ledger</span>
+                    <span id="f-total-header" class="text-lg font-black text-yellow-500">₦0</span>
                 </div>
                 <div id="fiduciary-content" class="card-content space-y-3"></div>
-            </div>
-
-            <div class="vault-card opacity-30">
-                <div class="card-header" onclick="toggleCard('audit-content')">
-                    <span class="text-[10px] font-black uppercase">Master Audit Trail</span>
-                    <span>▼</span>
-                </div>
-                <div id="audit-content" class="card-content text-[10px] space-y-2 max-h-40 overflow-y-auto"></div>
             </div>
         </div>
     </div>
@@ -107,49 +99,47 @@
         <div class="w-full max-w-sm mx-auto space-y-8 pb-32">
             <h2 class="text-4xl font-black uppercase tracking-tighter">Authorize</h2>
             
-            <select id="form-category" class="input-dark" onchange="handleCatChange()">
-                <option value="Income">Liquid Cash [+]</option>
-                <option value="FixedAsset">Fixed Asset [+]</option>
-                <option value="Expense">Expense [-]</option>
-                <option value="BulkFid">Bulk Fiduciary [📊]</option>
-            </select>
+            <div class="space-y-6" id="entry-form">
+                <select id="form-category" class="input-dark" onchange="handleCatChange()">
+                    <option value="Income">Liquid Cash [+]</option>
+                    <option value="FixedAsset">Fixed Asset [+]</option>
+                    <option value="Expense">Expense/Debit [-]</option>
+                    <option value="Fiduciary">Fiduciary [💼]</option>
+                </select>
 
-            <div class="space-y-4">
-                <input id="form-name" class="input-dark" placeholder="Description">
+                <input id="form-name" class="input-dark" placeholder="Description/Reference">
                 <input id="form-amount" type="number" class="input-dark" placeholder="Total Amount (₦)">
-            </div>
 
-            <div id="manual-split-fields" class="space-y-4 p-4 vault-card border-emerald-500/30">
-                <p class="text-[10px] font-bold text-zinc-500 uppercase">Manual Distribution</p>
-                <div class="grid grid-cols-3 gap-2">
-                    <div><label class="text-[8px] uppercase">Bills</label><input id="split-bills" type="number" class="input-dark !p-2 text-xs" placeholder="₦"></div>
-                    <div><label class="text-[8px] uppercase">Save</label><input id="split-save" type="number" class="input-dark !p-2 text-xs" placeholder="₦"></div>
-                    <div><label class="text-[8px] uppercase">Spend</label><input id="split-life" type="number" class="input-dark !p-2 text-xs" placeholder="₦"></div>
+                <div id="manual-split-box" class="space-y-4 p-5 vault-card border-emerald-500/30">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase">Manual Distribution Override</p>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div><label class="text-[8px] uppercase">Bills</label><input id="split-bills" type="number" class="input-dark !p-3 text-xs" placeholder="₦"></div>
+                        <div><label class="text-[8px] uppercase">Save</label><input id="split-save" type="number" class="input-dark !p-3 text-xs" placeholder="₦"></div>
+                        <div><label class="text-[8px] uppercase">Spend</label><input id="split-life" type="number" class="input-dark !p-3 text-xs" placeholder="₦"></div>
+                    </div>
                 </div>
-                <p class="text-[8px] text-zinc-500">Leave fields empty to auto-split 40/40/20</p>
             </div>
 
-            <button onclick="submitEntry()" class="w-full bg-emerald-500 p-6 rounded-2xl text-black font-black uppercase">Execute</button>
+            <button onclick="submitEntry()" class="w-full bg-emerald-500 p-6 rounded-2xl text-black font-black uppercase">Execute Transaction</button>
         </div>
     </div>
 
     <div id="intel-overlay" class="overlay text-center">
         <div class="w-full max-w-sm mx-auto space-y-8 pb-32">
-            <h2 class="text-4xl font-black uppercase tracking-tighter">Intelligence</h2>
+            <h2 class="text-4xl font-black uppercase tracking-tighter text-left">Intelligence</h2>
             <div id="intel-summary-box" class="p-8 vault-card border-emerald-500/50 bg-emerald-500/5">
-                <p class="text-[10px] font-black text-zinc-500 uppercase">Calculated Total</p>
+                <p class="text-[10px] font-black text-zinc-500 uppercase">Auditor Calculation</p>
                 <p id="intel-total" class="text-4xl font-black emerald-text">₦0.00</p>
             </div>
-            <input id="intel-search" oninput="runQuery()" class="input-dark text-center" placeholder="Search Contributor or Category...">
+            <input id="intel-search" oninput="runQuery()" class="input-dark text-center" placeholder="Query name or category...">
             <div id="intel-results" class="space-y-3"></div>
-            <button onclick="downloadCSV()" class="w-full py-4 border border-zinc-800 rounded uppercase font-bold text-[10px]">Export CSV</button>
         </div>
     </div>
 
     <div id="settings-overlay" class="overlay">
         <div class="w-full max-w-sm mx-auto space-y-10">
             <h2 class="text-3xl font-black uppercase tracking-tighter">Registry</h2>
-            <button onclick="securePurge()" class="w-full p-5 text-red-900 border border-red-900 rounded font-black uppercase text-xs">Wipe All Data (Clear Phantom Data)</button>
+            <button onclick="securePurge()" class="w-full p-6 text-red-900 border border-red-900 rounded font-black uppercase text-xs">Purge Vault Data</button>
         </div>
     </div>
 
@@ -161,8 +151,8 @@
         function updateDisplay() {
             let aSum = 0, eSum = 0, fSum = 0;
             liq = { bills: 0, savings: 0, lifestyle: 0 };
-            const exL = document.getElementById('expense-content'), asL = document.getElementById('asset-content'), fL = document.getElementById('fiduciary-content'), auditL = document.getElementById('audit-content');
-            exL.innerHTML = ''; asL.innerHTML = ''; fL.innerHTML = ''; auditL.innerHTML = '';
+            const exL = document.getElementById('expense-content'), asL = document.getElementById('asset-content'), fL = document.getElementById('fiduciary-content');
+            exL.innerHTML = ''; asL.innerHTML = ''; fL.innerHTML = '';
             
             const expGroups = {}, assetGroups = {};
 
@@ -170,16 +160,15 @@
                 const val = parseFloat(item.amount) || 0;
                 liq.bills += (item.bills || 0); liq.savings += (item.savings || 0); liq.lifestyle += (item.lifestyle || 0);
                 if (val < 0) {
-                    const t = item.tier || 'Other'; expGroups[t] = (expGroups[t] || 0) + Math.abs(val); eSum += Math.abs(val);
+                    const t = item.tier || 'General'; expGroups[t] = (expGroups[t] || 0) + Math.abs(val); eSum += Math.abs(val);
                 } else {
                     const t = item.type || 'Liquid Cash'; assetGroups[t] = (assetGroups[t] || 0) + val; aSum += val;
                 }
-                auditL.innerHTML += `<div class="flex justify-between border-b border-zinc-900 py-2"><span>${item.name}</span><span>₦${Math.abs(val).toLocaleString()}</span></div>`;
             });
 
             fLedger.forEach(item => {
                 fSum += parseFloat(item.amount) || 0;
-                fL.innerHTML += `<div class="flex justify-between text-xs font-bold uppercase"><span>${item.name}</span><span class="text-yellow-500">₦${parseFloat(item.amount).toLocaleString()}</span></div>`;
+                fL.innerHTML += `<div class="flex justify-between text-xs font-bold"><span>${item.name}</span><span class="text-yellow-500">₦${parseFloat(item.amount).toLocaleString()}</span></div>`;
             });
 
             for (const t in expGroups) exL.innerHTML += `<div class="flex justify-between text-xs font-bold uppercase"><span>${t}</span><span class="text-red-500">₦${expGroups[t].toLocaleString()}</span></div>`;
@@ -196,54 +185,13 @@
         }
 
         function toggleCard(id) { document.getElementById(id).classList.toggle('content-open'); }
-        function toggleOverlay(id) { document.getElementById(id).classList.add('overlay-open'); document.getElementById('fab-back').style.display = 'flex'; document.getElementById('fab-add').style.display = 'none'; if(id==='intel-overlay') runQuery(); }
+        function toggleOverlay(id) { document.getElementById(id).classList.add('overlay-open'); document.getElementById('fab-back').style.display = 'flex'; document.getElementById('fab-add').style.display = 'none'; }
         function closeAll() { document.querySelectorAll('.overlay').forEach(o => o.classList.remove('overlay-open')); document.getElementById('fab-back').style.display = 'none'; document.getElementById('fab-add').style.display = 'flex'; }
 
         function handleCatChange() {
             const cat = document.getElementById('form-category').value;
-            document.getElementById('manual-split-fields').classList.toggle('hidden', cat !== 'Income');
+            document.getElementById('manual-split-box').classList.toggle('hidden', cat !== 'Income');
         }
 
         function submitEntry() {
-            const cat = document.getElementById('form-category').value, name = document.getElementById('form-name').value, amount = parseFloat(document.getElementById('form-amount').value);
-            if (!name || isNaN(amount)) return;
-            const d = new Date().toLocaleDateString();
-
-            if (cat === 'Income') {
-                const mb = parseFloat(document.getElementById('split-bills').value) || 0;
-                const ms = parseFloat(document.getElementById('split-save').value) || 0;
-                const ml = parseFloat(document.getElementById('split-life').value) || 0;
-                
-                let entry = { name, amount, date: d, type: 'Liquid Cash' };
-                if (mb + ms + ml > 0) { entry.bills = mb; entry.savings = ms; entry.lifestyle = ml; }
-                else { entry.bills = amount * 0.4; entry.savings = amount * 0.4; entry.lifestyle = amount * 0.2; }
-                ledger.push(entry);
-            } else if (cat === 'Expense') {
-                ledger.push({ name, amount: -amount, bills: -amount, date: d, tier: 'General' });
-            } else if (cat === 'Fiduciary') {
-                fLedger.push({ name, amount, date: d });
-            }
-
-            localStorage.setItem('vault_ledger', JSON.stringify(ledger));
-            localStorage.setItem('fiduciary_ledger', JSON.stringify(fLedger));
-            updateDisplay(); closeAll();
-        }
-
-        function runQuery() {
-            const q = document.getElementById('intel-search').value.toLowerCase();
-            const res = document.getElementById('intel-results'); res.innerHTML = ''; let total = 0;
-            if(!q) return;
-            [...ledger, ...fLedger].forEach(i => {
-                if(i.name.toLowerCase().includes(q)) {
-                    total += Math.abs(parseFloat(i.amount));
-                    res.innerHTML += `<div class="flex justify-between p-4 vault-card text-[11px] font-black uppercase"><span>${i.name}</span><span>₦${Math.abs(i.amount).toLocaleString()}</span></div>`;
-                }
-            });
-            document.getElementById('intel-total').innerText = "₦" + total.toLocaleString();
-        }
-
-        function securePurge() { localStorage.clear(); location.reload(); }
-        updateDisplay();
-    </script>
-</body>
-</html>
+            const cat = document.
