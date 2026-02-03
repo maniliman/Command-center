@@ -16,18 +16,22 @@
         .trigger-btn { color: #00FF41; font-size: 18px; padding: 10px; cursor: pointer; }
         .drawer-open > div > .trigger-btn { transform: rotate(180deg); }
         .stealth-active .maskable { filter: blur(28px); opacity: 0.3; pointer-events: none; }
-        .fab-btn { position: fixed; bottom: 25px; width: 56px; height: 56px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; border: none; z-index: 9999; }
+        .fab-btn { position: fixed; bottom: 25px; width: 56px; height: 56px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; z-index: 9999; }
         .view-hidden { display: none !important; }
         .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 18px; border-radius: 12px; width: 100%; outline: none; }
-        
-        /* FIDUCIARY UI RESTORATION */
-        .toggle-row { display: flex; gap: 8px; margin-bottom: 12px; }
-        .t-btn { flex: 1; padding: 8px; font-size: 10px; font-weight: 900; background: #262629; border-radius: 8px; color: #666; text-align: center; }
+        #auth-screen { position: fixed; inset: 0; background: #0A0A0B; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+        .t-btn { flex: 1; padding: 8px; font-size: 10px; font-weight: 900; background: #262629; border-radius: 8px; color: #666; text-align: center; cursor: pointer; }
         .t-btn.active { background: #EAB308; color: black; }
         .pivot-card { background: rgba(234, 179, 8, 0.05); border: 1px solid rgba(234, 179, 8, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 8px; }
     </style>
 </head>
 <body id="main-body" class="p-6" style="padding-top: calc(var(--safe-top) + 20px);">
+
+    <div id="auth-screen" class="view-hidden">
+        <p class="text-[10px] tracking-[0.5em] uppercase font-black text-emerald-500 mb-8 text-center">Secure Access</p>
+        <input id="auth-pin" type="text" class="input-dark text-center text-2xl" placeholder="PIN or Recovery Key">
+        <button onclick="VaultUI.authenticate()" class="mt-8 w-full bg-emerald-500 p-6 rounded-2xl text-black font-black uppercase">Unlock Vault</button>
+    </div>
 
     <div id="dashboard-view" class="space-y-6">
         <div class="flex justify-between items-center mb-8">
@@ -52,7 +56,7 @@
                 <div class="p-6 flex justify-between items-center"><span>Tactical Liquidity</span><div class="flex items-center gap-4"><b id="tc-display" class="maskable">₦0</b><span class="trigger-btn" onclick="VaultUI.toggleCard('feat-tactical')">▼</span></div></div>
                 <div class="sub-drawer space-y-4 text-xs font-bold uppercase">
                     <div id="bills-node">
-                        <div class="flex justify-between items-center py-2 border-b border-zinc-900" onclick="VaultUI.toggleCard('bills-node')"><span>Bills Account</span><div class="flex items-center gap-4"><span id="b-total" class="maskable">₦0</span><span class="trigger-btn">▼</span></div></div>
+                        <div class="flex justify-between items-center py-2 border-b border-zinc-900" onclick="VaultUI.toggleCard('bills-node')"><span>Bills Account</span><span id="b-total" class="maskable">₦0</span></div>
                         <div class="sub-drawer space-y-3 text-[10px] text-zinc-400 normal-case">
                             <div class="flex justify-between"><span>Core (40%)</span><span id="b-core" class="maskable">₦0</span></div>
                             <div class="flex justify-between"><span>Reserve (40%)</span><span id="b-reserve" class="maskable">₦0</span></div>
@@ -83,7 +87,7 @@
                 </div>
             </div>
             
-            <div id="feat-history" class="vault-card opacity-50"><div class="p-6 flex justify-between"><span>History Trail</span><span class="trigger-btn" onclick="VaultUI.toggleCard('feat-history')">▼</span></div><div id="hi-list" class="sub-drawer space-y-2 max-h-64 overflow-y-auto"></div></div>
+            <div id="feat-history" class="vault-card opacity-50"><div class="p-6 flex justify-between"><span>History</span><span class="trigger-btn" onclick="VaultUI.toggleCard('feat-history')">▼</span></div><div id="hi-list" class="sub-drawer space-y-2 max-h-64 overflow-y-auto"></div></div>
         </div>
     </div>
 
@@ -105,9 +109,17 @@
     </div>
 
     <div id="settings-view" class="view-hidden space-y-10">
-        <h2 class="text-3xl font-black">REGISTRY</h2>
-        <div id="config-list" class="vault-card p-6 space-y-4"></div>
-        <button onclick="VaultCore.wipe()" class="w-full p-6 text-red-900 border border-red-900 rounded font-black text-xs uppercase">Purge All Records</button>
+        <h2 class="text-3xl font-black uppercase">Registry</h2>
+        <div class="vault-card p-6 space-y-4">
+            <p class="text-[10px] font-bold text-zinc-500 uppercase mb-4">Security Center</p>
+            <input id="set-pin" type="text" maxlength="4" class="input-dark" placeholder="Set 4-Digit PIN">
+            <button onclick="VaultCore.savePin()" class="w-full bg-emerald-500 p-4 rounded-xl text-black font-black uppercase text-[10px]">Lock Vault</button>
+            <div id="recovery-box" class="hidden bg-black/40 p-4 rounded-xl border border-dashed border-zinc-700">
+                <p class="text-[8px] text-zinc-500 mb-2 uppercase">Your Master Recovery Key (Save This!):</p>
+                <p id="recovery-key-display" class="text-emerald-500 font-bold text-xs select-all"></p>
+            </div>
+        </div>
+        <button onclick="VaultCore.wipe()" class="w-full p-4 text-red-900 border border-red-900 rounded-xl font-black text-[10px] uppercase">Wipe System</button>
     </div>
 
     <button id="f-add" onclick="VaultUI.changeView('entry-view')" class="fab-btn bg-emerald-500 text-black right-8">+</button>
@@ -116,13 +128,36 @@
     <script>
         const VaultCore = (() => {
             let db = JSON.parse(localStorage.getItem('SOVEREIGN_VAULT_FINAL')) || [];
-            let conf = JSON.parse(localStorage.getItem('VAULT_CONFIG')) || { tactical:true, assets:true, debtors:true, creditors:true, fiduciary:true, history:true };
+            let pin = localStorage.getItem('VAULT_PIN') || "";
+            let recovery = localStorage.getItem('VAULT_RECOVERY') || "";
             let fdView = 'goal';
-            const save = () => { localStorage.setItem('SOVEREIGN_VAULT_FINAL', JSON.stringify(db)); localStorage.setItem('VAULT_CONFIG', JSON.stringify(conf)); };
+
+            const genRecovery = () => {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                let res = '';
+                for (let i = 0; i < 16; i++) {
+                    if (i > 0 && i % 4 === 0) res += '-';
+                    res += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return res;
+            };
+
+            const save = () => localStorage.setItem('SOVEREIGN_VAULT_FINAL', JSON.stringify(db));
+
             return {
-                db: () => db, conf: () => conf, fdView: () => fdView,
+                db: () => db, pin: () => pin, recovery: () => recovery, fdView: () => fdView,
                 setFdView: (v) => { fdView = v; VaultUI.render(); },
-                toggleConf: (k) => { conf[k] = !conf[k]; save(); VaultUI.render(); },
+                savePin: () => { 
+                    const p = document.getElementById('set-pin').value;
+                    if(p.length !== 4) return alert("PIN must be 4 digits");
+                    const r = genRecovery();
+                    localStorage.setItem('VAULT_PIN', p);
+                    localStorage.setItem('VAULT_RECOVERY', r);
+                    pin = p; recovery = r;
+                    document.getElementById('recovery-key-display').innerText = r;
+                    document.getElementById('recovery-box').classList.remove('hidden');
+                    alert("PIN Locked. Copy your recovery key!");
+                },
                 execute: () => {
                     const t = document.getElementById('e-type').value, n = document.getElementById('e-name').value, a = parseFloat(document.getElementById('e-amount').value), dt = document.getElementById('e-datetime').value;
                     if (!n || isNaN(a)) return;
@@ -146,6 +181,17 @@
 
         const VaultUI = (() => {
             return {
+                init: () => {
+                    if (VaultCore.pin()) document.getElementById('auth-screen').classList.remove('view-hidden');
+                    else VaultUI.render();
+                },
+                authenticate: () => {
+                    const input = document.getElementById('auth-pin').value;
+                    if (input === VaultCore.pin() || input === VaultCore.recovery()) {
+                        document.getElementById('auth-screen').classList.add('view-hidden');
+                        VaultUI.render();
+                    } else { alert("Invalid Credentials"); document.getElementById('auth-pin').value = ''; }
+                },
                 toggleCard: id => document.getElementById(id).classList.toggle('drawer-open'),
                 toggleStealth: () => document.body.classList.toggle('stealth-active'),
                 changeView: id => {
@@ -153,67 +199,53 @@
                     document.getElementById(id).classList.remove('view-hidden');
                     document.getElementById('f-add').classList.toggle('view-hidden', id !== 'dashboard-view');
                     document.getElementById('f-back').classList.toggle('view-hidden', id === 'dashboard-view');
-                    if(id === 'dashboard-view' || id === 'settings-view') VaultUI.render();
+                    if(id === 'dashboard-view') VaultUI.render();
                     VaultUI.updateForm();
                 },
                 updateForm: () => {
                     const t = document.getElementById('e-type').value, c = document.getElementById('dynamic-inputs');
                     c.innerHTML = '';
-                    if(t === 'income') c.innerHTML = '<div class="vault-card p-6 border-emerald-500/20 text-center"><p class="text-[10px] font-black text-zinc-500 mb-4 uppercase">Fluid Allocation (%)</p><div class="grid grid-cols-3 gap-3"><input id="ps-b" type="number" class="input-dark !p-3" placeholder="Bills %"><input id="ps-s" type="number" class="input-dark !p-3" placeholder="Save %"><input id="ps-l" type="number" class="input-dark !p-3" placeholder="Spend %"></div></div>';
-                    if(t === 'fiduciary') c.innerHTML = '<input id="e-fd-goal" class="input-dark" placeholder="Goal (e.g. Hall Fee)"><input id="e-fd-user" class="input-dark mt-4" placeholder="Contributor Name">';
-                    if(t === 'asset') c.innerHTML = '<select id="e-as-cat" class="input-dark"><option value="Property">Property/Land</option><option value="Vehicle">Vehicle</option><option value="Stocks">Stocks</option></select>';
+                    if(t === 'income') c.innerHTML = '<div class="vault-card p-6 border-emerald-500/20 text-center"><p class="text-[10px] font-bold text-zinc-500 mb-4 uppercase">Fluid Allocation (%)</p><div class="grid grid-cols-3 gap-3"><input id="ps-b" type="number" class="input-dark !p-3" placeholder="Bills %"><input id="ps-s" type="number" class="input-dark !p-3" placeholder="Save %"><input id="ps-l" type="number" class="input-dark !p-3" placeholder="Spend %"></div></div>';
+                    if(t === 'fiduciary') c.innerHTML = '<input id="e-fd-goal" class="input-dark" placeholder="Goal (e.g. Hall Fee)"><input id="e-fd-user" class="input-dark mt-4" placeholder="Contributor (e.g. Alhaji Musa)">';
+                    if(t === 'asset') c.innerHTML = '<select id="e-as-cat" class="input-dark"><option value="Property">Property/Land</option><option value="Vehicle">Vehicle</option></select>';
                     if(t === 'debtor' || t === 'creditor') c.innerHTML = '<input id="e-rate" type="number" class="input-dark" placeholder="Interest %"><input id="e-terms" type="number" class="input-dark mt-4" placeholder="Terms (Months)">';
                     if(t === 'expense') c.innerHTML = '<select id="e-src" class="input-dark"><option value="bills">Bills Account</option><option value="savings">Savings Account</option></select>';
                 },
                 render: () => {
-                    const db = VaultCore.db(), conf = VaultCore.conf(), search = document.getElementById('fd-search').value.toLowerCase();
+                    const db = VaultCore.db(), search = document.getElementById('fd-search').value.toLowerCase();
                     let nw=0, b=0, s=0, l=0, as=0, fd=0, dbT=0, crT=0;
-                    
-                    document.getElementById('config-list').innerHTML = '';
-                    Object.keys(conf).forEach(k => {
-                        const el = document.getElementById(`feat-${k}`); if(el) el.classList.toggle('view-hidden', !conf[k]);
-                        document.getElementById('config-list').innerHTML += `<div class="flex justify-between items-center text-[10px] font-black uppercase"><span>${k}</span><button onclick="VaultCore.toggleConf('${k}')" class="text-emerald-500">${conf[k]?'[ON]':'[OFF]'}</button></div>`;
-                    });
-
                     document.getElementById('btn-goal').classList.toggle('active', VaultCore.fdView()==='goal');
                     document.getElementById('btn-user').classList.toggle('active', VaultCore.fdView()==='user');
-
                     ['as-list','db-list','cr-list','fd-pivot-list','hi-list'].forEach(id => document.getElementById(id).innerHTML = '');
-                    
                     const pivots = {};
                     db.slice().reverse().forEach(i => {
                         if(i.type === 'fiduciary') {
-                            fd += i.total;
-                            const main = VaultCore.fdView() === 'goal' ? i.goal : i.user;
-                            const sub = VaultCore.fdView() === 'goal' ? i.user : i.goal;
-                            if(!pivots[main]) pivots[main] = { total: 0, subs: [] };
-                            pivots[main].total += i.total;
-                            pivots[main].subs.push({ n: sub, a: i.total });
+                            fd += i.total; const m = VaultCore.fdView() === 'goal' ? i.goal : i.user, s = VaultCore.fdView() === 'goal' ? i.user : i.goal;
+                            if(!pivots[m]) pivots[m] = { total: 0, subs: [] };
+                            pivots[m].total += i.total; pivots[m].subs.push({ n: s, a: i.total });
                         } else {
                             nw += i.total; b += (i.b||0); s += (i.s||0); l += (i.l||0);
-                            if(i.type === 'asset') { as += i.total; document.getElementById('as-list').innerHTML += `<div class="py-1 border-b border-zinc-900 flex justify-between"><span>${i.name} (${i.cat})</span><span>₦${i.total.toLocaleString()}</span></div>`; }
-                            if(i.type === 'debtor') { dbT += i.total; document.getElementById('db-list').innerHTML += `<div class="py-1 border-b border-zinc-900 flex justify-between"><span>${i.name}</span><span>₦${i.total.toLocaleString()}</span></div>`; }
-                            if(i.type === 'creditor') { crT += Math.abs(i.total); document.getElementById('cr-list').innerHTML += `<div class="py-1 border-b border-zinc-900 flex justify-between"><span>${i.name}</span><span>₦${Math.abs(i.total).toLocaleString()}</span></div>`; }
+                            if(i.type === 'asset') as += i.total;
+                            if(i.type === 'debtor') dbT += i.total;
+                            if(i.type === 'creditor') crT += Math.abs(i.total);
                         }
-                        document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><div class="flex items-center gap-4"><span>₦${Math.abs(i.total).toLocaleString()}</span><button onclick="VaultCore.delete(${i.id})">✕</button></div></div>`;
+                        document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><div class="flex gap-4 items-center"><span>₦${Math.abs(i.total).toLocaleString()}</span><button onclick="VaultCore.delete(${i.id})">✕</button></div></div>`;
                     });
-
                     Object.keys(pivots).forEach(k => {
                         if(k.toLowerCase().includes(search)) {
-                            let rows = pivots[k].subs.map(s => `<div class="flex justify-between py-1 opacity-60"><span>${s.n}</span><span>₦${s.a.toLocaleString()}</span></div>`).join('');
-                            document.getElementById('fd-pivot-list').innerHTML += `<div class="pivot-card"><div class="flex justify-between font-black text-xs text-yellow-500 uppercase"><span>${k}</span><span>₦${pivots[k].total.toLocaleString()}</span></div><div class="mt-2 pt-2 border-t border-white/5 text-[9px]">${rows}</div></div>`;
+                            let r = pivots[k].subs.map(sb => `<div class="flex justify-between py-1 opacity-60"><span>${sb.n}</span><span>₦${sb.a.toLocaleString()}</span></div>`).join('');
+                            document.getElementById('fd-pivot-list').innerHTML += `<div class="pivot-card"><div class="flex justify-between font-black text-xs text-yellow-500 uppercase"><span>${k}</span><span>₦${pivots[k].total.toLocaleString()}</span></div><div class="mt-2 pt-2 border-t border-white/5 text-[9px]">${r}</div></div>`;
                         }
                     });
-
                     const set = (id, v) => { const el = document.getElementById(id); if(el) el.innerText = "₦" + v.toLocaleString(); };
                     set('nw-display', nw); set('split-cash', (b+s+l)); set('split-as', as); set('split-db', dbT);
                     set('tc-display', (b+s+l)); set('b-total', b); set('s-total', s); set('l-total', l);
-                    set('as-display', as); set('db-display', dbT); set('cr-display', crT); set('fd-display', fd);
+                    set('fd-display', fd); set('cr-display', crT); set('as-display', as); set('db-display', dbT);
                     set('b-core', b*0.4); set('b-reserve', b*0.4); set('b-ops', b*0.2);
                 }
             };
         })();
-        VaultUI.render();
+        VaultUI.init();
     </script>
 </body>
 </html>
