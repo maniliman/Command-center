@@ -138,4 +138,67 @@
                 if (assetEntries[cat].length > 0) {
                     mAssets.innerHTML += `
                         <details class="bg-black/20 rounded-lg border border-zinc-800">
-                            <summary class="p-3 flex justify-between items-center
+                            <summary class="p-3 flex justify-between items-center">
+                                <span class="text-[9px] font-bold uppercase text-zinc-500">${cat}</span>
+                                <span class="text-xs font-bold emerald-text">₦${stealth ? '••' : assetGroups[cat].toLocaleString()}</span>
+                            </summary>
+                            <div class="px-3 pb-3 space-y-1 border-t border-zinc-900/50 pt-2">
+                                ${assetEntries[cat].map(e => `<div class="flex justify-between text-[9px]"><span class="text-zinc-600">${e.name}</span><span>₦${e.amount.toLocaleString()}</span></div>`).join('')}
+                            </div>
+                        </details>`;
+                }
+            }
+
+            // Group Fiduciary
+            const fGroups = fLedger.reduce((acc, item) => {
+                const val = parseFloat(item.amount) || 0;
+                if (!acc[item.name]) acc[item.name] = { total: 0, entries: [] };
+                acc[item.name].total += val;
+                acc[item.name].entries.push(item);
+                fGlobal += val;
+                return acc;
+            }, {});
+
+            document.getElementById('f-total-header').innerText = "₦" + fGlobal.toLocaleString();
+            for (const name in fGroups) {
+                fMainList.innerHTML += `
+                    <details class="bg-black/20 rounded-lg border border-zinc-800 mb-2">
+                        <summary class="p-4 flex justify-between items-center">
+                            <span class="text-[10px] font-bold uppercase text-zinc-400">${name}</span>
+                            <span class="text-xs font-bold gold-text">₦${stealth ? '••' : fGroups[name].total.toLocaleString()}</span>
+                        </summary>
+                        <div class="px-4 pb-4 space-y-2 border-t border-zinc-900/50 pt-3">
+                            ${fGroups[name].entries.map(e => `<div class="flex justify-between text-[9px]"><span class="text-zinc-600">${e.date}</span><span class="gold-text">₦${e.amount.toLocaleString()}</span></div>`).join('')}
+                        </div>
+                    </details>`;
+            }
+
+            document.getElementById('networth').innerText = "₦" + (assetsSum - debtSum).toLocaleString();
+            document.getElementById('inv-assets-total').innerText = "₦" + assetsSum.toLocaleString();
+            document.getElementById('inv-debt-total').innerText = "₦" + debtSum.toLocaleString();
+        }
+
+        function toggleFormFields() { document.getElementById('personal-fields').classList.toggle('hidden', document.getElementById('form-category').value === 'Fiduciary'); }
+        function toggleMenu() { document.getElementById('menu-overlay').classList.toggle('menu-open'); }
+        function togglePrivacy() { stealth = !stealth; updateDisplay(); }
+
+        function submitEntry() {
+            const cat = document.getElementById('form-category').value, name = document.getElementById('form-name').value, amount = parseFloat(document.getElementById('form-amount').value), dateVal = document.getElementById('form-date').value;
+            if (!name || isNaN(amount) || !dateVal) return;
+
+            if (cat === 'Personal') {
+                ledger.push({ name, amount, type: document.getElementById('form-type').value, date: new Date(dateVal).toLocaleDateString(), rawDate: dateVal });
+                localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+            } else {
+                fLedger.push({ name, amount, date: new Date(dateVal).toLocaleDateString(), rawDate: dateVal });
+                localStorage.setItem('fiduciary_ledger', JSON.stringify(fLedger));
+            }
+            updateDisplay(); toggleMenu();
+        }
+
+        function deleteItem(index, type) { if(confirm("Delete?")) { ledger.splice(index, 1); localStorage.setItem('vault_ledger', JSON.stringify(ledger)); updateDisplay(); } }
+        function hardReset() { if(confirm("This will wipe all data. Proceed?")) { localStorage.clear(); location.reload(); } }
+        updateDisplay();
+    </script>
+</body>
+</html>
