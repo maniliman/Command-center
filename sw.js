@@ -1,14 +1,16 @@
-const CACHE_NAME = 'vault-v1';
-const assets = ['./', './index.html', './manifest.json'];
+const CACHE_NAME = 'vault-v2';
+const assets = [
+  './',
+  './index.html',
+  'https://cdn.tailwindcss.com'
+];
 
-// Install Service Worker
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(assets))
   );
 });
 
-// Intercept requests for offline use
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
