@@ -25,13 +25,19 @@
 
     <div class="vault-card p-5 mb-10">
         <div class="flex justify-between items-center mb-2">
-            <p class="text-[10px] uppercase text-[#71717A]">Target Progress</p>
-            <p id="goal-percent" class="text-[10px] emerald-text font-bold">0%</p>
+            <div>
+                <p id="goal-name" class="text-[10px] uppercase text-[#71717A]">Savings Goal</p>
+                <p id="goal-target-text" class="text-[10px] text-[#71717A]">Target: ₦0</p>
+            </div>
+            <p id="goal-percent" class="text-xs emerald-text font-bold">0%</p>
         </div>
         <div class="progress-bg mb-3">
             <div id="progress-bar" class="progress-fill" style="width: 0%"></div>
         </div>
-        <button onclick="setGoal()" class="text-[10px] text-[#71717A] underline">Set New Target</button>
+        <div class="flex gap-4">
+            <button onclick="setGoal()" class="text-[10px] text-[#71717A] underline">Set Target</button>
+            <button onclick="renameGoal()" class="text-[10px] text-[#71717A] underline">Rename Goal</button>
+        </div>
     </div>
 
     <div class="space-y-4 mb-10">
@@ -60,7 +66,8 @@
     <script>
         let stealth = false;
         let history = JSON.parse(localStorage.getItem('vault_history')) || [];
-        let targetGoal = parseFloat(localStorage.getItem('vault_goal')) || 1000000;
+        let targetGoal = parseFloat(localStorage.getItem('vault_goal')) || 0;
+        let goalName = localStorage.getItem('vault_goal_name') || "Savings Goal";
 
         function updateDisplay() {
             let totalIn = 0;
@@ -74,10 +81,12 @@
             const netValue = totalIn - currentDebt;
             document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netValue.toLocaleString();
             
-            // Update Progress Bar
-            const percent = Math.min((netValue / targetGoal) * 100, 100);
+            // Progress Bar Logic (Based on Net Worth vs Goal)
+            const percent = targetGoal > 0 ? Math.min((netValue / targetGoal) * 100, 100) : 0;
             document.getElementById('progress-bar').style.width = percent + "%";
             document.getElementById('goal-percent').innerText = Math.floor(percent) + "%";
+            document.getElementById('goal-name').innerText = goalName;
+            document.getElementById('goal-target-text').innerText = "Target: ₦" + targetGoal.toLocaleString();
 
             const list = document.getElementById('ledger-list');
             list.innerHTML = history.slice().reverse().map((item, idx) => {
@@ -97,10 +106,19 @@
         }
 
         function setGoal() {
-            const newGoal = prompt("Enter your new savings target (₦):", targetGoal);
+            const newGoal = prompt("Enter your target amount (₦):", targetGoal);
             if (newGoal && !isNaN(newGoal)) {
                 targetGoal = parseFloat(newGoal);
                 localStorage.setItem('vault_goal', targetGoal);
+                updateDisplay();
+            }
+        }
+
+        function renameGoal() {
+            const name = prompt("What are you saving for? (e.g. Christmas, New Car):", goalName);
+            if (name) {
+                goalName = name;
+                localStorage.setItem('vault_goal_name', goalName);
                 updateDisplay();
             }
         }
@@ -128,15 +146,11 @@
         }
 
         function deleteEntry(index) {
-            if (confirm("Are you sure you want to permanently delete this entry?")) {
+            if (confirm("Permanently delete this entry?")) {
                 history.splice(index, 1);
                 localStorage.setItem('vault_history', JSON.stringify(history));
                 updateDisplay();
             }
-        }
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
         }
 
         updateDisplay();
