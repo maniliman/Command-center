@@ -6,24 +6,39 @@
     <title>Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; }
-        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
+        body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; overflow-x: hidden; }
+        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; position: relative; z-index: 10; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
         
-        /* The Fix: Ensuring the menu and FAB are above everything else */
+        /* The Absolute Fix for Button Response */
+        .stealth-btn { 
+            position: relative; 
+            z-index: 50 !important; 
+            pointer-events: auto !important;
+        }
+        
+        .fab-button { 
+            position: fixed; 
+            bottom: 32px; 
+            right: 32px; 
+            z-index: 100 !important; 
+            pointer-events: auto !important;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+
         #menu-overlay { 
             display: none; 
             position: fixed; 
             inset: 0; 
-            z-index: 999; /* Highest layer */
+            z-index: 200 !important; 
+            background: rgba(0,0,0,0.98); 
+            backdrop-filter: blur(15px);
         }
-        .menu-open { display: flex !important; background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); }
-        .fab-button { z-index: 100; position: fixed; }
-        .stealth-btn { z-index: 50; position: relative; }
+        .menu-open { display: flex !important; }
     </style>
 </head>
-<body class="p-6 pb-32">
+<body class="p-6 pb-40">
 
     <div id="dashboard-content">
         <header class="mb-10 flex justify-between items-start pt-4">
@@ -31,7 +46,9 @@
                 <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase font-bold">Global Net Worth</p>
                 <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter">₦0.00</h1>
             </div>
-            <button onclick="togglePrivacy()" class="stealth-btn p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800 active:bg-zinc-800">Stealth</button>
+            <button onclick="togglePrivacy()" class="stealth-btn p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800 active:bg-zinc-700 transition-colors">
+                Stealth
+            </button>
         </header>
 
         <div class="grid grid-cols-2 gap-4 mb-8">
@@ -46,25 +63,25 @@
         </div>
 
         <div class="vault-card p-5 mb-8 border border-emerald-900/20">
-            <div class="flex justify-between items-center mb-6">
-                <p class="text-[#71717A] text-[9px] uppercase tracking-widest font-black">Tactical Cash Split</p>
-                <div class="text-right">
-                    <p class="text-[8px] text-zinc-600 uppercase font-bold">Liquid Total</p>
-                    <p id="total-cash" class="text-sm font-bold emerald-text">₦0</p>
-                </div>
-            </div>
+            <p class="text-[#71717A] text-[9px] uppercase tracking-widest font-black mb-6">Tactical Cash Split</p>
+            
             <div class="space-y-4">
                 <div class="flex justify-between text-xs">
-                    <span class="text-zinc-500 font-bold uppercase tracking-tighter">Bills (40%)</span>
+                    <span class="text-zinc-500 font-bold">Bills (40%)</span>
                     <span id="alloc-bills" class="font-mono">₦0</span>
                 </div>
                 <div class="flex justify-between text-xs">
-                    <span class="text-zinc-500 font-bold uppercase tracking-tighter">Savings (40%)</span>
+                    <span class="text-zinc-500 font-bold">Savings (40%)</span>
                     <span id="alloc-savings" class="text-emerald-500/80 font-mono">₦0</span>
                 </div>
-                <div class="flex justify-between text-xs border-t border-zinc-800/50 pt-3">
-                    <span class="text-zinc-500 font-bold uppercase tracking-tighter">Lifestyle (20%)</span>
+                <div class="flex justify-between text-xs">
+                    <span class="text-zinc-500 font-bold">Lifestyle (20%)</span>
                     <span id="alloc-life" class="font-mono">₦0</span>
+                </div>
+                
+                <div class="border-t border-emerald-500/20 pt-4 flex justify-between items-center">
+                    <span class="text-[10px] text-zinc-400 uppercase font-bold">Cash Balance</span>
+                    <span id="total-cash" class="text-sm font-bold emerald-text font-mono">₦0</span>
                 </div>
             </div>
         </div>
@@ -74,37 +91,37 @@
                 <span class="text-[10px] uppercase tracking-widest font-black">Asset Inventory</span>
                 <span class="text-zinc-600 group-open:rotate-180 transition-transform">▼</span>
             </summary>
-            <div id="asset-list" class="px-5 pb-5 space-y-2 border-t border-zinc-800 pt-4 text-xs"></div>
+            <div id="asset-list" class="px-5 pb-5 space-y-2 border-t border-zinc-800 pt-4 text-[11px]"></div>
         </details>
 
-        <details class="vault-card group">
+        <details class="vault-card group mb-4">
             <summary class="p-5 flex justify-between items-center list-none cursor-pointer">
                 <span class="text-[10px] uppercase tracking-widest font-black">Liability Ledger</span>
                 <span class="text-zinc-600 group-open:rotate-180 transition-transform">▼</span>
             </summary>
-            <div id="debt-list" class="px-5 pb-5 space-y-2 border-t border-zinc-800 pt-4 text-xs"></div>
+            <div id="debt-list" class="px-5 pb-5 space-y-2 border-t border-zinc-800 pt-4 text-[11px]"></div>
         </details>
     </div>
 
-    <button onclick="toggleMenu()" class="fab-button bottom-8 right-8 w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-3xl shadow-2xl font-bold active:scale-95 transition-transform">
+    <button onclick="toggleMenu()" class="fab-button w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-3xl shadow-2xl font-bold active:scale-90 transition-transform">
         +
     </button>
 
     <div id="menu-overlay" class="flex-col items-center justify-center p-8">
         <div class="w-full space-y-4 max-w-sm">
-            <button onclick="addEntry('Cash')" class="w-full vault-card p-6 text-left border-l-4 border-emerald-500 active:bg-zinc-800">
-                <p class="emerald-text font-bold uppercase text-xs tracking-widest">Add Liquid Cash</p>
-                <p class="text-[10px] text-zinc-500 mt-1 uppercase">Updates 40/40/20 Engine</p>
+            <button onclick="addEntry('Cash')" class="w-full vault-card p-6 text-left border-l-4 border-emerald-500">
+                <p class="emerald-text font-bold uppercase text-xs tracking-widest">Liquid Cash</p>
+                <p class="text-[10px] text-zinc-500 mt-1">Updates Tactical Engine</p>
             </button>
-            <button onclick="addEntry('Asset')" class="w-full vault-card p-6 text-left border-l-4 border-zinc-700 active:bg-zinc-800">
-                <p class="text-zinc-300 font-bold uppercase text-xs tracking-widest">Add Fixed Asset</p>
-                <p class="text-[10px] text-zinc-500 mt-1 uppercase">Properties & Equity</p>
+            <button onclick="addEntry('Asset')" class="w-full vault-card p-6 text-left border-l-4 border-zinc-600">
+                <p class="text-zinc-300 font-bold uppercase text-xs tracking-widest">Fixed Asset</p>
+                <p class="text-[10px] text-zinc-500 mt-1">Properties & Long-term</p>
             </button>
-            <button onclick="addEntry('Liability')" class="w-full vault-card p-6 text-left border-l-4 border-red-500 active:bg-zinc-800">
-                <p class="oxblood-text font-bold uppercase text-xs tracking-widest">Add Liability</p>
-                <p class="text-[10px] text-zinc-500 mt-1 uppercase">Loans & Creditors</p>
+            <button onclick="addEntry('Liability')" class="w-full vault-card p-6 text-left border-l-4 border-red-500">
+                <p class="oxblood-text font-bold uppercase text-xs tracking-widest">Liability</p>
+                <p class="text-[10px] text-zinc-500 mt-1">Loans & Creditors</p>
             </button>
-            <button onclick="toggleMenu()" class="w-full p-6 text-zinc-600 text-[10px] uppercase tracking-[0.3em] text-center mt-4 font-bold">Return to Base</button>
+            <button onclick="toggleMenu()" class="w-full p-6 text-zinc-600 text-[10px] uppercase tracking-[0.3em] text-center mt-6">Back</button>
         </div>
     </div>
 
@@ -127,10 +144,10 @@
                 const target = isAsset ? assetList : debtList;
                 target.innerHTML += `
                     <div class="flex justify-between items-center py-2 border-b border-zinc-900 last:border-0">
-                        <span class="text-zinc-400 font-bold">${item.name}</span>
+                        <span class="text-zinc-400 font-bold uppercase text-[9px]">${item.name}</span>
                         <div class="flex items-center gap-4">
                             <span class="${isAsset ? 'emerald-text' : 'oxblood-text'} font-mono">₦${stealth ? '••••' : item.amount.toLocaleString()}</span>
-                            <button onclick="deleteItem(${index})" class="text-zinc-800 px-2 font-black">×</button>
+                            <button onclick="deleteItem(${index})" class="text-zinc-800 px-2">×</button>
                         </div>
                     </div>
                 `;
@@ -151,7 +168,7 @@
         }
 
         function addEntry(type) {
-            const name = prompt(`Name of ${type}:`);
+            const name = prompt(`Label this ${type}:`);
             const amount = prompt("Value (₦):");
             if (name && amount && !isNaN(amount)) {
                 ledger.push({ name, amount: parseFloat(amount), type });
@@ -161,4 +178,20 @@
             }
         }
 
-        function deleteItem(index)
+        function deleteItem(index) {
+            if(confirm("Permanently delete entry?")) {
+                ledger.splice(index, 1);
+                localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+                updateDisplay();
+            }
+        }
+
+        function togglePrivacy() {
+            stealth = !stealth;
+            updateDisplay();
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
