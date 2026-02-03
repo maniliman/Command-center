@@ -13,7 +13,6 @@
         .gold-text { color: #FFD700; }
         .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 12px; border-radius: 8px; width: 100%; outline: none; font-size: 14px; }
         
-        /* THE STABILITY PILLAR: Layering */
         #dashboard-content { position: relative; z-index: 10; padding: 24px; }
         .stealth-btn { position: relative; z-index: 100 !important; pointer-events: auto !important; }
         .fab-button { 
@@ -28,9 +27,7 @@
             padding: 24px; padding-top: 60px; overflow-y: auto;
         }
         .menu-open { display: flex !important; flex-direction: column; align-items: center; }
-        .preview-box { background: rgba(0, 255, 65, 0.05); border: 1px dashed rgba(0, 255, 65, 0.2); border-radius: 8px; padding: 12px; width: 100%; }
         
-        /* Interaction Pillars */
         summary { cursor: pointer; outline: none; list-style: none; }
         summary::-webkit-details-marker { display: none; }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
@@ -44,42 +41,27 @@
                 <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase font-bold text-emerald-500/80">Sovereign Financials</p>
                 <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter">₦0.00</h1>
             </div>
-            <button onclick="togglePrivacy()" class="stealth-btn p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800 active:bg-zinc-800">Stealth</button>
+            <button onclick="togglePrivacy()" class="stealth-btn p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800">Stealth</button>
         </header>
 
-        <div class="vault-card p-5 mb-8 border border-emerald-900/20">
-            <p class="text-[#71717A] text-[9px] uppercase tracking-widest font-black mb-6 underline decoration-emerald-500 underline-offset-4">Tactical Cash Split</p>
-            <div class="space-y-4 font-bold">
-                <details class="group">
-                    <summary class="flex justify-between items-center list-none cursor-pointer">
-                        <span class="text-xs text-zinc-500 uppercase">Bills Account</span>
-                        <div class="flex items-center gap-2">
-                            <span id="alloc-bills" class="text-xs emerald-text">₦0</span>
-                            <span class="text-[8px] text-zinc-700 group-open:rotate-180 transition-transform">▼</span>
-                        </div>
-                    </summary>
-                    <div class="mt-3 pl-4 space-y-2 border-l border-emerald-900/30 pt-2 text-[10px] text-zinc-500 uppercase">
-                        <div class="flex justify-between"><span>Emergency (40%)</span><span id="bills-emerge">₦0</span></div>
-                        <div class="flex justify-between"><span>Operational (40%)</span><span id="bills-ops">₦0</span></div>
-                        <div class="flex justify-between"><span>Buffer (20%)</span><span id="bills-buffer">₦0</span></div>
-                    </div>
-                </details>
-                <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Savings Account</span><span id="alloc-savings">₦0</span></div>
-                <div class="flex justify-between text-xs font-bold"><span class="text-zinc-500 uppercase">Spend Account</span><span id="alloc-life">₦0</span></div>
-                <div class="border-t border-zinc-800 pt-4 flex justify-between items-center font-bold text-sm"><span class="text-[10px] text-zinc-400 uppercase">Cash Balance</span><span id="total-cash" class="emerald-text font-mono">₦0</span></div>
-            </div>
-        </div>
-
-        <details class="vault-card group mb-4">
-            <summary class="p-5 flex justify-between items-center list-none cursor-pointer">
-                <span class="text-[10px] uppercase tracking-widest font-black">Personal Wealth</span>
+        <details class="vault-card group mb-4 border-emerald-900/20">
+            <summary class="p-5 flex justify-between items-center">
+                <span class="text-[10px] uppercase tracking-widest font-black">Asset Inventory</span>
                 <span id="inv-assets-total" class="text-sm font-bold emerald-text">₦0</span>
             </summary>
             <div id="asset-list" class="px-5 pb-5 space-y-2 border-t border-zinc-900 pt-4 text-[11px]"></div>
         </details>
 
+        <details class="vault-card group mb-8 border-red-900/20">
+            <summary class="p-5 flex justify-between items-center">
+                <span class="text-[10px] uppercase tracking-widest font-black oxblood-text">Liability Ledger</span>
+                <span id="inv-debt-total" class="text-sm font-bold oxblood-text">₦0</span>
+            </summary>
+            <div id="debt-list" class="px-5 pb-5 space-y-2 border-t border-zinc-900 pt-4 text-[11px]"></div>
+        </details>
+
         <details class="vault-card group mb-12 border-gold-text/20">
-            <summary class="p-5 flex justify-between items-center list-none cursor-pointer">
+            <summary class="p-5 flex justify-between items-center">
                 <span class="text-[10px] uppercase tracking-widest font-black gold-text">Fiduciary Ledger</span>
                 <span id="f-total-header" class="text-sm font-bold gold-text">₦0</span>
             </summary>
@@ -87,9 +69,9 @@
         </details>
 
         <details class="vault-card group mb-10 border-zinc-800">
-            <summary class="p-5 flex justify-between items-center list-none cursor-pointer bg-zinc-900/30">
-                <span class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Audit Trail</span>
-                <span class="text-zinc-700 group-open:rotate-180 text-[10px]">▼</span>
+            <summary class="p-5 flex justify-between items-center bg-zinc-900/30">
+                <span class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Master Audit Trail</span>
+                <span class="text-zinc-700 text-[10px]">▼</span>
             </summary>
             <div id="master-history" class="p-5 space-y-4 bg-zinc-900/10 border-t border-zinc-800"></div>
         </details>
@@ -106,29 +88,16 @@
                     <option value="Fiduciary">Fiduciary Contribution</option>
                 </select>
                 
-                <div>
-                    <label class="text-[9px] text-zinc-500 uppercase font-bold mb-1 block">Value Date</label>
-                    <input id="form-date" type="date" class="input-dark">
-                </div>
-
+                <input id="form-date" type="date" class="input-dark">
                 <input id="form-name" class="input-dark" placeholder="Label / Contributor">
-                <input id="form-amount" type="number" class="input-dark" placeholder="Amount (₦)" oninput="liveValidate()">
+                <input id="form-amount" type="number" class="input-dark" placeholder="Amount (₦)">
                 
                 <div id="personal-fields">
-                    <select id="form-type" class="input-dark" onchange="toggleCashFields()">
+                    <select id="form-type" class="input-dark">
                         <option value="Asset">Asset</option>
-                        <option value="Cash">Cash (Tactical Split)</option>
                         <option value="Liability">Liability</option>
-                        <option value="Debtor">Debtor</option>
+                        <option value="Debtor">Debtor (Owed to Me)</option>
                     </select>
-
-                    <div id="cash-fields" class="hidden space-y-4 pt-4 border-t border-zinc-800">
-                        <div class="grid grid-cols-3 gap-2">
-                            <div><label class="text-[8px] text-zinc-500 block mb-1 uppercase">Bills</label><input id="form-bills-pct" type="number" class="input-dark" value="40" oninput="liveValidate()"></div>
-                            <div><label class="text-[8px] text-zinc-500 block mb-1 uppercase">Savings</label><input id="form-save-pct" type="number" class="input-dark" value="40" oninput="liveValidate()"></div>
-                            <div><label class="text-[8px] text-zinc-500 block mb-1 uppercase">Life</label><input id="form-life-pct" type="number" class="input-dark" value="20" oninput="liveValidate()"></div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="pt-6 space-y-3">
@@ -145,27 +114,32 @@
         document.getElementById('form-date').valueAsDate = new Date();
 
         function updateDisplay() {
-            let assetsSum = 0, debtSum = 0, fGlobal = 0, bBal = 0, sBal = 0, lBal = 0, tCash = 0;
-            const aList = document.getElementById('asset-list'), mHistory = document.getElementById('master-history'), fMainList = document.getElementById('fiduciary-main-list');
-            aList.innerHTML = ''; mHistory.innerHTML = ''; fMainList.innerHTML = '';
+            let assetsSum = 0, debtSum = 0, fGlobal = 0;
+            const aList = document.getElementById('asset-list'), dList = document.getElementById('debt-list'), mHistory = document.getElementById('master-history'), fMainList = document.getElementById('fiduciary-main-list');
+            
+            aList.innerHTML = ''; dList.innerHTML = ''; mHistory.innerHTML = ''; fMainList.innerHTML = '';
 
-            // 1. Process Personal Wealth
+            // 1. DATA GUARD & PERSONAL PROCESSING
             ledger.slice().sort((a,b) => new Date(b.rawDate) - new Date(a.rawDate)).forEach((item, idx) => {
-                const isA = (item.type === 'Asset' || item.type === 'Cash' || item.type === 'Debtor');
-                if(isA) assetsSum += item.amount; else debtSum += item.amount;
-                if(item.type === 'Cash') { tCash += item.amount; bBal += item.bills; sBal += item.savings; lBal += item.lifestyle; }
+                // FORCE NUMBER CONVERSION TO PREVENT NaN
+                const val = parseFloat(item.amount) || 0;
+                const isA = (item.type === 'Asset' || item.type === 'Debtor' || item.type === 'Cash');
                 
-                const card = `<div class="flex justify-between py-1 border-b border-zinc-900 last:border-0"><span>${item.name}</span><span class="${isA?'emerald-text':'oxblood-text'}">₦${stealth ? '••' : item.amount.toLocaleString()}</span></div>`;
-                mHistory.innerHTML += `<div class="p-3 border border-zinc-800 rounded-lg mb-2"><div class="flex justify-between text-[8px] text-zinc-600 font-bold uppercase mb-1"><span>${item.date}</span><button onclick="deleteItem(${ledger.indexOf(item)}, 'P')">×</button></div><div class="flex justify-between items-center"><span class="text-xs font-bold uppercase">${item.name} <small class="opacity-40 text-[7px]">${item.type}</small></span><span class="text-xs font-mono font-bold">₦${item.amount.toLocaleString()}</span></div></div>`;
-                aList.innerHTML += card;
+                if(isA) assetsSum += val; else debtSum += val;
+                
+                const card = `<div class="flex justify-between py-1 border-b border-zinc-900 last:border-0"><span>${item.name}</span><span class="${isA?'emerald-text':'oxblood-text'}">₦${stealth ? '••' : val.toLocaleString()}</span></div>`;
+                mHistory.innerHTML += `<div class="p-3 border border-zinc-800 rounded-lg mb-2"><div class="flex justify-between text-[8px] text-zinc-600 font-bold mb-1"><span>${item.date}</span><button onclick="deleteItem(${ledger.indexOf(item)}, 'P')">×</button></div><div class="flex justify-between items-center"><span class="text-xs font-bold uppercase">${item.name}</span><span class="text-xs font-mono">₦${val.toLocaleString()}</span></div></div>`;
+                
+                if (isA) aList.innerHTML += card; else dList.innerHTML += card;
             });
 
-            // 2. Process Fiduciary Ledger
+            // 2. DATA GUARD & FIDUCIARY PROCESSING
             const fGroups = fLedger.reduce((acc, item) => {
+                const val = parseFloat(item.amount) || 0;
                 if (!acc[item.name]) acc[item.name] = { total: 0, entries: [] };
-                acc[item.name].total += item.amount;
+                acc[item.name].total += val;
                 acc[item.name].entries.push(item);
-                fGlobal += item.amount;
+                fGlobal += val;
                 return acc;
             }, {});
 
@@ -178,51 +152,4 @@
                             <span class="text-xs font-bold gold-text">₦${stealth ? '••' : fGroups[name].total.toLocaleString()}</span>
                         </summary>
                         <div class="px-4 pb-4 space-y-2 border-t border-zinc-900/50 pt-3">
-                            ${fGroups[name].entries.sort((a,b) => new Date(b.rawDate) - new Date(a.rawDate)).map(e => `<div class="flex justify-between text-[9px]"><span class="text-zinc-600">${e.date}</span><span class="gold-text">₦${e.amount.toLocaleString()}</span></div>`).join('')}
-                        </div>
-                    </details>`;
-            }
-
-            // Dashboard Updates
-            document.getElementById('networth').innerText = "₦" + (assetsSum - debtSum).toLocaleString();
-            document.getElementById('inv-assets-total').innerText = "₦" + assetsSum.toLocaleString();
-            document.getElementById('total-cash').innerText = "₦" + tCash.toLocaleString();
-            document.getElementById('alloc-bills').innerText = "₦" + bBal.toLocaleString();
-            document.getElementById('alloc-savings').innerText = "₦" + sBal.toLocaleString();
-            document.getElementById('alloc-life').innerText = "₦" + lBal.toLocaleString();
-            document.getElementById('bills-emerge').innerText = "₦" + (bBal * 0.4).toLocaleString();
-            document.getElementById('bills-ops').innerText = "₦" + (bBal * 0.4).toLocaleString();
-            document.getElementById('bills-buffer').innerText = "₦" + (bBal * 0.2).toLocaleString();
-        }
-
-        function toggleFormFields() { document.getElementById('personal-fields').classList.toggle('hidden', document.getElementById('form-category').value === 'Fiduciary'); }
-        function toggleCashFields() { document.getElementById('cash-fields').classList.toggle('hidden', document.getElementById('form-type').value !== 'Cash'); }
-        function toggleMenu() { document.getElementById('menu-overlay').classList.toggle('menu-open'); }
-        function togglePrivacy() { stealth = !stealth; updateDisplay(); }
-
-        function submitEntry() {
-            const cat = document.getElementById('form-category').value, name = document.getElementById('form-name').value, amount = parseFloat(document.getElementById('form-amount').value), dateVal = document.getElementById('form-date').value;
-            if (!name || isNaN(amount) || !dateVal) return;
-            const entryDate = new Date(dateVal).toLocaleDateString();
-
-            if (cat === 'Personal') {
-                const type = document.getElementById('form-type').value;
-                let entry = { name, amount, type, date: entryDate, rawDate: dateVal };
-                if (type === 'Cash') {
-                    entry.bills = amount * (parseFloat(document.getElementById('form-bills-pct').value)/100);
-                    entry.savings = amount * (parseFloat(document.getElementById('form-save-pct').value)/100);
-                    entry.lifestyle = amount * (parseFloat(document.getElementById('form-life-pct').value)/100);
-                }
-                ledger.push(entry); localStorage.setItem('vault_ledger', JSON.stringify(ledger));
-            } else {
-                fLedger.push({ name, amount, date: entryDate, rawDate: dateVal });
-                localStorage.setItem('fiduciary_ledger', JSON.stringify(fLedger));
-            }
-            updateDisplay(); toggleMenu();
-        }
-
-        function deleteItem(index, type) { if(confirm("Delete?")) { if(type==='P') ledger.splice(index, 1); localStorage.setItem('vault_ledger', JSON.stringify(ledger)); updateDisplay(); } }
-        updateDisplay();
-    </script>
-</body>
-</html>
+                            ${fGroups[name].entries.sort((a,b) => new Date(b.rawDate
