@@ -12,6 +12,8 @@
         .oxblood-text { color: #FF3131; }
         .progress-bg { background: #262629; height: 6px; border-radius: 3px; overflow: hidden; }
         .progress-fill { background: #00FF41; height: 100%; transition: width 0.4s ease; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 50; align-items: flex-end; }
+        .modal.active { display: flex; }
     </style>
 </head>
 <body class="p-6">
@@ -26,14 +28,15 @@
     <div id="goal-container" class="space-y-4 mb-10">
         <p class="text-[10px] uppercase text-[#71717A] mb-2 tracking-widest">Active Envelopes</p>
     </div>
-    <button onclick="createNewGoal()" class="w-full border border-dashed border-[#262629] p-3 rounded-xl text-[10px] uppercase text-[#71717A] mb-10">+ Create New Envelope</button>
+    
+    <button onclick="createNewGoal()" class="w-full border border-dashed border-[#262629] p-3 rounded-xl text-[10px] uppercase text-[#71717A] mb-10">+ New Envelope</button>
 
     <div class="grid grid-cols-2 gap-4 mb-10">
-        <button onclick="addEntry()" class="vault-card p-5 text-center border-emerald-900/20">
+        <button onclick="openSelector('IN')" class="vault-card p-5 text-center border-emerald-900/20">
             <p class="text-[10px] font-bold uppercase emerald-text mb-1">Deposit</p>
             <span class="text-xl">💰</span>
         </button>
-        <button onclick="spendMoney()" class="vault-card p-5 text-center border-red-900/20">
+        <button onclick="openSelector('OUT')" class="vault-card p-5 text-center border-red-900/20">
             <p class="text-[10px] font-bold uppercase oxblood-text mb-1">Spend</p>
             <span class="text-xl">💸</span>
         </button>
@@ -44,8 +47,17 @@
         <div id="ledger-list" class="space-y-3"></div>
     </div>
 
+    <div id="selector" class="modal p-6">
+        <div class="w-full bg-[#161618] rounded-t-3xl p-6 border-t border-[#262629]">
+            <p class="text-[10px] uppercase text-[#71717A] mb-4 tracking-widest">Select Envelope</p>
+            <div id="envelope-options" class="space-y-3 mb-6"></div>
+            <button onclick="closeSelector()" class="w-full p-4 text-xs uppercase text-[#71717A]">Cancel</button>
+        </div>
+    </div>
+
     <script>
         let stealth = false;
+        let pendingAction = null;
         let history = JSON.parse(localStorage.getItem('vh_history')) || [];
         let goals = JSON.parse(localStorage.getItem('vh_goals')) || [
             { id: 'gen', name: 'General Savings', target: 0, balance: 0 }
@@ -56,22 +68,14 @@
             goals.forEach(g => g.balance = 0);
 
             history.forEach(item => {
-                const amount = parseFloat(item.amount);
                 const g = goals.find(goal => goal.id === item.goalId) || goals[0];
-                
-                if (item.type === 'IN') {
-                    totalCash += amount;
-                    g.balance += amount;
-                } else if (item.type === 'OUT') {
-                    totalCash -= amount;
-                    g.balance -= amount;
-                }
+                if (item.type === 'IN') { totalCash += item.amount; g.balance += item.amount; }
+                else { totalCash -= item.amount; g.balance -= item.amount; }
             });
 
             document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + totalCash.toLocaleString();
             
-            const container = document.getElementById('goal-container');
-            container.innerHTML = goals.map(g => {
+            document.getElementById('goal-container').innerHTML = goals.map(g => {
                 const percent = g.target > 0 ? Math.min((g.balance / g.target) * 100, 100) : 0;
                 return `
                     <div class="vault-card p-4">
@@ -79,19 +83,15 @@
                             <span class="text-[10px] font-bold uppercase">${g.name}</span>
                             <span class="text-[10px] emerald-text font-bold">${Math.floor(percent)}%</span>
                         </div>
-                        <div class="progress-bg mb-2">
-                            <div class="progress-fill" style="width: ${percent}%"></div>
-                        </div>
+                        <div class="progress-bg mb-2"><div class="progress-fill" style="width: ${percent}%"></div></div>
                         <div class="flex justify-between text-[8px] text-[#71717A]">
                             <span>₦${g.balance.toLocaleString()} saved</span>
                             <span>Target: ₦${g.target.toLocaleString()}</span>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
 
-            const list = document.getElementById('ledger-list');
-            list.innerHTML = history.slice().reverse().map((item, idx) => {
+            document.getElementById('ledger-list').innerHTML = history.slice().reverse().map((item, idx) => {
                 const realIdx = history.length - 1 - idx;
                 const g = goals.find(goal => goal.id === item.goalId) || {name: 'General'};
                 return `
@@ -100,63 +100,62 @@
                             <span class="text-[8px] uppercase text-[#71717A] font-mono">${item.date} | ${item.time}</span>
                             <span class="text-[7px] uppercase text-[#4B5563] mb-1">${g.name}</span>
                             <span class="text-[10px] ${item.type === 'IN' ? 'emerald-text' : 'oxblood-text'} font-bold">
-                                ${item.type === 'IN' ? '+' : '-'} ₦${parseFloat(item.amount).toLocaleString()}
+                                ${item.type === 'IN' ? '+' : '-'} ₦${item.amount.toLocaleString()}
                             </span>
                         </div>
-                        <button onclick="deleteEntry(${realIdx})" class="text-[#71717A] text-[12px] px-2">×</button>
-                    </div>
-                `;
+                        <button onclick="deleteEntry(${realIdx})" class="text-[#71717A] text-lg px-2">×</button>
+                    </div>`;
             }).join('');
+        }
+
+        function openSelector(type) {
+            pendingAction = type;
+            const optDiv = document.getElementById('envelope-options');
+            optDiv.innerHTML = goals.map(g => `
+                <button onclick="executeAction('${g.id}')" class="w-full vault-card p-4 text-left flex justify-between">
+                    <span class="text-xs uppercase">${g.name}</span>
+                    <span class="text-[10px] text-[#71717A]">₦${g.balance.toLocaleString()}</span>
+                </button>
+            `).join('');
+            document.getElementById('selector').classList.add('active');
+        }
+
+        function executeAction(goalId) {
+            const amount = prompt(`Amount to ${pendingAction === 'IN' ? 'Deposit' : 'Spend'} (₦):`);
+            if (amount && !isNaN(amount)) {
+                const now = new Date();
+                history.push({
+                    type: pendingAction,
+                    amount: parseFloat(amount),
+                    goalId: goalId,
+                    date: now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }),
+                    time: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+                });
+                localStorage.setItem('vh_history', JSON.stringify(history));
+                updateDisplay();
+            }
+            closeSelector();
         }
 
         function createNewGoal() {
             const name = prompt("Envelope Name:");
             const target = prompt("Target Amount (₦):");
             if (name && target) {
-                const id = 'g' + Date.now();
-                goals.push({ id, name, target: parseFloat(target), balance: 0 });
+                goals.push({ id: 'g' + Date.now(), name, target: parseFloat(target), balance: 0 });
                 localStorage.setItem('vh_goals', JSON.stringify(goals));
                 updateDisplay();
             }
         }
 
-        function addEntry() {
-            const amount = prompt("Amount to Deposit (₦):");
-            if (!amount || isNaN(amount)) return;
-            
-            let options = goals.map((g, i) => `${i}: ${g.name}`).join('\n');
-            const choice = prompt("Choose Envelope Index:\n" + options, "0");
-            const goal = goals[choice] || goals[0];
-            saveTx('IN', amount, goal.id);
-        }
-
-        function spendMoney() {
-            const amount = prompt("Amount Spent (₦):");
-            if (!amount || isNaN(amount)) return;
-
-            let options = goals.map((g, i) => `${i}: ${g.name}`).join('\n');
-            const choice = prompt("Spend from which Envelope?:\n" + options, "0");
-            const goal = goals[choice] || goals[0];
-            saveTx('OUT', amount, goal.id);
-        }
-
-        function saveTx(type, amount, goalId) {
-            const now = new Date();
-            const date = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
-            const time = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-            history.push({ type, amount: parseFloat(amount), goalId, date, time });
-            localStorage.setItem('vh_history', JSON.stringify(history));
-            updateDisplay();
-        }
-
         function deleteEntry(idx) {
-            if (confirm("Permanently delete this transaction?")) {
+            if (confirm("Delete this transaction?")) {
                 history.splice(idx, 1);
                 localStorage.setItem('vh_history', JSON.stringify(history));
                 updateDisplay();
             }
         }
 
+        function closeSelector() { document.getElementById('selector').classList.remove('active'); }
         function togglePrivacy() { stealth = !stealth; updateDisplay(); }
         updateDisplay();
     </script>
