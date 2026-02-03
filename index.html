@@ -31,28 +31,46 @@
     </div>
 
     <script>
-        let stealth = false;
-        let balance = parseFloat(localStorage.getItem('vault_balance')) || 0;
+        <script>
+    let stealth = false;
+    // Load both balance and loans from local storage
+    let balance = parseFloat(localStorage.getItem('vault_balance')) || 0;
+    let loans = parseFloat(localStorage.getItem('vault_loans')) || 0;
 
-        function updateDisplay() {
-            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + balance.toLocaleString();
-        }
+    function updateDisplay() {
+        const netWorth = balance - loans;
+        document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netWorth.toLocaleString();
+        // We will also update a Loan display if you add one to the HTML later
+    }
 
-        function togglePrivacy() {
-            stealth = !stealth;
-            updateDisplay();
-        }
-
-        function addEntry() {
-            const amount = prompt("Enter deposit amount (₦):");
-            if (amount && !isNaN(amount)) {
-                balance += parseFloat(amount);
-                localStorage.setItem('vault_balance', balance);
-                updateDisplay();
-                alert("Vault Updated Successfully.");
-            }
-        }
+    function togglePrivacy() {
+        stealth = !stealth;
         updateDisplay();
+    }
+
+    function addEntry() {
+        const amount = prompt("Enter deposit amount (₦):");
+        if (amount && !isNaN(amount)) {
+            balance += parseFloat(amount);
+            localStorage.setItem('vault_balance', balance);
+            updateDisplay();
+            alert("Funds Vaulted. Split 40/40/20 in your mind.");
+        }
+    }
+
+    // NEW: Debt Destroyer Function
+    function addLoan() {
+        const amount = prompt("Enter total debt/loan amount (₦):");
+        if (amount && !isNaN(amount)) {
+            loans = parseFloat(amount);
+            localStorage.setItem('vault_loans', loans);
+            updateDisplay();
+            alert("Liability Tracked. Net Worth adjusted.");
+        }
+    }
+
+    updateDisplay();
+</script>
     </script>
 </body>
 </html>
