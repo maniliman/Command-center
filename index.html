@@ -10,6 +10,7 @@
         body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; margin: 0; padding: 0; overflow-x: hidden; }
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; margin-bottom: 16px; width: 100%; overflow: hidden; }
         .emerald-border { border: 2px solid #00FF41; background: rgba(0, 255, 65, 0.03); }
+        .fiduciary-border { border: 2px solid #EAB308; background: rgba(234, 179, 8, 0.03); }
         .fab-btn { position: fixed; bottom: 30px; width: 72px; height: 72px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; font-weight: bold; border: none; cursor: pointer; z-index: 10000; }
         .view-hidden { display: none !important; }
         .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 18px; border-radius: 12px; width: 100%; outline: none; }
@@ -34,46 +35,40 @@
         </div>
 
         <div class="text-center mb-10">
-            <p class="text-[11px] uppercase text-zinc-500 font-bold mb-1">Total Net Worth</p>
+            <p class="text-[11px] uppercase text-zinc-500 font-bold mb-1">Total Sovereign Wealth</p>
             <h1 id="nw-display" class="text-5xl font-black tracking-tighter emerald-text maskable">₦0.00</h1>
-            <div class="text-[9px] uppercase font-bold text-zinc-600 mt-2">
-                Cash: <span id="split-cash" class="text-zinc-400">₦0</span> | Debtors: <span id="split-db" class="text-zinc-400">₦0</span>
-            </div>
         </div>
 
-        <div id="cards-container">
-            <div id="feat-tactical" class="vault-card emerald-border">
-                <div id="tactical-node" class="p-6" onclick="VaultUI.toggleNode('tactical-node')">
-                    <div class="flex justify-between items-center"><span class="text-[11px] font-black uppercase text-emerald-500">Tactical Engine</span><span id="tc-display" class="text-xl font-black maskable">₦0</span></div>
-                    <div class="sub-drawer space-y-4 text-xs font-bold uppercase">
-                        <div id="bills-node" onclick="event.stopPropagation(); VaultUI.toggleNode('bills-node')">
-                            <div class="flex justify-between items-center cursor-pointer opacity-80"><span>Bills Account <span class="chevron">▼</span></span><span id="b-total" class="maskable">₦0</span></div>
-                            <div class="sub-drawer space-y-3 text-[10px] text-zinc-400 normal-case">
-                                <div class="flex justify-between"><span>Core (40%)</span><span id="b-core" class="maskable">₦0</span></div>
-                                <div class="flex justify-between"><span>Reserve (40%)</span><span id="b-reserve" class="maskable">₦0</span></div>
-                                <div class="flex justify-between"><span>Ops (20%)</span><span id="b-ops" class="maskable">₦0</span></div>
-                            </div>
+        <div id="feat-tactical" class="vault-card emerald-border">
+            <div id="tactical-node" class="p-6" onclick="VaultUI.toggleNode('tactical-node')">
+                <div class="flex justify-between items-center"><span class="text-[11px] font-black uppercase text-emerald-500">Tactical Liquidity</span><span id="tc-display" class="text-xl font-black maskable">₦0</span></div>
+                <div class="sub-drawer space-y-4 text-xs font-bold uppercase">
+                    <div id="bills-node" onclick="event.stopPropagation(); VaultUI.toggleNode('bills-node')">
+                        <div class="flex justify-between items-center cursor-pointer opacity-80"><span>Bills Account <span class="chevron">▼</span></span><span id="b-total" class="maskable">₦0</span></div>
+                        <div class="sub-drawer space-y-3 text-[10px] text-zinc-400 normal-case">
+                            <div class="flex justify-between"><span>Core (40%)</span><span id="b-core" class="maskable">₦0</span></div>
+                            <div class="flex justify-between"><span>Reserve (40%)</span><span id="b-reserve" class="maskable">₦0</span></div>
+                            <div class="flex justify-between"><span>Ops (20%)</span><span id="b-ops" class="maskable">₦0</span></div>
                         </div>
-                        <div class="flex justify-between border-t border-zinc-800 pt-3"><span>Savings Account</span><span id="s-total" class="maskable">₦0</span></div>
-                        <div class="flex justify-between border-t border-zinc-800 pt-3"><span>Spend Account</span><span id="l-total" class="maskable">₦0</span></div>
                     </div>
+                    <div class="flex justify-between border-t border-zinc-800 pt-3"><span>Savings Account</span><span id="s-total" class="maskable">₦0</span></div>
+                    <div class="flex justify-between border-t border-zinc-800 pt-3"><span>Spend Account</span><span id="l-total" class="maskable">₦0</span></div>
                 </div>
             </div>
-
-            <div id="feat-assets" class="vault-card"><div id="as-node" class="p-6" onclick="VaultUI.toggleNode('as-node')"><div class="flex justify-between items-center uppercase text-[11px] font-black text-zinc-500"><span>Assets Inventory</span><span id="as-display" class="maskable">₦0</span></div><div id="as-list" class="sub-drawer space-y-2 pt-4"></div></div></div>
-
-            <div id="feat-fiduciary" class="vault-card border-yellow-900/30">
-                <div id="fd-node" class="p-6" onclick="VaultUI.toggleNode('fd-node')">
-                    <div class="flex justify-between items-center uppercase text-[11px] font-black text-yellow-500"><span>Fiduciary Bookkeeper</span><span id="fd-display" class="maskable">₦0</span></div>
-                    <div id="fd-list" class="sub-drawer space-y-3 pt-4"></div>
-                </div>
-            </div>
-
-            <div id="feat-debtors" class="vault-card"><div id="db-node" class="p-6" onclick="VaultUI.toggleNode('db-node')"><div class="flex justify-between items-center uppercase text-[11px] font-black text-emerald-400"><span>Debtors</span><span id="db-display" class="maskable">₦0</span></div><div id="db-list" class="sub-drawer space-y-4 pt-4"></div></div></div>
-
-            <div id="feat-expenses" class="vault-card border-red-900/40"><div id="ex-node" class="p-6" onclick="VaultUI.toggleNode('ex-node')"><div class="flex justify-between items-center uppercase text-[11px] font-black oxblood-text"><span>Expenses (Burn)</span><span id="ex-display" class="maskable">₦0</span></div><div id="ex-list" class="sub-drawer space-y-2 pt-4"></div></div></div>
-            <div id="feat-liabilities" class="vault-card border-orange-900/40"><div id="li-node" class="p-6" onclick="VaultUI.toggleNode('li-node')"><div class="flex justify-between items-center uppercase text-[11px] font-black text-orange-500"><span>Liabilities (Debt)</span><span id="li-display" class="maskable">₦0</span></div><div id="li-list" class="sub-drawer space-y-3 pt-4"></div></div></div>
         </div>
+
+        <div id="feat-fiduciary" class="vault-card fiduciary-border">
+            <div id="fd-node" class="p-6" onclick="VaultUI.toggleNode('fd-node')">
+                <div class="flex justify-between items-center uppercase text-[11px] font-black text-yellow-500"><span>Fiduciary Custody (Third Party)</span><span id="fd-display" class="maskable text-lg">₦0</span></div>
+                <div id="fd-list" class="sub-drawer space-y-3 pt-4"></div>
+            </div>
+        </div>
+
+        <div id="feat-debtors" class="vault-card"><div id="db-node" class="p-6" onclick="VaultUI.toggleNode('db-node')"><div class="flex justify-between items-center uppercase text-[11px] font-black text-emerald-400"><span>Debtors</span><span id="db-display" class="maskable">₦0</span></div><div id="db-list" class="sub-drawer space-y-4 pt-4"></div></div></div>
+
+        <div id="feat-assets" class="vault-card"><div id="as-node" class="p-6" onclick="VaultUI.toggleNode('as-node')"><div class="flex justify-between items-center uppercase text-[11px] font-black text-zinc-500"><span>Assets</span><span id="as-display" class="maskable">₦0</span></div><div id="as-list" class="sub-drawer space-y-2 pt-4"></div></div></div>
+        <div id="feat-expenses" class="vault-card border-red-900/40"><div id="ex-node" class="p-6" onclick="VaultUI.toggleNode('ex-node')"><div class="flex justify-between items-center uppercase text-[11px] font-black oxblood-text"><span>Expenses</span><span id="ex-display" class="maskable">₦0</span></div><div id="ex-list" class="sub-drawer space-y-2 pt-4"></div></div></div>
+        <div id="feat-liabilities" class="vault-card border-orange-900/40"><div id="li-node" class="p-6" onclick="VaultUI.toggleNode('li-node')"><div class="flex justify-between items-center uppercase text-[11px] font-black text-orange-500"><span>Liabilities</span><span id="li-display" class="maskable">₦0</span></div><div id="li-list" class="sub-drawer space-y-3 pt-4"></div></div></div>
 
         <div id="feat-audit" class="vault-card opacity-50"><div id="au-node" class="p-6" onclick="VaultUI.toggleNode('au-node')"><div class="flex justify-between items-center uppercase text-[11px] font-black"><span>Audit History</span><span>▼</span></div><div id="au-list" class="sub-drawer space-y-3 max-h-64 overflow-y-auto text-[10px]"></div></div></div>
     </div>
@@ -81,9 +76,9 @@
     <div id="entry-view" class="view-hidden space-y-6 pb-40">
         <h2 class="text-4xl font-black uppercase tracking-tighter">Authorize</h2>
         <select id="e-type" class="input-dark" onchange="VaultUI.updateForm()">
-            <option value="income">Inflow [+]</option>
+            <option value="income">Liquid Cash Inflow [+]</option>
+            <option value="fiduciary">Fiduciary Collection (NOT MY MONEY) [💼]</option>
             <option value="asset">Asset Inventory [+]</option>
-            <option value="fiduciary">Fiduciary Collection [+]</option>
             <option value="debtor">New Debtor (Loan) [+]</option>
             <option value="expense">Expense (Outflow) [-]</option>
             <option value="liability">Liability (Debt) [-]</option>
@@ -95,7 +90,7 @@
 
         <input id="e-datetime" type="datetime-local" class="input-dark">
         <input id="e-name" class="input-dark" placeholder="Entity/Label">
-        <input id="e-amount" type="number" class="input-dark" placeholder="Total (₦)">
+        <input id="e-amount" type="number" class="input-dark" placeholder="Total Amount (₦)">
         
         <div id="loan-fields" class="hidden space-y-4">
             <input id="e-rate" type="number" class="input-dark" placeholder="Interest Rate %">
@@ -115,7 +110,6 @@
     <div id="settings-view" class="view-hidden space-y-10">
         <h2 class="text-4xl font-black uppercase tracking-tighter">Settings</h2>
         <div class="vault-card p-6 space-y-4">
-            <p class="text-[10px] font-black uppercase text-zinc-500">Security</p>
             <input id="new-pin" type="password" maxlength="4" class="input-dark" placeholder="Update 4-Digit PIN">
             <button onclick="VaultUI.savePin()" class="w-full bg-zinc-800 p-4 rounded uppercase font-black text-xs">Update PIN</button>
         </div>
@@ -123,7 +117,7 @@
             <p class="text-[10px] font-black uppercase text-zinc-500">Feature Toggles</p>
             <div id="toggle-list" class="space-y-4 text-[10px] font-black uppercase"></div>
         </div>
-        <button onclick="VaultCore.wipe()" class="w-full p-6 text-red-900 border border-red-900 rounded font-black uppercase text-xs">Purge All Records</button>
+        <button onclick="VaultCore.wipe()" class="w-full p-6 text-red-900 border border-red-900 rounded font-black uppercase text-xs">Purge Records</button>
     </div>
 
     <button id="f-add" onclick="VaultUI.changeView('entry-view')" class="fab-btn bg-emerald-500 text-black right-8">+</button>
@@ -131,8 +125,8 @@
 
     <script>
         const VaultCore = (() => {
-            let db = JSON.parse(localStorage.getItem('sov_v12')) || [];
-            const save = () => localStorage.setItem('sov_v12', JSON.stringify(db));
+            let db = JSON.parse(localStorage.getItem('sov_v13')) || [];
+            const save = () => localStorage.setItem('sov_v13', JSON.stringify(db));
             return {
                 db: () => db,
                 execute: () => {
@@ -143,6 +137,7 @@
                     let entry = { id: Date.now(), name: n, total: a, type: t, rawDate: dt, 
                                   date: dateObj.toLocaleDateString('en-GB', {day:'2-digit', month:'short'}), 
                                   time: dateObj.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}) };
+                    
                     if (t === 'income') {
                         const b = parseFloat(document.getElementById('ps-b').value) || 40, s = parseFloat(document.getElementById('ps-s').value) || 40, l = parseFloat(document.getElementById('ps-l').value) || 20;
                         entry.b = a * (b/100); entry.s = a * (s/100); entry.l = a * (l/100);
@@ -154,10 +149,11 @@
                         const rate = parseFloat(document.getElementById('e-rate').value) || 0;
                         entry.total = a * (1 + rate/100); 
                     }
+                    // Fiduciary type does not get added to tactical calculations
                     db.push(entry); db.sort((a,b) => new Date(a.rawDate) - new Date(b.rawDate)); save(); VaultUI.changeView('dashboard-view');
                 },
                 update: (id, ups) => { const idx = db.findIndex(x => x.id === id); if(idx > -1) { db[idx] = {...db[idx], ...ups}; save(); VaultUI.render(); } },
-                wipe: () => { if(confirm("Wipe data?")) { localStorage.clear(); location.reload(); } }
+                wipe: () => { if(confirm("Purge?")) { localStorage.clear(); location.reload(); } }
             };
         })();
 
@@ -165,76 +161,4 @@
             let stealth = false;
             return {
                 toggleNode: id => document.getElementById(id).classList.toggle('open'),
-                toggleStealth: () => { stealth = !stealth; document.body.classList.toggle('stealth-active', stealth); },
-                toggleFeat: (id, show) => document.getElementById(id).classList.toggle('view-hidden', !show),
-                changeView: id => {
-                    ['dashboard-view', 'entry-view', 'settings-view'].forEach(v => document.getElementById(v).classList.add('view-hidden'));
-                    document.getElementById(id).classList.remove('view-hidden');
-                    document.getElementById('f-add').classList.toggle('view-hidden', id !== 'dashboard-view');
-                    document.getElementById('f-back').classList.toggle('view-hidden', id === 'dashboard-view');
-                    if(id === 'entry-view') {
-                        const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                        document.getElementById('e-datetime').value = now.toISOString().slice(0, 16);
-                        VaultUI.updateForm();
-                    } else if(id === 'dashboard-view') VaultUI.render();
-                },
-                updateForm: () => {
-                    const t = document.getElementById('e-type').value;
-                    document.getElementById('split-fields').style.display = t === 'income' ? 'block' : 'none';
-                    document.getElementById('source-box').style.display = t === 'expense' ? 'block' : 'none';
-                    document.getElementById('loan-fields').style.display = t === 'debtor' ? 'block' : 'none';
-                },
-                savePin: () => { const p = document.getElementById('new-pin').value; if(p.length===4) { localStorage.setItem('sov_pin', p); alert("PIN OK"); } },
-                render: () => {
-                    const db = VaultCore.db();
-                    let nw=0, tc=0, b=0, s=0, l=0, as=0, fd=0, ex=0, li=0, dbT=0;
-                    const containers = { as: 'as-list', fd: 'fd-list', db: 'db-list', ex: 'ex-list', li: 'li-list', au: 'au-list' };
-                    Object.values(containers).forEach(id => document.getElementById(id).innerHTML = '');
-                    
-                    db.slice().reverse().forEach(i => {
-                        nw += i.total; b += (i.b||0); s += (i.s||0); l += (i.l||0);
-                        if(i.type === 'asset') { as += i.total; document.getElementById('as-list').innerHTML += `<div class="flex justify-between py-1 border-b border-zinc-900"><span>${i.name}</span><span>₦${i.total.toLocaleString()}</span></div>`; }
-                        if(i.type === 'fiduciary') { fd += i.total; document.getElementById('fd-list').innerHTML += `<div class="flex justify-between py-1 border-b border-zinc-900"><span>${i.name}</span><span>₦${i.total.toLocaleString()}</span></div>`; }
-                        if(i.type === 'debtor') { dbT += i.total; document.getElementById('db-list').innerHTML += `<div class="vault-card p-4 border border-zinc-800 flex justify-between"><span>${i.name}</span><div class="flex gap-2"><button onclick="VaultUI.settleDebt(${i.id},'part')" class="bg-zinc-800 px-2 py-1 rounded text-[8px]">PART</button><button onclick="VaultUI.settleDebt(${i.id},'full')" class="bg-emerald-500 text-black px-2 py-1 rounded text-[8px]">FULL</button></div></div>`; }
-                        if(i.type === 'expense') ex += Math.abs(i.total);
-                        if(i.type === 'liability') li += Math.abs(i.total);
-                        document.getElementById('au-list').innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-900"><span class="text-zinc-500">${i.date} <small>${i.time}</small> <b>${i.name}</b></span><span class="${i.total < 0 ? 'oxblood-text' : 'emerald-text'} font-bold">₦${Math.abs(i.total).toLocaleString()}</span></div>`;
-                    });
-                    document.getElementById('nw-display').innerText = "₦" + nw.toLocaleString();
-                    document.getElementById('tc-display').innerText = "₦" + (b+s+l).toLocaleString();
-                    document.getElementById('split-cash').innerText = "₦" + (b+s+l).toLocaleString();
-                    document.getElementById('split-db').innerText = "₦" + dbT.toLocaleString();
-                    document.getElementById('b-total').innerText = "₦" + b.toLocaleString();
-                    document.getElementById('s-total').innerText = "₦" + s.toLocaleString();
-                    document.getElementById('l-total').innerText = "₦" + l.toLocaleString();
-                    document.getElementById('as-display').innerText = "₦" + as.toLocaleString();
-                    document.getElementById('fd-display').innerText = "₦" + fd.toLocaleString();
-                    document.getElementById('db-display').innerText = "₦" + dbT.toLocaleString();
-                    document.getElementById('ex-display').innerText = "₦" + ex.toLocaleString();
-                    document.getElementById('li-display').innerText = "₦" + li.toLocaleString();
-                    document.getElementById('b-core').innerText = "₦" + (b * 0.4).toLocaleString();
-                    document.getElementById('b-reserve').innerText = "₦" + (b * 0.4).toLocaleString();
-                    document.getElementById('b-ops').innerText = "₦" + (b * 0.2).toLocaleString();
-                },
-                settleDebt: (id, type) => {
-                    const i = VaultCore.db().find(x => x.id === id);
-                    const a = parseFloat(prompt("Amount Paid (₦):"));
-                    if(a > 0) {
-                        VaultCore.update(id, { total: i.total - a, name: type === 'full' ? i.name + ' [SETTLED]' : i.name });
-                        document.getElementById('e-type').value = 'income'; document.getElementById('e-name').value = `Debt Pay: ${i.name}`; document.getElementById('e-amount').value = a;
-                        VaultCore.execute();
-                    }
-                }
-            };
-        })();
-
-        // Visibility Toggles Setup
-        const tList = document.getElementById('toggle-list');
-        ['tactical', 'assets', 'fiduciary', 'debtors', 'expenses', 'liabilities', 'audit'].forEach(f => {
-            tList.innerHTML += `<div class="flex justify-between"><span>${f}</span><input type="checkbox" checked onchange="VaultUI.toggleFeat('feat-${f}', this.checked)"></div>`;
-        });
-
-        VaultUI.render();
-    </script>
-</body>
-</html>
+                toggleStealth: () => { stealth = !stealth; document.body.classList.toggle('stealth-active', stealth
