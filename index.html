@@ -10,16 +10,29 @@
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
+        .progress-bg { background: #262629; height: 8px; border-radius: 4px; overflow: hidden; }
+        .progress-fill { background: #00FF41; height: 100%; transition: width 0.5s ease-in-out; }
     </style>
 </head>
 <body class="p-6">
-    <header class="mb-10 flex justify-between items-start pt-4">
+    <header class="mb-6 flex justify-between items-start pt-4">
         <div>
             <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase">True Net Worth</p>
             <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter">₦0</h1>
         </div>
         <button onclick="togglePrivacy()" class="p-3 vault-card text-[10px] tracking-widest uppercase">Stealth</button>
     </header>
+
+    <div class="vault-card p-5 mb-10">
+        <div class="flex justify-between items-center mb-2">
+            <p class="text-[10px] uppercase text-[#71717A]">Target Progress</p>
+            <p id="goal-percent" class="text-[10px] emerald-text font-bold">0%</p>
+        </div>
+        <div class="progress-bg mb-3">
+            <div id="progress-bar" class="progress-fill" style="width: 0%"></div>
+        </div>
+        <button onclick="setGoal()" class="text-[10px] text-[#71717A] underline">Set New Target</button>
+    </div>
 
     <div class="space-y-4 mb-10">
         <button onclick="addEntry()" class="w-full vault-card p-5 flex justify-between items-center text-left">
@@ -47,6 +60,7 @@
     <script>
         let stealth = false;
         let history = JSON.parse(localStorage.getItem('vault_history')) || [];
+        let targetGoal = parseFloat(localStorage.getItem('vault_goal')) || 1000000;
 
         function updateDisplay() {
             let totalIn = 0;
@@ -60,13 +74,18 @@
             const netValue = totalIn - currentDebt;
             document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netValue.toLocaleString();
             
+            // Update Progress Bar
+            const percent = Math.min((netValue / targetGoal) * 100, 100);
+            document.getElementById('progress-bar').style.width = percent + "%";
+            document.getElementById('goal-percent').innerText = Math.floor(percent) + "%";
+
             const list = document.getElementById('ledger-list');
             list.innerHTML = history.slice().reverse().map((item, idx) => {
                 const realIdx = history.length - 1 - idx;
                 return `
                     <div class="flex justify-between items-center border-b border-[#262629] pb-2">
                         <div class="flex flex-col">
-                            <span class="text-[10px] uppercase text-[#71717A]">${item.date}</span>
+                            <span class="text-[10px] uppercase text-[#71717A] font-mono">${item.date}</span>
                             <span class="text-[10px] ${item.type === 'IN' ? 'emerald-text' : 'oxblood-text'} font-bold">
                                 ${item.type === 'IN' ? '+' : 'DEBT:'} ₦${item.amount.toLocaleString()}
                             </span>
@@ -75,6 +94,15 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        function setGoal() {
+            const newGoal = prompt("Enter your new savings target (₦):", targetGoal);
+            if (newGoal && !isNaN(newGoal)) {
+                targetGoal = parseFloat(newGoal);
+                localStorage.setItem('vault_goal', targetGoal);
+                updateDisplay();
+            }
         }
 
         function togglePrivacy() { stealth = !stealth; updateDisplay(); }
@@ -100,7 +128,6 @@
         }
 
         function deleteEntry(index) {
-            // THE SAFETY LOCK
             if (confirm("Are you sure you want to permanently delete this entry?")) {
                 history.splice(index, 1);
                 localStorage.setItem('vault_history', JSON.stringify(history));
