@@ -4,23 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Sovereign Vault</title>
+    
+    <link rel="icon" href="https://img.icons8.com/nolan/64/safe.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/nolan/128/safe.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; overflow-x: hidden; margin: 0; padding: 0; }
-        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
+        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; position: relative; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
         .gold-text { color: #FFD700; }
-        .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 12px; border-radius: 8px; width: 100%; outline: none; }
+        .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 12px; border-radius: 8px; width: 100%; outline: none; font-size: 14px; }
         
-        /* FIX: High Priority Layers */
-        #dashboard-content { position: relative; z-index: 1; padding: 24px; }
+        /* Layering Architecture */
+        #dashboard-content { position: relative; z-index: 10; padding: 24px; }
         .stealth-btn { position: relative; z-index: 1000 !important; pointer-events: auto !important; cursor: pointer; }
-        .stealth-active { background: #00FF41 !important; color: #000 !important; }
+        .stealth-active { background: #00FF41 !important; color: #000 !important; box-shadow: 0 0 15px rgba(0, 255, 65, 0.5); }
         .fab-button { 
             position: fixed; bottom: 32px; right: 32px; 
             z-index: 5000 !important; pointer-events: auto !important;
-            display: flex !important; visibility: visible !important;
             box-shadow: 0 0 25px rgba(0, 255, 65, 0.4); 
         }
 
@@ -33,6 +38,7 @@
         
         summary { cursor: pointer; outline: none; list-style: none; }
         summary::-webkit-details-marker { display: none; }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
     </style>
 </head>
 <body class="pb-60">
@@ -59,7 +65,7 @@
                             <span class="text-[8px] text-zinc-700 group-open:rotate-180 transition-transform">▼</span>
                         </div>
                     </summary>
-                    <div class="mt-3 pl-4 space-y-2 border-l border-emerald-900/30 pt-2 text-[10px] text-zinc-500 uppercase">
+                    <div class="mt-3 pl-4 space-y-2 border-l border-emerald-900/30 pt-2 text-[10px] text-zinc-500 uppercase font-bold">
                         <div class="flex justify-between"><span>Emergency (40%)</span><span id="bills-emerge">₦0</span></div>
                         <div class="flex justify-between"><span>Operational (40%)</span><span id="bills-ops">₦0</span></div>
                         <div class="flex justify-between"><span>Buffer (20%)</span><span id="bills-buffer">₦0</span></div>
@@ -72,22 +78,34 @@
         </div>
 
         <details class="vault-card group mb-4 border-emerald-900/20">
-            <summary class="p-5 flex justify-between items-center"><span class="text-[10px] uppercase tracking-widest font-black">Asset Inventory</span><span id="inv-assets-total" class="text-sm font-bold emerald-text">₦0</span></summary>
+            <summary class="p-5 flex justify-between items-center">
+                <span class="text-[10px] uppercase tracking-widest font-black">Asset Inventory</span>
+                <span id="inv-assets-total" class="text-sm font-bold emerald-text">₦0</span>
+            </summary>
             <div id="multi-tier-assets" class="px-5 pb-5 space-y-3 border-t border-zinc-900 pt-4"></div>
         </details>
 
         <details class="vault-card group mb-4 border-red-900/20">
-            <summary class="p-5 flex justify-between items-center"><span class="text-[10px] uppercase tracking-widest font-black oxblood-text">Liability Ledger</span><span id="inv-debt-total" class="text-sm font-bold oxblood-text">₦0</span></summary>
+            <summary class="p-5 flex justify-between items-center">
+                <span class="text-[10px] uppercase tracking-widest font-black oxblood-text">Liability Ledger</span>
+                <span id="inv-debt-total" class="text-sm font-bold oxblood-text">₦0</span>
+            </summary>
             <div id="debt-list" class="px-5 pb-5 space-y-2 border-t border-zinc-900 pt-4 text-[11px]"></div>
         </details>
 
         <details class="vault-card group mb-12 border-gold-text/20">
-            <summary class="p-5 flex justify-between items-center"><span class="text-[10px] uppercase tracking-widest font-black gold-text">Fiduciary Ledger</span><span id="f-total-header" class="text-sm font-bold gold-text">₦0</span></summary>
+            <summary class="p-5 flex justify-between items-center">
+                <span class="text-[10px] uppercase tracking-widest font-black gold-text">Fiduciary Ledger</span>
+                <span id="f-total-header" class="text-sm font-bold gold-text">₦0</span>
+            </summary>
             <div id="fiduciary-main-list" class="px-5 pb-5 space-y-4 border-t border-zinc-900 pt-4"></div>
         </details>
 
         <details class="vault-card group mb-12 border-zinc-800">
-            <summary class="p-5 flex justify-between items-center bg-zinc-900/20"><span class="text-[10px] uppercase tracking-widest font-black text-zinc-500">Audit Trail</span><span class="text-zinc-700 text-[10px]">▼</span></summary>
+            <summary class="p-5 flex justify-between items-center bg-zinc-900/20">
+                <span class="text-[10px] uppercase tracking-widest font-black text-zinc-500">Master Audit Trail</span>
+                <span class="text-zinc-700 text-[10px]">▼</span>
+            </summary>
             <div id="master-history" class="p-5 space-y-4 bg-zinc-900/10 border-t border-zinc-800"></div>
         </details>
 
@@ -100,7 +118,10 @@
         <div class="w-full space-y-6 max-w-sm mx-auto pb-10">
             <h2 class="text-xl font-bold uppercase tracking-tighter">New Entry</h2>
             <div class="space-y-4">
-                <select id="form-category" class="input-dark" onchange="toggleFormFields()"><option value="Personal">Personal wealth</option><option value="Fiduciary">Fiduciary</option></select>
+                <select id="form-category" class="input-dark" onchange="toggleFormFields()">
+                    <option value="Personal">Personal wealth</option>
+                    <option value="Fiduciary">Fiduciary Contribution</option>
+                </select>
                 <input id="form-date" type="date" class="input-dark">
                 <input id="form-name" class="input-dark" placeholder="Label / Contributor">
                 <input id="form-amount" type="number" class="input-dark" placeholder="Amount (₦)">
@@ -109,7 +130,7 @@
                         <option value="Cash">Cash (Fluid Split)</option>
                         <option value="Stocks">Stocks</option>
                         <option value="Property">Property</option>
-                        <option value="Liability">Liability</option>
+                        <option value="Liability">Liability (I Owe)</option>
                     </select>
                 </div>
             </div>
@@ -122,13 +143,8 @@
 
     <script>
         let stealth = false;
-        // DATA RECOVERY WRAPPER
-        let ledger = []; let fLedger = [];
-        try {
-            ledger = JSON.parse(localStorage.getItem('vault_ledger')) || [];
-            fLedger = JSON.parse(localStorage.getItem('fiduciary_ledger')) || [];
-        } catch (e) { console.error("Data error, starting fresh"); }
-
+        let ledger = JSON.parse(localStorage.getItem('vault_ledger')) || [];
+        let fLedger = JSON.parse(localStorage.getItem('fiduciary_ledger')) || [];
         document.getElementById('form-date').valueAsDate = new Date();
 
         function mask(val) { return stealth ? "••••" : (parseFloat(val) || 0).toLocaleString(); }
@@ -140,7 +156,7 @@
 
             const assetGroups = { Stocks: {t:0, e:[]}, Property: {t:0, e:[]} };
 
-            ledger.forEach((item, idx) => {
+            ledger.slice().sort((a,b) => new Date(b.rawDate) - new Date(a.rawDate)).forEach((item, idx) => {
                 const val = parseFloat(item.amount) || 0;
                 if (item.type === 'Liability') {
                     dSum += val;
@@ -152,7 +168,7 @@
                     if(!assetGroups[type]) assetGroups[type] = {t:0, e:[]};
                     assetGroups[type].t += val; assetGroups[type].e.push(item); aSum += val;
                 }
-                mHistory.innerHTML += `<div class="p-3 border border-zinc-800 rounded-lg mb-2"><div class="flex justify-between text-[8px] text-zinc-600 mb-1"><span>${item.date}</span><button onclick="deleteItem(${idx}, 'P')">×</button></div><div class="flex justify-between text-xs"><span>${item.name}</span><span>₦${mask(val)}</span></div></div>`;
+                mHistory.innerHTML += `<div class="p-3 border border-zinc-800 rounded-lg mb-2"><div class="flex justify-between text-[8px] text-zinc-600 mb-1"><span>${item.date}</span><button onclick="deleteItem(${ledger.indexOf(item)}, 'P')">×</button></div><div class="flex justify-between text-xs"><span>${item.name}</span><span>₦${mask(val)}</span></div></div>`;
             });
 
             for (const cat in assetGroups) {
@@ -190,7 +206,7 @@
             updateDisplay(); 
         }
         function toggleFormFields() { document.getElementById('personal-fields').classList.toggle('hidden', document.getElementById('form-category').value === 'Fiduciary'); }
-        function toggleCashFields() { /* Handled in logic */ }
+        function toggleCashFields() {}
         function toggleMenu() { document.getElementById('menu-overlay').classList.toggle('menu-open'); }
 
         function submitEntry() {
@@ -200,9 +216,7 @@
             if (cat === 'Personal') {
                 const type = document.getElementById('form-type').value;
                 let entry = { name, amount, type, date: entryDate, rawDate: dateVal };
-                if (type === 'Cash') {
-                    entry.bills = amount * 0.40; entry.savings = amount * 0.40; entry.lifestyle = amount * 0.20;
-                }
+                if (type === 'Cash') { entry.bills = amount * 0.40; entry.savings = amount * 0.40; entry.lifestyle = amount * 0.20; }
                 ledger.push(entry); localStorage.setItem('vault_ledger', JSON.stringify(ledger));
             } else {
                 fLedger.push({ name, amount, date: entryDate, rawDate: dateVal }); localStorage.setItem('fiduciary_ledger', JSON.stringify(fLedger));
