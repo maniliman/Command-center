@@ -10,6 +10,7 @@
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
+        .ledger-item { border-bottom: 1px solid #262629; }
     </style>
 </head>
 <body class="p-6">
@@ -21,7 +22,7 @@
         <button onclick="togglePrivacy()" class="p-3 vault-card text-[10px] tracking-widest uppercase">Stealth</button>
     </header>
 
-    <div class="space-y-4">
+    <div class="space-y-4 mb-10">
         <button onclick="addEntry()" class="w-full vault-card p-5 flex justify-between items-center text-left">
             <div>
                 <p class="text-xs font-bold uppercase emerald-text">Quick Entry (40/40/20)</p>
@@ -39,15 +40,32 @@
         </button>
     </div>
 
+    <div class="vault-card p-5">
+        <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase mb-4">Tactical Ledger</p>
+        <div id="ledger-list" class="space-y-3 max-h-60 overflow-y-auto">
+            </div>
+    </div>
+
     <script>
         let stealth = false;
         let balance = parseFloat(localStorage.getItem('vault_balance')) || 0;
         let loans = parseFloat(localStorage.getItem('vault_loans')) || 0;
+        let history = JSON.parse(localStorage.getItem('vault_history')) || [];
 
         function updateDisplay() {
             const netWorth = balance - loans;
             document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netWorth.toLocaleString();
             document.getElementById('loan-display').innerText = "Current Debt: ₦" + loans.toLocaleString();
+            
+            const list = document.getElementById('ledger-list');
+            list.innerHTML = history.slice().reverse().map(item => `
+                <div class="ledger-item pb-2 flex justify-between">
+                    <span class="text-[10px] uppercase">${item.date}</span>
+                    <span class="${item.type === 'IN' ? 'emerald-text' : 'oxblood-text'} text-[10px] font-bold">
+                        ${item.type === 'IN' ? '+' : '-'} ₦${item.amount.toLocaleString()}
+                    </span>
+                </div>
+            `).join('');
         }
 
         function togglePrivacy() {
@@ -60,28 +78,29 @@
             if (amount && !isNaN(amount)) {
                 const num = parseFloat(amount);
                 balance += num;
-                localStorage.setItem('vault_balance', balance);
-                updateDisplay();
-                
-                // Show the 40/40/20 split in the UI
-                document.getElementById('split-display').innerHTML = 
-                    `Last Split: Bills: ₦${(num*0.4).toLocaleString()} | Savings: ₦${(num*0.4).toLocaleString()}`;
+                saveTransaction('IN', num);
             }
         }
 
         function addLoan() {
-            const amount = prompt("Enter total debt/loan amount (₦):");
+            const amount = prompt("Enter total debt amount (₦):");
             if (amount && !isNaN(amount)) {
-                loans = parseFloat(amount);
-                localStorage.setItem('vault_loans', loans);
-                updateDisplay();
+                const num = parseFloat(amount);
+                loans = num;
+                saveTransaction('DEBT', num);
             }
         }
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+        function saveTransaction(type, amount) {
+            const date = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+            history.push({ type, amount, date });
+            localStorage.setItem('vault_balance', balance);
+            localStorage.setItem('vault_loans', loans);
+            localStorage.setItem('vault_history', JSON.stringify(history));
+            updateDisplay();
         }
 
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
         updateDisplay();
     </script>
 </body>
