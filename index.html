@@ -10,39 +10,58 @@
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; position: relative; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
-        .filter-btn { padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; transition: 0.2s; border: 1px solid #262629; }
-        .filter-active { background: #FF3131; color: black; border-color: #FF3131; }
         .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 14px; border-radius: 8px; width: 100%; outline: none; }
-        .fab-button { position: fixed; bottom: 32px; right: 32px; z-index: 500 !important; box-shadow: 0 0 25px rgba(0, 255, 65, 0.4); }
-        #menu-overlay { display: none; position: fixed; inset: 0; z-index: 1000 !important; background: rgba(0,0,0,0.98); backdrop-filter: blur(25px); padding: 24px; padding-top: 80px; overflow-y: auto; }
+        
+        #dashboard-content { position: relative; z-index: 1; padding: 24px; }
+        .stealth-btn { position: relative; z-index: 100 !important; pointer-events: auto !important; }
+        .fab-button { position: fixed; bottom: 32px; right: 32px; z-index: 500 !important; pointer-events: auto !important; box-shadow: 0 0 25px rgba(0, 255, 65, 0.4); }
+
+        #menu-overlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            z-index: 1000 !important; 
+            background: rgba(0,0,0,0.98); 
+            backdrop-filter: blur(25px); 
+            padding: 24px;
+            padding-top: 80px;
+            overflow-y: auto;
+        }
         .menu-open { display: flex !important; flex-direction: column; align-items: center; }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
     </style>
 </head>
 <body class="pb-60">
 
-    <div id="dashboard-content" class="p-6">
+    <div id="dashboard-content">
         <header class="mb-10 flex justify-between items-start pt-4">
             <div>
                 <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase font-bold text-emerald-500/80">Sovereign Financials</p>
                 <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter">₦0.00</h1>
             </div>
-            <button onclick="togglePrivacy()" class="p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800 active:bg-zinc-800">Stealth</button>
+            <button onclick="togglePrivacy()" class="stealth-btn p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800">
+                Stealth
+            </button>
         </header>
 
-        <div class="grid grid-cols-1 gap-4 mb-8">
-            <div class="vault-card p-5 border-l-4 border-red-500">
-                <p class="text-[#71717A] text-[9px] uppercase font-bold mb-1">Total Monies Owed (Creditors)</p>
-                <p id="inv-debt-total" class="oxblood-text font-bold text-2xl font-mono">₦0</p>
-            </div>
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <details class="vault-card group col-span-2">
+                <summary class="p-5 flex justify-between items-center list-none cursor-pointer">
+                    <span class="text-[10px] uppercase tracking-widest font-black">Assets & Debtors</span>
+                    <span id="inv-assets-total" class="text-sm font-bold emerald-text">₦0</span>
+                </summary>
+                <div id="asset-list" class="px-5 pb-5 space-y-2 border-t border-zinc-900 pt-4 text-[11px]"></div>
+            </details>
+            <details class="vault-card group col-span-2">
+                <summary class="p-5 flex justify-between items-center list-none cursor-pointer">
+                    <span class="text-[10px] uppercase tracking-widest font-black">Creditors (People I Owe)</span>
+                    <span id="inv-debt-total" class="text-sm font-bold oxblood-text">₦0</span>
+                </summary>
+                <div id="debt-list" class="px-5 pb-5 space-y-2 border-t border-zinc-900 pt-4 text-[11px]"></div>
+            </details>
         </div>
 
-        <div class="flex justify-between items-center mb-6">
-            <p class="text-[#71717A] text-[9px] uppercase tracking-[0.3em] font-bold">Master Ledger</p>
-            <button id="debt-filter-btn" onclick="toggleDebtFilter()" class="filter-btn">
-                Filter: Debt Only
-            </button>
-        </div>
-        
+        <p class="text-[#71717A] text-[9px] uppercase tracking-[0.3em] font-bold mb-4">Master Ledger (Debt Servicing)</p>
         <div id="master-history" class="space-y-4"></div>
     </div>
 
@@ -52,13 +71,13 @@
         <div class="w-full space-y-6 max-w-sm mx-auto pb-20">
             <h2 class="text-xl font-bold uppercase tracking-tighter">New Entry</h2>
             <div class="space-y-4">
-                <input id="form-name" class="input-dark" placeholder="Entity Name">
-                <input id="form-amount" type="number" class="input-dark" placeholder="Amount (₦)">
+                <input id="form-name" class="input-dark" placeholder="Name of Person/Bank">
+                <input id="form-amount" type="number" class="input-dark" placeholder="Principal Amount (₦)">
                 <select id="form-type" class="input-dark" onchange="toggleSpecialFields()">
                     <option value="Asset">Fixed Asset</option>
                     <option value="Cash">Liquid Cash</option>
-                    <option value="Liability">Liability (I Owe)</option>
-                    <option value="Debtor">Debtor (Owes Me)</option>
+                    <option value="Liability">Creditor (I Owe Them)</option>
+                    <option value="Debtor">Debtor (They Owe Me)</option>
                 </select>
 
                 <div id="debt-fields" class="hidden space-y-4 pt-4 border-t border-zinc-800">
@@ -77,37 +96,30 @@
 
     <script>
         let stealth = false;
-        let debtFilter = false;
         let ledger = JSON.parse(localStorage.getItem('vault_ledger')) || [];
 
         function updateDisplay() {
             let assetsSum = 0, debtSum = 0;
-            const masterHistory = document.getElementById('master-history');
-            masterHistory.innerHTML = '';
+            const assetList = document.getElementById('asset-list'), debtList = document.getElementById('debt-list'), masterHistory = document.getElementById('master-history');
+            assetList.innerHTML = ''; debtList.innerHTML = ''; masterHistory.innerHTML = '';
 
             ledger.slice().reverse().forEach((item, originalIndex) => {
                 const idx = ledger.length - 1 - originalIndex;
-                const interestAmt = (item.amount * (item.interest || 0) / 100);
+                const interest = (item.amount * (item.interest || 0) / 100);
                 const paid = item.paid || 0;
-                const forgiven = item.forgiven || 0;
-                const balance = item.amount + interestAmt - paid - forgiven;
+                const balance = item.amount + interest - paid;
 
-                const isDebt = (item.type === 'Liability');
-                const isAssetGroup = (item.type === 'Asset' || item.type === 'Cash' || item.type === 'Debtor');
+                const isAsset = (item.type === 'Asset' || item.type === 'Cash' || item.type === 'Debtor');
+                if(isAsset) assetsSum += balance; else debtSum += balance;
+
+                const color = item.type === 'Debtor' ? 'text-blue-400' : (isAsset ? 'emerald-text' : 'oxblood-text');
                 
-                if(isAssetGroup) assetsSum += balance; else debtSum += balance;
-
-                // FILTER LOGIC
-                if (debtFilter && !isDebt) return;
-
-                const color = item.type === 'Debtor' ? 'text-blue-400' : (isAssetGroup ? 'emerald-text' : 'oxblood-text');
-                
-                masterHistory.innerHTML += `
-                    <div class="vault-card p-4 border-l-4 ${isAssetGroup ? 'border-emerald-500' : 'border-red-500'} mb-4">
+                const auditHTML = `
+                    <div class="vault-card p-4 border-l-4 ${isAsset ? 'border-emerald-500' : 'border-red-500'} mb-4">
                         <div class="flex justify-between items-start mb-2">
                             <p class="text-[8px] text-zinc-600 font-bold uppercase">${item.timestamp}</p>
                             <div class="flex gap-2">
-                                <button onclick="serviceDebt(${idx})" class="text-[8px] border border-zinc-800 px-2 py-1 rounded text-zinc-400 uppercase font-bold">Service</button>
+                                <button onclick="serviceDebt(${idx})" class="text-[8px] border border-zinc-800 px-2 py-1 rounded text-zinc-400 uppercase font-bold">Service Payment</button>
                                 <button onclick="deleteItem(${idx})" class="text-zinc-800 hover:text-red-500 px-1 font-black text-xs">×</button>
                             </div>
                         </div>
@@ -118,26 +130,24 @@
                             <p class="${color} font-mono text-xs font-bold">₦${stealth ? '••••' : balance.toLocaleString()}</p>
                         </div>
                     </div>`;
+
+                masterHistory.innerHTML += auditHTML;
+                const listHTML = `<div class="flex justify-between py-1 border-b border-zinc-900 last:border-0"><span>${item.name}</span><span class="${color}">₦${stealth ? '••••' : balance.toLocaleString()}</span></div>`;
+                if (isAsset) assetList.innerHTML += listHTML; else debtList.innerHTML += listHTML;
             });
 
             document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + (assetsSum - debtSum).toLocaleString();
+            document.getElementById('inv-assets-total').innerText = stealth ? "••••" : "₦" + assetsSum.toLocaleString();
             document.getElementById('inv-debt-total').innerText = stealth ? "••••" : "₦" + debtSum.toLocaleString();
         }
 
-        function toggleDebtFilter() {
-            debtFilter = !debtFilter;
-            const btn = document.getElementById('debt-filter-btn');
-            btn.classList.toggle('filter-active', debtFilter);
-            updateDisplay();
-        }
-
         function serviceDebt(index) {
-            const pay = parseFloat(prompt("Amount Paid (₦):", "0")) || 0;
-            const forgive = parseFloat(prompt("Amount Forgiven (₦):", "0")) || 0;
-            ledger[index].paid = (ledger[index].paid || 0) + pay;
-            ledger[index].forgiven = (ledger[index].forgiven || 0) + forgive;
-            localStorage.setItem('vault_ledger', JSON.stringify(ledger));
-            updateDisplay();
+            const amt = parseFloat(prompt("Amount Paid (₦):", "0"));
+            if(!isNaN(amt)) {
+                ledger[index].paid = (ledger[index].paid || 0) + amt;
+                localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+                updateDisplay();
+            }
         }
 
         function toggleSpecialFields() {
@@ -148,13 +158,8 @@
         function submitEntry() {
             const name = document.getElementById('form-name').value, amount = parseFloat(document.getElementById('form-amount').value), type = document.getElementById('form-type').value;
             if (!name || isNaN(amount)) return;
-            ledger.push({
-                name, amount, type, timestamp: new Date().toLocaleDateString(),
-                interest: parseFloat(document.getElementById('form-interest').value) || 0,
-                dueDate: document.getElementById('form-due').value,
-                paid: 0, forgiven: 0
-            });
-            localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+            const entry = { name, amount, type, timestamp: new Date().toLocaleDateString(), interest: parseFloat(document.getElementById('form-interest').value) || 0, dueDate: document.getElementById('form-due').value, paid: 0 };
+            ledger.push(entry); localStorage.setItem('vault_ledger', JSON.stringify(ledger));
             updateDisplay(); toggleMenu();
         }
 
