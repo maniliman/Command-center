@@ -10,9 +10,17 @@
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
         .emerald-text { color: #00FF41; }
         .oxblood-text { color: #FF3131; }
-        /* Ensures the dashboard is visible and the menu is hidden by default */
-        #menu-overlay { display: none; } 
+        
+        /* The Fix: Ensuring the menu and FAB are above everything else */
+        #menu-overlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            z-index: 999; /* Highest layer */
+        }
         .menu-open { display: flex !important; background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); }
+        .fab-button { z-index: 100; position: fixed; }
+        .stealth-btn { z-index: 50; position: relative; }
     </style>
 </head>
 <body class="p-6 pb-32">
@@ -20,81 +28,83 @@
     <div id="dashboard-content">
         <header class="mb-10 flex justify-between items-start pt-4">
             <div>
-                <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase">Global Net Worth</p>
+                <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase font-bold">Global Net Worth</p>
                 <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter">₦0.00</h1>
             </div>
-            <button onclick="togglePrivacy()" class="p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800">Stealth</button>
+            <button onclick="togglePrivacy()" class="stealth-btn p-3 vault-card text-[10px] tracking-widest uppercase border border-zinc-800 active:bg-zinc-800">Stealth</button>
         </header>
 
         <div class="grid grid-cols-2 gap-4 mb-8">
             <div class="vault-card p-4">
-                <p class="text-[#71717A] text-[9px] uppercase mb-1">Total Assets</p>
+                <p class="text-[#71717A] text-[9px] uppercase mb-1 font-bold">Total Assets</p>
                 <p id="total-assets" class="emerald-text font-bold text-lg">₦0</p>
             </div>
             <div class="vault-card p-4">
-                <p class="text-[#71717A] text-[9px] uppercase mb-1">Total Debt</p>
+                <p class="text-[#71717A] text-[9px] uppercase mb-1 font-bold">Total Debt</p>
                 <p id="total-debt" class="oxblood-text font-bold text-lg">₦0</p>
             </div>
         </div>
 
         <div class="vault-card p-5 mb-8 border border-emerald-900/20">
             <div class="flex justify-between items-center mb-6">
-                <p class="text-[#71717A] text-[9px] uppercase tracking-widest font-bold">Tactical Cash Split</p>
+                <p class="text-[#71717A] text-[9px] uppercase tracking-widest font-black">Tactical Cash Split</p>
                 <div class="text-right">
-                    <p class="text-[8px] text-zinc-600 uppercase">Liquid Total</p>
+                    <p class="text-[8px] text-zinc-600 uppercase font-bold">Liquid Total</p>
                     <p id="total-cash" class="text-sm font-bold emerald-text">₦0</p>
                 </div>
             </div>
             <div class="space-y-4">
                 <div class="flex justify-between text-xs">
-                    <span class="text-zinc-500 font-bold">Bills (40%)</span>
-                    <span id="alloc-bills">₦0</span>
+                    <span class="text-zinc-500 font-bold uppercase tracking-tighter">Bills (40%)</span>
+                    <span id="alloc-bills" class="font-mono">₦0</span>
                 </div>
                 <div class="flex justify-between text-xs">
-                    <span class="text-zinc-500 font-bold">Savings (40%)</span>
-                    <span id="alloc-savings" class="text-emerald-500/80">₦0</span>
+                    <span class="text-zinc-500 font-bold uppercase tracking-tighter">Savings (40%)</span>
+                    <span id="alloc-savings" class="text-emerald-500/80 font-mono">₦0</span>
                 </div>
                 <div class="flex justify-between text-xs border-t border-zinc-800/50 pt-3">
-                    <span class="text-zinc-500 font-bold">Lifestyle (20%)</span>
-                    <span id="alloc-life">₦0</span>
+                    <span class="text-zinc-500 font-bold uppercase tracking-tighter">Lifestyle (20%)</span>
+                    <span id="alloc-life" class="font-mono">₦0</span>
                 </div>
             </div>
         </div>
 
         <details class="vault-card group mb-4">
             <summary class="p-5 flex justify-between items-center list-none cursor-pointer">
-                <span class="text-[10px] uppercase tracking-widest font-bold">Asset Inventory</span>
+                <span class="text-[10px] uppercase tracking-widest font-black">Asset Inventory</span>
                 <span class="text-zinc-600 group-open:rotate-180 transition-transform">▼</span>
             </summary>
-            <div id="asset-list" class="px-5 pb-5 space-y-2 border-t border-zinc-800 pt-4"></div>
+            <div id="asset-list" class="px-5 pb-5 space-y-2 border-t border-zinc-800 pt-4 text-xs"></div>
         </details>
 
         <details class="vault-card group">
             <summary class="p-5 flex justify-between items-center list-none cursor-pointer">
-                <span class="text-[10px] uppercase tracking-widest font-bold">Liability Ledger</span>
+                <span class="text-[10px] uppercase tracking-widest font-black">Liability Ledger</span>
                 <span class="text-zinc-600 group-open:rotate-180 transition-transform">▼</span>
             </summary>
-            <div id="debt-list" class="px-5 pb-5 space-y-2 border-t border-zinc-800 pt-4"></div>
+            <div id="debt-list" class="px-5 pb-5 space-y-2 border-t border-zinc-800 pt-4 text-xs"></div>
         </details>
     </div>
 
-    <button onclick="toggleMenu()" class="fixed bottom-8 right-8 w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-3xl shadow-2xl z-50 font-bold">+</button>
+    <button onclick="toggleMenu()" class="fab-button bottom-8 right-8 w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-black text-3xl shadow-2xl font-bold active:scale-95 transition-transform">
+        +
+    </button>
 
-    <div id="menu-overlay" class="fixed inset-0 z-40 flex-col items-center justify-center p-8">
+    <div id="menu-overlay" class="flex-col items-center justify-center p-8">
         <div class="w-full space-y-4 max-w-sm">
-            <button onclick="addEntry('Cash')" class="w-full vault-card p-6 text-left border-l-4 border-emerald-500">
-                <p class="emerald-text font-bold uppercase text-xs">Add Liquid Cash</p>
-                <p class="text-[10px] text-zinc-500">Calculates 40/40/20 Split</p>
+            <button onclick="addEntry('Cash')" class="w-full vault-card p-6 text-left border-l-4 border-emerald-500 active:bg-zinc-800">
+                <p class="emerald-text font-bold uppercase text-xs tracking-widest">Add Liquid Cash</p>
+                <p class="text-[10px] text-zinc-500 mt-1 uppercase">Updates 40/40/20 Engine</p>
             </button>
-            <button onclick="addEntry('Asset')" class="w-full vault-card p-6 text-left border-l-4 border-zinc-700">
-                <p class="text-zinc-300 font-bold uppercase text-xs">Add Fixed Asset</p>
-                <p class="text-[10px] text-zinc-500">Property, Land, Equity</p>
+            <button onclick="addEntry('Asset')" class="w-full vault-card p-6 text-left border-l-4 border-zinc-700 active:bg-zinc-800">
+                <p class="text-zinc-300 font-bold uppercase text-xs tracking-widest">Add Fixed Asset</p>
+                <p class="text-[10px] text-zinc-500 mt-1 uppercase">Properties & Equity</p>
             </button>
-            <button onclick="addEntry('Liability')" class="w-full vault-card p-6 text-left border-l-4 border-red-500">
-                <p class="oxblood-text font-bold uppercase text-xs">Add Liability</p>
-                <p class="text-[10px] text-zinc-500">Loans and Creditors</p>
+            <button onclick="addEntry('Liability')" class="w-full vault-card p-6 text-left border-l-4 border-red-500 active:bg-zinc-800">
+                <p class="oxblood-text font-bold uppercase text-xs tracking-widest">Add Liability</p>
+                <p class="text-[10px] text-zinc-500 mt-1 uppercase">Loans & Creditors</p>
             </button>
-            <button onclick="toggleMenu()" class="w-full p-6 text-zinc-500 text-xs uppercase tracking-widest text-center mt-4 underline">Close Menu</button>
+            <button onclick="toggleMenu()" class="w-full p-6 text-zinc-600 text-[10px] uppercase tracking-[0.3em] text-center mt-4 font-bold">Return to Base</button>
         </div>
     </div>
 
@@ -116,6 +126,39 @@
 
                 const target = isAsset ? assetList : debtList;
                 target.innerHTML += `
-                    <div class="flex justify-between items-center text-[11px] py-2 border-b border-zinc-900 last:border-0">
+                    <div class="flex justify-between items-center py-2 border-b border-zinc-900 last:border-0">
                         <span class="text-zinc-400 font-bold">${item.name}</span>
                         <div class="flex items-center gap-4">
+                            <span class="${isAsset ? 'emerald-text' : 'oxblood-text'} font-mono">₦${stealth ? '••••' : item.amount.toLocaleString()}</span>
+                            <button onclick="deleteItem(${index})" class="text-zinc-800 px-2 font-black">×</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + (assetsSum - debtSum).toLocaleString();
+            document.getElementById('total-assets').innerText = stealth ? "••••" : "₦" + assetsSum.toLocaleString();
+            document.getElementById('total-debt').innerText = stealth ? "••••" : "₦" + debtSum.toLocaleString();
+            document.getElementById('total-cash').innerText = stealth ? "••••" : "₦" + cashSum.toLocaleString();
+
+            document.getElementById('alloc-bills').innerText = stealth ? "••••" : "₦" + (cashSum * 0.4).toLocaleString();
+            document.getElementById('alloc-savings').innerText = stealth ? "••••" : "₦" + (cashSum * 0.4).toLocaleString();
+            document.getElementById('alloc-life').innerText = stealth ? "••••" : "₦" + (cashSum * 0.2).toLocaleString();
+        }
+
+        function toggleMenu() {
+            document.getElementById('menu-overlay').classList.toggle('menu-open');
+        }
+
+        function addEntry(type) {
+            const name = prompt(`Name of ${type}:`);
+            const amount = prompt("Value (₦):");
+            if (name && amount && !isNaN(amount)) {
+                ledger.push({ name, amount: parseFloat(amount), type });
+                localStorage.setItem('vault_ledger', JSON.stringify(ledger));
+                updateDisplay();
+                toggleMenu();
+            }
+        }
+
+        function deleteItem(index)
