@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Financial Command Center</title>
+    <title>Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; }
         .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; }
         .emerald-text { color: #00FF41; }
+        .oxblood-text { color: #FF3131; }
     </style>
 </head>
 <body class="p-6">
     <header class="mb-10 flex justify-between items-start pt-4">
         <div>
-            <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase">Global Net Worth</p>
+            <p class="text-[#71717A] text-[10px] tracking-[0.3em] uppercase">True Net Worth</p>
             <h1 id="networth" class="text-4xl font-bold mt-2 tracking-tighter">₦0.00</h1>
         </div>
         <button onclick="togglePrivacy()" class="p-3 vault-card text-[10px] tracking-widest uppercase">Stealth</button>
@@ -24,53 +25,64 @@
         <button onclick="addEntry()" class="w-full vault-card p-5 flex justify-between items-center text-left">
             <div>
                 <p class="text-xs font-bold uppercase emerald-text">Quick Entry (40/40/20)</p>
-                <p class="text-[10px] text-[#71717A]">Add Funds & Auto-Allocate</p>
+                <p id="split-display" class="text-[10px] text-[#71717A]">Add Funds & Auto-Allocate</p>
             </div>
             <span class="text-xl">⚡</span>
+        </button>
+
+        <button onclick="addLoan()" class="w-full vault-card p-5 flex justify-between items-center text-left border-dashed border-red-900/30">
+            <div>
+                <p class="text-xs font-bold uppercase oxblood-text">Debt Destroyer</p>
+                <p id="loan-display" class="text-[10px] text-[#71717A]">Log Liabilities</p>
+            </div>
+            <span class="text-xl">📉</span>
         </button>
     </div>
 
     <script>
-        <script>
-    let stealth = false;
-    // Load both balance and loans from local storage
-    let balance = parseFloat(localStorage.getItem('vault_balance')) || 0;
-    let loans = parseFloat(localStorage.getItem('vault_loans')) || 0;
+        let stealth = false;
+        let balance = parseFloat(localStorage.getItem('vault_balance')) || 0;
+        let loans = parseFloat(localStorage.getItem('vault_loans')) || 0;
 
-    function updateDisplay() {
-        const netWorth = balance - loans;
-        document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netWorth.toLocaleString();
-        // We will also update a Loan display if you add one to the HTML later
-    }
+        function updateDisplay() {
+            const netWorth = balance - loans;
+            document.getElementById('networth').innerText = stealth ? "••••••••" : "₦" + netWorth.toLocaleString();
+            document.getElementById('loan-display').innerText = "Current Debt: ₦" + loans.toLocaleString();
+        }
 
-    function togglePrivacy() {
-        stealth = !stealth;
+        function togglePrivacy() {
+            stealth = !stealth;
+            updateDisplay();
+        }
+
+        function addEntry() {
+            const amount = prompt("Enter deposit amount (₦):");
+            if (amount && !isNaN(amount)) {
+                const num = parseFloat(amount);
+                balance += num;
+                localStorage.setItem('vault_balance', balance);
+                updateDisplay();
+                
+                // Show the 40/40/20 split in the UI
+                document.getElementById('split-display').innerHTML = 
+                    `Last Split: Bills: ₦${(num*0.4).toLocaleString()} | Savings: ₦${(num*0.4).toLocaleString()}`;
+            }
+        }
+
+        function addLoan() {
+            const amount = prompt("Enter total debt/loan amount (₦):");
+            if (amount && !isNaN(amount)) {
+                loans = parseFloat(amount);
+                localStorage.setItem('vault_loans', loans);
+                updateDisplay();
+            }
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
         updateDisplay();
-    }
-
-    function addEntry() {
-        const amount = prompt("Enter deposit amount (₦):");
-        if (amount && !isNaN(amount)) {
-            balance += parseFloat(amount);
-            localStorage.setItem('vault_balance', balance);
-            updateDisplay();
-            alert("Funds Vaulted. Split 40/40/20 in your mind.");
-        }
-    }
-
-    // NEW: Debt Destroyer Function
-    function addLoan() {
-        const amount = prompt("Enter total debt/loan amount (₦):");
-        if (amount && !isNaN(amount)) {
-            loans = parseFloat(amount);
-            localStorage.setItem('vault_loans', loans);
-            updateDisplay();
-            alert("Liability Tracked. Net Worth adjusted.");
-        }
-    }
-
-    updateDisplay();
-</script>
     </script>
 </body>
 </html>
