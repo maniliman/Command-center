@@ -130,4 +130,87 @@
                 execute: () => {
                     const a = parseFloat(document.getElementById('e-amount').value), desc = document.getElementById('e-name').value;
                     if(!desc || isNaN(a)) return;
-                    let e =
+                    let e = { id: Date.now(), name: desc, total: a, type: activeType, date: new Date().toISOString().split('T')[0] };
+                    if(activeType === 'income') { if(settlement){ e.type='debt_repayment'; e.debtor=desc; } e.b=a*0.4; e.s=a*0.4; e.l=a*0.2; }
+                    else if(activeType === 'expense') { e.total=-a; if(settlement){ e.type='credit_settlement'; e.creditor=desc; } }
+                    else if(activeType === 'fiduciary') { e.goal=document.getElementById('e-fd-goal').value; e.user=document.getElementById('e-fd-user').value; }
+                    else if(activeType === 'debtor' || activeType === 'creditor') { e.total=(activeType==='creditor')?-a:a; e.debtor=desc; e.creditor=desc; e.rate=document.getElementById('e-rate')?.value; e.term=document.getElementById('e-term')?.value; }
+                    else if(activeType === 'asset') { e.cat=document.getElementById('e-as-cat').value; }
+                    db.push(e); save(); VaultUI.changeView('dashboard-view');
+                },
+                export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'Vault_v66.json'; a.click(); },
+                import: (input) => { const r = new FileReader(); r.onload = (e) => { db = JSON.parse(e.target.result); save(); location.reload(); }; r.readAsText(input.files[0]); },
+                delete: id => { if(confirm("Delete?")){ db=db.filter(x=>x.id!==id); save(); VaultUI.render(); }},
+                wipe: () => { if(confirm("Wipe?")){ localStorage.clear(); location.reload(); }}
+            };
+        })();
+
+        const VaultUI = (() => {
+            return {
+                init: () => { 
+                    if(VaultCore.pin() && VaultCore.config().reqPin) document.getElementById('auth-screen').classList.remove('view-hidden');
+                    else VaultUI.render();
+                },
+                authenticate: () => { if(document.getElementById('auth-pin').value === VaultCore.pin()) { document.getElementById('auth-screen').classList.add('view-hidden'); VaultUI.render(); } else alert("Error"); },
+                toggleCard: id => document.getElementById(id).classList.toggle('drawer-open'),
+                toggleStealth: () => document.getElementById('main-body').classList.toggle('stealth-active'),
+                changeView: id => {
+                    const vs = ['dashboard-view', 'entry-grid', 'entry-form', 'settings-view', 'query-lab'];
+                    vs.forEach(v => document.getElementById(v).classList.add('view-hidden'));
+                    document.getElementById(id).classList.remove('view-hidden');
+                    const f = document.getElementById('nav-fab');
+                    if(id==='dashboard-view'){ f.innerText="+"; f.className="fab-btn fab-primary"; f.onclick=()=>VaultUI.changeView('entry-grid'); VaultUI.render(); }
+                    else { f.innerText="↩"; f.className="fab-btn fab-back"; f.onclick=()=>VaultUI.changeView('dashboard-view'); }
+                },
+                openForm: t => { VaultCore.setType(t); VaultUI.changeView('entry-form'); VaultUI.updateFormUI(); },
+                updateFormUI: () => {
+                    const t = VaultCore.getType(), isSet = VaultCore.isSettlement(), dyn = document.getElementById('dynamic-inputs'), name = document.getElementById('e-name'), tog = document.getElementById('settle-toggle-container'), dl = document.getElementById('active-list');
+                    dyn.innerHTML = ''; tog.innerHTML = ''; dl.innerHTML = ''; name.placeholder = "Description";
+                    if(t === 'income') {
+                        tog.innerHTML = `<div class="seg-control"><div class="seg-btn ${!isSet?'active green':''}" onclick="VaultCore.setSettlement(false)">INFLOW</div><div class="seg-btn ${isSet?'active yellow':''}" onclick="VaultCore.setSettlement(true)">RECOVER DEBT</div></div>`;
+                        if(isSet) { name.placeholder = "Search Debtor..."; [...new Set(VaultCore.db().filter(i=>i.type==='debtor').map(i=>i.debtor))].forEach(n=>dl.innerHTML+=`<option value="${n}">`); }
+                    } else if(t === 'expense') {
+                        tog.innerHTML = `<div class="seg-control"><div class="seg-btn ${!isSet?'active green':''}" onclick="VaultCore.setSettlement(false)">EXPENSE</div><div class="seg-btn ${isSet?'active yellow':''}" onclick="VaultCore.setSettlement(true)">SETTLE CREDIT</div></div>`;
+                        if(isSet) { name.placeholder = "Search Creditor..."; [...new Set(VaultCore.db().filter(i=>i.type==='creditor').map(i=>i.creditor))].forEach(n=>dl.innerHTML+=`<option value="${n}">`); }
+                    } else if(t==='debtor'||t==='creditor'){ dyn.innerHTML = '<div class="grid grid-cols-2 gap-4"><input id="e-rate" type="number" class="input-ghost" placeholder="Rate %"><input id="e-term" class="input-ghost" placeholder="Timeline"></div>'; }
+                    else if(t==='fiduciary'){ dyn.innerHTML = '<input id="e-fd-goal" class="input-ghost" placeholder="Project"><input id="e-fd-user" class="input-ghost" placeholder="Person">'; }
+                    else if(t==='asset'){ dyn.innerHTML = '<select id="e-as-cat" class="input-ghost"><option value="Property">Property</option><option value="Vehicle">Vehicle</option><option value="Other">Other Asset</option></select>'; }
+                },
+                runQuery: () => {
+                    const s = document.getElementById('q-search').value.toLowerCase(), start = document.getElementById('q-start').value, end = document.getElementById('q-end').value, res = document.getElementById('q-results');
+                    res.innerHTML = '';
+                    VaultCore.db().filter(i => {
+                        const dateM = (!start || i.date >= start) && (!end || i.date <= end);
+                        const textM = i.name.toLowerCase().includes(s) || (i.debtor||"").toLowerCase().includes(s) || (i.goal||"").toLowerCase().includes(s) || i.type.toLowerCase().includes(s);
+                        return dateM && textM;
+                    }).reverse().forEach(i => {
+                        const col = { expense: 'bg-red-900', income: 'bg-emerald-900', debtor: 'bg-yellow-900', creditor: 'bg-zinc-800' };
+                        res.innerHTML += `<div class="glass-panel p-4 flex justify-between uppercase text-[10px]"><span><span class="q-tag ${col[i.type]||'bg-zinc-700'}">${i.type}</span>${i.date} | ${i.name}</span><b>₦${Math.abs(i.total).toLocaleString()}</b></div>`;
+                    });
+                },
+                render: () => {
+                    const db = VaultCore.db(); let nw=0, b=0, s=0, l=0, as=0, fd=0, ex=0, dbT=0, crT=0;
+                    const dMap = {}, cMap = {}, piv = {};
+                    const hiS = document.getElementById('hi-search')?.value.toLowerCase() || "";
+                    ['as-list','db-list','cr-list','fd-pivot-list','hi-list','ex-list'].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ''; });
+                    db.slice().reverse().forEach(i => {
+                        if(i.type === 'fiduciary') { fd += i.total; const m = VaultCore.fdView()==='goal'?i.goal:i.user, sb = VaultCore.fdView()==='goal'?i.user:i.goal; if(!piv[m]) piv[m] = { t: 0, subs: [] }; piv[m].t += i.total; piv[m].subs.push({ n: sb, a: i.total }); } 
+                        else {
+                            nw += i.total; b += (i.b||0); s += (i.s||0); l += (i.l||0);
+                            if(i.total < 0 && i.type !== 'creditor') { ex += Math.abs(i.total); document.getElementById('ex-list').innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-900 text-[10px] uppercase"><span>${i.name}</span><span class="text-red-400">₦${Math.abs(i.total).toLocaleString()}</span></div>`; }
+                            if(i.type==='asset'){ as+=i.total; document.getElementById('as-list').innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-900 text-[10px] uppercase"><span>${i.cat} - ${i.name}</span><span class="text-blue-400">₦${i.total.toLocaleString()}</span></div>`; }
+                            if(i.type==='debtor'||i.type==='debt_repayment'){ const n=i.debtor||i.name, v=i.type==='debt_repayment'?-Math.abs(i.total):Math.abs(i.total); dMap[n]=(dMap[n]||0)+v; dbT+=v; }
+                            if(i.type==='creditor'||i.type==='credit_settlement'){ const n=i.creditor||i.name, v=i.type==='credit_settlement'?Math.abs(i.total):-Math.abs(i.total); cMap[n]=(cMap[n]||0)+v; crT+=v; }
+                        }
+                        if(!hiS || (i.name||"").toLowerCase().includes(hiS)) { document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-3 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><div class="flex gap-4 items-center"><span>₦${Math.abs(i.total).toLocaleString()}</span><button onclick="VaultCore.delete(${i.id})">✕</button></div></div>`; }
+                    });
+                    const set = (id, v) => { const el = document.getElementById(id); if(el) el.innerText = "₦" + v.toLocaleString(); };
+                    set('nw-display', nw); set('split-cash', (b+s+l)); set('split-as', as); set('split-db', dbT); set('ex-display', ex); set('fd-display', fd); set('cr-display', crT); set('as-display', as); set('db-display', dbT);
+                    set('tc-display', (b+s+l)); set('b-total', b); set('s-total', s); set('l-total', l);
+                }
+            };
+        })();
+        window.onload = VaultUI.init;
+    </script>
+</body>
+</html>
