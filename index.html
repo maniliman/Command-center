@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-    <title>Sovereign Vault v78</title>
+    <title>Sovereign Vault v79</title>
     
     <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/512/shield.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -53,7 +53,7 @@
 
     <div id="dashboard-view" class="space-y-6 pb-32">
         <div class="flex justify-between items-center px-2">
-            <span class="text-[10px] font-black tracking-widest text-zinc-600 uppercase">Sovereign v78</span>
+            <span class="text-[10px] font-black tracking-widest text-zinc-600 uppercase">Sovereign v79</span>
             <div class="flex gap-2">
                 <button onclick="VaultUI.changeView('query-lab')" class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400">🔍</button>
                 <button onclick="VaultUI.toggleStealth()" class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400">👁️</button>
@@ -139,10 +139,10 @@
 
     <script>
         const VaultCore = (() => {
-            let db = JSON.parse(localStorage.getItem('SOV_DB_V78')) || [];
-            let config = JSON.parse(localStorage.getItem('SOV_CFG_V78')) || { reqPin: false, activeQType: 'all', fdView: 'goal' };
-            let pin = localStorage.getItem('SOV_PIN_V78') || "";
-            const save = () => { localStorage.setItem('SOV_DB_V78', JSON.stringify(db)); localStorage.setItem('SOV_CFG_V78', JSON.stringify(config)); localStorage.setItem('SOV_PIN_V78', pin); };
+            let db = JSON.parse(localStorage.getItem('SOV_DB_V79')) || [];
+            let config = JSON.parse(localStorage.getItem('SOV_CFG_V79')) || { reqPin: false, activeQType: 'all', fdView: 'goal' };
+            let pin = localStorage.getItem('SOV_PIN_V79') || "";
+            const save = () => { localStorage.setItem('SOV_DB_V79', JSON.stringify(db)); localStorage.setItem('SOV_CFG_V79', JSON.stringify(config)); localStorage.setItem('SOV_PIN_V79', pin); };
             return {
                 db: () => db, config: () => config, pin: () => pin,
                 setFdView: v => { config.fdView = v; VaultUI.render(); },
@@ -154,7 +154,9 @@
                     if(!desc || isNaN(a)) return;
                     let e = { id: Date.now(), name: desc, total: a, type: activeType, date: new Date().toISOString().split('T')[0] };
                     if(activeType === 'income') {
-                        const bP = parseFloat(document.getElementById('fluid-bills').value)/100, sP = parseFloat(document.getElementById('fluid-save').value)/100, lP = parseFloat(document.getElementById('fluid-spend').value)/100;
+                        const bP = parseFloat(document.getElementById('fluid-bills').value)/100;
+                        const sP = parseFloat(document.getElementById('fluid-save').value)/100;
+                        const lP = parseFloat(document.getElementById('fluid-spend').value)/100;
                         e.b = a * bP; e.s = a * sP; e.l = a * lP;
                         if(settlement){ e.type='debt_repayment'; e.debtor=desc; }
                     }
@@ -165,7 +167,7 @@
                     else if(activeType === 'fiduciary') { e.goal=document.getElementById('e-fd-goal').value; e.user=document.getElementById('e-fd-user').value; }
                     db.push(e); save(); VaultUI.changeView('dashboard-view');
                 },
-                export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'Vault_v78.json'; a.click(); },
+                export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'Vault_v79.json'; a.click(); },
                 import: (input) => { const r = new FileReader(); r.onload = (e) => { db = JSON.parse(e.target.result); save(); location.reload(); }; r.readAsText(input.files[0]); },
                 delete: id => { if(confirm("Remove?")){ db=db.filter(x=>x.id!==id); save(); VaultUI.render(); }},
                 wipe: () => { if(confirm("RESET?")){ localStorage.clear(); location.reload(); }}
@@ -257,7 +259,7 @@
                         }
                         const hiS = document.getElementById('hi-search').value.toLowerCase();
                         if(!hiS || (i.name||"").toLowerCase().includes(hiS)) {
-                            document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-3 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><button onclick="VaultCore.delete(${i.id})">✕</button></div>`;
+                            document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-3 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><div class="flex gap-4"><b>₦${Math.abs(i.total).toLocaleString()}</b><button onclick="VaultCore.delete(${i.id})">✕</button></div></div>`;
                         }
                     });
                     Object.keys(piv).forEach(k => { 
