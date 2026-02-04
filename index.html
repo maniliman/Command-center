@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-    <title>Sovereign Vault v54</title>
+    <title>Sovereign Vault v53</title>
+    
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Sovereign%22,%22short_name%22:%22Vault%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#000000%22,%22theme_color%22:%22#10B981%22}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --safe-top: env(safe-area-inset-top, 50px); }
@@ -20,12 +25,8 @@
         .drawer-open > .sub-drawer { display: block !important; }
         
         /* Inputs & Toggles */
-        .input-ghost { background: transparent; border: none; color: white; font-size: 16px; width: 100%; outline: none; padding: 16px 0; border-bottom: 1px solid #333; border-radius: 0; transition: 0.2s; }
+        .input-ghost { background: transparent; border: none; color: white; font-size: 16px; width: 100%; outline: none; padding: 12px 0; border-bottom: 1px solid #333; border-radius: 0; transition: 0.2s; }
         .input-ghost:focus { border-bottom-color: #10B981; }
-        
-        /* Dropdown Fix */
-        select.input-ghost { background-color: #000; color: white; border-radius: 0; -webkit-appearance: none; }
-        
         .amount-hero { font-size: 48px; font-weight: 800; text-align: center; background: transparent; border: none; color: #fff; width: 100%; outline: none; padding: 20px 0; letter-spacing: -2px; }
         
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
@@ -35,11 +36,11 @@
         input:checked + .slider { background-color: #10B981; }
         input:checked + .slider:before { transform: translateX(22px); background-color: white; }
 
-        /* Navigation FAB - HYPER RESPONSIVE */
-        .fab-btn { position: fixed; bottom: 40px; right: 30px; width: 72px; height: 72px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; z-index: 50; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); touch-action: manipulation; cursor: pointer; }
+        /* Navigation FAB */
+        .fab-btn { position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; z-index: 9999; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); touch-action: manipulation; -webkit-transform: translateZ(0); }
         .fab-primary { background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: black; }
         .fab-back { background: #333; color: white; }
-        .fab-btn:active { transform: scale(0.92); }
+        .fab-btn:active { opacity: 0.8; transform: scale(0.95); }
 
         /* Fluid Bar */
         .fluid-bar { display: flex; border-radius: 12px; overflow: hidden; margin-top: 10px; border: 1px solid #333; }
@@ -59,13 +60,9 @@
         .seg-btn { flex: 1; text-align: center; padding: 12px; font-size: 10px; font-weight: 800; color: #555; border-radius: 10px; transition: 0.2s; touch-action: manipulation; }
         .seg-btn.active.green { background: #064E3B; color: #6EE7B7; border: 1px solid #065F46; }
         .seg-btn.active.red { background: #7F1D1D; color: #FCA5A5; border: 1px solid #991B1B; }
-
-        #emergency-reset { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; background: #991B1B; color: white; padding: 20px; border-radius: 10px; font-weight: bold; display: none; }
     </style>
 </head>
 <body id="main-body" class="p-4" style="padding-top: calc(var(--safe-top) + 10px);">
-
-    <button id="emergency-reset" onclick="localStorage.clear(); location.reload()">CRASH DETECTED. TAP TO RESET DATA.</button>
 
     <div id="auth-screen" class="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-8 view-hidden">
         <div class="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-8 text-2xl">🔒</div>
@@ -78,7 +75,7 @@
         <div class="flex justify-between items-center px-2">
             <div class="flex flex-col">
                 <span class="text-[10px] font-black tracking-widest text-zinc-600">SOVEREIGN VAULT</span>
-                <span class="text-[9px] text-zinc-700">SafeMode v54</span>
+                <span class="text-[9px] text-zinc-700">Velocity v53</span>
             </div>
             <div class="flex gap-2">
                 <button onclick="VaultUI.toggleStealth()" class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400">👁️</button>
@@ -197,10 +194,9 @@
             
             <div>
                 <input id="e-name" class="input-ghost" placeholder="Description" autocomplete="off">
-                
-                <select id="e-pick-debtor" class="input-ghost text-emerald-500 font-bold hidden"></select>
-                
-                <select id="e-pick-creditor" class="input-ghost text-red-500 font-bold hidden"></select>
+                <datalist id="list-debtors"></datalist>
+                <datalist id="list-creditors"></datalist>
+                <datalist id="list-history"></datalist>
             </div>
             
             <input id="e-datetime" type="datetime-local" class="input-ghost text-zinc-500 text-sm">
@@ -210,39 +206,23 @@
     </div>
 
     <div id="settings-view" class="view-hidden space-y-8 pb-32">
-        <div class="flex justify-between items-center mb-4 px-2">
-            <h2 class="text-2xl font-black tracking-tighter">CONFIGURATION</h2>
-        </div>
-
+        <h2 class="text-2xl font-black tracking-tighter">CONFIGURATION</h2>
         <div class="glass-panel p-6 space-y-6">
             <p class="text-[10px] font-bold text-zinc-500 uppercase">Dashboard Modules</p>
-            <div class="flex justify-between items-center"><span class="text-xs font-bold">Liquidity (Cash)</span><label class="switch"><input type="checkbox" id="tog-liq" onchange="VaultCore.toggleSetting('showLiq')"><span class="slider"></span></label></div>
+            <div class="flex justify-between items-center"><span class="text-xs font-bold">Liquidity</span><label class="switch"><input type="checkbox" id="tog-liq" onchange="VaultCore.toggleSetting('showLiq')"><span class="slider"></span></label></div>
             <div class="flex justify-between items-center"><span class="text-xs font-bold">Assets Tracker</span><label class="switch"><input type="checkbox" id="tog-ast" onchange="VaultCore.toggleSetting('showAst')"><span class="slider"></span></label></div>
             <div class="flex justify-between items-center"><span class="text-xs font-bold">Debtors</span><label class="switch"><input type="checkbox" id="tog-dbt" onchange="VaultCore.toggleSetting('showDbt')"><span class="slider"></span></label></div>
             <div class="flex justify-between items-center"><span class="text-xs font-bold">Creditors</span><label class="switch"><input type="checkbox" id="tog-crd" onchange="VaultCore.toggleSetting('showCrd')"><span class="slider"></span></label></div>
             <div class="flex justify-between items-center"><span class="text-xs font-bold">Fiduciary</span><label class="switch"><input type="checkbox" id="tog-fid" onchange="VaultCore.toggleSetting('showFid')"><span class="slider"></span></label></div>
         </div>
 
-        <div class="glass-panel p-6 space-y-6">
-            <div class="flex justify-between items-center">
-                <div><p class="text-sm font-bold">Secure Startup</p><p class="text-[10px] text-zinc-500">Require PIN on launch</p></div>
-                <label class="switch"><input type="checkbox" id="tog-pin" onchange="VaultCore.toggleSetting('reqPin')"><span class="slider"></span></label>
-            </div>
-            <div class="pt-4 border-t border-zinc-800">
-                <input id="set-pin" type="text" maxlength="4" class="input-ghost text-center tracking-[0.5em] mb-4" placeholder="••••">
-                <button onclick="VaultCore.savePin()" class="w-full bg-zinc-800 py-3 rounded-xl text-[10px] font-black uppercase">Update PIN</button>
-            </div>
-        </div>
-
         <div class="glass-panel p-6 space-y-4">
-            <div class="flex gap-2">
-                <button onclick="VaultCore.export()" class="flex-1 bg-zinc-800 py-4 rounded-xl text-[10px] font-bold uppercase">Export JSON</button>
-                <button onclick="document.getElementById('file-input').click()" class="flex-1 bg-zinc-800 py-4 rounded-xl text-[10px] font-bold uppercase text-emerald-400">Import JSON</button>
-                <input type="file" id="file-input" class="hidden" onchange="VaultCore.import(this)">
-            </div>
+            <button onclick="VaultCore.export()" class="w-full bg-zinc-800 py-4 rounded-xl text-[10px] font-bold uppercase">Export JSON</button>
+            <input type="file" id="file-input" class="hidden" onchange="VaultCore.import(this)">
+            <button onclick="document.getElementById('file-input').click()" class="w-full bg-zinc-800 py-4 rounded-xl text-[10px] font-bold uppercase text-emerald-400">Import JSON</button>
         </div>
 
-        <button onclick="VaultCore.wipe()" class="w-full py-4 border border-red-900/50 text-red-700 rounded-xl text-[10px] font-black uppercase tracking-widest">Factory Reset</button>
+        <button onclick="VaultCore.wipe()" class="w-full py-4 border border-red-900/50 text-red-700 rounded-xl text-[10px] font-black uppercase">Factory Reset</button>
     </div>
 
     <button id="nav-fab" onclick="VaultUI.handleFab()" class="fab-btn fab-primary">+</button>
@@ -250,11 +230,7 @@
     <script>
         const VaultCore = (() => {
             let db = JSON.parse(localStorage.getItem('SOVEREIGN_VAULT_FINAL')) || [];
-            let config = JSON.parse(localStorage.getItem('SOVEREIGN_CONFIG')) || { 
-                reqPin: true, showLiq: true, showAst: true, showDbt: true, showCrd: true, showFid: true 
-            };
-            let pin = localStorage.getItem('VAULT_PIN') || "";
-            let fdView = 'goal';
+            let config = JSON.parse(localStorage.getItem('SOVEREIGN_CONFIG')) || { reqPin: true, showLiq: true, showAst: true, showDbt: true, showCrd: true, showFid: true };
             let activeType = 'income';
             let settlementMode = false;
 
@@ -262,277 +238,98 @@
             const saveConfig = () => localStorage.setItem('SOVEREIGN_CONFIG', JSON.stringify(config));
 
             return {
-                db: () => db, pin: () => pin, config: () => config, fdView: () => fdView,
+                db: () => db, config: () => config,
                 getType: () => activeType,
                 setType: (t) => { activeType = t; settlementMode = false; },
-                setFdView: (v) => { fdView = v; VaultUI.render(); },
                 setSettlement: (bool) => { settlementMode = bool; VaultUI.updateFormUI(); },
                 isSettlement: () => settlementMode,
-                
                 toggleSetting: (key) => { config[key] = !config[key]; saveConfig(); VaultUI.render(); },
-                
-                savePin: () => { 
-                    const p = document.getElementById('set-pin').value;
-                    if(p.length !== 4) return alert("PIN must be 4 digits");
-                    localStorage.setItem('VAULT_PIN', p); pin = p;
-                    config.reqPin = true; saveConfig();
-                    VaultUI.syncToggles(); alert("Security Updated");
-                },
-
                 execute: () => {
-                    const t = activeType;
-                    const a = parseFloat(document.getElementById('e-amount').value);
-                    const dt = document.getElementById('e-datetime').value;
-                    
-                    // SMART NAME SELECTION
-                    let desc = "";
-                    if (t === 'income' && settlementMode) desc = document.getElementById('e-pick-debtor').value;
-                    else if (t === 'expense' && settlementMode) desc = document.getElementById('e-pick-creditor').value;
-                    else desc = document.getElementById('e-name').value;
-
+                    const t = activeType, a = parseFloat(document.getElementById('e-amount').value), dt = document.getElementById('e-datetime').value, desc = document.getElementById('e-name').value;
                     if (!desc || isNaN(a)) return alert("Incomplete Details");
-                    
                     let entry = { id: Date.now(), name: desc, total: a, type: t, rawDate: dt };
-                    
                     if (t === 'income') {
-                        if(settlementMode) {
-                            entry.type = 'debt_repayment';
-                            entry.debtor = desc; 
-                            entry.name = `Repayment: ${desc}`;
-                        }
-                        const pb = parseFloat(document.getElementById('fluid-bills').value) / 100;
-                        const ps = parseFloat(document.getElementById('fluid-save').value) / 100;
-                        const pl = parseFloat(document.getElementById('fluid-spend').value) / 100;
+                        if(settlementMode) { entry.type = 'debt_repayment'; entry.debtor = desc; entry.name = `Repayment: ${desc}`; }
+                        const pb = parseFloat(document.getElementById('fluid-bills').value)/100, ps = parseFloat(document.getElementById('fluid-save').value)/100, pl = parseFloat(document.getElementById('fluid-spend').value)/100;
                         entry.b = a * pb; entry.s = a * ps; entry.l = a * pl; 
-                    } 
-                    else if (t === 'expense') {
+                    } else if (t === 'expense') {
                         entry.total = -a;
-                        if(settlementMode) {
-                            entry.type = 'credit_settlement'; 
-                            entry.creditor = desc;
-                            entry.name = `Settled: ${desc}`;
-                        }
+                        if(settlementMode) { entry.type = 'credit_settlement'; entry.creditor = desc; entry.name = `Settled: ${desc}`; }
                         const s = document.getElementById('e-src')?.value || 'spend';
                         if(s === 'bills') entry.b = -a; else if(s === 'savings') entry.s = -a; else entry.l = -a;
-                    } 
-                    else if (t === 'fiduciary') { 
-                        entry.goal = document.getElementById('e-fd-goal').value; 
-                        entry.user = document.getElementById('e-fd-user').value; 
-                    }
-                    else if (t === 'asset') {
-                        entry.cat = document.getElementById('e-as-cat').value; 
-                    }
-                    else if (t === 'debtor' || t === 'creditor') { 
-                        entry.total = t==='creditor' ? -a : a; 
-                        entry.debtor = desc; entry.creditor = desc; 
-                    }
-                    
+                    } else if (t === 'fiduciary') { entry.goal = document.getElementById('e-fd-goal').value; entry.user = document.getElementById('e-fd-user').value; }
+                    else if (t === 'asset') { entry.cat = document.getElementById('e-as-cat').value; }
+                    else if (t === 'debtor' || t === 'creditor') { entry.total = t==='creditor' ? -a : a; entry.debtor = desc; entry.creditor = desc; }
                     db.push(entry); save(); VaultUI.changeView('dashboard-view');
                 },
                 export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `Vault_Backup.json`; a.click(); },
                 import: (input) => {
-                    const file = input.files[0];
-                    if(!file) return;
                     const reader = new FileReader();
-                    reader.onload = (e) => {
-                        try {
-                            const data = JSON.parse(e.target.result);
-                            if(confirm("Overwrite current data?")) { db = data; save(); location.reload(); }
-                        } catch(err) { alert("Invalid Backup File"); }
-                    };
-                    reader.readAsText(file);
+                    reader.onload = (e) => { db = JSON.parse(e.target.result); save(); location.reload(); };
+                    reader.readAsText(input.files[0]);
                 },
-                delete: (id) => { if(confirm("Remove Record?")) { db = db.filter(i => i.id !== id); save(); VaultUI.render(); } },
-                wipe: () => { if(confirm("RESET SYSTEM?")) { localStorage.clear(); location.reload(); } }
+                delete: (id) => { if(confirm("Remove?")) { db = db.filter(i => i.id !== id); save(); VaultUI.render(); } },
+                wipe: () => { if(confirm("RESET?")) { localStorage.clear(); location.reload(); } }
             };
         })();
 
         const VaultUI = (() => {
             return {
-                init: () => {
-                    // Safety Timeout for Black Screen
-                    setTimeout(() => { if(document.body.innerHTML === "") document.getElementById('emergency-reset').style.display='block'; }, 2000);
-                    
-                    try {
-                        VaultUI.syncToggles();
-                        if (VaultCore.pin() && VaultCore.config().reqPin) {
-                            document.getElementById('auth-screen').classList.remove('view-hidden');
-                        } else {
-                            VaultUI.render();
-                        }
-                    } catch(e) {
-                        alert("Data Crash. Please Reset.");
-                        document.getElementById('emergency-reset').style.display = 'block';
-                    }
-                },
-                syncToggles: () => {
+                init: () => { 
                     const c = VaultCore.config();
-                    ['reqPin','showLiq','showAst','showDbt','showCrd','showFid'].forEach(k => {
-                        const el = document.getElementById(k === 'reqPin' ? 'tog-pin' : k.replace('show','tog-').toLowerCase());
-                        if(el) el.checked = c[k];
-                    });
-                },
-                authenticate: () => {
-                    if (document.getElementById('auth-pin').value === VaultCore.pin()) {
-                        document.getElementById('auth-screen').classList.add('view-hidden');
-                        VaultUI.render();
-                    } else { alert("DENIED"); document.getElementById('auth-pin').value = ''; }
+                    ['showLiq','showAst','showDbt','showCrd','showFid'].forEach(k => { const el = document.getElementById(k.replace('show','tog-').toLowerCase()); if(el) el.checked = c[k]; });
+                    VaultUI.render(); 
                 },
                 toggleCard: id => document.getElementById(id).classList.toggle('drawer-open'),
                 toggleStealth: () => document.body.classList.toggle('stealth-active'),
-                
                 changeView: id => {
                     ['dashboard-view', 'entry-grid', 'entry-form', 'settings-view'].forEach(v => document.getElementById(v).classList.add('view-hidden'));
                     document.getElementById(id).classList.remove('view-hidden');
-                    
                     const fab = document.getElementById('nav-fab');
-                    if(id === 'dashboard-view') {
-                        fab.innerText = "+";
-                        fab.className = "fab-btn fab-primary";
-                        fab.onclick = () => VaultUI.changeView('entry-grid');
-                        VaultUI.render();
-                    } else {
-                        fab.innerText = "↩";
-                        fab.className = "fab-btn fab-back";
-                        fab.onclick = () => VaultUI.changeView('dashboard-view');
-                    }
+                    if(id === 'dashboard-view') { fab.innerText = "+"; fab.className = "fab-btn fab-primary"; fab.onclick = () => VaultUI.changeView('entry-grid'); VaultUI.render(); }
+                    else { fab.innerText = "↩"; fab.className = "fab-btn fab-back"; fab.onclick = () => VaultUI.changeView('dashboard-view'); }
                 },
-
-                handleFab: () => { /* Handled in changeView */ },
-
-                openForm: (type) => {
-                    VaultCore.setType(type);
-                    VaultUI.changeView('entry-form');
-                    VaultUI.updateFormUI();
-                },
-
+                openForm: (type) => { VaultCore.setType(type); VaultUI.changeView('entry-form'); VaultUI.updateFormUI(); },
                 balanceFluid: (source) => {
-                    let b = parseInt(document.getElementById('fluid-bills').value) || 0;
-                    let s = parseInt(document.getElementById('fluid-save').value) || 0;
-                    let l = parseInt(document.getElementById('fluid-spend').value) || 0;
-
-                    if(source === 'bills') {
-                        let rem = 100 - b;
-                        s = Math.floor(rem * 0.66); l = rem - s; 
-                    } else if (source === 'save') {
-                        let rem = 100 - s;
-                        b = Math.floor(rem * 0.66); l = rem - b;
-                    } else {
-                        let rem = 100 - l;
-                        b = Math.floor(rem / 2); s = rem - b;
-                    }
-                    
-                    document.getElementById('fluid-bills').value = b;
-                    document.getElementById('fluid-save').value = s;
-                    document.getElementById('fluid-spend').value = l;
+                    let b = parseInt(document.getElementById('fluid-bills').value) || 0, s = parseInt(document.getElementById('fluid-save').value) || 0, l = parseInt(document.getElementById('fluid-spend').value) || 0;
+                    if(source === 'bills') { let rem = 100 - b; s = Math.floor(rem * 0.66); l = rem - s; } 
+                    else if (source === 'save') { let rem = 100 - s; b = Math.floor(rem * 0.66); l = rem - b; } 
+                    else { let rem = 100 - l; b = Math.floor(rem / 2); s = rem - b; }
+                    document.getElementById('fluid-bills').value = b; document.getElementById('fluid-save').value = s; document.getElementById('fluid-spend').value = l;
                 },
-
                 updateFormUI: () => {
-                    const t = VaultCore.getType();
-                    const isSet = VaultCore.isSettlement();
-                    const dyn = document.getElementById('dynamic-inputs');
-                    const name = document.getElementById('e-name');
-                    const pickD = document.getElementById('e-pick-debtor');
-                    const pickC = document.getElementById('e-pick-creditor');
-                    const fluid = document.getElementById('fluid-container');
-                    const toggle = document.getElementById('settle-toggle-container');
-
+                    const t = VaultCore.getType(), isSet = VaultCore.isSettlement(), dyn = document.getElementById('dynamic-inputs'), name = document.getElementById('e-name'), fluid = document.getElementById('fluid-container'), toggle = document.getElementById('settle-toggle-container');
                     document.getElementById('form-title').innerText = t.toUpperCase();
-                    toggle.innerHTML = ''; dyn.innerHTML = ''; fluid.classList.add('hidden');
-                    name.classList.remove('hidden'); pickD.classList.add('hidden'); pickC.classList.add('hidden');
-                    name.placeholder = "Description";
-                    
-                    // STRICT DATA SEPARATION
-                    const debtors = new Set(), creditors = new Set();
-                    VaultCore.db().forEach(i => {
-                        if((i.type === 'debtor' || i.type === 'debt_repayment') && i.name && !i.name.includes("Repayment:")) debtors.add(i.debtor || i.name);
-                        if((i.type === 'creditor' || i.type === 'credit_settlement') && i.name && !i.name.includes("Settled:")) creditors.add(i.creditor || i.name);
-                    });
-                    
-                    const populateSelect = (el, set) => {
-                        el.innerHTML = '<option value="" disabled selected>Select Name...</option>';
-                        set.forEach(n => el.innerHTML += `<option value="${n}">${n}</option>`);
-                    };
-
+                    toggle.innerHTML = ''; dyn.innerHTML = ''; fluid.classList.add('hidden'); name.placeholder = "Description";
                     if (t === 'income') {
                         toggle.innerHTML = `<div class="seg-control"><div class="seg-btn ${!isSet?'active green':''}" onclick="VaultCore.setSettlement(false)">EARNINGS</div><div class="seg-btn ${isSet?'active':''}" onclick="VaultCore.setSettlement(true)">RECOVER DEBT</div></div>`;
-                        if(!isSet) fluid.classList.remove('hidden');
-                        else { 
-                            name.classList.add('hidden'); pickD.classList.remove('hidden'); 
-                            populateSelect(pickD, debtors);
-                        }
-                    } 
-                    else if (t === 'expense') {
+                        if(!isSet) fluid.classList.remove('hidden'); else { name.placeholder = "Target Debtor"; name.setAttribute('list', 'list-debtors'); }
+                    } else if (t === 'expense') {
                         toggle.innerHTML = `<div class="seg-control"><div class="seg-btn ${!isSet?'active red':''}" onclick="VaultCore.setSettlement(false)">SPENDING</div><div class="seg-btn ${isSet?'active':''}" onclick="VaultCore.setSettlement(true)">SETTLE LIABILITY</div></div>`;
                         if(!isSet) dyn.innerHTML = '<select id="e-src" class="input-ghost"><option value="spend">From Spend Account</option><option value="bills">From Bills Account</option><option value="savings">From Savings</option></select>';
-                        else { 
-                            name.classList.add('hidden'); pickC.classList.remove('hidden');
-                            populateSelect(pickC, creditors);
-                        }
-                    }
-                    else if (t === 'asset') {
-                        dyn.innerHTML = '<select id="e-as-cat" class="input-ghost"><option value="Property">Property / Land</option><option value="Vehicle">Vehicle</option><option value="Equity">Stock / Equity</option><option value="Other">Other Asset</option></select>';
-                    }
-                    else if (t === 'fiduciary') {
-                        dyn.innerHTML = '<input id="e-fd-goal" class="input-ghost" placeholder="Project / Goal"><input id="e-fd-user" class="input-ghost" placeholder="Contributor Name">';
-                    }
+                        else { name.placeholder = "Target Creditor"; name.setAttribute('list', 'list-creditors'); }
+                    } else if (t === 'asset') { dyn.innerHTML = '<select id="e-as-cat" class="input-ghost"><option value="Property">Property / Land</option><option value="Vehicle">Vehicle</option><option value="Equity">Stock / Equity</option><option value="Other">Other Asset</option></select>'; }
+                    else if (t === 'fiduciary') { dyn.innerHTML = '<input id="e-fd-goal" class="input-ghost" placeholder="Project / Goal"><input id="e-fd-user" class="input-ghost" placeholder="Contributor Name">'; }
                 },
-
                 render: () => {
                     const db = VaultCore.db(), c = VaultCore.config();
                     let nw=0, b=0, s=0, l=0, as=0, fd=0, dbT=0, crT=0;
-                    const debMap = {}, creMap = {}, pivots = {};
-
-                    ['feat-tactical','feat-assets','feat-debtors','feat-creditors','feat-fiduciary'].forEach((id, idx) => {
-                        const key = ['showLiq','showAst','showDbt','showCrd','showFid'][idx];
-                        document.getElementById(id).classList.toggle('view-hidden', !c[key]);
-                    });
-                    document.getElementById('head-liq').classList.toggle('view-hidden', !c.showLiq);
-                    document.getElementById('head-as').classList.toggle('view-hidden', !c.showAst);
-                    document.getElementById('head-db').classList.toggle('view-hidden', !c.showDbt);
-
+                    const dMap = {}, cMap = {}, piv = {};
                     ['as-list','db-list','cr-list','fd-pivot-list','hi-list'].forEach(id => document.getElementById(id).innerHTML = '');
-                    
                     db.slice().reverse().forEach(i => {
-                        if(i.type === 'fiduciary') {
-                            fd += (i.total || 0); 
-                            const m = VaultCore.fdView() === 'goal' ? i.goal : i.user, sb = VaultCore.fdView() === 'goal' ? i.user : i.goal;
-                            if(!pivots[m]) pivots[m] = { total: 0, subs: [] };
-                            pivots[m].total += (i.total || 0); pivots[m].subs.push({ n: sb, a: i.total });
-                        } else {
-                            const val = (i.total || 0);
-                            nw += val; b += (i.b||0); s += (i.s||0); l += (i.l||0);
-                            
-                            if(i.type === 'asset') {
-                                as += val;
-                                document.getElementById('as-list').innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-900"><span class="text-[10px] text-zinc-400 font-bold uppercase">${i.cat || 'Asset'} - ${i.name}</span><span class="text-xs font-bold text-blue-400">₦${val.toLocaleString()}</span></div>`;
-                            }
-                            
-                            if(i.type==='debtor' || i.type==='debt_repayment') { 
-                                const n = i.debtor || i.name; const v = i.type==='debt_repayment' ? -Math.abs(val) : Math.abs(val); 
-                                debMap[n] = (debMap[n]||0) + v; dbT += v; 
-                            }
-                            if(i.type==='creditor' || i.type==='credit_settlement') { 
-                                const n = i.creditor || i.name; const v = i.type==='credit_settlement' ? Math.abs(val) : -Math.abs(val); 
-                                creMap[n] = (creMap[n]||0) + v; crT += v; 
-                            }
+                        if(i.type === 'fiduciary') { fd += i.total; const m = i.goal; if(!piv[m]) piv[m] = { total: 0, subs: [] }; piv[m].total += i.total; piv[m].subs.push({ n: i.user, a: i.total }); } 
+                        else {
+                            nw += i.total; b += (i.b||0); s += (i.s||0); l += (i.l||0);
+                            if(i.type === 'asset') { as += i.total; document.getElementById('as-list').innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-900"><span class="text-[10px] text-zinc-400 uppercase">${i.cat} - ${i.name}</span><span class="text-xs font-bold text-blue-400">₦${i.total.toLocaleString()}</span></div>`; }
+                            if(i.type==='debtor'||i.type==='debt_repayment'){ const n=i.debtor||i.name, v=i.type==='debt_repayment'?-Math.abs(i.total):Math.abs(i.total); dMap[n]=(dMap[n]||0)+v; dbT+=v; }
+                            if(i.type==='creditor'||i.type==='credit_settlement'){ const n=i.creditor||i.name, v=i.type==='credit_settlement'?Math.abs(i.total):-Math.abs(i.total); cMap[n]=(cMap[n]||0)+v; crT+=v; }
                         }
-                        const displayTotal = (i.type === 'expense' || i.type === 'creditor') ? -Math.abs(i.total||0) : Math.abs(i.total||0);
-                        document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-3 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><div class="flex gap-4 items-center"><span class="${displayTotal < 0 ? 'text-red-400' : 'text-emerald-400'} font-bold">₦${Math.abs(displayTotal).toLocaleString()}</span><button onclick="VaultCore.delete(${i.id})" class="text-zinc-600">✕</button></div></div>`;
+                        document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-3 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><div class="flex gap-4 items-center"><span>₦${Math.abs(i.total).toLocaleString()}</span><button onclick="VaultCore.delete(${i.id})">✕</button></div></div>`;
                     });
-
-                    Object.keys(debMap).forEach(k => { if(Math.round(debMap[k]) > 0) document.getElementById('db-list').innerHTML += `<div class="flex justify-between py-2 text-[11px] font-bold uppercase border-b border-zinc-900"><span>${k}</span><span class="text-emerald-500">₦${debMap[k].toLocaleString()}</span></div>`; });
-                    Object.keys(creMap).forEach(k => { if(Math.round(Math.abs(creMap[k])) > 0) document.getElementById('cr-list').innerHTML += `<div class="flex justify-between py-2 text-[11px] font-bold uppercase border-b border-zinc-900 text-red-500"><span>${k}</span><span>₦${Math.abs(creMap[k]).toLocaleString()}</span></div>`; });
-                    
-                    const search = document.getElementById('fd-search')?.value.toLowerCase() || "";
-                    Object.keys(pivots).forEach(k => {
-                        if(k.toLowerCase().includes(search)) {
-                            let r = pivots[k].subs.map(sb => `<div class="flex justify-between py-1 opacity-60"><span>${sb.n}</span><span>₦${sb.a.toLocaleString()}</span></div>`).join('');
-                            document.getElementById('fd-pivot-list').innerHTML += `<div class="bg-zinc-900/50 p-3 rounded-lg border border-white/5"><div class="flex justify-between font-black text-xs text-yellow-500 uppercase mb-2"><span>${k}</span><span>₦${pivots[k].total.toLocaleString()}</span></div><div class="text-[9px] space-y-1">${r}</div></div>`;
-                        }
-                    });
-
-                    const set = (id, v) => { const el = document.getElementById(id); if(el) el.innerText = "₦" + v.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}); };
+                    Object.keys(dMap).forEach(k => { if(dMap[k]>0) document.getElementById('db-list').innerHTML += `<div class="flex justify-between py-2 text-[11px] font-bold uppercase border-b border-zinc-900"><span>${k}</span><span>₦${dMap[k].toLocaleString()}</span></div>`; });
+                    Object.keys(cMap).forEach(k => { if(Math.abs(cMap[k])>0) document.getElementById('cr-list').innerHTML += `<div class="flex justify-between py-2 text-[11px] font-bold uppercase border-b border-zinc-900 text-red-500"><span>${k}</span><span>₦${Math.abs(cMap[k]).toLocaleString()}</span></div>`; });
+                    Object.keys(piv).forEach(k => { document.getElementById('fd-pivot-list').innerHTML += `<div class="bg-zinc-900/50 p-3 rounded-lg border border-white/5"><div class="flex justify-between font-black text-xs text-yellow-500 uppercase"><span>${k}</span><span>₦${piv[k].total.toLocaleString()}</span></div></div>`; });
+                    const set = (id, v) => { if(document.getElementById(id)) document.getElementById(id).innerText = "₦" + v.toLocaleString(); };
                     set('nw-display', nw); set('split-cash', (b+s+l)); set('split-as', as); set('split-db', dbT);
                     set('tc-display', (b+s+l)); set('b-total', b); set('s-total', s); set('l-total', l);
                     set('fd-display', fd); set('cr-display', crT); set('as-display', as); set('db-display', dbT);
