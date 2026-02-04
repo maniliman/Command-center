@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-    <title>Sovereign Vault v77</title>
+    <title>Sovereign Vault v78</title>
     
     <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/512/shield.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -29,14 +29,10 @@
         .fab-back { background: #333; color: white; }
         .view-hidden { display: none !important; }
         .stealth-active .maskable { filter: blur(20px); opacity: 0.3; }
-        
-        /* ALIGNED TABS */
         .seg-control { display: flex; background: #000; padding: 4px; border-radius: 14px; border: 1px solid #222; margin-bottom: 20px; white-space: nowrap; }
         .seg-btn { flex: 1; text-align: center; padding: 12px 4px; font-size: 10px; font-weight: 800; color: #555; border-radius: 10px; transition: 0.2s; white-space: nowrap; }
         .seg-btn.active.emerald { background: #064E3B; color: #10B981; border: 1px solid #065F46; }
         .seg-btn.active.yellow { background: #78350f; color: #fcd34d; border: 1px solid #92400e; }
-        .seg-btn.active.red { background: #7F1D1D; color: #FCA5A5; border: 1px solid #991B1B; }
-
         .q-pill { padding: 8px 16px; border-radius: 20px; border: 1px solid #333; font-size: 10px; font-weight: 800; color: #666; transition: 0.2s; white-space: nowrap; }
         .q-pill.active { border-color: #10B981; color: #10B981; background: rgba(16,185,129,0.1); }
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
@@ -57,7 +53,7 @@
 
     <div id="dashboard-view" class="space-y-6 pb-32">
         <div class="flex justify-between items-center px-2">
-            <span class="text-[10px] font-black tracking-widest text-zinc-600 uppercase">Sovereign v77</span>
+            <span class="text-[10px] font-black tracking-widest text-zinc-600 uppercase">Sovereign v78</span>
             <div class="flex gap-2">
                 <button onclick="VaultUI.changeView('query-lab')" class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400">🔍</button>
                 <button onclick="VaultUI.toggleStealth()" class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400">👁️</button>
@@ -92,6 +88,9 @@
             <button class="q-pill active" onclick="VaultUI.toggleQPill(this, 'all')">ALL</button>
             <button class="q-pill" onclick="VaultUI.toggleQPill(this, 'income')">INFLOW</button>
             <button class="q-pill" onclick="VaultUI.toggleQPill(this, 'expense')">EXPENSE</button>
+            <button class="q-pill" onclick="VaultUI.toggleQPill(this, 'asset')">ASSET</button>
+            <button class="q-pill" onclick="VaultUI.toggleQPill(this, 'debtor')">LEND</button>
+            <button class="q-pill" onclick="VaultUI.toggleQPill(this, 'creditor')">BORROW</button>
             <button class="q-pill" onclick="VaultUI.toggleQPill(this, 'fiduciary')">FIDUCIARY</button>
         </div>
         <div id="q-results" class="space-y-4 pb-32"></div>
@@ -112,7 +111,6 @@
     <div id="entry-form" class="view-hidden fixed inset-0 bg-black z-[2000] p-6 pt-20">
         <div id="settle-toggle-container" class="mb-4"></div>
         <input id="e-amount" type="number" class="amount-hero" placeholder="0">
-        
         <div id="fluid-container" class="view-hidden">
             <div class="fluid-bar">
                 <div class="fluid-seg w-[40%]">BILLS<input id="fluid-bills" type="number" class="fluid-input" value="40" oninput="VaultUI.balanceFluid('bills')"></div>
@@ -120,7 +118,6 @@
                 <div class="fluid-seg w-[20%]">SPEND<input id="fluid-spend" type="number" class="fluid-input" value="20" oninput="VaultUI.balanceFluid('spend')"></div>
             </div>
         </div>
-
         <div id="dynamic-inputs" class="space-y-4 mb-4 mt-6"></div>
         <input id="e-name" class="input-ghost" placeholder="Description" list="active-list">
         <datalist id="active-list"></datalist>
@@ -142,10 +139,10 @@
 
     <script>
         const VaultCore = (() => {
-            let db = JSON.parse(localStorage.getItem('SOV_DB_V77')) || [];
-            let config = JSON.parse(localStorage.getItem('SOV_CFG_V77')) || { reqPin: false, activeQType: 'all', fdView: 'goal' };
-            let pin = localStorage.getItem('SOV_PIN_V77') || "";
-            const save = () => { localStorage.setItem('SOV_DB_V77', JSON.stringify(db)); localStorage.setItem('SOV_CFG_V77', JSON.stringify(config)); localStorage.setItem('SOV_PIN_V77', pin); };
+            let db = JSON.parse(localStorage.getItem('SOV_DB_V78')) || [];
+            let config = JSON.parse(localStorage.getItem('SOV_CFG_V78')) || { reqPin: false, activeQType: 'all', fdView: 'goal' };
+            let pin = localStorage.getItem('SOV_PIN_V78') || "";
+            const save = () => { localStorage.setItem('SOV_DB_V78', JSON.stringify(db)); localStorage.setItem('SOV_CFG_V78', JSON.stringify(config)); localStorage.setItem('SOV_PIN_V78', pin); };
             return {
                 db: () => db, config: () => config, pin: () => pin,
                 setFdView: v => { config.fdView = v; VaultUI.render(); },
@@ -157,9 +154,7 @@
                     if(!desc || isNaN(a)) return;
                     let e = { id: Date.now(), name: desc, total: a, type: activeType, date: new Date().toISOString().split('T')[0] };
                     if(activeType === 'income') {
-                        const bP = parseFloat(document.getElementById('fluid-bills').value)/100;
-                        const sP = parseFloat(document.getElementById('fluid-save').value)/100;
-                        const lP = parseFloat(document.getElementById('fluid-spend').value)/100;
+                        const bP = parseFloat(document.getElementById('fluid-bills').value)/100, sP = parseFloat(document.getElementById('fluid-save').value)/100, lP = parseFloat(document.getElementById('fluid-spend').value)/100;
                         e.b = a * bP; e.s = a * sP; e.l = a * lP;
                         if(settlement){ e.type='debt_repayment'; e.debtor=desc; }
                     }
@@ -170,7 +165,7 @@
                     else if(activeType === 'fiduciary') { e.goal=document.getElementById('e-fd-goal').value; e.user=document.getElementById('e-fd-user').value; }
                     db.push(e); save(); VaultUI.changeView('dashboard-view');
                 },
-                export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'Vault_v77.json'; a.click(); },
+                export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'Vault_v78.json'; a.click(); },
                 import: (input) => { const r = new FileReader(); r.onload = (e) => { db = JSON.parse(e.target.result); save(); location.reload(); }; r.readAsText(input.files[0]); },
                 delete: id => { if(confirm("Remove?")){ db=db.filter(x=>x.id!==id); save(); VaultUI.render(); }},
                 wipe: () => { if(confirm("RESET?")){ localStorage.clear(); location.reload(); }}
@@ -237,7 +232,7 @@
                     res.innerHTML = '';
                     VaultCore.db().filter(i => {
                         const tM = (i.name||"").toLowerCase().includes(s) || (i.debtor||"").toLowerCase().includes(s) || (i.goal||"").toLowerCase().includes(s);
-                        const cM = type === 'all' || i.type === type; return tM && cM;
+                        const cM = type === 'all' || i.type === type || (type==='debtor' && i.type==='debt_repayment') || (type==='creditor' && i.type==='credit_settlement'); return tM && cM;
                     }).reverse().forEach(i => {
                         res.innerHTML += `<div class="glass-panel p-4 flex justify-between uppercase text-[10px]"><span>${i.date} | ${i.name}</span><b>₦${Math.abs(i.total).toLocaleString()}</b></div>`;
                     });
