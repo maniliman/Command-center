@@ -1,77 +1,56 @@
-<script>
-    const VaultUI = (() => {
-        return {
-            // ... (keep open, stealth, unlock, view functions as they are)
-            
-            form: () => {
-                const t = document.getElementById('e-type').value;
-                const c = document.getElementById('dynamic-inputs');
-                c.innerHTML = '';
-                
-                if(t === 'income') {
-                    c.innerHTML = `
-                        <div class="flex items-center gap-3 p-4 border border-zinc-800 rounded">
-                            <input type="checkbox" id="e-settle" onchange="VaultUI.form()">
-                            <span class="text-[10px] font-bold uppercase">Debt Repayment?</span>
-                        </div>
-                        ${document.getElementById('e-settle')?.checked ? 
-                        '<input id="e-target" class="input-dark mt-2" placeholder="Debtor Name (e.g. Alhaji Musa)">' : ''}`;
-                }
-                
-                if(t === 'expense') {
-                    c.innerHTML = `
-                        <select id="e-src" class="input-dark mb-4">
-                            <option value="bills">Bills</option>
-                            <option value="save">Savings</option>
-                            <option value="spend">Spend</option>
-                        </select>
-                        <div class="flex items-center gap-3 p-4 border border-zinc-800 rounded">
-                            <input type="checkbox" id="e-settle" onchange="VaultUI.form()">
-                            <span class="text-[10px] font-bold uppercase">Credit Settlement?</span>
-                        </div>
-                        ${document.getElementById('e-settle')?.checked ? 
-                        '<input id="e-target" class="input-dark mt-2" placeholder="Creditor Name">' : ''}`;
-                }
-                
-                if(t === 'fiduciary') {
-                    c.innerHTML = '<input id="e-goal" class="input-dark" placeholder="Project"><input id="e-user" class="input-dark mt-4" placeholder="Contributor">';
-                }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Sovereign Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --safe-top: env(safe-area-inset-top, 50px); }
+        body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; margin: 0; padding: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        .vault-card { background: #161618; border: 1px solid #262629; border-radius: 12px; margin-bottom: 16px; width: 100%; position: relative; }
+        .emerald-border { border: 1px solid #00FF41; background: rgba(0, 255, 65, 0.03); }
+        .fiduciary-border { border: 2px solid #EAB308; background: rgba(234, 179, 8, 0.03); }
+        .sub-drawer { display: none; padding: 20px; background: rgba(0,0,0,0.6); border-top: 1px solid #262629; }
+        .drawer-open > .sub-drawer { display: block !important; }
+        .trigger-btn { color: #00FF41; font-size: 18px; padding: 10px; cursor: pointer; display: inline-block; transition: 0.2s; }
+        .drawer-open > div > .trigger-btn { transform: rotate(180deg); color: white; }
+        .stealth-active .maskable { filter: blur(28px); opacity: 0.3; pointer-events: none; }
+        .fab-btn { position: fixed; bottom: 25px; width: 56px; height: 56px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; z-index: 999; border: none; }
+        .view-hidden { display: none !important; }
+        .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 18px; border-radius: 12px; width: 100%; outline: none; }
+        #auth-gate { position: fixed; inset: 0; background: #0A0A0B; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+        .t-btn { flex: 1; padding: 8px; font-size: 10px; font-weight: 900; background: #262629; border-radius: 8px; color: #666; text-align: center; cursor: pointer; }
+        .t-btn.active { background: #EAB308; color: black; }
+        .pivot-card { background: rgba(234, 179, 8, 0.05); border: 1px solid rgba(234, 179, 8, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 8px; }
+    </style>
+</head>
+<body id="main-body" class="p-6" style="padding-top: calc(var(--safe-top) + 20px);">
 
-                // Auto-hide the Description box if it's a settlement to keep the screen short
-                const descBox = document.getElementById('e-name');
-                if(document.getElementById('e-settle')?.checked) {
-                    descBox.classList.add('view-hidden');
-                    descBox.value = "Settlement"; // Placeholder to prevent empty error
-                } else {
-                    descBox.classList.remove('view-hidden');
-                    descBox.value = "";
-                }
-            },
+    <div id="auth-gate" class="view-hidden">
+        <p class="text-[10px] tracking-[0.5em] uppercase font-black text-emerald-500 mb-8">Authorization</p>
+        <input id="gate-pin" type="password" class="input-dark text-center text-3xl" placeholder="****">
+        <button onclick="VaultUI.unlock()" class="mt-8 w-full bg-emerald-500 p-6 rounded-2xl text-black font-black uppercase">Sync & Enter</button>
+    </div>
 
-            exec: async () => {
-                const t = document.getElementById('e-type').value;
-                const a = parseFloat(document.getElementById('e-amount').value);
-                const isSettle = document.getElementById('e-settle')?.checked;
-                const target = document.getElementById('e-target')?.value;
-                
-                // Use the Target Name as the Description if it's a settlement
-                const n = isSettle ? `Payment from ${target}` : document.getElementById('e-name').value;
-                
-                if (!n || isNaN(a)) return;
-                
-                let e = { name: n, total: a, type: t, date: document.getElementById('e-datetime').value };
-                
-                if (isSettle) {
-                    if (t === 'income') {
-                        e.type = 'debt_repayment';
-                        e.debtor = target;
-                    } else {
-                        e.type = 'credit_settlement';
-                        e.creditor = target;
-                    }
-                }
-                // ... (rest of the insertion logic remains the same)
-            }
-        };
-    })();
-</script>
+    <div id="dashboard-view" class="space-y-6">
+        <div class="flex justify-between items-center mb-8">
+            <p class="text-[10px] tracking-[0.4em] uppercase font-black text-emerald-500/40">Sovereign Command</p>
+            <div class="flex gap-3">
+                <button onclick="VaultUI.stealth()" class="w-12 h-12 vault-card flex items-center justify-center m-0">👁️</button>
+                <button onclick="VaultUI.view('settings-view')" class="w-12 h-12 vault-card flex items-center justify-center m-0">⚙️</button>
+            </div>
+        </div>
+
+        <div class="text-center mb-10">
+            <h1 id="nw-display" class="text-5xl font-black tracking-tighter text-[#00FF41] maskable">₦0.00</h1>
+            <div class="text-[8px] uppercase font-bold text-zinc-600 mt-4 flex justify-center gap-4">
+                <span>Cash: <b id="split-cash" class="maskable text-zinc-400">₦0</b></span>
+                <span>Assets: <b id="split-as" class="maskable text-zinc-400">₦0</b></span>
+                <span>Debt: <b id="split-db" class="maskable text-zinc-400">₦0</b></span>
+            </div>
+        </div>
+
+        <div id="cards-container">
+            <div id="card-tactical" class="vault-card emerald-border"><div class="
