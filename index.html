@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-    <title>Sovereign Vault v80</title>
+    <title>Sovereign Vault v89</title>
     
     <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/512/shield.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -27,7 +27,6 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-color); font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 0; padding-top: calc(var(--safe-top) + 10px); padding-bottom: 100px; overflow-x: hidden; }
         
-        /* UTILITIES */
         .flex { display: flex; }
         .flex-col { flex-direction: column; }
         .items-center { align-items: center; }
@@ -42,7 +41,6 @@
         .uppercase { text-transform: uppercase; }
         .hidden { display: none; }
 
-        /* COMPONENTS */
         .glass-panel { background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; }
         .hero-card { background: linear-gradient(145deg, #111 0%, #050505 100%); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 28px; padding: 30px; margin-top: 20px; }
         .vault-card { background: #111; border: 1px solid #222; border-radius: 18px; margin-bottom: 12px; width: 100%; overflow: hidden; pointer-events: auto; }
@@ -58,32 +56,26 @@
         .fab-primary { background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: black; }
         .fab-back { background: #333; color: white; }
 
-        .btn-action { width: 100%; padding: 16px; border-radius: 16px; font-weight: 800; text-transform: uppercase; font-size: 12px; border: none; cursor: pointer; }
-        .btn-dark { background: var(--zinc-900); color: white; border: 1px solid #333; }
+        .btn-dark { background: var(--zinc-900); color: white; border: 1px solid #333; padding: 16px; border-radius: 16px; font-weight: 800; width: 100%; cursor: pointer; }
         .btn-grid { background: var(--zinc-900); border: 1px solid #333; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; }
         
-        /* FLUID BAR */
         .fluid-bar { display: flex; border-radius: 12px; overflow: hidden; margin: 20px 0; border: 1px solid #333; }
         .fluid-seg { padding: 12px 0; text-align: center; font-size: 10px; font-weight: 800; background: #111; border-right: 1px solid #222; color: #777; width: 33.33%; }
         .fluid-input { background: transparent; width: 100%; text-align: center; color: var(--accent-green); outline: none; font-size: 14px; font-weight: 900; border: none; }
 
-        /* SEGMENTS */
         .seg-control { display: flex; background: #000; padding: 4px; border-radius: 14px; border: 1px solid #222; margin-bottom: 20px; }
         .seg-btn { flex: 1; text-align: center; padding: 10px; font-size: 10px; font-weight: 800; color: #555; border-radius: 10px; cursor: pointer; }
         .seg-btn.active.emerald { background: #064E3B; color: #10B981; }
         .seg-btn.active.yellow { background: #78350f; color: #fcd34d; }
 
-        /* PILLS */
         .pill-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; }
         .q-pill { padding: 8px 16px; border-radius: 20px; border: 1px solid #333; font-size: 10px; font-weight: 800; color: #666; background: transparent; white-space: nowrap; cursor: pointer; }
         .q-pill.active { border-color: var(--accent-green); color: var(--accent-green); background: rgba(16,185,129,0.1); }
 
-        /* VIEWS & LAYERS */
         .view-hidden { display: none !important; }
         .full-overlay { position: fixed; inset: 0; background: black; z-index: 2000; padding: 20px; padding-top: 80px; overflow-y: auto; }
         .stealth-active .maskable { filter: blur(15px); opacity: 0.3; }
 
-        /* COLORS */
         .text-emerald { color: var(--accent-green); }
         .text-red { color: var(--accent-red); }
         .text-blue { color: var(--accent-blue); }
@@ -92,7 +84,6 @@
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         
-        /* SWITCH */
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; inset: 0; background-color: #222; transition: .4s; border-radius: 34px; }
@@ -110,7 +101,7 @@
     </div>
 
     <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 10px; margin-bottom: 20px;">
-        <span class="text-xs font-black uppercase text-zinc">Sovereign v80</span>
+        <span class="text-xs font-black uppercase text-zinc">Sovereign v89</span>
         <div class="flex gap-2">
             <button onclick="VaultUI.changeView('query-lab')" class="btn-dark" style="width: 40px; height: 40px; border-radius: 50%; padding: 0;">🔍</button>
             <button onclick="VaultUI.toggleStealth()" class="btn-dark" style="width: 40px; height: 40px; border-radius: 50%; padding: 0;">👁️</button>
@@ -141,7 +132,7 @@
             
             <div id="feat-fiduciary" class="vault-card"><div class="p-5 flex justify-between items-center" onclick="VaultUI.toggleCard('feat-fiduciary')"><span class="text-xs font-bold uppercase text-yellow">Fiduciary</span><b id="fd-display" class="maskable text-sm text-yellow">₦0</b></div><div class="sub-drawer"><div class="seg-control"><div class="seg-btn" id="fd-v-goal" onclick="VaultCore.setFdView('goal')">GOAL</div><div class="seg-btn" id="fd-v-user" onclick="VaultCore.setFdView('user')">USER</div></div><div id="fd-pivot-list"></div></div></div>
             
-            <div id="feat-history" class="vault-card" style="opacity: 0.7;"><div class="p-5 flex justify-between items-center" onclick="VaultUI.toggleCard('feat-history')"><span class="text-xs font-bold uppercase text-zinc">Audit Trail</span><span>▼</span></div><div class="sub-drawer"><input type="text" id="hi-search" class="input-ghost text-xs mb-4" placeholder="Filter..." onkeyup="VaultUI.render()"><div id="hi-list" style="max-height: 300px; overflow-y: auto;"></div></div></div>
+            <div id="feat-history" class="vault-card" style="opacity: 0.7;"><div class="p-5 flex justify-between items-center" onclick="VaultUI.toggleCard('feat-history')"><span class="text-xs font-bold uppercase text-zinc">Audit Trail</span><span>▼</span></div><div class="sub-drawer"><input type="text" id="hi-search" class="input-ghost text-xs mb-4" placeholder="Filter..." onkeyup="VaultUI.render()"><div id="hi-list" style="max-height: 400px; overflow-y: auto;"></div></div></div>
         </div>
     </div>
 
@@ -159,9 +150,7 @@
 
     <div id="entry-form" class="full-overlay view-hidden">
         <div class="flex justify-between mb-6"><div id="settle-toggle-container" class="w-full" style="margin-right: 20px;"></div><button onclick="VaultUI.changeView('entry-grid')" style="background:none; border:none; color: white; font-size: 20px;">✕</button></div>
-        
         <input id="e-amount" type="number" class="amount-hero" placeholder="0">
-        
         <div id="fluid-container" class="hidden">
             <div class="fluid-bar">
                 <div class="fluid-seg">BILLS<input id="fluid-bills" type="number" class="fluid-input" value="40" oninput="VaultUI.balanceFluid('bills')"></div>
@@ -169,11 +158,9 @@
                 <div class="fluid-seg" style="border-right: none;">SPEND<input id="fluid-spend" type="number" class="fluid-input" value="20" oninput="VaultUI.balanceFluid('spend')"></div>
             </div>
         </div>
-
         <div id="dynamic-inputs" class="mb-4" style="margin-top: 20px;"></div>
         <input id="e-name" class="input-ghost" placeholder="Description" list="active-list">
         <datalist id="active-list"></datalist>
-        
         <button onclick="VaultCore.execute()" class="btn-dark" style="margin-top: 40px; padding: 20px; font-size: 14px;">EXECUTE TRANSACTION</button>
     </div>
 
@@ -189,28 +176,21 @@
             <button class="q-pill" onclick="VaultUI.toggleQPill(this, 'creditor')">BORROW</button>
             <button class="q-pill" onclick="VaultUI.toggleQPill(this, 'fiduciary')">FIDUCIARY</button>
         </div>
-        <div class="grid-2" style="margin-top: 20px; margin-bottom: 20px;">
-            <input type="date" id="q-start" class="input-ghost text-xs" onchange="VaultUI.runQuery()">
-            <input type="date" id="q-end" class="input-ghost text-xs" onchange="VaultUI.runQuery()">
-        </div>
         <div id="q-results" class="flex-col gap-2"></div>
     </div>
 
     <div id="settings-view" class="full-overlay view-hidden">
         <div class="flex justify-between mb-6"><h2 class="text-sm font-black uppercase">Settings</h2><button onclick="VaultUI.changeView('dashboard-view')" style="background:none; border:none; color: white; font-size: 20px;">✕</button></div>
-        
         <div class="vault-card p-6 mb-4">
             <div class="flex justify-between items-center mb-4"><p class="text-xs font-bold uppercase">PIN Startup</p><label class="switch"><input type="checkbox" id="tog-pin" onchange="VaultCore.toggleSetting('reqPin')"><span class="slider"></span></label></div>
             <input id="set-pin" type="password" maxlength="4" class="input-ghost text-center" style="letter-spacing: 5px; margin-bottom: 20px;" placeholder="••••" inputmode="numeric">
             <button onclick="VaultCore.savePin()" class="btn-dark">Update PIN</button>
         </div>
-
         <div class="flex gap-2 mb-4">
             <button onclick="VaultCore.export()" class="btn-dark" style="flex:1;">BACKUP</button>
             <button onclick="document.getElementById('file-input').click()" class="btn-dark" style="flex:1; color: var(--accent-green);">RESTORE</button>
             <input type="file" id="file-input" class="hidden" onchange="VaultCore.import(this)">
         </div>
-        
         <button onclick="VaultCore.wipe()" class="btn-dark" style="color: var(--accent-red); border-color: var(--accent-red);">FACTORY RESET</button>
     </div>
 
@@ -218,10 +198,10 @@
 
     <script>
         const VaultCore = (() => {
-            let db = JSON.parse(localStorage.getItem('SOV_DB_V80')) || [];
-            let config = JSON.parse(localStorage.getItem('SOV_CFG_V80')) || { reqPin: false, activeQType: 'all', fdView: 'goal' };
-            let pin = localStorage.getItem('SOV_PIN_V80') || "";
-            const save = () => { localStorage.setItem('SOV_DB_V80', JSON.stringify(db)); localStorage.setItem('SOV_CFG_V80', JSON.stringify(config)); localStorage.setItem('SOV_PIN_V80', pin); };
+            let db = JSON.parse(localStorage.getItem('SOV_DB_V89')) || [];
+            let config = JSON.parse(localStorage.getItem('SOV_CFG_V89')) || { reqPin: false, activeQType: 'all', fdView: 'goal' };
+            let pin = localStorage.getItem('SOV_PIN_V89') || "";
+            const save = () => { localStorage.setItem('SOV_DB_V89', JSON.stringify(db)); localStorage.setItem('SOV_CFG_V89', JSON.stringify(config)); localStorage.setItem('SOV_PIN_V89', pin); };
             return {
                 db: () => db, config: () => config, pin: () => pin,
                 setFdView: v => { config.fdView = v; save(); VaultUI.render(); },
@@ -231,7 +211,12 @@
                 execute: () => {
                     const a = parseFloat(document.getElementById('e-amount').value), desc = document.getElementById('e-name').value;
                     if(!desc || isNaN(a)) return;
-                    let e = { id: Date.now(), name: desc, total: a, type: activeType, date: new Date().toISOString().split('T')[0] };
+                    
+                    // Create Timestamp: DD Mon, HH:MM
+                    const now = new Date();
+                    const timestamp = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ', ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                    
+                    let e = { id: Date.now(), name: desc, total: a, type: activeType, date: timestamp };
                     
                     if(activeType === 'income') {
                         const bP = parseFloat(document.getElementById('fluid-bills').value)/100;
@@ -248,7 +233,7 @@
                     
                     db.push(e); save(); VaultUI.changeView('dashboard-view');
                 },
-                export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'Vault_v80.json'; a.click(); },
+                export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'Vault_v89.json'; a.click(); },
                 import: (input) => { const r = new FileReader(); r.onload = (e) => { db = JSON.parse(e.target.result); save(); location.reload(); }; r.readAsText(input.files[0]); },
                 delete: id => { if(confirm("Delete?")){ db=db.filter(x=>x.id!==id); save(); VaultUI.render(); }},
                 wipe: () => { if(confirm("RESET?")){ localStorage.clear(); location.reload(); }}
@@ -283,24 +268,19 @@
                 updateFormUI: () => {
                     const dyn = document.getElementById('dynamic-inputs'), fluid = document.getElementById('fluid-container'), tog = document.getElementById('settle-toggle-container'), name = document.getElementById('e-name'), dl = document.getElementById('active-list');
                     dyn.innerHTML = ''; fluid.classList.add('hidden'); tog.innerHTML = ''; dl.innerHTML = ''; name.placeholder = "Description";
-                    
                     if(activeType==='income') {
                         fluid.classList.remove('hidden');
                         tog.innerHTML = `<div class="seg-control"><div class="seg-btn ${!settlement?'active emerald':''}" onclick="VaultCore.setSettlement(false)">INFLOW</div><div class="seg-btn ${settlement?'active yellow':''}" onclick="VaultCore.setSettlement(true)">RECOVER DEBT</div></div>`;
                         if(settlement) { name.placeholder = "Payer Name"; [...new Set(VaultCore.db().filter(i=>i.type==='debtor').map(i=>i.debtor))].forEach(n=>dl.innerHTML+=`<option value="${n}">`); }
-                    } 
-                    else if(activeType==='expense') {
+                    } else if(activeType==='expense') {
                         tog.innerHTML = `<div class="seg-control"><div class="seg-btn ${!settlement?'active emerald':''}" onclick="VaultCore.setSettlement(false)">EXPENSE</div><div class="seg-btn ${settlement?'active yellow':''}" onclick="VaultCore.setSettlement(true)">PAY DEBT</div></div>`;
                         if(settlement) { name.placeholder = "Creditor Name"; [...new Set(VaultCore.db().filter(i=>i.type==='creditor').map(i=>i.creditor))].forEach(n=>dl.innerHTML+=`<option value="${n}">`); }
-                    }
-                    else if(activeType==='debtor' || activeType==='creditor') {
+                    } else if(activeType==='debtor' || activeType==='creditor') {
                         dyn.innerHTML = '<div class="grid-2"><input id="e-rate" type="number" class="input-ghost" placeholder="Rate %"><input id="e-term" type="date" class="input-ghost"></div>';
                         name.placeholder = activeType==='creditor' ? "Lender Name" : "Borrower Name";
-                    }
-                    else if(activeType==='fiduciary') {
+                    } else if(activeType==='fiduciary') {
                         dyn.innerHTML = '<input id="e-fd-goal" class="input-ghost mb-4" placeholder="Project/Goal"><input id="e-fd-user" class="input-ghost" placeholder="Contributor">';
-                    }
-                    else if(activeType==='asset') {
+                    } else if(activeType==='asset') {
                         dyn.innerHTML = '<select id="e-as-cat" class="input-ghost"><option value="Property">Property</option><option value="Vehicle">Vehicle</option><option value="Stock">Stock</option><option value="Other">Other</option></select>';
                         name.placeholder = "Asset Name";
                     }
@@ -323,10 +303,10 @@
                     const db = VaultCore.db(); let nw=0, b=0, s=0, l=0, as=0, fd=0, ex=0, dbT=0, crT=0;
                     const piv = {}; const fView = VaultCore.config().fdView;
                     ['as-list','db-list','cr-list','fd-pivot-list','hi-list','ex-list'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).innerHTML = ''; });
-                    
                     document.getElementById('fd-v-goal').className = `seg-btn ${fView==='goal'?'active emerald':''}`;
                     document.getElementById('fd-v-user').className = `seg-btn ${fView==='user'?'active emerald':''}`;
 
+                    // Reverse iteration ensures newest entries are on top for ALL lists
                     db.slice().reverse().forEach(i => {
                         if(i.type==='fiduciary') { 
                             fd+=i.total; const m = fView === 'goal' ? i.goal : i.user, sb = fView === 'goal' ? i.user : i.goal;
@@ -340,14 +320,23 @@
                         }
                         const hiS = document.getElementById('hi-search').value.toLowerCase();
                         if(!hiS || (i.name||"").toLowerCase().includes(hiS)) {
-                            document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-3 text-xs uppercase" style="border-bottom:1px solid #222;"><span>${i.name}</span><div class="flex gap-4"><b>₦${Math.abs(i.total).toLocaleString()}</b><button onclick="VaultCore.delete(${i.id})">✕</button></div></div>`;
+                            document.getElementById('hi-list').innerHTML += `
+                                <div class="flex justify-between py-4 text-xs uppercase" style="border-bottom:1px solid #222;">
+                                    <div class="flex-col">
+                                        <span class="font-bold">${i.name}</span>
+                                        <span style="font-size: 9px; color: #777;">${i.date}</span>
+                                    </div>
+                                    <div class="flex gap-4 items-center">
+                                        <b>₦${Math.abs(i.total).toLocaleString()}</b>
+                                        <button onclick="VaultCore.delete(${i.id})" style="background:none; border:none; color:var(--accent-red); font-size:16px;">✕</button>
+                                    </div>
+                                </div>`;
                         }
                     });
                     Object.keys(piv).forEach(k => { 
                         let r = piv[k].subs.map(sb => `<div class="flex justify-between py-1 opacity-60"><span>${sb.n}</span><span>₦${sb.a.toLocaleString()}</span></div>`).join('');
                         document.getElementById('fd-pivot-list').innerHTML += `<div class="p-3 mb-2" style="background:var(--zinc-900); border-radius:8px;"><div class="flex justify-between font-black text-xs text-yellow uppercase"><span>${k}</span><span>₦${piv[k].t.toLocaleString()}</span></div><div class="text-xs mt-2">${r}</div></div>`;
                     });
-                    
                     const set = (id, v) => { if(document.getElementById(id)) document.getElementById(id).innerText = "₦" + v.toLocaleString(); };
                     set('nw-display', nw); set('split-cash', (b+s+l)); set('split-as', as); set('split-db', dbT);
                     set('tc-display', (b+s+l)); set('b-total', b); set('s-total', s); set('l-total', l);
