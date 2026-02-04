@@ -23,7 +23,6 @@
         .t-btn { flex: 1; padding: 8px; font-size: 10px; font-weight: 900; background: #262629; border-radius: 8px; color: #666; text-align: center; cursor: pointer; }
         .t-btn.active { background: #EAB308; color: black; }
         .pivot-card { background: rgba(234, 179, 8, 0.05); border: 1px solid rgba(234, 179, 8, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 8px; }
-        .settle-row { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #333; border-radius: 8px; margin-bottom: 12px; background: rgba(255,255,255,0.03); }
     </style>
 </head>
 <body id="main-body" class="p-6" style="padding-top: calc(var(--safe-top) + 20px);">
@@ -95,16 +94,18 @@
     <div id="entry-view" class="view-hidden space-y-6 pb-40">
         <h2 class="text-3xl font-black">AUTHORIZE</h2>
         <select id="e-type" class="input-dark" onchange="VaultUI.updateForm()">
-            <option value="income">Inflow [+]</option>
+            <option value="income">Earnings (Inflow) [+]</option>
+            <option value="recover">Recover Debt (Inflow) [+]</option>
+            <option value="expense">Spending (Expense) [-]</option>
+            <option value="settle">Settle Debt (Expense) [-]</option>
             <option value="fiduciary">Fiduciary [💼]</option>
             <option value="asset">Asset [+]</option>
-            <option value="debtor">Debtor [+]</option>
-            <option value="creditor">Creditor [-]</option>
-            <option value="expense">Expense [-]</option>
+            <option value="debtor">New Debtor [+]</option>
+            <option value="creditor">New Creditor [-]</option>
         </select>
         <div id="dynamic-inputs" class="space-y-4"></div>
         <input id="e-datetime" type="datetime-local" class="input-dark">
-        <input id="e-name" class="input-dark" placeholder="Description">
+        <input id="e-name" class="input-dark" placeholder="Description / Name">
         <input id="e-amount" type="number" class="input-dark" placeholder="Amount ₦">
         <button onclick="VaultCore.execute()" class="w-full bg-emerald-500 p-6 rounded-2xl text-black font-black uppercase">Execute</button>
     </div>
@@ -135,26 +136,11 @@
 
     <script>
         const VaultCore = (() => {
-            let db = [];
-            // --- SAFE LOAD SEQUENCE ---
-            try {
-                // 1. Try Primary Storage
-                let raw = localStorage.getItem('SOVEREIGN_VAULT_FINAL');
-                if (raw) db = JSON.parse(raw);
-                
-                // 2. If empty, Try Rescue from Cloud Storage Key
-                if (!db || db.length === 0) {
-                    let cloudRaw = localStorage.getItem('SOV_DATA');
-                    if (cloudRaw) {
-                        db = JSON.parse(cloudRaw);
-                        alert("System Recovered: " + db.length + " records found.");
-                        localStorage.setItem('SOVEREIGN_VAULT_FINAL', JSON.stringify(db));
-                    }
-                }
-            } catch (e) {
-                console.error("Data Corruption Detected");
-                db = []; // Fail safe to empty array so buttons work
-                alert("Warning: Data file corrupted. Starting fresh to unfreeze UI.");
+            // SAFE LOAD: Checks both folders to ensure data is found
+            let db = JSON.parse(localStorage.getItem('SOVEREIGN_VAULT_FINAL')) || [];
+            if(db.length === 0) {
+                let rescue = JSON.parse(localStorage.getItem('SOV_DATA'));
+                if(rescue && rescue.length > 0) { db = rescue; localStorage.setItem('SOVEREIGN_VAULT_FINAL', JSON.stringify(db)); }
             }
 
             let pin = localStorage.getItem('VAULT_PIN') || "";
@@ -164,10 +150,7 @@
             const genRecovery = () => {
                 const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
                 let res = '';
-                for (let i = 0; i < 16; i++) {
-                    if (i > 0 && i % 4 === 0) res += '-';
-                    res += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
+                for (let i = 0; i < 16; i++) { if (i > 0 && i % 4 === 0) res += '-'; res += chars.charAt(Math.floor(Math.random() * chars.length)); }
                 return res;
             };
 
@@ -176,7 +159,7 @@
             return {
                 db: () => db, pin: () => pin, recovery: () => recovery, fdView: () => fdView,
                 setFdView: (v) => { fdView = v; VaultUI.render(); },
-                savePin: () => { 
+                savePin: () => { 
                     const p = document.getElementById('set-pin').value;
                     if(p.length !== 4) return alert("PIN must be 4 digits");
                     const r = genRecovery();
@@ -185,7 +168,7 @@
                     pin = p; recovery = r;
                     document.getElementById('recovery-key-display').innerText = r;
                     document.getElementById('recovery-box').classList.remove('hidden');
-                    alert("PIN Locked. Copy your recovery key!");
+                    alert("PIN Locked.");
                 },
                 execute: () => {
                     const t = document.getElementById('e-type').value, n = document.getElementById('e-name').value, a = parseFloat(document.getElementById('e-amount').value), dt = document.getElementById('e-datetime').value;
@@ -197,20 +180,26 @@
                         entry.b = a * (parseFloat(document.getElementById('ps-b').value)/100 || 0.4);
                         entry.s = a * (parseFloat(document.getElementById('ps-s').value)/100 || 0.4);
                         entry.l = a * (parseFloat(document.getElementById('ps-l').value)/100 || 0.2);
-                        // SETTLEMENT LOGIC
-                        if(document.getElementById('is-repay')?.checked) {
-                            entry.type = 'debt_repayment';
-                            entry.debtor = document.getElementById('settle-name').value;
-                        }
-                    } else if (t === 'expense') {
+                    } 
+                    else if (t === 'recover') {
+                        // Recover Debt: Adds to Cash, Reduces Debtor Balance
+                        entry.b = a * 0.4; entry.s = a * 0.4; entry.l = a * 0.2; // Treat as income
+                        entry.type = 'debt_repayment';
+                        entry.debtor = document.getElementById('link-name').value; // Who paid?
+                    }
+                    else if (t === 'expense') {
                         entry.total = -a; const s = document.getElementById('e-src').value;
                         if(s === 'bills') entry.b = -a; else if(s === 'savings') entry.s = -a; else entry.l = -a;
-                        // SETTLEMENT LOGIC
-                        if(document.getElementById('is-settle')?.checked) {
-                            entry.type = 'credit_settlement';
-                            entry.creditor = document.getElementById('settle-name').value;
-                        }
-                    } else if (t === 'fiduciary') { entry.goal = document.getElementById('e-fd-goal').value; entry.user = document.getElementById('e-fd-user').value; }
+                    }
+                    else if (t === 'settle') {
+                        // Settle Debt: Reduces Cash, Reduces Creditor Balance
+                        entry.total = -a; 
+                        const s = document.getElementById('e-src').value;
+                        if(s === 'bills') entry.b = -a; else if(s === 'savings') entry.s = -a; else entry.l = -a;
+                        entry.type = 'credit_settlement';
+                        entry.creditor = document.getElementById('link-name').value; // Who did you pay?
+                    }
+                    else if (t === 'fiduciary') { entry.goal = document.getElementById('e-fd-goal').value; entry.user = document.getElementById('e-fd-user').value; }
                     else if (t === 'debtor' || t === 'creditor') { entry.total = t==='creditor' ? -a : a; entry.rate = document.getElementById('e-rate').value; }
                     else if (t === 'asset') entry.cat = document.getElementById('e-as-cat').value;
                     
@@ -253,11 +242,20 @@
                 updateForm: () => {
                     const t = document.getElementById('e-type').value, c = document.getElementById('dynamic-inputs');
                     c.innerHTML = '';
-                    if(t === 'income') c.innerHTML = '<div class="vault-card p-6 border-emerald-500/20 text-center"><p class="text-[10px] font-bold text-zinc-500 mb-4 uppercase">Fluid Allocation (%)</p><div class="grid grid-cols-3 gap-3"><input id="ps-b" type="number" class="input-dark !p-3" placeholder="Bills %"><input id="ps-s" type="number" class="input-dark !p-3" placeholder="Save %"><input id="ps-l" type="number" class="input-dark !p-3" placeholder="Spend %"></div></div>' + '<div class="settle-row"><input type="checkbox" id="is-repay" onchange="VaultUI.updateForm()"><span class="text-[10px] font-bold uppercase">Debt Repayment?</span></div>' + (document.getElementById('is-repay')?.checked ? '<input id="settle-name" class="input-dark mt-2" placeholder="Debtor Name">' : '');
+                    // 1. INCOME
+                    if(t === 'income') c.innerHTML = '<div class="vault-card p-6 border-emerald-500/20 text-center"><p class="text-[10px] font-bold text-zinc-500 mb-4 uppercase">Fluid Allocation (%)</p><div class="grid grid-cols-3 gap-3"><input id="ps-b" type="number" class="input-dark !p-3" placeholder="Bills %"><input id="ps-s" type="number" class="input-dark !p-3" placeholder="Save %"><input id="ps-l" type="number" class="input-dark !p-3" placeholder="Spend %"></div></div>';
+                    // 2. RECOVER DEBT (New Intuitive UI)
+                    if(t === 'recover') c.innerHTML = '<input id="link-name" class="input-dark mb-4" placeholder="Who paid you? (Debtor Name)"><div class="text-[10px] text-emerald-500 font-bold uppercase text-center">This will reduce their debt balance.</div>';
+                    // 3. FIDUCIARY
                     if(t === 'fiduciary') c.innerHTML = '<input id="e-fd-goal" class="input-dark" placeholder="Goal (e.g. Hall Fee)"><input id="e-fd-user" class="input-dark mt-4" placeholder="Contributor (e.g. Alhaji Musa)">';
+                    // 4. ASSET
                     if(t === 'asset') c.innerHTML = '<select id="e-as-cat" class="input-dark"><option value="Property">Property/Land</option><option value="Vehicle">Vehicle</option></select>';
+                    // 5. DEBT/CREDIT Creation
                     if(t === 'debtor' || t === 'creditor') c.innerHTML = '<input id="e-rate" type="number" class="input-dark" placeholder="Interest %"><input id="e-terms" type="number" class="input-dark mt-4" placeholder="Terms (Months)">';
-                    if(t === 'expense') c.innerHTML = '<select id="e-src" class="input-dark mb-4"><option value="bills">Bills Account</option><option value="savings">Savings Account</option></select>' + '<div class="settle-row"><input type="checkbox" id="is-settle" onchange="VaultUI.updateForm()"><span class="text-[10px] font-bold uppercase">Credit Settlement?</span></div>' + (document.getElementById('is-settle')?.checked ? '<input id="settle-name" class="input-dark mt-2" placeholder="Creditor Name">' : '');
+                    // 6. EXPENSE
+                    if(t === 'expense') c.innerHTML = '<select id="e-src" class="input-dark"><option value="bills">Bills Account</option><option value="savings">Savings Account</option></select>';
+                    // 7. SETTLE DEBT (New Intuitive UI)
+                    if(t === 'settle') c.innerHTML = '<select id="e-src" class="input-dark mb-4"><option value="bills">Pay from Bills</option><option value="savings">Pay from Savings</option></select><input id="link-name" class="input-dark" placeholder="Who did you pay? (Creditor Name)">';
                 },
                 render: () => {
                     const db = VaultCore.db(), search = document.getElementById('fd-search').value.toLowerCase();
@@ -275,42 +273,7 @@
                             nw += i.total; b += (i.b||0); s += (i.s||0); l += (i.l||0);
                             if(i.type === 'asset') as += i.total;
                             
-                            // CALCULATE DEBTORS
-                            if(i.type === 'debtor' || i.type === 'debt_repayment') { 
-                                const name = i.debtor || i.name; 
-                                const val = (i.type === 'debt_repayment') ? -Math.abs(i.total) : Math.abs(i.total);
-                                dMap[name] = (dMap[name]||0) + val; dbT += val; 
-                            }
-                            // CALCULATE CREDITORS
-                            if(i.type === 'creditor' || i.type === 'credit_settlement') { 
-                                const name = i.creditor || i.name; 
-                                const val = (i.type === 'credit_settlement') ? Math.abs(i.total) : -Math.abs(i.total);
-                                cMap[name] = (cMap[name]||0) + val; crT += val; 
-                            }
-                        }
-                        document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><div class="flex gap-4 items-center"><span>₦${Math.abs(i.total).toLocaleString()}</span><button onclick="VaultCore.delete(${i.id})">✕</button></div></div>`;
-                    });
-
-                    Object.keys(pivots).forEach(k => {
-                        if(k.toLowerCase().includes(search)) {
-                            let r = pivots[k].subs.map(sb => `<div class="flex justify-between py-1 opacity-60"><span>${sb.n}</span><span>₦${sb.a.toLocaleString()}</span></div>`).join('');
-                            document.getElementById('fd-pivot-list').innerHTML += `<div class="pivot-card"><div class="flex justify-between font-black text-xs text-yellow-500 uppercase"><span>${k}</span><span>₦${pivots[k].total.toLocaleString()}</span></div><div class="mt-2 pt-2 border-t border-white/5 text-[9px]">${r}</div></div>`;
-                        }
-                    });
-
-                    // Render Calculated Balances
-                    Object.keys(dMap).forEach(k => { if(dMap[k]!==0) document.getElementById('db-list').innerHTML += `<div class="flex justify-between font-bold text-[11px] uppercase p-2 border-b border-zinc-900"><span>${k}</span><span>₦${dMap[k].toLocaleString()}</span></div>`; });
-                    Object.keys(cMap).forEach(k => { if(cMap[k]!==0) document.getElementById('cr-list').innerHTML += `<div class="flex justify-between font-bold text-[11px] uppercase text-red-500 p-2 border-b border-zinc-900"><span>${k}</span><span>₦${Math.abs(cMap[k]).toLocaleString()}</span></div>`; });
-
-                    const set = (id, v) => { const el = document.getElementById(id); if(el) el.innerText = "₦" + v.toLocaleString(); };
-                    set('nw-display', nw); set('split-cash', (b+s+l)); set('split-as', as); set('split-db', dbT);
-                    set('tc-display', (b+s+l)); set('b-total', b); set('s-total', s); set('l-total', l);
-                    set('fd-display', fd); set('cr-display', crT); set('as-display', as); set('db-display', dbT);
-                    set('b-core', b*0.4); set('b-reserve', b*0.4); set('b-ops', b*0.2);
-                }
-            };
-        })();
-        VaultUI.init();
-    </script>
-</body>
-</html>
+                            // --- INTELLIGENT MATCHING ---
+                            // 1. Debtors
+                            if(i.type === 'debtor') { 
+                                dMap[i.name] = (dMap[i.name]||0) + i.total;
