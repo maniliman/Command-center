@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Sovereign Vault</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --safe-top: env(safe-area-inset-top, 50px); }
         body { background-color: #0A0A0B; color: #EDEDED; font-family: ui-monospace, monospace; margin: 0; padding: 0; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
@@ -24,17 +23,16 @@
         .t-btn { flex: 1; padding: 8px; font-size: 10px; font-weight: 900; background: #262629; border-radius: 8px; color: #666; text-align: center; cursor: pointer; }
         .t-btn.active { background: #EAB308; color: black; }
         .pivot-card { background: rgba(234, 179, 8, 0.05); border: 1px solid rgba(234, 179, 8, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 8px; }
-        
-        /* New Style for the Settlement Checkbox to fit your UI */
+        /* Settlement Checkbox Style */
         .settle-row { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #333; border-radius: 8px; margin-bottom: 12px; background: rgba(255,255,255,0.03); }
     </style>
 </head>
 <body id="main-body" class="p-6" style="padding-top: calc(var(--safe-top) + 20px);">
 
     <div id="auth-screen" class="view-hidden">
-        <p class="text-[10px] tracking-[0.5em] uppercase font-black text-emerald-500 mb-8 text-center">Cloud Access</p>
-        <input id="auth-pin" type="password" class="input-dark text-center text-2xl" placeholder="PIN">
-        <button onclick="VaultUI.authenticate()" class="mt-8 w-full bg-emerald-500 p-6 rounded-2xl text-black font-black uppercase">Sync & Unlock</button>
+        <p class="text-[10px] tracking-[0.5em] uppercase font-black text-emerald-500 mb-8 text-center">Secure Access</p>
+        <input id="auth-pin" type="text" class="input-dark text-center text-2xl" placeholder="PIN or Recovery Key">
+        <button onclick="VaultUI.authenticate()" class="mt-8 w-full bg-emerald-500 p-6 rounded-2xl text-black font-black uppercase">Unlock Vault</button>
     </div>
 
     <div id="dashboard-view" class="space-y-6">
@@ -115,191 +113,4 @@
     <div id="settings-view" class="view-hidden space-y-10">
         <h2 class="text-3xl font-black uppercase">Registry</h2>
         <div class="vault-card p-6 space-y-4">
-            <p class="text-[10px] font-bold text-zinc-500 uppercase mb-4">Security Center</p>
-            <input id="set-pin" type="text" maxlength="4" class="input-dark" placeholder="Set 4-Digit PIN">
-            <button onclick="VaultCore.savePin()" class="w-full bg-emerald-500 p-4 rounded-xl text-black font-black uppercase text-[10px]">Lock Vault</button>
-        </div>
-        <div class="vault-card p-6 space-y-4">
-            <p class="text-[10px] font-bold text-zinc-500 uppercase mb-4">Cloud Data</p>
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="VaultCore.export()" class="bg-zinc-800 p-4 rounded-xl text-[10px] font-black uppercase">Export JSON</button>
-                <button onclick="document.getElementById('imp-file').click()" class="bg-zinc-800 p-4 rounded-xl text-[10px] font-black uppercase">Import JSON</button>
-                <input type="file" id="imp-file" class="hidden" onchange="VaultCore.import(event)">
-            </div>
-        </div>
-        <button onclick="VaultCore.wipe()" class="w-full p-4 text-red-900 border border-red-900 rounded-xl font-black text-[10px] uppercase">Wipe System</button>
-    </div>
-
-    <button id="f-add" onclick="VaultUI.changeView('entry-view')" class="fab-btn bg-emerald-500 text-black right-8">+</button>
-    <button id="f-back" onclick="VaultUI.changeView('dashboard-view')" class="fab-btn bg-zinc-800 text-white left-8 view-hidden">✕</button>
-
-    <script>
-        // --- 1. CONFIGURATION ---
-        const SUPA_URL = "https://uypybzjavipkslwkrqyh.supabase.co";
-        const SUPA_KEY = "sb_publishable_qx5zflCGJslA5R9L8L7oiQ_xhj0BGG4";
-        const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
-
-        const VaultCore = (() => {
-            let db = [];
-            let pin = localStorage.getItem('SOV_PIN') || "";
-            let fdView = 'goal';
-
-            // --- 2. SYNC ENGINE ---
-            const sync = async () => {
-                // Pulls data from Cloud instead of LocalStorage
-                const { data, error } = await supa.from('vault_entries').select('*');
-                if (!error && data) { db = data; VaultUI.render(); }
-            };
-
-            return {
-                db: () => db, pin: () => pin, fdView: () => fdView,
-                setFdView: (v) => { fdView = v; VaultUI.render(); },
-                sync: sync, // Public access to sync
-                
-                savePin: () => { 
-                    const p = document.getElementById('set-pin').value;
-                    if(p.length !== 4) return alert("PIN must be 4 digits");
-                    localStorage.setItem('SOV_PIN', p);
-                    pin = p; alert("PIN Locked.");
-                },
-
-                // --- 3. EXECUTION LOGIC (Updated for Settlement) ---
-                execute: async () => {
-                    const t = document.getElementById('e-type').value, n = document.getElementById('e-name').value, a = parseFloat(document.getElementById('e-amount').value), dt = document.getElementById('e-datetime').value;
-                    if (!n || isNaN(a)) return;
-                    
-                    let e = { name: n, total: a, type: t, date: dt };
-                    
-                    if (t === 'income') {
-                        e.b = a * 0.4; e.s = a * 0.4; e.l = a * 0.2;
-                        // Settlement Logic: If checked, it becomes a 'debt_repayment'
-                        if(document.getElementById('is-repay')?.checked) { 
-                            e.type = 'debt_repayment'; 
-                            e.debtor = document.getElementById('settle-name').value; 
-                        }
-                    } else if (t === 'expense') {
-                        e.total = -a; const s = document.getElementById('e-src').value;
-                        if(s === 'bills') e.b = -a; else if(s === 'savings') e.s = -a; else e.l = -a;
-                        // Settlement Logic: If checked, it becomes a 'credit_settlement'
-                        if(document.getElementById('is-settle')?.checked) { 
-                            e.type = 'credit_settlement'; 
-                            e.creditor = document.getElementById('settle-name').value; 
-                        }
-                    } else if (t === 'fiduciary') { e.goal = document.getElementById('e-fd-goal').value; e.user = document.getElementById('e-fd-user').value; }
-                    else if (t === 'debtor' || t === 'creditor') { e.total = t==='creditor' ? -a : a; e.debtor = n; e.creditor = n; }
-                    else if (t === 'asset') e.cat = document.getElementById('e-as-cat').value;
-
-                    // Push to Cloud
-                    const { error } = await supa.from('vault_entries').insert([e]);
-                    if(!error) { await sync(); VaultUI.changeView('dashboard-view'); } else { alert("Sync Error. Check connection."); }
-                },
-
-                export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `Sovereign_Cloud_Backup.json`; a.click(); },
-                import: async (ev) => { 
-                    const reader = new FileReader(); 
-                    reader.onload = async (e) => { 
-                        const data = JSON.parse(e.target.result);
-                        if(confirm(`Import ${data.length} records to Cloud?`)) {
-                            // Clean IDs to prevent conflicts
-                            const clean = data.map(({ id, ...rest }) => rest);
-                            const { error } = await supa.from('vault_entries').insert(clean);
-                            if(!error) { await sync(); alert("Success!"); } else { alert("Import Failed"); }
-                        }
-                    }; 
-                    reader.readAsText(ev.target.files[0]); 
-                },
-                delete: async (id) => { if(confirm("Delete Permanently?")) { await supa.from('vault_entries').delete().eq('id', id); await sync(); } },
-                wipe: () => { if(confirm("Reset Local Settings?")) { localStorage.clear(); location.reload(); } }
-            };
-        })();
-
-        const VaultUI = (() => {
-            return {
-                init: () => {
-                    if (VaultCore.pin()) document.getElementById('auth-screen').classList.remove('view-hidden');
-                    else { VaultCore.sync(); VaultUI.render(); }
-                },
-                authenticate: () => {
-                    const input = document.getElementById('auth-pin').value;
-                    if (input === VaultCore.pin()) {
-                        document.getElementById('auth-screen').classList.add('view-hidden');
-                        VaultCore.sync();
-                    } else { alert("Denied"); document.getElementById('auth-pin').value = ''; }
-                },
-                toggleCard: id => document.getElementById(id).classList.toggle('drawer-open'),
-                toggleStealth: () => document.body.classList.toggle('stealth-active'),
-                changeView: id => {
-                    ['dashboard-view', 'entry-view', 'settings-view'].forEach(v => document.getElementById(v).classList.add('view-hidden'));
-                    document.getElementById(id).classList.remove('view-hidden');
-                    document.getElementById('f-add').classList.toggle('view-hidden', id !== 'dashboard-view');
-                    document.getElementById('f-back').classList.toggle('view-hidden', id === 'dashboard-view');
-                    if(id === 'dashboard-view') VaultUI.render();
-                    VaultUI.updateForm();
-                },
-                updateForm: () => {
-                    const t = document.getElementById('e-type').value, c = document.getElementById('dynamic-inputs');
-                    c.innerHTML = '';
-                    if(t === 'income') c.innerHTML = '<div class="vault-card p-6 border-emerald-500/20 text-center"><p class="text-[10px] font-bold text-zinc-500 mb-4 uppercase">Fluid Allocation (%)</p><div class="grid grid-cols-3 gap-3"><input id="ps-b" type="number" class="input-dark !p-3" placeholder="Bills %"><input id="ps-s" type="number" class="input-dark !p-3" placeholder="Save %"><input id="ps-l" type="number" class="input-dark !p-3" placeholder="Spend %"></div></div>' + '<div class="settle-row"><input type="checkbox" id="is-repay" onchange="VaultUI.updateForm()"><span class="text-[10px] font-bold uppercase">Debt Repayment?</span></div>' + (document.getElementById('is-repay')?.checked ? '<input id="settle-name" class="input-dark mt-2" placeholder="Debtor Name">' : '');
-                    if(t === 'fiduciary') c.innerHTML = '<input id="e-fd-goal" class="input-dark" placeholder="Goal (e.g. Hall Fee)"><input id="e-fd-user" class="input-dark mt-4" placeholder="Contributor (e.g. Alhaji Musa)">';
-                    if(t === 'asset') c.innerHTML = '<select id="e-as-cat" class="input-dark"><option value="Property">Property/Land</option><option value="Vehicle">Vehicle</option></select>';
-                    if(t === 'debtor' || t === 'creditor') c.innerHTML = '<input id="e-rate" type="number" class="input-dark" placeholder="Interest %"><input id="e-terms" type="number" class="input-dark mt-4" placeholder="Terms (Months)">';
-                    if(t === 'expense') c.innerHTML = '<select id="e-src" class="input-dark mb-4"><option value="bills">Bills Account</option><option value="savings">Savings Account</option></select>' + '<div class="settle-row"><input type="checkbox" id="is-settle" onchange="VaultUI.updateForm()"><span class="text-[10px] font-bold uppercase">Credit Settlement?</span></div>' + (document.getElementById('is-settle')?.checked ? '<input id="settle-name" class="input-dark mt-2" placeholder="Creditor Name">' : '');
-                },
-                render: () => {
-                    const db = VaultCore.db(), search = (document.getElementById('fd-search')?.value || "").toLowerCase();
-                    let nw=0, b=0, s=0, l=0, as=0, fd=0, dbT=0, crT=0;
-                    // Maps to track debtor/creditor balances
-                    const dMap = {}, cMap = {}, pivots = {};
-
-                    ['as-list','db-list','cr-list','fd-pivot-list','hi-list'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).innerHTML = ''; });
-                    
-                    db.slice().reverse().forEach(i => {
-                        if(i.type === 'fiduciary') {
-                            fd += i.total; const m = VaultCore.fdView() === 'goal' ? i.goal : i.user, sub = VaultCore.fdView() === 'goal' ? i.user : i.goal;
-                            if(!pivots[m]) pivots[m] = { total: 0, subs: [] };
-                            pivots[m].total += i.total; pivots[m].subs.push({ n: sub, a: i.total });
-                        } else {
-                            nw += i.total; b += (i.b||0); s += (i.s||0); l += (i.l||0);
-                            if(i.type === 'asset') as += i.total;
-                            
-                            // --- SETTLEMENT MATH ---
-                            if(i.type === 'debtor' || i.type === 'debt_repayment') { 
-                                const name = i.debtor || i.name; 
-                                // Repayment is negative for debtor balance calculation
-                                const val = (i.type === 'debt_repayment') ? -Math.abs(i.total) : Math.abs(i.total);
-                                dMap[name] = (dMap[name]||0) + val; dbT += val; 
-                            }
-                            if(i.type === 'creditor' || i.type === 'credit_settlement') { 
-                                const name = i.creditor || i.name; 
-                                // Settlement is positive for creditor balance calculation (reduces negative debt)
-                                const val = (i.type === 'credit_settlement') ? Math.abs(i.total) : -Math.abs(i.total);
-                                cMap[name] = (cMap[name]||0) + val; crT += val; 
-                            }
-                        }
-                        const hi = document.getElementById('hi-list');
-                        if(hi) hi.innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><div class="flex gap-4 items-center"><span>₦${Math.abs(i.total).toLocaleString()}</span><button onclick="VaultCore.delete(${i.id})">✕</button></div></div>`;
-                    });
-
-                    Object.keys(pivots).forEach(k => {
-                        if(k.toLowerCase().includes(search)) {
-                            let r = pivots[k].subs.map(sb => `<div class="flex justify-between py-1 opacity-60"><span>${sb.n}</span><span>₦${sb.a.toLocaleString()}</span></div>`).join('');
-                            document.getElementById('fd-pivot-list').innerHTML += `<div class="pivot-card"><div class="flex justify-between font-black text-xs text-yellow-500 uppercase"><span>${k}</span><span>₦${pivots[k].total.toLocaleString()}</span></div><div class="mt-2 pt-2 border-t border-white/5 text-[9px]">${r}</div></div>`;
-                        }
-                    });
-                    
-                    // Render Debtor/Creditor lists with calculated balances
-                    Object.keys(dMap).forEach(k => { if(dMap[k]!==0) document.getElementById('db-list').innerHTML += `<div class="flex justify-between font-bold text-[11px] uppercase p-2 border-b border-zinc-900"><span>${k}</span><span>₦${dMap[k].toLocaleString()}</span></div>`; });
-                    Object.keys(cMap).forEach(k => { if(cMap[k]!==0) document.getElementById('cr-list').innerHTML += `<div class="flex justify-between font-bold text-[11px] uppercase text-red-500 p-2 border-b border-zinc-900"><span>${k}</span><span>₦${Math.abs(cMap[k]).toLocaleString()}</span></div>`; });
-
-                    const set = (id, v) => { const el = document.getElementById(id); if(el) el.innerText = "₦" + v.toLocaleString(); };
-                    set('nw-display', nw); set('split-cash', (b+s+l)); set('split-as', as); set('split-db', dbT);
-                    set('tc-display', (b+s+l)); set('b-total', b); set('s-total', s); set('l-total', l);
-                    set('fd-display', fd); set('cr-display', crT); set('as-display', as); set('db-display', dbT);
-                    set('b-core', b*0.4); set('b-reserve', b*0.4); set('b-ops', b*0.2);
-                }
-            };
-        })();
-        VaultUI.init();
-    </script>
-</body>
-</html>
+            <p class="text-[10px] font-bold text-zinc-500
