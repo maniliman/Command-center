@@ -16,7 +16,7 @@
         .trigger-btn { color: #00FF41; font-size: 18px; padding: 10px; cursor: pointer; }
         .drawer-open > div > .trigger-btn { transform: rotate(180deg); }
         .stealth-active .maskable { filter: blur(28px); opacity: 0.3; pointer-events: none; }
-        .fab-btn { position: fixed; bottom: 25px; width: 56px; height: 56px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; z-index: 9999; }
+        .fab-btn { position: fixed; bottom: 25px; width: 56px; height: 56px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; z-index: 9999; border: none; }
         .view-hidden { display: none !important; }
         .input-dark { background: #0A0A0B; border: 1px solid #262629; color: white; padding: 18px; border-radius: 12px; width: 100%; outline: none; }
         #auth-screen { position: fixed; inset: 0; background: #0A0A0B; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
@@ -69,8 +69,8 @@
             </div>
 
             <div id="feat-assets" class="vault-card"><div class="p-6 flex justify-between"><span>Assets</span><div class="flex items-center gap-4"><b id="as-display" class="maskable">₦0</b><span class="trigger-btn" onclick="VaultUI.toggleCard('feat-assets')">▼</span></div></div><div id="as-list" class="sub-drawer"></div></div>
-            <div id="feat-debtors" class="vault-card"><div class="p-6 flex justify-between"><span>Debtors</span><div class="flex items-center gap-4"><b id="db-display" class="maskable">₦0</b><span class="trigger-btn" onclick="VaultUI.toggleCard('feat-debtors')">▼</span></div></div><div id="db-list" class="sub-drawer"></div></div>
-            <div id="feat-creditors" class="vault-card border-red-900/40"><div class="p-6 flex justify-between"><span>Creditors</span><div class="flex items-center gap-4"><b id="cr-display" class="maskable text-red-500">₦0</b><span class="trigger-btn" onclick="VaultUI.toggleCard('feat-creditors')">▼</span></div></div><div id="cr-list" class="sub-drawer"></div></div>
+            <div id="feat-debtors" class="vault-card"><div class="p-6 flex justify-between"><span>Debtors</span><div class="flex items-center gap-4"><b id="db-display" class="maskable">₦0</b><span class="trigger-btn" onclick="VaultUI.toggleCard('feat-debtors')">▼</span></div></div><div id="db-list" class="sub-drawer space-y-2"></div></div>
+            <div id="feat-creditors" class="vault-card border-red-900/40"><div class="p-6 flex justify-between"><span>Creditors</span><div class="flex items-center gap-4"><b id="cr-display" class="maskable text-red-500">₦0</b><span class="trigger-btn" onclick="VaultUI.toggleCard('feat-creditors')">▼</span></div></div><div id="cr-list" class="sub-drawer space-y-2"></div></div>
 
             <div id="feat-fiduciary" class="vault-card fiduciary-border">
                 <div class="p-6 flex justify-between items-center">
@@ -115,7 +115,7 @@
             <input id="set-pin" type="text" maxlength="4" class="input-dark" placeholder="Set 4-Digit PIN">
             <button onclick="VaultCore.savePin()" class="w-full bg-emerald-500 p-4 rounded-xl text-black font-black uppercase text-[10px]">Lock Vault</button>
             <div id="recovery-box" class="hidden bg-black/40 p-4 rounded-xl border border-dashed border-zinc-700">
-                <p class="text-[8px] text-zinc-500 mb-2 uppercase">Your Master Recovery Key (Save This!):</p>
+                <p class="text-[8px] text-zinc-500 mb-2 uppercase">Your Master Recovery Key:</p>
                 <p id="recovery-key-display" class="text-emerald-500 font-bold text-xs select-all"></p>
             </div>
         </div>
@@ -132,16 +132,6 @@
             let recovery = localStorage.getItem('VAULT_RECOVERY') || "";
             let fdView = 'goal';
 
-            const genRecovery = () => {
-                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-                let res = '';
-                for (let i = 0; i < 16; i++) {
-                    if (i > 0 && i % 4 === 0) res += '-';
-                    res += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                return res;
-            };
-
             const save = () => localStorage.setItem('SOVEREIGN_VAULT_FINAL', JSON.stringify(db));
 
             return {
@@ -150,28 +140,34 @@
                 savePin: () => { 
                     const p = document.getElementById('set-pin').value;
                     if(p.length !== 4) return alert("PIN must be 4 digits");
-                    const r = genRecovery();
+                    const r = Math.random().toString(36).substring(2,12).toUpperCase();
                     localStorage.setItem('VAULT_PIN', p);
                     localStorage.setItem('VAULT_RECOVERY', r);
                     pin = p; recovery = r;
                     document.getElementById('recovery-key-display').innerText = r;
                     document.getElementById('recovery-box').classList.remove('hidden');
-                    alert("PIN Locked. Copy your recovery key!");
+                    alert("PIN Locked.");
                 },
                 execute: () => {
-                    const t = document.getElementById('e-type').value, n = document.getElementById('e-name').value, a = parseFloat(document.getElementById('e-amount').value), dt = document.getElementById('e-datetime').value;
+                    const t = document.getElementById('e-type').value, a = parseFloat(document.getElementById('e-amount').value), dt = document.getElementById('e-datetime').value;
+                    const isSettle = document.getElementById('e-settle')?.checked;
+                    const target = document.getElementById('e-target')?.value;
+                    const n = isSettle ? target : document.getElementById('e-name').value;
+
                     if (!n || isNaN(a)) return;
                     let entry = { id: Date.now(), name: n, total: a, type: t, rawDate: dt };
-                    if (t === 'income') {
-                        entry.b = a * (parseFloat(document.getElementById('ps-b').value)/100 || 0.4);
-                        entry.s = a * (parseFloat(document.getElementById('ps-s').value)/100 || 0.4);
-                        entry.l = a * (parseFloat(document.getElementById('ps-l').value)/100 || 0.2);
+                    
+                    if (isSettle) {
+                        if (t === 'income') { entry.type = 'debt_repayment'; entry.debtor = target; entry.name = `Payment from ${target}`; }
+                        else { entry.type = 'credit_settlement'; entry.creditor = target; entry.name = `Paid to ${target}`; }
+                    } else if (t === 'income') {
+                        entry.b = a * 0.4; entry.s = a * 0.4; entry.l = a * 0.2;
                     } else if (t === 'expense') {
                         entry.total = -a; const s = document.getElementById('e-src').value;
                         if(s === 'bills') entry.b = -a; else if(s === 'savings') entry.s = -a; else entry.l = -a;
-                    } else if (t === 'fiduciary') { entry.goal = document.getElementById('e-fd-goal').value; entry.user = document.getElementById('e-fd-user').value; }
-                    else if (t === 'debtor' || t === 'creditor') { entry.total = t==='creditor' ? -a : a; entry.rate = document.getElementById('e-rate').value; }
-                    else if (t === 'asset') entry.cat = document.getElementById('e-as-cat').value;
+                    } else if (t === 'fiduciary') { entry.goal = document.getElementById('e-fd-goal').value; entry.user = document.getElementById('e-user').value; }
+                    else if (t === 'debtor' || t === 'creditor') { entry.total = t==='creditor' ? -a : a; entry.debtor = n; entry.creditor = n; }
+                    
                     db.push(entry); save(); VaultUI.changeView('dashboard-view');
                 },
                 delete: (id) => { if(confirm("Delete?")) { db = db.filter(i => i.id !== id); save(); VaultUI.render(); } },
@@ -205,38 +201,48 @@
                 updateForm: () => {
                     const t = document.getElementById('e-type').value, c = document.getElementById('dynamic-inputs');
                     c.innerHTML = '';
-                    if(t === 'income') c.innerHTML = '<div class="vault-card p-6 border-emerald-500/20 text-center"><p class="text-[10px] font-bold text-zinc-500 mb-4 uppercase">Fluid Allocation (%)</p><div class="grid grid-cols-3 gap-3"><input id="ps-b" type="number" class="input-dark !p-3" placeholder="Bills %"><input id="ps-s" type="number" class="input-dark !p-3" placeholder="Save %"><input id="ps-l" type="number" class="input-dark !p-3" placeholder="Spend %"></div></div>';
-                    if(t === 'fiduciary') c.innerHTML = '<input id="e-fd-goal" class="input-dark" placeholder="Goal (e.g. Hall Fee)"><input id="e-fd-user" class="input-dark mt-4" placeholder="Contributor (e.g. Alhaji Musa)">';
-                    if(t === 'asset') c.innerHTML = '<select id="e-as-cat" class="input-dark"><option value="Property">Property/Land</option><option value="Vehicle">Vehicle</option></select>';
-                    if(t === 'debtor' || t === 'creditor') c.innerHTML = '<input id="e-rate" type="number" class="input-dark" placeholder="Interest %"><input id="e-terms" type="number" class="input-dark mt-4" placeholder="Terms (Months)">';
-                    if(t === 'expense') c.innerHTML = '<select id="e-src" class="input-dark"><option value="bills">Bills Account</option><option value="savings">Savings Account</option></select>';
+                    if(t === 'income') c.innerHTML = '<div class="flex items-center gap-3 p-4 border border-zinc-800 rounded"><input type="checkbox" id="e-settle" onchange="VaultUI.updateForm()"><span class="text-[10px] font-bold uppercase">Debt Repayment?</span></div>' + (document.getElementById('e-settle')?.checked ? '<input id="e-target" class="input-dark mt-2" placeholder="Debtor Name">' : '');
+                    if(t === 'expense') c.innerHTML = '<select id="e-src" class="input-dark mb-4"><option value="bills">Bills Account</option><option value="savings">Savings Account</option></select><div class="flex items-center gap-3 p-4 border border-zinc-800 rounded"><input type="checkbox" id="e-settle" onchange="VaultUI.updateForm()"><span class="text-[10px] font-bold uppercase">Credit Settlement?</span></div>' + (document.getElementById('e-settle')?.checked ? '<input id="e-target" class="input-dark mt-2" placeholder="Creditor Name">' : '');
+                    if(t === 'fiduciary') c.innerHTML = '<input id="e-fd-goal" class="input-dark" placeholder="Goal"><input id="e-fd-user" class="input-dark mt-4" placeholder="Contributor">';
+                    const d = document.getElementById('e-name');
+                    if(document.getElementById('e-settle')?.checked) d.classList.add('view-hidden'); else d.classList.remove('view-hidden');
                 },
                 render: () => {
-                    const db = VaultCore.db(), search = document.getElementById('fd-search').value.toLowerCase();
+                    const db = VaultCore.db(), search = document.getElementById('fd-search')?.value.toLowerCase() || "";
                     let nw=0, b=0, s=0, l=0, as=0, fd=0, dbT=0, crT=0;
-                    document.getElementById('btn-goal').classList.toggle('active', VaultCore.fdView()==='goal');
-                    document.getElementById('btn-user').classList.toggle('active', VaultCore.fdView()==='user');
-                    ['as-list','db-list','cr-list','fd-pivot-list','hi-list'].forEach(id => document.getElementById(id).innerHTML = '');
-                    const pivots = {};
+                    const debMap = {}, creMap = {}, pivots = {};
+
+                    ['as-list','db-list','cr-list','fd-pivot-list','hi-list'].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ''; });
+                    
                     db.slice().reverse().forEach(i => {
                         if(i.type === 'fiduciary') {
-                            fd += i.total; const m = VaultCore.fdView() === 'goal' ? i.goal : i.user, s = VaultCore.fdView() === 'goal' ? i.user : i.goal;
+                            fd += i.total; const m = VaultCore.fdView() === 'goal' ? i.goal : i.user, sb = VaultCore.fdView() === 'goal' ? i.user : i.goal;
                             if(!pivots[m]) pivots[m] = { total: 0, subs: [] };
-                            pivots[m].total += i.total; pivots[m].subs.push({ n: s, a: i.total });
+                            pivots[m].total += i.total; pivots[m].subs.push({ n: sb, a: i.total });
                         } else {
                             nw += i.total; b += (i.b||0); s += (i.s||0); l += (i.l||0);
                             if(i.type === 'asset') as += i.total;
-                            if(i.type === 'debtor') dbT += i.total;
-                            if(i.type === 'creditor') crT += Math.abs(i.total);
+                            if(i.type==='debtor' || i.type==='debt_repayment') { 
+                                const n = i.debtor || i.name; const v = i.type==='debt_repayment' ? -Math.abs(i.total) : Math.abs(i.total); 
+                                debMap[n] = (debMap[n]||0) + v; dbT += v; 
+                            }
+                            if(i.type==='creditor' || i.type==='credit_settlement') { 
+                                const n = i.creditor || i.name; const v = i.type==='credit_settlement' ? Math.abs(i.total) : -Math.abs(i.total); 
+                                creMap[n] = (creMap[n]||0) + v; crT += v; 
+                            }
                         }
                         document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-2 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><div class="flex gap-4 items-center"><span>₦${Math.abs(i.total).toLocaleString()}</span><button onclick="VaultCore.delete(${i.id})">✕</button></div></div>`;
                     });
+
+                    Object.keys(debMap).forEach(k => { if(debMap[k]!==0) document.getElementById('db-list').innerHTML += `<div class="flex justify-between text-[11px] font-bold uppercase"><span>${k}</span><span>₦${debMap[k].toLocaleString()}</span></div>`; });
+                    Object.keys(creMap).forEach(k => { if(creMap[k]!==0) document.getElementById('cr-list').innerHTML += `<div class="flex justify-between text-[11px] font-bold uppercase text-red-500"><span>${k}</span><span>₦${Math.abs(creMap[k]).toLocaleString()}</span></div>`; });
                     Object.keys(pivots).forEach(k => {
                         if(k.toLowerCase().includes(search)) {
                             let r = pivots[k].subs.map(sb => `<div class="flex justify-between py-1 opacity-60"><span>${sb.n}</span><span>₦${sb.a.toLocaleString()}</span></div>`).join('');
                             document.getElementById('fd-pivot-list').innerHTML += `<div class="pivot-card"><div class="flex justify-between font-black text-xs text-yellow-500 uppercase"><span>${k}</span><span>₦${pivots[k].total.toLocaleString()}</span></div><div class="mt-2 pt-2 border-t border-white/5 text-[9px]">${r}</div></div>`;
                         }
                     });
+
                     const set = (id, v) => { const el = document.getElementById(id); if(el) el.innerText = "₦" + v.toLocaleString(); };
                     set('nw-display', nw); set('split-cash', (b+s+l)); set('split-as', as); set('split-db', dbT);
                     set('tc-display', (b+s+l)); set('b-total', b); set('s-total', s); set('l-total', l);
