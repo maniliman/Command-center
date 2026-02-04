@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-    <title>Sovereign Vault v71</title>
+    <title>Sovereign Vault v73</title>
+    
     <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/512/shield.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Vault%22,%22short_name%22:%22Vault%22,%22display%22:%22standalone%22,%22background_color%22:%22#000000%22,%22theme_color%22:%22#10B981%22,%22icons%22:[{%22src%22:%22https://img.icons8.com/fluency/512/shield.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --safe-top: env(safe-area-inset-top, 50px); }
@@ -24,17 +27,29 @@
         .view-hidden { display: none !important; }
         .stealth-active .maskable { filter: blur(20px); opacity: 0.3; }
         .seg-control { display: flex; background: #000; padding: 4px; border-radius: 14px; border: 1px solid #222; margin-bottom: 20px; }
-        .seg-btn { flex: 1; text-align: center; padding: 10px; font-size: 10px; font-weight: 800; color: #555; border-radius: 10px; transition: 0.2s; }
+        .seg-btn { flex: 1; text-align: center; padding: 10px; font-size: 10px; font-weight: 800; color: #555; border-radius: 10px; }
         .seg-btn.active.emerald { background: #064E3B; color: #10B981; }
         .q-pill { padding: 8px 16px; border-radius: 20px; border: 1px solid #333; font-size: 10px; font-weight: 800; color: #666; transition: 0.2s; white-space: nowrap; }
         .q-pill.active { border-color: #10B981; color: #10B981; background: rgba(16,185,129,0.1); }
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #222; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 2px; bottom: 2px; background-color: #666; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #10B981; }
+        input:checked + .slider:before { transform: translateX(22px); background-color: white; }
     </style>
 </head>
 <body id="main-body" class="p-4" style="padding-top: calc(var(--safe-top) + 10px);">
 
+    <div id="auth-screen" class="fixed inset-0 z-[10000] bg-black flex flex-col items-center justify-center p-8 view-hidden">
+        <div class="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-8 text-2xl">🔒</div>
+        <input id="auth-pin" type="password" class="bg-transparent border-b border-zinc-800 text-center text-4xl tracking-[0.5em] w-2/3 outline-none text-white focus:border-emerald-500" placeholder="••••" maxlength="4" inputmode="numeric">
+        <button onclick="VaultUI.authenticate()" class="mt-12 w-full glass-panel py-5 text-xs font-black uppercase text-white active:bg-zinc-800">Unlock</button>
+    </div>
+
     <div id="dashboard-view" class="space-y-6 pb-32">
         <div class="flex justify-between items-center px-2">
-            <span class="text-[10px] font-black tracking-widest text-zinc-600 uppercase">Sovereign v71</span>
+            <span class="text-[10px] font-black tracking-widest text-zinc-600 uppercase">Sovereign v73</span>
             <div class="flex gap-2">
                 <button onclick="VaultUI.changeView('query-lab')" class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400">🔍</button>
                 <button onclick="VaultUI.toggleStealth()" class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400">👁️</button>
@@ -64,7 +79,7 @@
 
     <div id="query-lab" class="view-hidden fixed inset-0 bg-black z-[2000] p-6 overflow-y-auto pt-20">
         <h2 class="text-xl font-black uppercase mb-6">Query Lab</h2>
-        <input type="text" id="q-search" class="input-ghost" placeholder="Search entries..." onkeyup="VaultUI.runQuery()">
+        <input type="text" id="q-search" class="input-ghost" placeholder="Search..." onkeyup="VaultUI.runQuery()">
         <div class="flex gap-2 overflow-x-auto my-6" id="q-type-filters">
             <button class="q-pill active" onclick="VaultUI.toggleQPill(this, 'all')">ALL</button>
             <button class="q-pill" onclick="VaultUI.toggleQPill(this, 'income')">INFLOW</button>
@@ -75,6 +90,11 @@
     </div>
 
     <div id="settings-view" class="view-hidden space-y-8 p-4 pt-20">
+        <div class="glass-panel p-6 space-y-6">
+            <div class="flex justify-between items-center"><p class="text-xs font-bold uppercase">PIN Startup</p><label class="switch"><input type="checkbox" id="tog-pin" onchange="VaultCore.toggleSetting('reqPin')"><span class="slider"></span></label></div>
+            <input id="set-pin" type="password" maxlength="4" class="input-ghost text-center tracking-[0.5em]" placeholder="••••" inputmode="numeric">
+            <button onclick="VaultCore.savePin()" class="w-full bg-zinc-800 py-3 rounded-xl text-[10px] font-black uppercase">Update Security PIN</button>
+        </div>
         <button onclick="VaultCore.export()" class="w-full glass-panel py-4 text-[10px] font-bold uppercase">Backup Data</button>
         <button onclick="document.getElementById('file-input').click()" class="w-full glass-panel py-4 text-[10px] font-bold uppercase text-emerald-400">Restore Data</button>
         <input type="file" id="file-input" class="hidden" onchange="VaultCore.import(this)">
@@ -103,12 +123,15 @@
 
     <script>
         const VaultCore = (() => {
-            let db = JSON.parse(localStorage.getItem('SOV_DB_V71')) || [];
-            let config = { activeQType: 'all', fdView: 'goal' };
-            const save = () => { localStorage.setItem('SOV_DB_V71', JSON.stringify(db)); };
+            let db = JSON.parse(localStorage.getItem('SOV_DB_V73')) || [];
+            let config = JSON.parse(localStorage.getItem('SOV_CFG_V73')) || { reqPin: false, activeQType: 'all', fdView: 'goal' };
+            let pin = localStorage.getItem('SOV_PIN_V73') || "";
+            const save = () => { localStorage.setItem('SOV_DB_V73', JSON.stringify(db)); localStorage.setItem('SOV_CFG_V73', JSON.stringify(config)); localStorage.setItem('SOV_PIN_V73', pin); };
             return {
-                db: () => db, config: () => config,
+                db: () => db, config: () => config, pin: () => pin,
                 setFdView: v => { config.fdView = v; VaultUI.render(); },
+                toggleSetting: k => { config[k] = !config[k]; save(); },
+                savePin: () => { const p = document.getElementById('set-pin').value; if(p.length===4){ pin=p; save(); alert("PIN Saved"); } else alert("PIN must be 4 digits"); },
                 execute: () => {
                     const a = parseFloat(document.getElementById('e-amount').value), desc = document.getElementById('e-name').value;
                     if(!desc || isNaN(a)) return;
@@ -121,16 +144,23 @@
                     else if(activeType === 'fiduciary') { e.goal=document.getElementById('e-fd-goal').value; e.user=document.getElementById('e-fd-user').value; }
                     db.push(e); save(); VaultUI.changeView('dashboard-view');
                 },
-                export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'Vault_v71.json'; a.click(); },
+                export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'Vault_v73.json'; a.click(); },
                 import: (input) => { const r = new FileReader(); r.onload = (e) => { db = JSON.parse(e.target.result); save(); location.reload(); }; r.readAsText(input.files[0]); },
-                delete: id => { if(confirm("Delete?")){ db=db.filter(x=>x.id!==id); save(); VaultUI.render(); }},
-                wipe: () => { if(confirm("RESET?")){ localStorage.clear(); location.reload(); }}
+                delete: id => { if(confirm("Remove?")){ db=db.filter(x=>x.id!==id); save(); VaultUI.render(); }},
+                wipe: () => { if(confirm("RESET SYSTEM?")){ localStorage.clear(); location.reload(); }}
             };
         })();
 
         let activeType = 'income';
         const VaultUI = (() => {
             return {
+                init: () => { 
+                    const cfg = VaultCore.config();
+                    document.getElementById('tog-pin').checked = cfg.reqPin;
+                    if(VaultCore.pin() && cfg.reqPin) document.getElementById('auth-screen').classList.remove('view-hidden');
+                    else VaultUI.render();
+                },
+                authenticate: () => { if(document.getElementById('auth-pin').value === VaultCore.pin()) { document.getElementById('auth-screen').classList.add('view-hidden'); VaultUI.render(); } else alert("Wrong PIN"); },
                 toggleCard: id => document.getElementById(id).classList.toggle('drawer-open'),
                 toggleStealth: () => document.body.classList.toggle('stealth-active'),
                 changeView: id => {
@@ -144,7 +174,7 @@
                 openForm: t => { activeType = t; VaultUI.changeView('entry-form'); VaultUI.updateFormUI(); },
                 updateFormUI: () => {
                     const d = document.getElementById('dynamic-inputs'); d.innerHTML = '';
-                    if(activeType==='fiduciary') d.innerHTML = '<input id="e-fd-goal" class="input-ghost" placeholder="Goal"><input id="e-fd-user" class="input-ghost" placeholder="Person">';
+                    if(activeType==='fiduciary') d.innerHTML = '<input id="e-fd-goal" class="input-ghost" placeholder="Goal"><input id="e-fd-user" class="input-ghost" placeholder="Contributor">';
                 },
                 toggleQPill: (el, type) => {
                     document.querySelectorAll('.q-pill').forEach(p => p.classList.remove('active'));
@@ -154,14 +184,14 @@
                     const s = document.getElementById('q-search').value.toLowerCase(), type = VaultCore.config().activeQType, res = document.getElementById('q-results');
                     res.innerHTML = '';
                     VaultCore.db().filter(i => {
-                        const tM = i.name.toLowerCase().includes(s) || (i.debtor||"").toLowerCase().includes(s) || (i.goal||"").toLowerCase().includes(s);
+                        const tM = (i.name||"").toLowerCase().includes(s) || (i.debtor||"").toLowerCase().includes(s) || (i.goal||"").toLowerCase().includes(s);
                         const cM = type === 'all' || i.type === type; return tM && cM;
                     }).reverse().forEach(i => {
                         res.innerHTML += `<div class="glass-panel p-4 flex justify-between uppercase text-[10px]"><span>${i.date} | ${i.name}</span><b>₦${Math.abs(i.total).toLocaleString()}</b></div>`;
                     });
                 },
                 render: () => {
-                    const db = VaultCore.db(); let nw=0, b=0, s=0, l=0, as=0, fd=0, ex=0, dBT=0, cRT=0;
+                    const db = VaultCore.db(); let nw=0, b=0, s=0, l=0, as=0, fd=0, ex=0, dbT=0, crT=0;
                     const piv = {}; const fView = VaultCore.config().fdView;
                     ['as-list','db-list','cr-list','fd-pivot-list','hi-list','ex-list'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).innerHTML = ''; });
                     
@@ -172,30 +202,30 @@
                         if(i.type==='fiduciary') { 
                             fd+=i.total; const m = fView === 'goal' ? i.goal : i.user, sb = fView === 'goal' ? i.user : i.goal;
                             if(!piv[m]) piv[m] = { t: 0, subs: [] }; piv[m].t += i.total; piv[m].subs.push({ n: sb, a: i.total });
-                        }
-                        else {
+                        } else {
                             nw += i.total; b+=(i.b||0); s+=(i.s||0); l+=(i.l||0);
-                            if(i.type==='expense'||(i.total < 0 && i.type==='income')) { ex += Math.abs(i.total); document.getElementById('ex-list').innerHTML+=`<div class="flex justify-between py-2 text-[10px] uppercase"><span>${i.name}</span><span>₦${Math.abs(i.total).toLocaleString()}</span></div>`; }
+                            if(i.type==='expense') { ex += Math.abs(i.total); document.getElementById('ex-list').innerHTML+=`<div class="flex justify-between py-2 text-[10px] uppercase"><span>${i.name}</span><span>₦${Math.abs(i.total).toLocaleString()}</span></div>`; }
                             if(i.type==='asset') { as+=i.total; document.getElementById('as-list').innerHTML+=`<div class="flex justify-between py-2 text-[10px] uppercase"><span>${i.name}</span><span>₦${i.total.toLocaleString()}</span></div>`; }
-                            if(i.type==='debtor') { dBT+=i.total; document.getElementById('db-list').innerHTML+=`<div class="flex justify-between py-2 text-[10px] uppercase"><span>${i.debtor}</span><span>₦${i.total.toLocaleString()}</span></div>`; }
-                            if(i.type==='creditor') { cRT+=Math.abs(i.total); document.getElementById('cr-list').innerHTML+=`<div class="flex justify-between py-2 text-[10px] uppercase text-red-500"><span>${i.creditor}</span><span>₦${Math.abs(i.total).toLocaleString()}</span></div>`; }
+                            if(i.type==='debtor') { dbT+=i.total; document.getElementById('db-list').innerHTML+=`<div class="flex justify-between py-2 text-[10px] uppercase"><span>${i.debtor}</span><span>₦${i.total.toLocaleString()}</span></div>`; }
+                            if(i.type==='creditor') { crT+=Math.abs(i.total); document.getElementById('cr-list').innerHTML+=`<div class="flex justify-between py-2 text-[10px] uppercase text-red-500"><span>${i.creditor}</span><span>₦${Math.abs(i.total).toLocaleString()}</span></div>`; }
                         }
-                        document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-3 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><button onclick="VaultCore.delete(${i.id})">✕</button></div>`;
+                        const hiS = document.getElementById('hi-search').value.toLowerCase();
+                        if(!hiS || (i.name||"").toLowerCase().includes(hiS)) {
+                            document.getElementById('hi-list').innerHTML += `<div class="flex justify-between py-3 border-b border-zinc-800 text-[10px] uppercase"><span>${i.name}</span><button onclick="VaultCore.delete(${i.id})">✕</button></div>`;
+                        }
                     });
-
                     Object.keys(piv).forEach(k => { 
                         let r = piv[k].subs.map(sb => `<div class="flex justify-between py-1 opacity-60"><span>${sb.n}</span><span>₦${sb.a.toLocaleString()}</span></div>`).join('');
                         document.getElementById('fd-pivot-list').innerHTML += `<div class="bg-zinc-900/50 p-3 rounded-lg border border-white/5"><div class="flex justify-between font-black text-xs text-yellow-500 uppercase"><span>${k}</span><span>₦${piv[k].t.toLocaleString()}</span></div><div class="text-[9px] mt-2">${r}</div></div>`;
                     });
-
                     const set = (id, v) => { if(document.getElementById(id)) document.getElementById(id).innerText = "₦" + v.toLocaleString(); };
-                    set('nw-display', nw); set('split-cash', (b+s+l)); set('split-as', as); set('split-db', dBT);
+                    set('nw-display', nw); set('split-cash', (b+s+l)); set('split-as', as); set('split-db', dbT);
                     set('tc-display', (b+s+l)); set('b-total', b); set('s-total', s); set('l-total', l);
-                    set('ex-display', ex); set('as-display', as); set('db-display', dBT); set('cr-display', cRT); set('fd-display', fd);
+                    set('ex-display', ex); set('as-display', as); set('db-display', dbT); set('cr-display', crT); set('fd-display', fd);
                 }
             };
         })();
-        window.onload = VaultUI.render;
+        window.onload = VaultUI.init;
     </script>
 </body>
 </html>
