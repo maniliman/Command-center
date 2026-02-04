@@ -119,13 +119,6 @@
                 <p id="recovery-key-display" class="text-emerald-500 font-bold text-xs select-all"></p>
             </div>
         </div>
-        <div class="vault-card p-6 space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="VaultCore.export()" class="bg-zinc-800 p-4 rounded-xl text-[10px] font-black uppercase">Export File</button>
-                <button onclick="document.getElementById('imp-file').click()" class="bg-zinc-800 p-4 rounded-xl text-[10px] font-black uppercase">Import File</button>
-                <input type="file" id="imp-file" class="hidden" onchange="VaultCore.import(event)">
-            </div>
-        </div>
         <button onclick="VaultCore.wipe()" class="w-full p-4 text-red-900 border border-red-900 rounded-xl font-black text-[10px] uppercase">Wipe System</button>
     </div>
 
@@ -134,16 +127,18 @@
 
     <script>
         const VaultCore = (() => {
-            // --- DATA RESCUE LOGIC ---
-            // 1. Try to load your original V30 data
+            // --- DATA RESCUE MISSION ---
+            // 1. Check for the original V30 data
             let db = JSON.parse(localStorage.getItem('SOVEREIGN_VAULT_FINAL')) || [];
             
-            // 2. If V30 is empty, look for the 'Cloud' version's local copy
+            // 2. If empty, check for the Cloud data from previous attempt
             if (db.length === 0) {
-                const cloudBackup = JSON.parse(localStorage.getItem('SOV_DATA'));
+                let cloudBackup = JSON.parse(localStorage.getItem('SOV_DATA')); // Key used by Cloud version
                 if (cloudBackup && cloudBackup.length > 0) {
-                    db = cloudBackup;
-                    alert("RECOVERED: " + db.length + " records found in backup.");
+                    db = cloudBackup; // Rescue the data
+                    // Alert user so they know it worked
+                    alert("RECOVERY SUCCESS: Found " + db.length + " missing records.");
+                    // Save it immediately to the stable V30 location
                     localStorage.setItem('SOVEREIGN_VAULT_FINAL', JSON.stringify(db));
                 }
             }
@@ -198,7 +193,37 @@
                     db.push(entry); save(); VaultUI.changeView('dashboard-view');
                 },
                 delete: (id) => { if(confirm("Delete?")) { db = db.filter(i => i.id !== id); save(); VaultUI.render(); } },
-                export: () => { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `Sovereign_Backup.json`; a.click(); },
-                import: (ev) => { 
-                    const reader = new FileReader(); 
-                    reader.onload = (e) => { db = JSON.parse(e.target.result
+                wipe: () => { if(confirm("Purge?")) { localStorage.clear(); location.reload(); } }
+            };
+        })();
+
+        const VaultUI = (() => {
+            return {
+                init: () => {
+                    if (VaultCore.pin()) document.getElementById('auth-screen').classList.remove('view-hidden');
+                    else VaultUI.render();
+                },
+                authenticate: () => {
+                    const input = document.getElementById('auth-pin').value;
+                    if (input === VaultCore.pin() || input === VaultCore.recovery()) {
+                        document.getElementById('auth-screen').classList.add('view-hidden');
+                        VaultUI.render();
+                    } else { alert("Invalid Credentials"); document.getElementById('auth-pin').value = ''; }
+                },
+                toggleCard: id => document.getElementById(id).classList.toggle('drawer-open'),
+                toggleStealth: () => document.body.classList.toggle('stealth-active'),
+                changeView: id => {
+                    ['dashboard-view', 'entry-view', 'settings-view'].forEach(v => document.getElementById(v).classList.add('view-hidden'));
+                    document.getElementById(id).classList.remove('view-hidden');
+                    document.getElementById('f-add').classList.toggle('view-hidden', id !== 'dashboard-view');
+                    document.getElementById('f-back').classList.toggle('view-hidden', id === 'dashboard-view');
+                    if(id === 'dashboard-view') VaultUI.render();
+                    VaultUI.updateForm();
+                },
+                updateForm: () => {
+                    const t = document.getElementById('e-type').value, c = document.getElementById('dynamic-inputs');
+                    c.innerHTML = '';
+                    if(t === 'income') c.innerHTML = '<div class="vault-card p-6 border-emerald-500/20 text-center"><p class="text-[10px] font-bold text-zinc-500 mb-4 uppercase">Fluid Allocation (%)</p><div class="grid grid-cols-3 gap-3"><input id="ps-b" type="number" class="input-dark !p-3" placeholder="Bills %"><input id="ps-s" type="number" class="input-dark !p-3" placeholder="Save %"><input id="ps-l" type="number" class="input-dark !p-3" placeholder="Spend %"></div></div>';
+                    if(t === 'fiduciary') c.innerHTML = '<input id="e-fd-goal" class="input-dark" placeholder="Goal (e.g. Hall Fee)"><input id="e-fd-user" class="input-dark mt-4" placeholder="Contributor (e.g. Alhaji Musa)">';
+                    if(t === 'asset') c.innerHTML = '<select id="e-as-cat" class="input-dark"><option value="Property">Property/Land</option><option value="Vehicle">Vehicle</option></select>';
+                    if(t === 'debtor' || t === 'creditor') c.innerHTML = '<input id="e-rate" type="number" class="input-
