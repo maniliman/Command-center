@@ -17,1759 +17,2266 @@
   />
 
   <style>
-    :root {
-      --bg: #000;
-      --fg: #e5e5e5;
-      --muted: #8a8a8a;
+    :root{
+      --bg:#000;
+      --fg:#e5e5e5;
+      --muted:#9ca3af;
+      --card:#0b0b0d;
+      --card2:#101014;
+      --stroke: rgba(255,255,255,.10);
+      --stroke2: rgba(255,255,255,.16);
 
-      --emerald: #10b981;
-      --red: #ef4444;
-      --blue: #3b82f6;
-      --yellow: #eab308;
-
-      --card: #0f0f10;
-      --card2: #141416;
-      --border: rgba(255,255,255,0.08);
+      --green:#10b981;
+      --red:#ef4444;
+      --blue:#3b82f6;
+      --yellow:#eab308;
 
       --safe-top: env(safe-area-inset-top, 20px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body {
-      margin: 0;
-      padding: 0;
+    *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    body{
+      background:var(--bg);
+      color:var(--fg);
+      font-family:-apple-system, system-ui, sans-serif;
+      margin:0;
+      padding:0;
       padding-top: calc(var(--safe-top) + 10px);
-      padding-bottom: calc(100px + var(--safe-bottom));
-      background: var(--bg);
-      color: var(--fg);
-      font-family: -apple-system, system-ui, sans-serif;
-      overflow-x: hidden;
+      padding-bottom: 120px;
+      overflow-x:hidden;
     }
 
-    /* UTIL */
-    .flex { display: flex; }
-    .col { display: flex; flex-direction: column; }
-    .row { display: flex; align-items: center; justify-content: space-between; }
-    .center { display: flex; align-items: center; justify-content: center; }
-    .gap-8 { gap: 8px; }
-    .gap-12 { gap: 12px; }
-    .p-10 { padding: 10px; }
-    .p-16 { padding: 16px; }
-    .p-20 { padding: 20px; }
-    .mb-10 { margin-bottom: 10px; }
-    .mb-16 { margin-bottom: 16px; }
-    .mb-20 { margin-bottom: 20px; }
-    .hidden { display: none !important; }
-    .text-xs { font-size: 12px; }
-    .text-sm { font-size: 14px; }
-    .text-lg { font-size: 18px; }
-    .tiny { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
-    .caps { letter-spacing: .08em; text-transform: uppercase; font-weight: 900; }
-    .muted { color: var(--muted); }
-    .maskable { }
-    .stealth-active .maskable { filter: blur(14px); opacity: .28; }
+    /* utilities */
+    .flex{ display:flex; }
+    .flex-col{ display:flex; flex-direction:column; }
+    .items-center{ align-items:center; }
+    .justify-between{ justify-content:space-between; }
+    .justify-center{ justify-content:center; }
+    .gap-2{ gap:8px; }
+    .gap-3{ gap:12px; }
+    .gap-4{ gap:16px; }
+    .w-full{ width:100%; }
+    .mb-2{ margin-bottom:8px; }
+    .mb-4{ margin-bottom:16px; }
+    .mb-6{ margin-bottom:24px; }
+    .p-4{ padding:16px; }
+    .p-5{ padding:20px; }
+    .p-6{ padding:24px; }
+    .text-center{ text-align:center; }
+    .text-xs{ font-size:12px; }
+    .text-sm{ font-size:14px; }
+    .font-bold{ font-weight:700; }
+    .font-black{ font-weight:900; }
+    .uppercase{ text-transform:uppercase; letter-spacing:.08em; }
+    .hidden{ display:none !important; }
 
-    /* CARDS */
-    .hero {
-      background: linear-gradient(145deg, #121214 0%, #070707 100%);
-      border: 1px solid rgba(16,185,129,.18);
-      border-radius: 26px;
-      padding: 26px;
-      margin: 0 10px 16px 10px;
+    .view-hidden{ display:none !important; }
+    .full-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.98);
+      z-index:2000;
+      padding:20px;
+      padding-top:80px;
+      overflow-y:auto;
+      -webkit-overflow-scrolling: touch;
     }
-    .card {
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,0.08);
+
+    .stealth-active .maskable{ filter: blur(14px); opacity:.28; }
+
+    /* bank-ish surfaces */
+    .hero-card{
+      background: radial-gradient(1200px 500px at 30% -40%, rgba(16,185,129,.22) 0%, rgba(16,185,129,0) 55%),
+                  linear-gradient(180deg, #0b0b0d 0%, #050506 100%);
+      border:1px solid rgba(16,185,129,.16);
+      border-radius: 28px;
+      padding: 28px;
+      margin-top: 14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-card:after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: linear-gradient(135deg, rgba(16,185,129,.22), rgba(59,130,246,.12), rgba(234,179,8,.08));
+      opacity:.25;
+      filter: blur(22px);
+      z-index:0;
+    }
+    .hero-card > *{ position:relative; z-index:1; }
+
+    .vault-card{
+      background: linear-gradient(180deg, var(--card) 0%, #070708 100%);
+      border: 1px solid var(--stroke);
       border-radius: 18px;
+      margin-bottom: 12px;
+      width: 100%;
       overflow: hidden;
-      margin: 0 10px 12px 10px;
     }
-    .card-head {
-      padding: 18px 20px;
-      cursor: pointer;
-      user-select: none;
+    .drawer-head{
+      cursor:pointer;
+      user-select:none;
     }
-    .drawer { display: none; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.06); background: #09090a; }
-    .open .drawer { display: block; }
+    .sub-drawer{
+      display:none;
+      padding:18px 20px;
+      background: linear-gradient(180deg, var(--card2) 0%, #070708 100%);
+      border-top: 1px solid var(--stroke);
+    }
+    .drawer-open > .sub-drawer{ display:block; }
 
-    /* INPUTS */
-    .input {
-      width: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #fff;
-      border-bottom: 1px solid rgba(255,255,255,0.18);
-      padding: 12px 0;
-      font-size: 16px;
+    .glass-panel{
+      background: rgba(16,16,18,.86);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
     }
-    .input:focus { border-bottom-color: var(--emerald); }
-    .amount {
-      width: 100%;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #fff;
+
+    .input-ghost{
+      background:transparent;
+      border:none;
+      color:#fff;
+      font-size:16px;
+      width:100%;
+      outline:none;
+      padding:12px 0;
+      border-bottom: 1px solid rgba(255,255,255,.14);
+      border-radius:0;
+    }
+    .input-ghost:focus{ border-bottom-color: rgba(16,185,129,.9); }
+
+    .amount-hero{
       font-size: 46px;
       font-weight: 900;
-      text-align: center;
-      padding: 18px 0;
-    }
-    select.input {
-      border-radius: 0;
-      -webkit-appearance: none;
-      appearance: none;
+      text-align:center;
+      color:#fff;
+      width:100%;
+      background:transparent;
+      border:none;
+      outline:none;
+      padding: 14px 0;
+      letter-spacing: -0.02em;
     }
 
-    /* BUTTONS */
-    .btn {
-      background: #151518;
-      border: 1px solid rgba(255,255,255,0.14);
-      color: #fff;
+    .btn{
+      background: #0f0f12;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.14);
       border-radius: 16px;
       padding: 14px 16px;
       font-weight: 900;
       font-size: 12px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      cursor: pointer;
+      cursor:pointer;
     }
-    .btn:active { transform: translateY(1px); }
-    .btn-ghost { background: transparent; border-color: rgba(255,255,255,0.14); }
-    .btn-danger { border-color: rgba(239,68,68,.8); color: var(--red); }
-
-    .fab {
-      position: fixed;
-      right: 18px;
-      bottom: calc(18px + var(--safe-bottom));
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 16px 40px rgba(0,0,0,.55);
-      font-size: 28px;
-      z-index: 3000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(16,185,129,1) 0%, rgba(5,150,105,1) 100%);
+      border:none;
+      color:#05120b;
     }
-    .fab-primary { background: linear-gradient(135deg, var(--emerald), #059669); color: #04130c; font-weight: 900; }
-    .fab-back { background: #2a2a2c; color: #fff; }
-
-    /* OVERLAYS */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.92);
-      z-index: 2000;
-      padding: 20px;
-      padding-top: 80px;
-      overflow-y: auto;
+    .btn.danger{
+      color: var(--red);
+      border-color: rgba(239,68,68,.7);
+      background: rgba(239,68,68,.06);
     }
 
-    /* GRID */
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    /* BANK-LIKE ROWS */
-    .tx-row {
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      cursor: pointer;
-      user-select: none;
-    }
-    .tx-row:last-child { border-bottom: none; }
-    .tx-left { display: flex; flex-direction: column; gap: 4px; }
-    .tx-title { font-size: 12px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
-    .tx-sub { font-size: 11px; color: var(--muted); letter-spacing: .04em; }
-    .tx-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .tx-amt { font-size: 12px; font-weight: 900; letter-spacing: .04em; }
-    .pill {
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.04);
-    }
-    .pill-in { border-color: rgba(16,185,129,.35); color: var(--emerald); background: rgba(16,185,129,.10); }
-    .pill-out { border-color: rgba(239,68,68,.35); color: var(--red); background: rgba(239,68,68,.10); }
-    .pill-asset { border-color: rgba(59,130,246,.35); color: var(--blue); background: rgba(59,130,246,.10); }
-    .pill-iou { border-color: rgba(234,179,8,.35); color: var(--yellow); background: rgba(234,179,8,.10); }
-    .pill-fid { border-color: rgba(234,179,8,.35); color: var(--yellow); background: rgba(234,179,8,.08); }
-
-    /* SECTION HEADER IN AUDIT */
-    .section {
-      margin: 16px 0 10px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-    }
-    .section-top { display:flex; justify-content:space-between; align-items:center; gap: 10px; }
-    .section-title { font-size: 11px; font-weight: 900; letter-spacing: .10em; text-transform: uppercase; }
-    .section-sub { margin-top: 8px; font-size: 11px; color: var(--muted); display:flex; flex-wrap: wrap; gap: 8px; }
-    .dot { opacity: .6; }
-    .mini-pill {
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.04);
-      padding: 4px 8px;
-      border-radius: 999px;
-    }
-
-    /* TOP BAR */
-    .topbar {
-      display:flex; justify-content:space-between; align-items:center;
-      padding: 0 10px;
-      margin-bottom: 14px;
-    }
-    .icon-btn {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background: #151518;
-      border: 1px solid rgba(255,255,255,0.12);
-      color: #fff;
-      cursor: pointer;
+    .btn-icon{
+      width:40px; height:40px;
+      border-radius: 16px;
+      padding:0;
       display:flex;
       align-items:center;
       justify-content:center;
+      background:#0f0f12;
+      border:1px solid rgba(255,255,255,.14);
+      cursor:pointer;
     }
-    .icon {
-      width: 18px; height: 18px;
-      display:block;
-      opacity: .95;
-    }
+    .btn-icon.round{ border-radius: 999px; }
 
-    /* BOTTOM SHEET */
-    .sheet-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.58);
-      z-index: 5000;
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      padding: 16px;
-      padding-bottom: calc(16px + var(--safe-bottom));
-    }
-    .sheet-backdrop.show { display: flex; }
-    .sheet {
-      width: min(560px, 100%);
+    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    .btn-grid{
+      background: #0f0f12;
+      border:1px solid rgba(255,255,255,.14);
       border-radius: 22px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(16,16,18,.96);
-      backdrop-filter: blur(22px);
-      box-shadow: 0 20px 60px rgba(0,0,0,.60);
-      overflow: hidden;
-    }
-    .sheet-handle {
-      width: 44px; height: 5px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.18);
-      margin: 10px auto 0;
-    }
-    .sheet-body { padding: 16px 18px 18px; }
-    .sheet-title { font-weight: 900; letter-spacing: .08em; text-transform: uppercase; font-size: 12px; }
-    .sheet-amt { font-size: 26px; font-weight: 900; margin-top: 6px; }
-    .kv { margin-top: 14px; display:flex; flex-direction:column; gap: 10px; }
-    .kv-row { display:flex; justify-content:space-between; gap: 12px; font-size: 12px; }
-    .kv-row span:first-child { color: var(--muted); }
-    .sheet-actions { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-
-    /* TOAST */
-    .toast-wrap {
-      position: fixed;
-      left: 0; right: 0;
-      bottom: calc(90px + var(--safe-bottom));
-      z-index: 6000;
+      padding: 18px;
       display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+    }
+    .btn-grid:active{ transform: translateY(1px); }
+
+    /* icons - Option A inline SVG */
+    .ic{
+      width: 20px;
+      height: 20px;
+      display:inline-flex;
       align-items:center;
       justify-content:center;
-      pointer-events: none;
-      padding: 0 12px;
     }
-    .toast {
-      pointer-events: none;
-      max-width: 560px;
-      width: 100%;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(18,18,20,.96);
-      backdrop-filter: blur(18px);
-      padding: 12px 14px;
+    .ic svg{
+      width:20px; height:20px;
+      stroke: rgba(255,255,255,0.92);
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .ic.muted svg{ stroke: rgba(255,255,255,0.70); }
+    .ic.green svg{ stroke: var(--green); }
+    .ic.red svg{ stroke: var(--red); }
+    .ic.blue svg{ stroke: var(--blue); }
+    .ic.yellow svg{ stroke: var(--yellow); }
+
+    /* badges */
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing:.10em;
+      text-transform: uppercase;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.82);
+      white-space:nowrap;
+    }
+    .badge.in{ border-color: rgba(16,185,129,.45); background: rgba(16,185,129,.10); color: rgba(16,185,129,.95); }
+    .badge.out{ border-color: rgba(239,68,68,.45); background: rgba(239,68,68,.10); color: rgba(239,68,68,.95); }
+    .badge.asset{ border-color: rgba(59,130,246,.45); background: rgba(59,130,246,.10); color: rgba(59,130,246,.95); }
+    .badge.iou{ border-color: rgba(234,179,8,.45); background: rgba(234,179,8,.10); color: rgba(234,179,8,.95); }
+    .badge.fid{ border-color: rgba(234,179,8,.38); background: rgba(234,179,8,.08); color: rgba(234,179,8,.92); }
+
+    /* rows */
+    .row{
       display:flex;
       justify-content:space-between;
       align-items:center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing:.06em;
+    }
+    .row:last-child{ border-bottom:none; }
+    .row.tap{
+      cursor:pointer;
+      user-select:none;
+    }
+    .row.tap:active{ opacity:.8; }
+
+    .tiny{
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing:.12em;
+      color: rgba(255,255,255,.45);
+    }
+
+    /* segment control */
+    .seg-control{
+      display:flex;
+      background: rgba(255,255,255,.04);
+      padding: 4px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      margin-bottom: 16px;
+    }
+    .seg-btn{
+      flex:1;
+      text-align:center;
+      padding: 10px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing:.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45);
+      border-radius: 10px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .seg-btn.active.green{ background: rgba(16,185,129,.16); color: rgba(16,185,129,.95); }
+    .seg-btn.active.yellow{ background: rgba(234,179,8,.14); color: rgba(234,179,8,.92); }
+
+    /* fluid bar */
+    .fluid-bar{ display:flex; border-radius: 14px; overflow:hidden; margin: 18px 0; border: 1px solid rgba(255,255,255,.12); }
+    .fluid-seg{ padding: 12px 0; text-align:center; font-size: 10px; font-weight: 900; letter-spacing:.10em; text-transform: uppercase; background: rgba(255,255,255,.04); border-right: 1px solid rgba(255,255,255,.08); color: rgba(255,255,255,.45); width:33.33%; }
+    .fluid-seg:last-child{ border-right:none; }
+    .fluid-input{ background:transparent; width:100%; text-align:center; color: var(--green); outline:none; font-size: 14px; font-weight: 900; border:none; padding-top:4px; }
+
+    /* fab */
+    .fab{
+      position: fixed;
+      bottom: 26px;
+      right: 26px;
+      width: 64px;
+      height: 64px;
+      border-radius: 999px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index: 2500;
+      border: none;
+      box-shadow: 0 16px 40px rgba(0,0,0,.55);
+      cursor:pointer;
+    }
+    .fab.primary{
+      background: linear-gradient(135deg, rgba(16,185,129,1) 0%, rgba(5,150,105,1) 100%);
+      color:#04110a;
+    }
+    .fab.back{
+      background: rgba(255,255,255,.10);
+      color: rgba(255,255,255,.9);
+      border: 1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(18px);
+    }
+
+    /* toast */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%);
+      background: rgba(16,16,18,.92);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 16px;
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
       gap: 10px;
-      box-shadow: 0 18px 50px rgba(0,0,0,.55);
-      transform: translateY(18px);
-      opacity: 0;
-      transition: .25s ease;
+      z-index: 4000;
+      max-width: 92vw;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 16px 50px rgba(0,0,0,.55);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
     }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast strong { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
-    .toast .msg { font-size: 12px; color: var(--fg); opacity: .95; }
-    .toast.success { border-color: rgba(16,185,129,.22); }
-    .toast.error { border-color: rgba(239,68,68,.22); }
-    .toast.warn { border-color: rgba(234,179,8,.22); }
-
-    /* AUTH */
-    .auth { z-index: 7000; display:none; }
-    .auth.show { display:flex; }
-
-    /* SWITCH */
-    .switch { position: relative; display: inline-block; width: 54px; height: 30px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; inset: 0; background-color: #222; transition: .25s; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); }
-    .slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 3px; bottom: 2px; background-color: #666; transition: .25s; border-radius: 50%; }
-    input:checked + .slider { background-color: rgba(16,185,129,.75); }
-    input:checked + .slider:before { transform: translateX(22px); background-color: white; }
-
-    /* ACCESSIBILITY */
-    button:focus-visible, .icon-btn:focus-visible, .tx-row:focus-visible, .card-head:focus-visible {
-      outline: 2px solid rgba(16,185,129,.55);
-      outline-offset: 3px;
+    .toast.show{
+      opacity:1;
+      pointer-events:auto;
+      transform: translateX(-50%) translateY(-4px);
     }
+    .toast .msg{
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing:.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.9);
+    }
+    .toast .sub{
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing:.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+      margin-top:2px;
+    }
+    .toast .undo{
+      margin-left:auto;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.14);
+      color: rgba(255,255,255,.9);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing:.10em;
+      text-transform: uppercase;
+      cursor:pointer;
+    }
+
+    /* bottom sheet */
+    .sheet-backdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      z-index: 3500;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .18s ease;
+    }
+    .sheet-backdrop.show{ opacity:1; pointer-events:auto; }
+    .sheet{
+      position: fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index: 3600;
+      transform: translateY(110%);
+      transition: transform .22s ease;
+      padding: 14px 14px calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+    .sheet.show{ transform: translateY(0%); }
+    .sheet .panel{
+      background: rgba(12,12,14,.96);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 22px;
+      padding: 14px 14px 12px;
+      backdrop-filter: blur(22px);
+      box-shadow: 0 18px 70px rgba(0,0,0,.65);
+      max-height: 72vh;
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .sheet .grab{
+      width: 42px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.22);
+      margin: 0 auto 12px;
+    }
+    .sheet .title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 4px 2px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      margin-bottom: 10px;
+    }
+    .sheet .title .left{
+      display:flex;
+      flex-direction:column;
+      gap: 4px;
+    }
+    .sheet .title .name{
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing:.08em;
+      font-size: 12px;
+      color: rgba(255,255,255,.92);
+    }
+    .sheet .title .meta{
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing:.10em;
+      color: rgba(255,255,255,.45);
+    }
+    .sheet .actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .sheet .actions .btn{
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 10px;
+      letter-spacing:.10em;
+      text-transform: uppercase;
+    }
+
+    /* section headers in audit list */
+    .sec{
+      margin-top: 14px;
+      padding: 14px 0 10px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .sec .hdr{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .sec .label{
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing:.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.70);
+    }
+    .sec .subtotal{
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing:.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.82);
+    }
+    .sec .mini{
+      margin-top: 8px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing:.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45);
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .mini .pill{
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      border-radius: 999px;
+      padding: 6px 10px;
+      white-space:nowrap;
+    }
+
+    /* tidy search results */
+    .qbox{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 12px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      margin-bottom: 14px;
+    }
+    .qbox input{
+      border:none;
+      background:transparent;
+      outline:none;
+      color:#fff;
+      font-size:16px;
+      width:100%;
+    }
+    .qbox input::placeholder{ color: rgba(255,255,255,.40); }
+
+    .q-pill-row{ display:flex; gap:10px; overflow-x:auto; padding-bottom: 8px; }
+    .q-pill{
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing:.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45);
+      background: rgba(255,255,255,.03);
+      white-space:nowrap;
+      cursor:pointer;
+    }
+    .q-pill.active{
+      border-color: rgba(16,185,129,.55);
+      color: rgba(16,185,129,.96);
+      background: rgba(16,185,129,.10);
+    }
+
+    /* switch */
+    .switch{ position:relative; display:inline-block; width:50px; height:28px; }
+    .switch input{ opacity:0; width:0; height:0; }
+    .slider{ position:absolute; cursor:pointer; inset:0; background: rgba(255,255,255,.10); transition:.2s; border-radius: 999px; border: 1px solid rgba(255,255,255,.10); }
+    .slider:before{ position:absolute; content:""; height: 22px; width: 22px; left: 3px; bottom: 3px; background: rgba(255,255,255,.40); transition:.2s; border-radius: 999px; }
+    input:checked + .slider{ background: rgba(16,185,129,.32); border-color: rgba(16,185,129,.40); }
+    input:checked + .slider:before{ transform: translateX(22px); background: rgba(255,255,255,.92); }
+
+    /* colors */
+    .text-emerald{ color: var(--green); }
+    .text-red{ color: var(--red); }
+    .text-blue{ color: var(--blue); }
+    .text-yellow{ color: var(--yellow); }
+    .text-zinc{ color: rgba(255,255,255,.45); }
+
   </style>
 </head>
 
 <body>
-  <!-- AUTH OVERLAY -->
-  <div id="auth" class="overlay auth center col">
-    <div style="font-size: 40px; margin-bottom: 16px;">🔒</div>
-    <input id="authPin" type="password" class="input" style="text-align:center; font-size: 40px; letter-spacing: 12px; width: 220px;" placeholder="••••" maxlength="4" inputmode="numeric">
-    <button id="authBtn" class="btn" style="margin-top: 28px; width: 220px;">Unlock</button>
-    <div class="tiny" style="margin-top: 14px;" id="authHint"></div>
+  <!-- AUTH -->
+  <div id="auth-screen" class="full-overlay view-hidden" style="z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+    <div class="ic muted" data-ic="lock" style="transform: scale(1.35); margin-bottom: 18px;"></div>
+    <input id="auth-pin" type="password" class="input-ghost"
+      style="text-align:center;font-size:40px;letter-spacing:10px;width:220px;"
+      placeholder="••••" maxlength="4" inputmode="numeric" />
+    <button id="btn-unlock" class="btn primary" style="margin-top:30px; width: 220px;">Unlock</button>
+    <div id="auth-hint" class="tiny" style="margin-top: 14px;">PIN required</div>
   </div>
 
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <span class="tiny">Sovereign v82</span>
-    <div class="flex gap-8">
-      <button class="icon-btn" id="btnQuery" aria-label="Query">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="7"></circle>
-          <path d="M21 21l-4.3-4.3"></path>
-        </svg>
+  <!-- TOP BAR -->
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:0 10px;margin-bottom:16px;">
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-black uppercase text-zinc">Sovereign v82</span>
+      <span class="badge" style="opacity:.7;">Offline</span>
+    </div>
+    <div class="flex gap-2">
+      <button id="btn-query" class="btn-icon round" aria-label="Search">
+        <span class="ic muted" data-ic="search"></span>
       </button>
-      <button class="icon-btn" id="btnStealth" aria-label="Stealth">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
-          <circle cx="12" cy="12" r="3"></circle>
-        </svg>
+      <button id="btn-stealth" class="btn-icon round" aria-label="Stealth">
+        <span class="ic muted" data-ic="eye"></span>
       </button>
-      <button class="icon-btn" id="btnSettings" aria-label="Settings">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z"></path>
-          <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06-1.8 3.12-.09-.03a2 2 0 0 0-2.22.57l-.05.05-3.6-2.07a1.7 1.7 0 0 0-1.42 0L7 20.64l-.05-.05a2 2 0 0 0-2.22-.57l-.09.03-1.8-3.12.06-.06A1.7 1.7 0 0 0 3.24 15l-4.15-2.4.03-.09a2 2 0 0 0 0-2.3l-.03-.09L3.24 7.7a1.7 1.7 0 0 0-.34-1.87l-.06-.06 1.8-3.12.09.03a2 2 0 0 0 2.22-.57l.05-.05 3.6 2.07a1.7 1.7 0 0 0 1.42 0L16.64 2.02l.05.05a2 2 0 0 0 2.22.57l.09-.03 1.8 3.12-.06.06a1.7 1.7 0 0 0-.34 1.87l2.4 4.15.09-.03a2 2 0 0 0 2.3 0l.09.03-2.4 4.15z"></path>
-        </svg>
+      <button id="btn-settings" class="btn-icon round" aria-label="Settings">
+        <span class="ic muted" data-ic="gear"></span>
       </button>
     </div>
   </div>
 
   <!-- DASHBOARD -->
-  <div id="viewDash">
-    <div class="hero">
-      <div class="center col">
-        <div id="nw" class="amount maskable">₦0.00</div>
-        <div class="flex gap-12" style="opacity:.9;">
-          <div class="center col">
-            <div id="cashSplit" class="text-xs maskable" style="font-weight:900; color:var(--emerald);">₦0</div>
-            <div class="tiny">Cash</div>
+  <div id="dashboard-view">
+    <div class="hero-card text-center">
+      <div class="tiny" style="margin-bottom: 8px;">Net worth</div>
+      <h1 id="nw-display" class="amount-hero maskable">₦0</h1>
+
+      <div class="flex justify-center gap-4" style="opacity:.95;">
+        <div class="text-center">
+          <p id="split-cash" class="text-xs font-black maskable text-emerald">₦0</p>
+          <p class="tiny">Liquidity</p>
+        </div>
+        <div class="text-center">
+          <p id="split-as" class="text-xs font-black maskable text-blue">₦0</p>
+          <p class="tiny">Assets</p>
+        </div>
+        <div class="text-center">
+          <p id="split-db" class="text-xs font-black maskable text-yellow">₦0</p>
+          <p class="tiny">IOU Net</p>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center" style="margin-top: 14px; padding-top: 14px; border-top:1px solid rgba(255,255,255,.08);">
+        <div class="flex items-center gap-2">
+          <span class="badge in">IN</span>
+          <span class="badge out">OUT</span>
+          <span class="badge asset">ASSET</span>
+          <span class="badge iou">IOU</span>
+        </div>
+        <div class="tiny">Tap rows for details</div>
+      </div>
+    </div>
+
+    <div id="cards-container" style="margin-top: 18px;">
+      <!-- Liquidity -->
+      <div id="feat-tactical" class="vault-card">
+        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-tactical">
+          <div class="flex items-center gap-3">
+            <span class="ic green" data-ic="wallet"></span>
+            <span class="text-xs font-black uppercase">Liquidity</span>
           </div>
-          <div class="center col">
-            <div id="assetSplit" class="text-xs maskable" style="font-weight:900; color:var(--blue);">₦0</div>
-            <div class="tiny">Assets</div>
+          <b id="tc-display" class="maskable text-sm text-emerald">₦0</b>
+        </div>
+        <div class="sub-drawer">
+          <div class="row"><span>Bills</span><span id="b-total" class="maskable font-black">₦0</span></div>
+          <div class="row"><span>Savings</span><span id="s-total" class="maskable font-black">₦0</span></div>
+          <div class="row"><span>Spend</span><span id="l-total" class="maskable font-black">₦0</span></div>
+          <div class="tiny" style="margin-top: 10px;">Expenses subtract from your chosen bucket.</div>
+        </div>
+      </div>
+
+      <!-- Expenses -->
+      <div id="feat-expenses" class="vault-card">
+        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-expenses">
+          <div class="flex items-center gap-3">
+            <span class="ic red" data-ic="arrowUp"></span>
+            <span class="text-xs font-black uppercase text-red">Expenses</span>
           </div>
-          <div class="center col">
-            <div id="debtSplit" class="text-xs maskable" style="font-weight:900; color:var(--yellow);">₦0</div>
-            <div class="tiny">Debt</div>
+          <b id="ex-display" class="maskable text-sm text-red">₦0</b>
+        </div>
+        <div id="ex-list" class="sub-drawer"></div>
+      </div>
+
+      <!-- Assets -->
+      <div id="feat-assets" class="vault-card">
+        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-assets">
+          <div class="flex items-center gap-3">
+            <span class="ic blue" data-ic="diamond"></span>
+            <span class="text-xs font-black uppercase text-blue">Assets</span>
           </div>
+          <b id="as-display" class="maskable text-sm text-blue">₦0</b>
+        </div>
+        <div id="as-list" class="sub-drawer"></div>
+      </div>
+
+      <!-- Debtors -->
+      <div id="feat-debtors" class="vault-card">
+        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-debtors">
+          <div class="flex items-center gap-3">
+            <span class="ic green" data-ic="iouIn"></span>
+            <span class="text-xs font-black uppercase">Debtors</span>
+          </div>
+          <b id="db-display" class="maskable text-sm text-emerald">₦0</b>
+        </div>
+        <div id="db-list" class="sub-drawer"></div>
+      </div>
+
+      <!-- Creditors -->
+      <div id="feat-creditors" class="vault-card">
+        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-creditors">
+          <div class="flex items-center gap-3">
+            <span class="ic red" data-ic="iouOut"></span>
+            <span class="text-xs font-black uppercase text-zinc">Creditors</span>
+          </div>
+          <b id="cr-display" class="maskable text-sm text-red">₦0</b>
+        </div>
+        <div id="cr-list" class="sub-drawer"></div>
+      </div>
+
+      <!-- Fiduciary -->
+      <div id="feat-fiduciary" class="vault-card">
+        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-fiduciary">
+          <div class="flex items-center gap-3">
+            <span class="ic yellow" data-ic="briefcase"></span>
+            <span class="text-xs font-black uppercase text-yellow">Fiduciary</span>
+          </div>
+          <b id="fd-display" class="maskable text-sm text-yellow">₦0</b>
+        </div>
+        <div class="sub-drawer">
+          <div class="seg-control">
+            <div class="seg-btn" id="fd-v-goal">Goal</div>
+            <div class="seg-btn" id="fd-v-user">User</div>
+          </div>
+          <div id="fd-pivot-list"></div>
         </div>
       </div>
-    </div>
 
-    <!-- CARDS -->
-    <div class="card" data-drawer="liq">
-      <div class="card-head row" tabindex="0">
-        <span class="tiny">Liquidity</span>
-        <b id="liq" class="text-sm maskable" style="color:var(--emerald);">₦0</b>
-      </div>
-      <div class="drawer">
-        <div class="row tx-row" style="cursor:default;">
-          <span class="tiny">Bills</span><b id="bills" class="maskable">₦0</b>
+      <!-- Audit trail -->
+      <div id="feat-history" class="vault-card" style="opacity:.92;">
+        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-history">
+          <div class="flex items-center gap-3">
+            <span class="ic muted" data-ic="clock"></span>
+            <span class="text-xs font-black uppercase text-zinc">Audit Trail</span>
+          </div>
+          <span class="tiny">Newest first</span>
         </div>
-        <div class="row tx-row" style="cursor:default;">
-          <span class="tiny">Savings</span><b id="save" class="maskable">₦0</b>
+        <div class="sub-drawer">
+          <div class="qbox" style="margin-bottom:12px;">
+            <span class="ic muted" data-ic="filter"></span>
+            <input type="text" id="hi-search" placeholder="Filter by name..." />
+          </div>
+          <div id="hi-list" style="max-height: 360px; overflow-y:auto;"></div>
         </div>
-        <div class="row tx-row" style="cursor:default;">
-          <span class="tiny">Spend</span><b id="spend" class="maskable">₦0</b>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" data-drawer="exp">
-      <div class="card-head row" tabindex="0">
-        <span class="tiny" style="color:var(--red);">Expenses</span>
-        <b id="expT" class="text-sm maskable" style="color:var(--red);">₦0</b>
-      </div>
-      <div class="drawer" id="expList"></div>
-    </div>
-
-    <div class="card" data-drawer="ast">
-      <div class="card-head row" tabindex="0">
-        <span class="tiny" style="color:var(--blue);">Assets</span>
-        <b id="astT" class="text-sm maskable" style="color:var(--blue);">₦0</b>
-      </div>
-      <div class="drawer" id="astList"></div>
-    </div>
-
-    <div class="card" data-drawer="deb">
-      <div class="card-head row" tabindex="0">
-        <span class="tiny">Debtors</span>
-        <b id="debT" class="text-sm maskable" style="color:var(--emerald);">₦0</b>
-      </div>
-      <div class="drawer" id="debList"></div>
-    </div>
-
-    <div class="card" data-drawer="cred">
-      <div class="card-head row" tabindex="0">
-        <span class="tiny">Creditors</span>
-        <b id="credT" class="text-sm maskable" style="color:var(--red);">₦0</b>
-      </div>
-      <div class="drawer" id="credList"></div>
-    </div>
-
-    <div class="card" data-drawer="audit" style="opacity:.92;">
-      <div class="card-head row" tabindex="0">
-        <span class="tiny">Audit Trail</span>
-        <span class="tiny">▼</span>
-      </div>
-      <div class="drawer">
-        <input id="auditFilter" class="input text-xs mb-16" placeholder="Filter..." />
-        <div id="auditList" class="col"></div>
       </div>
     </div>
   </div>
 
   <!-- ENTRY GRID -->
-  <div id="viewGrid" class="overlay hidden">
-    <div class="row mb-20">
-      <div class="caps text-sm">New Entry</div>
-      <button class="btn btn-ghost" id="closeGrid">✕</button>
+  <div id="entry-grid" class="full-overlay view-hidden">
+    <div class="flex justify-between mb-6">
+      <h2 class="text-sm font-black uppercase">New entry</h2>
+      <button id="btn-close-grid" class="btn-icon round" aria-label="Close">
+        <span class="ic muted" data-ic="x"></span>
+      </button>
     </div>
 
-    <div class="grid2">
-      <button class="btn" data-open="income" style="border-color: rgba(16,185,129,.35);">Inflow</button>
-      <button class="btn" data-open="expense" style="border-color: rgba(239,68,68,.35);">Expense</button>
-      <button class="btn" data-open="asset" style="border-color: rgba(59,130,246,.35);">Asset</button>
-      <button class="btn" data-open="creditor" style="border-color: rgba(239,68,68,.25);">Borrow (IOU)</button>
-      <button class="btn" data-open="debtor" style="border-color: rgba(16,185,129,.25);">Lend (IOU)</button>
-      <button class="btn" data-open="fiduciary" style="border-color: rgba(234,179,8,.25);">Fiduciary</button>
+    <div class="grid-2">
+      <button data-open-form="income" class="btn-grid" style="border-color: rgba(16,185,129,.45);">
+        <span class="ic green" data-ic="arrowDown"></span>
+        <span class="text-xs font-black uppercase text-emerald">Inflow</span>
+      </button>
+
+      <button data-open-form="expense" class="btn-grid" style="border-color: rgba(239,68,68,.45);">
+        <span class="ic red" data-ic="arrowUp"></span>
+        <span class="text-xs font-black uppercase text-red">Expense</span>
+      </button>
+
+      <button data-open-form="asset" class="btn-grid" style="border-color: rgba(59,130,246,.45);">
+        <span class="ic blue" data-ic="diamond"></span>
+        <span class="text-xs font-black uppercase text-blue">Asset</span>
+      </button>
+
+      <button data-open-form="creditor" class="btn-grid" style="border-color: rgba(239,68,68,.30);">
+        <span class="ic red" data-ic="iouOut"></span>
+        <span class="text-xs font-black uppercase text-red">Borrow</span>
+      </button>
+
+      <button data-open-form="debtor" class="btn-grid" style="border-color: rgba(16,185,129,.30);">
+        <span class="ic green" data-ic="iouIn"></span>
+        <span class="text-xs font-black uppercase text-emerald">Lend</span>
+      </button>
+
+      <button data-open-form="fiduciary" class="btn-grid" style="border-color: rgba(234,179,8,.35);">
+        <span class="ic yellow" data-ic="briefcase"></span>
+        <span class="text-xs font-black uppercase text-yellow">Fiduciary</span>
+      </button>
     </div>
   </div>
 
   <!-- ENTRY FORM -->
-  <div id="viewForm" class="overlay hidden">
-    <div class="row mb-20">
-      <div id="formTitle" class="caps text-sm">Entry</div>
-      <button class="btn btn-ghost" id="closeForm">✕</button>
+  <div id="entry-form" class="full-overlay view-hidden">
+    <div class="flex justify-between mb-6">
+      <div id="settle-toggle-container" class="w-full" style="margin-right: 16px;"></div>
+      <button id="btn-close-form" class="btn-icon round" aria-label="Close">
+        <span class="ic muted" data-ic="x"></span>
+      </button>
     </div>
 
-    <div id="settleWrap" class="mb-16"></div>
+    <input id="e-amount" type="number" class="amount-hero" placeholder="0" inputmode="numeric" />
 
-    <input id="amt" type="number" class="amount" placeholder="0" inputmode="numeric" />
-
-    <!-- Income split -->
-    <div id="fluidWrap" class="hidden mb-16">
-      <div class="card" style="margin: 0; border-radius: 16px;">
-        <div class="p-16">
-          <div class="row mb-10"><span class="tiny">Bills %</span><input id="pBills" class="input" style="text-align:right; width: 90px; border-bottom:none;" type="number" value="40"></div>
-          <div class="row mb-10"><span class="tiny">Save %</span><input id="pSave" class="input" style="text-align:right; width: 90px; border-bottom:none;" type="number" value="40"></div>
-          <div class="row"><span class="tiny">Spend %</span><input id="pSpend" class="input" style="text-align:right; width: 90px; border-bottom:none;" type="number" value="20"></div>
-          <div class="tiny" style="margin-top: 10px;">Auto-normalized to 100%</div>
-        </div>
+    <div id="fluid-container" class="hidden">
+      <div class="fluid-bar">
+        <div class="fluid-seg">Bills<input id="fluid-bills" type="number" class="fluid-input" value="40" /></div>
+        <div class="fluid-seg">Save<input id="fluid-save" type="number" class="fluid-input" value="40" /></div>
+        <div class="fluid-seg">Spend<input id="fluid-spend" type="number" class="fluid-input" value="20" /></div>
       </div>
     </div>
 
-    <div id="dyn" class="mb-16"></div>
+    <div id="dynamic-inputs" class="mb-4" style="margin-top: 14px;"></div>
 
-    <input id="desc" class="input" placeholder="Description" />
+    <!-- Intelligent picker area (debtor/creditor) -->
+    <div id="picker-wrap" class="hidden">
+      <div class="tiny mb-2">Choose from existing</div>
+      <div id="picker-list" class="glass-panel p-4" style="padding: 12px 14px;"></div>
+      <div class="tiny" style="margin-top: 10px;">Tap a person to auto-fill + see balance.</div>
+      <div style="height: 14px;"></div>
+    </div>
 
-    <button id="exec" class="btn" style="margin-top: 26px; padding: 18px 18px; font-size: 13px;">Execute</button>
+    <div class="qbox">
+      <span class="ic muted" data-ic="tag"></span>
+      <input id="e-name" placeholder="Description" />
+    </div>
+
+    <button id="btn-exec" class="btn primary" style="margin-top: 14px; padding: 18px; font-size: 12px; width:100%;">
+      Execute transaction
+    </button>
 
     <div class="tiny" style="margin-top: 12px;">
-      Loans (Borrow/Lend/Settlements) are IOU-only: they never change Net Worth or Liquidity.
+      Loans (Borrow/Lend/Settlements) are IOUs only: they never change Net Worth or Liquidity.
     </div>
   </div>
 
-  <!-- QUERY -->
-  <div id="viewQuery" class="overlay hidden">
-    <div class="row mb-20">
-      <div class="caps text-sm">Query Lab</div>
-      <button class="btn btn-ghost" id="closeQuery">✕</button>
+  <!-- QUERY LAB -->
+  <div id="query-lab" class="full-overlay view-hidden">
+    <div class="flex justify-between mb-6">
+      <h2 class="text-sm font-black uppercase">Search</h2>
+      <button id="btn-close-query" class="btn-icon round" aria-label="Close">
+        <span class="ic muted" data-ic="x"></span>
+      </button>
     </div>
 
-    <input id="qSearch" class="input" placeholder="Search..." style="font-size: 18px; margin-bottom: 16px;" />
-
-    <div class="flex gap-8" style="overflow:auto; padding-bottom: 8px;">
-      <button class="mini-pill" data-q="all">All</button>
-      <button class="mini-pill" data-q="income">In</button>
-      <button class="mini-pill" data-q="expense">Out</button>
-      <button class="mini-pill" data-q="asset">Asset</button>
-      <button class="mini-pill" data-q="iou">IOU</button>
-      <button class="mini-pill" data-q="fiduciary">Fid</button>
+    <!-- tidy search bar -->
+    <div class="qbox">
+      <span class="ic muted" data-ic="search"></span>
+      <input type="text" id="q-search" placeholder="Search transactions, names, tags..." />
+      <button id="btn-q-clear" class="btn-icon round" style="width:36px;height:36px;">
+        <span class="ic muted" data-ic="x"></span>
+      </button>
     </div>
 
-    <div class="grid2" style="margin: 14px 0 14px;">
-      <input id="qStart" class="input text-xs" type="date" />
-      <input id="qEnd" class="input text-xs" type="date" />
+    <div class="q-pill-row" id="q-type-filters" style="margin-top: 10px;">
+      <button class="q-pill active" data-qtype="all">All</button>
+      <button class="q-pill" data-qtype="income">In</button>
+      <button class="q-pill" data-qtype="expense">Out</button>
+      <button class="q-pill" data-qtype="asset">Asset</button>
+      <button class="q-pill" data-qtype="iou">IOU</button>
+      <button class="q-pill" data-qtype="fiduciary">Fid</button>
     </div>
 
-    <div id="qRes" class="col"></div>
+    <div class="grid-2" style="margin-top: 14px; margin-bottom: 16px;">
+      <input type="date" id="q-start" class="input-ghost text-xs" />
+      <input type="date" id="q-end" class="input-ghost text-xs" />
+    </div>
+
+    <div id="q-results" class="flex-col gap-2"></div>
+
+    <div class="tiny" style="margin-top: 14px;">
+      Tip: tap any result to open details.
+    </div>
   </div>
 
   <!-- SETTINGS -->
-  <div id="viewSettings" class="overlay hidden">
-    <div class="row mb-20">
-      <div class="caps text-sm">Settings</div>
-      <button class="btn btn-ghost" id="closeSettings">✕</button>
+  <div id="settings-view" class="full-overlay view-hidden">
+    <div class="flex justify-between mb-6">
+      <h2 class="text-sm font-black uppercase">Settings</h2>
+      <button id="btn-close-settings" class="btn-icon round" aria-label="Close">
+        <span class="ic muted" data-ic="x"></span>
+      </button>
     </div>
 
-    <div class="card" style="margin:0 0 12px 0;">
-      <div class="p-20">
-        <div class="row mb-16">
-          <div class="tiny">PIN Startup</div>
-          <label class="switch">
-            <input type="checkbox" id="pinToggle" />
-            <span class="slider"></span>
-          </label>
-        </div>
-        <input id="pinSet" type="password" maxlength="4" class="input" style="text-align:center; letter-spacing: 10px;" placeholder="••••" inputmode="numeric" />
-        <button id="savePin" class="btn" style="width:100%; margin-top: 14px;">Update PIN</button>
-        <div class="tiny" style="margin-top: 10px;">PIN stored hashed (not plaintext).</div>
+    <div class="vault-card p-6 mb-4">
+      <div class="flex justify-between items-center mb-4">
+        <p class="text-xs font-black uppercase">PIN startup</p>
+        <label class="switch">
+          <input type="checkbox" id="tog-pin" />
+          <span class="slider"></span>
+        </label>
       </div>
+
+      <input id="set-pin" type="password" maxlength="4" class="input-ghost" style="text-align:center; letter-spacing: 6px; margin-bottom: 16px;" placeholder="••••" inputmode="numeric" />
+      <button id="btn-save-pin" class="btn w-full">Update PIN</button>
+      <div class="tiny" style="margin-top: 10px;">PIN stored as hash (not plaintext).</div>
     </div>
 
-    <div class="card" style="margin:0 0 12px 0;">
-      <div class="p-20">
-        <div class="row mb-16">
-          <div class="tiny">Haptics</div>
-          <label class="switch">
-            <input type="checkbox" id="hapToggle" />
-            <span class="slider"></span>
-          </label>
-        </div>
-        <div class="tiny">Uses vibration where supported (mostly Android/PWA).</div>
-      </div>
+    <div class="flex gap-2 mb-4">
+      <button id="btn-backup" class="btn w-full">Backup</button>
+      <button id="btn-restore" class="btn w-full" style="color: var(--green);">Restore</button>
+      <input type="file" id="file-input" class="hidden" />
     </div>
 
-    <div class="grid2 mb-16">
-      <button id="backup" class="btn">Backup</button>
-      <button id="restore" class="btn" style="border-color: rgba(16,185,129,.28); color: var(--emerald);">Restore</button>
-      <input id="file" type="file" class="hidden" />
-    </div>
-
-    <button id="reset" class="btn btn-danger" style="width: 100%;">Factory Reset</button>
+    <button id="btn-reset" class="btn danger w-full">Factory reset</button>
   </div>
 
   <!-- FAB -->
-  <button id="fab" class="fab fab-primary">+</button>
-
-  <!-- BOTTOM SHEET: TX DETAILS -->
-  <div id="sheetBack" class="sheet-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="sheet" role="document">
-      <div class="sheet-handle"></div>
-      <div class="sheet-body">
-        <div class="row">
-          <div>
-            <div id="sheetTitle" class="sheet-title">Transaction</div>
-            <div id="sheetAmt" class="sheet-amt maskable">₦0</div>
-          </div>
-          <div id="sheetBadge" class="pill">TYPE</div>
-        </div>
-
-        <div class="kv" id="sheetKV"></div>
-
-        <div class="sheet-actions">
-          <button id="dupBtn" class="btn">Duplicate</button>
-          <button id="delBtn" class="btn btn-danger">Delete</button>
-        </div>
-
-        <button id="closeSheet" class="btn btn-ghost" style="width:100%; margin-top: 10px;">Close</button>
-      </div>
-    </div>
-  </div>
+  <button id="nav-fab" class="fab primary" aria-label="Add">
+    <span class="ic" data-ic="plus"></span>
+  </button>
 
   <!-- TOAST -->
-  <div class="toast-wrap">
-    <div id="toast" class="toast">
-      <div>
-        <strong id="toastT">Notice</strong>
-        <div id="toastM" class="msg">Hello</div>
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <span class="ic muted" data-ic="check"></span>
+    <div class="flex-col" style="gap:2px;">
+      <div id="toast-msg" class="msg">Saved</div>
+      <div id="toast-sub" class="sub">Done</div>
+    </div>
+    <button id="toast-undo" class="undo hidden">Undo</button>
+  </div>
+
+  <!-- BOTTOM SHEET -->
+  <div id="sheet-backdrop" class="sheet-backdrop"></div>
+  <div id="sheet" class="sheet">
+    <div class="panel">
+      <div class="grab"></div>
+      <div class="title">
+        <div class="left">
+          <div id="sheet-name" class="name">Transaction</div>
+          <div id="sheet-meta" class="meta">—</div>
+        </div>
+        <div class="actions">
+          <button id="sheet-dup" class="btn">Duplicate</button>
+          <button id="sheet-del" class="btn danger">Delete</button>
+        </div>
       </div>
-      <div class="tiny muted">OK</div>
+
+      <div id="sheet-body"></div>
+
+      <div class="tiny" style="margin-top: 12px;">
+        Edit is next (we left the door open).
+      </div>
     </div>
   </div>
 
   <script>
-    (function () {
-      const APP = 82;
+    (() => {
+      const APP_VER = 82;
 
       const KEYS = {
         DB:  "SOV_DB_V82",
         CFG: "SOV_CFG_V82",
-        PIN: "SOV_PIN_V82"
+        PIN: "SOV_PIN_V82" // {salt, hash, algo}
       };
-
-      const CATEGORIES = [
-        "Food", "Transport", "Bills", "Data/Airtime", "Fuel",
-        "Family", "Health", "Shopping", "Rent", "Work",
-        "Entertainment", "Charity", "Other"
-      ];
-
-      const $ = (id) => document.getElementById(id);
 
       const money = {
-        n(v) { const x = Number(v); return Number.isFinite(x) ? x : 0; },
-        fmt(n) { return "₦" + (Number(n) || 0).toLocaleString(); }
-      };
-
-      const time = {
-        pad2(x){ return String(x).padStart(2,"0"); },
-        ymd(d){
-          const dt = new Date(d);
-          return dt.getFullYear()+"-"+this.pad2(dt.getMonth()+1)+"-"+this.pad2(dt.getDate());
-        },
-        hm(ts){
-          const dt = new Date(ts);
-          return this.pad2(dt.getHours())+":"+this.pad2(dt.getMinutes());
-        },
-        ymdhm(ts){
-          const dt = new Date(ts);
-          return this.ymd(dt)+" "+this.hm(ts);
-        },
-        startOfDay(ts){
-          const d = new Date(ts);
-          d.setHours(0,0,0,0);
-          return d.getTime();
-        },
-        weekStart(ts){
-          const d = new Date(ts);
-          const day = d.getDay(); // 0 Sun .. 6 Sat
-          const diff = (day === 0 ? 6 : day - 1); // Monday start
-          d.setDate(d.getDate() - diff);
-          d.setHours(0,0,0,0);
-          return d.getTime();
-        },
-        monthKey(ts){
-          const d = new Date(ts);
-          return d.getFullYear()+"-"+this.pad2(d.getMonth()+1);
+        fmt: (n) => "₦" + (Number(n) || 0).toLocaleString(),
+        num: (v) => {
+          const x = Number(v);
+          return Number.isFinite(x) ? x : 0;
         }
       };
 
-      const ui = {
-        toastTimer: null,
-        toast(type, title, msg){
-          const t = $("toast");
-          t.classList.remove("success","error","warn","show");
-          t.classList.add(type);
-          $("toastT").textContent = title;
-          $("toastM").textContent = msg;
-          clearTimeout(this.toastTimer);
-          requestAnimationFrame(() => t.classList.add("show"));
-          this.toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
-        },
-        vibrate(ms){
-          if (!core.cfg.haptics) return;
-          if (navigator.vibrate) navigator.vibrate(ms);
+      const dom = {
+        byId: (id) => document.getElementById(id),
+        clear: (el) => { if(!el) return; while(el.firstChild) el.removeChild(el.firstChild); },
+        el: (tag, cls, text) => {
+          const e = document.createElement(tag);
+          if (cls) e.className = cls;
+          if (text !== undefined) e.textContent = text;
+          return e;
         }
       };
 
+      /* ---------- Icons (Option A) ---------- */
+      const icons = (() => {
+        const svgs = {
+          search: `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.2-3.2"></path></svg>`,
+          eye: `<svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
+          gear: `<svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path><path d="M19.4 15a7.8 7.8 0 0 0 .1-2l2-1.2-2-3.4-2.3.6a7.7 7.7 0 0 0-1.7-1L13 2h-4l-.5 2.9a7.7 7.7 0 0 0-1.7 1l-2.3-.6-2 3.4 2 1.2a7.8 7.8 0 0 0 0 2l-2 1.2 2 3.4 2.3-.6a7.7 7.7 0 0 0 1.7 1L9 22h4l.5-2.9a7.7 7.7 0 0 0 1.7-1l2.3.6 2-3.4-2-1.2z"></path></svg>`,
+          arrowDown: `<svg viewBox="0 0 24 24"><path d="M12 4v12"></path><path d="M7 13l5 5 5-5"></path></svg>`,
+          arrowUp: `<svg viewBox="0 0 24 24"><path d="M12 20V8"></path><path d="M7 11l5-5 5 5"></path></svg>`,
+          diamond: `<svg viewBox="0 0 24 24"><path d="M12 2l4 6-4 14L8 8l4-6z"></path><path d="M8 8h8"></path></svg>`,
+          briefcase: `<svg viewBox="0 0 24 24"><path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1"></path><path d="M4 7h16v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z"></path><path d="M4 12h16"></path></svg>`,
+          wallet: `<svg viewBox="0 0 24 24"><path d="M3 7h18v14H3z"></path><path d="M3 7l14-3v3"></path><path d="M17 13h4v4h-4z"></path></svg>`,
+          clock: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6l4 2"></path></svg>`,
+          filter: `<svg viewBox="0 0 24 24"><path d="M4 5h16"></path><path d="M7 12h10"></path><path d="M10 19h4"></path></svg>`,
+          tag: `<svg viewBox="0 0 24 24"><path d="M20 13l-7 7-11-11V2h7l11 11z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>`,
+          x: `<svg viewBox="0 0 24 24"><path d="M18 6L6 18"></path><path d="M6 6l12 12"></path></svg>`,
+          plus: `<svg viewBox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>`,
+          check: `<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg>`,
+          lock: `<svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3"></path><path d="M6 11h12v10H6z"></path></svg>`,
+          iouIn: `<svg viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M7 12h10"></path><path d="M4 17h6"></path><path d="M14 17l2 2 4-4"></path></svg>`,
+          iouOut:`<svg viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M7 12h10"></path><path d="M4 17h6"></path><path d="M14 15l6 6"></path><path d="M20 15l-6 6"></path></svg>`
+        };
+
+        const mount = () => {
+          document.querySelectorAll("[data-ic]").forEach(el => {
+            const key = el.getAttribute("data-ic");
+            if (svgs[key]) el.innerHTML = svgs[key];
+          });
+        };
+
+        return { mount };
+      })();
+
+      /* ---------- Haptics (soft) ---------- */
+      const haptics = {
+        light: () => { try { if (navigator.vibrate) navigator.vibrate(10); } catch {} },
+        med:   () => { try { if (navigator.vibrate) navigator.vibrate([15,10,15]); } catch {} }
+      };
+
+      /* ---------- Toast ---------- */
+      const toast = (() => {
+        let tId = null;
+        let undoFn = null;
+
+        const show = (msg, sub = "", opts = {}) => {
+          const el = dom.byId("toast");
+          dom.byId("toast-msg").textContent = msg;
+          dom.byId("toast-sub").textContent = sub || "";
+
+          const undoBtn = dom.byId("toast-undo");
+          undoFn = opts.undo || null;
+
+          if (undoFn) {
+            undoBtn.classList.remove("hidden");
+            undoBtn.onclick = () => {
+              try { undoFn(); } finally { hide(); }
+            };
+          } else {
+            undoBtn.classList.add("hidden");
+            undoBtn.onclick = null;
+          }
+
+          el.classList.add("show");
+          clearTimeout(tId);
+          tId = setTimeout(hide, opts.ms || 2200);
+        };
+
+        const hide = () => {
+          dom.byId("toast").classList.remove("show");
+          undoFn = null;
+        };
+
+        return { show, hide };
+      })();
+
+      /* ---------- PIN Hash ---------- */
       const cryptoUtil = {
-        randSalt(){
+        randSalt: () => {
           const a = new Uint8Array(16);
           crypto.getRandomValues(a);
           return Array.from(a).map(b => b.toString(16).padStart(2,"0")).join("");
         },
-        toHex(buf){
-          return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
-        },
+        toHex: (buf) => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join(""),
         async sha256(str){
           const data = new TextEncoder().encode(str);
           const buf = await crypto.subtle.digest("SHA-256", data);
-          return this.toHex(buf);
+          return cryptoUtil.toHex(buf);
         },
         async hashPin(pin, salt){
-          return this.sha256(`${salt}:${pin}`);
+          return cryptoUtil.sha256(`${salt}:${pin}`);
         }
       };
 
-      const core = {
-        db: [],
-        cfg: { reqPin: false, qType: "all", fdView: "goal", haptics: false },
-        pinObj: null,
-        activeType: "income",
-        settlement: false,
-        selectedTxId: null,
+      /* ---------- Core ---------- */
+      const VaultCore = (() => {
+        let db = [];
+        let config = { reqPin:false, activeQType:"all", fdView:"goal" };
+        let pinObj = null; // {salt, hash, algo}
 
-        load(){
-          // load best-effort from older versions if v82 empty
-          const loadJson = (k, fallback) => {
-            try { return JSON.parse(localStorage.getItem(k)) ?? fallback; }
-            catch { return fallback; }
-          };
+        const loanTypes = new Set(["creditor","credit_settlement","debtor","debt_repayment"]);
+        const iouType = (t) => loanTypes.has(t);
 
-          this.db = loadJson(KEYS.DB, []);
-          this.cfg = { ...this.cfg, ...loadJson(KEYS.CFG, this.cfg) };
-          this.pinObj = loadJson(KEYS.PIN, null);
+        const nowISO = () => {
+          const d = new Date();
+          const y = d.getFullYear();
+          const m = String(d.getMonth()+1).padStart(2,"0");
+          const da = String(d.getDate()).padStart(2,"0");
+          return `${y}-${m}-${da}`;
+        };
 
-          // migrate old db keys if needed
-          if (!this.db.length) {
-            const older = localStorage.getItem("SOV_DB_V81") || localStorage.getItem("SOV_DB_V80");
-            if (older) {
-              try { this.db = JSON.parse(older) || []; } catch { this.db = []; }
+        const timeHM = (d) => {
+          const h = String(d.getHours()).padStart(2,"0");
+          const m = String(d.getMinutes()).padStart(2,"0");
+          return `${h}:${m}`;
+        };
+
+        const makeId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(16).slice(2));
+
+        const save = () => {
+          localStorage.setItem(KEYS.DB, JSON.stringify(db));
+          localStorage.setItem(KEYS.CFG, JSON.stringify(config));
+          localStorage.setItem(KEYS.PIN, JSON.stringify(pinObj));
+        };
+
+        const load = () => {
+          // prefer v82
+          try { db = JSON.parse(localStorage.getItem(KEYS.DB)) || []; } catch { db = []; }
+          try { config = JSON.parse(localStorage.getItem(KEYS.CFG)) || config; } catch {}
+          try { pinObj = JSON.parse(localStorage.getItem(KEYS.PIN)) || null; } catch { pinObj = null; }
+
+          // migrate from v81 if needed
+          if (!db.length) {
+            const v81 = localStorage.getItem("SOV_DB_V81");
+            const v80 = localStorage.getItem("SOV_DB_V80");
+            const src = v81 || v80;
+            if (src) {
+              try { db = JSON.parse(src) || []; } catch { db = []; }
             }
           }
 
-          // migrate entries: ensure ts exists + enforce IOU-only totals
-          this.db = this.db.map(e => this.migrateEntry(e)).filter(Boolean);
-
-          this.save();
-        },
-
-        save(){
-          localStorage.setItem(KEYS.DB, JSON.stringify(this.db));
-          localStorage.setItem(KEYS.CFG, JSON.stringify(this.cfg));
-          localStorage.setItem(KEYS.PIN, JSON.stringify(this.pinObj));
-        },
-
-        migrateEntry(e){
-          if (!e || typeof e !== "object") return null;
-          // ensure ts
-          if (!e.ts) {
-            // best effort: if date exists, set midday; else now
-            if (e.date) {
-              const d = new Date(e.date + "T12:00:00");
-              e.ts = d.getTime();
-            } else {
-              e.ts = Date.now();
-              e.date = time.ymd(e.ts);
+          // normalize: ensure createdAt exists; ensure IOUs total=0 and principal exists
+          db = db.map(e => {
+            if (!e || typeof e !== "object") return e;
+            if (!e.createdAt) {
+              // If there was no time, set midday to avoid timezone weirdness
+              const d = e.date ? new Date(e.date + "T12:00:00") : new Date();
+              e.createdAt = d.toISOString();
             }
-          }
-          if (!e.date) e.date = time.ymd(e.ts);
+            if (iouType(e.type)) {
+              if (typeof e.principal !== "number") {
+                // best effort from old total
+                const t = money.num(e.total);
+                const a = Math.abs(t);
+                if (e.type === "creditor") e.principal = a;
+                if (e.type === "credit_settlement") e.principal = -a;
+                if (e.type === "debtor") e.principal = a;
+                if (e.type === "debt_repayment") e.principal = -a;
+              }
+              e.total = 0;
+              delete e.b; delete e.s; delete e.l;
+            }
+            // lightweight tag/category fields
+            if (!e.category) e.category = "";
+            if (!e.note) e.note = "";
+            return e;
+          });
 
-          // enforce IOU-only loan types
-          const loanTypes = new Set(["creditor","credit_settlement","debtor","debt_repayment"]);
-          if (loanTypes.has(e.type)) {
-            e.total = 0;
-            delete e.b; delete e.s; delete e.l;
-            if (typeof e.principal !== "number") e.principal = 0;
-          }
+          save();
+        };
 
-          // normalize expense fields
-          if (e.type === "expense") {
-            if (!e.category) e.category = "Other";
-            if (!CATEGORIES.includes(e.category)) e.category = "Other";
-            if (!e.merchant) e.merchant = "";
-            if (!e.bucket) e.bucket = "spend";
-          }
+        const entryAmount = (e) => (typeof e.principal === "number" ? e.principal : money.num(e.total));
 
-          return e;
-        },
+        const setQType = (t) => { config.activeQType = t; save(); };
+        const setFdView = (v) => { config.fdView = v; save(); VaultUI.render(); };
+        const toggleSetting = (k) => { config[k] = !config[k]; save(); };
 
-        makeId(){
-          return (crypto.randomUUID ? crypto.randomUUID() : (String(Date.now()) + "-" + Math.random().toString(16).slice(2)));
-        },
+        const hasPin = () => !!(pinObj && pinObj.hash && pinObj.salt);
 
-        entryAmt(e){
-          if (typeof e.principal === "number" && (e.type === "creditor" || e.type === "credit_settlement" || e.type === "debtor" || e.type === "debt_repayment")) {
-            return Math.abs(e.principal);
-          }
-          return Math.abs(money.n(e.total));
-        },
+        const savePin = async () => {
+          const p = dom.byId("set-pin").value || "";
+          if (p.length !== 4) return toast.show("PIN not saved", "4 digits required");
+          if (!crypto?.subtle) return toast.show("Not supported", "Browser can't hash PIN");
 
-        badgeFor(e){
-          if (!e) return { text:"TX", cls:"pill" };
-          if (e.type === "income") return { text:"IN", cls:"pill pill-in" };
-          if (e.type === "expense") return { text:"OUT", cls:"pill pill-out" };
-          if (e.type === "asset") return { text:"ASSET", cls:"pill pill-asset" };
-          if (e.type === "fiduciary") return { text:"FID", cls:"pill pill-fid" };
-          if (e.type === "creditor" || e.type === "debtor" || e.type === "credit_settlement" || e.type === "debt_repayment") return { text:"IOU", cls:"pill pill-iou" };
-          return { text:"TX", cls:"pill" };
-        },
-
-        // --- PIN ---
-        hasPin(){ return !!(this.pinObj && this.pinObj.hash && this.pinObj.salt); },
-
-        async savePin(){
-          const p = ($("pinSet").value || "").trim();
-          if (p.length !== 4) { ui.toast("warn","PIN","4 digits required"); ui.vibrate(20); return; }
-          if (!crypto?.subtle) { ui.toast("error","PIN","Browser can't store securely"); return; }
           const salt = cryptoUtil.randSalt();
           const hash = await cryptoUtil.hashPin(p, salt);
-          this.pinObj = { salt, hash, algo: "sha256(salt:pin)" };
-          this.save();
-          $("pinSet").value = "";
-          ui.toast("success","PIN","Saved");
-          ui.vibrate(12);
-        },
+          pinObj = { salt, hash, algo: "sha256(salt:pin)" };
+          save();
+          dom.byId("set-pin").value = "";
+          toast.show("PIN updated", "Startup lock configured");
+        };
 
-        async verifyPin(input){
-          if (!this.hasPin()) return true;
-          const hash = await cryptoUtil.hashPin(input, this.pinObj.salt);
-          return hash === this.pinObj.hash;
-        },
+        const verifyPin = async (inputPin) => {
+          if (!pinObj?.hash || !pinObj?.salt) return true;
+          const hash = await cryptoUtil.hashPin(inputPin, pinObj.salt);
+          return hash === pinObj.hash;
+        };
 
-        exportAll(){
-          const payload = { version: APP, exportedAt: new Date().toISOString(), db: this.db, cfg: this.cfg };
-          const b = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const exportAll = () => {
+          const payload = { version: APP_VER, exportedAt: new Date().toISOString(), db, config };
+          const b = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
           const a = document.createElement("a");
           a.href = URL.createObjectURL(b);
-          a.download = `Vault_v${APP}.json`;
+          a.download = `Vault_v${APP_VER}.json`;
           a.click();
-          ui.toast("success","Backup","Saved file");
-          ui.vibrate(10);
-        },
+        };
 
-        importAll(file){
+        const importAll = (file) => {
           const r = new FileReader();
           r.onload = (ev) => {
             try{
               const parsed = JSON.parse(ev.target.result);
-              if (Array.isArray(parsed)) this.db = parsed;
+              if (Array.isArray(parsed)) db = parsed;
               else if (parsed && Array.isArray(parsed.db)) {
-                this.db = parsed.db;
-                if (parsed.cfg) this.cfg = { ...this.cfg, ...parsed.cfg };
-              } else throw new Error("Invalid format");
+                db = parsed.db;
+                if (parsed.config && typeof parsed.config === "object") config = { ...config, ...parsed.config };
+              } else throw new Error("Bad file");
 
-              this.db = this.db.map(e => this.migrateEntry(e)).filter(Boolean);
-              this.save();
-              ui.toast("success","Restore","Loaded");
-              ui.vibrate(12);
-              views.show("dash");
-              render.all();
-            }catch{
-              ui.toast("error","Restore","Invalid file");
-              ui.vibrate(30);
+              // normalize on import
+              db = db.map(e => {
+                if (!e) return e;
+                if (!e.createdAt) e.createdAt = new Date((e.date||nowISO()) + "T12:00:00").toISOString();
+                if (iouType(e.type)) {
+                  if (typeof e.principal !== "number") {
+                    const t = money.num(e.total);
+                    const a = Math.abs(t);
+                    if (e.type === "creditor") e.principal = a;
+                    if (e.type === "credit_settlement") e.principal = -a;
+                    if (e.type === "debtor") e.principal = a;
+                    if (e.type === "debt_repayment") e.principal = -a;
+                  }
+                  e.total = 0;
+                  delete e.b; delete e.s; delete e.l;
+                }
+                if (!e.category) e.category = "";
+                if (!e.note) e.note = "";
+                return e;
+              });
+
+              save();
+              location.reload();
+            } catch {
+              toast.show("Restore failed", "Invalid backup file");
             }
           };
           r.readAsText(file);
-        },
+        };
 
-        wipe(){
-          if (!confirm("Reset Vault? This clears only this app's data.")) return;
+        const deleteById = (id) => {
+          const idx = db.findIndex(x => x.id === id);
+          if (idx < 0) return;
+          const removed = db[idx];
+          db.splice(idx,1);
+          save();
+          VaultUI.render();
+          toast.show("Deleted", removed?.name || "Transaction", {
+            undo: () => {
+              db.push(removed);
+              // keep order roughly by createdAt if present
+              db.sort((a,b) => String(a.createdAt||"").localeCompare(String(b.createdAt||"")));
+              save();
+              VaultUI.render();
+              toast.show("Restored", "Undo complete");
+            },
+            ms: 3500
+          });
+        };
+
+        const wipe = () => {
+          if (!confirm("RESET?")) return;
           localStorage.removeItem(KEYS.DB);
           localStorage.removeItem(KEYS.CFG);
           localStorage.removeItem(KEYS.PIN);
           location.reload();
-        },
+        };
 
-        deleteById(id){
-          const idx = this.db.findIndex(x => x.id === id);
-          if (idx < 0) return;
-          this.db.splice(idx,1);
-          this.save();
-          ui.toast("success","Deleted","Transaction removed");
-          ui.vibrate(18);
-        },
+        // runtime form state
+        let activeType = "income";
+        let settlementFlag = false;
 
-        // Duplicate: clears amount, keeps fields
-        duplicateToForm(e){
-          if (!e) return;
-          // open correct base type (for IOU, keep IOU type)
-          this.activeType = (e.type === "credit_settlement") ? "expense" :
-                            (e.type === "debt_repayment") ? "income" :
-                            e.type;
+        const setActiveType = (t) => { activeType = t; settlementFlag = false; };
+        const setSettlement = (b) => { settlementFlag = b; VaultUI.updateFormUI(); };
 
-          // settlement flag if needed
-          this.settlement = (e.type === "credit_settlement" || e.type === "debt_repayment");
+        const normalizeFluid = () => {
+          let b = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-bills").value))));
+          let s = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-save").value))));
+          let l = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-spend").value))));
+          const sum = b+s+l;
+          if (sum === 100) return {b,s,l};
+          const scale = sum ? 100/sum : 1;
+          b = Math.round(b*scale);
+          s = Math.round(s*scale);
+          l = 100 - b - s;
+          dom.byId("fluid-bills").value = b;
+          dom.byId("fluid-save").value = s;
+          dom.byId("fluid-spend").value = l;
+          return {b,s,l};
+        };
 
-          // open form
-          views.show("form");
-          form.build();
+        const classifyBadge = (e) => {
+          if (!e) return { cls:"badge", txt:"" };
+          if (e.type === "income") return { cls:"badge in", txt:"IN" };
+          if (e.type === "expense") return { cls:"badge out", txt:"OUT" };
+          if (e.type === "asset") return { cls:"badge asset", txt:"ASSET" };
+          if (e.type === "fiduciary") return { cls:"badge fid", txt:"FID" };
+          if (iouType(e.type)) return { cls:"badge iou", txt:"IOU" };
+          return { cls:"badge", txt:(e.type||"").toUpperCase().slice(0,6) };
+        };
 
-          // clear amount by requirement
-          $("amt").value = "";
-
-          // prefill fields (desc, merchant, category, bucket, etc.)
-          $("desc").value = (this.settlement ? (e.creditor || e.debtor || e.name || "") : (e.name || ""));
-
-          if (this.activeType === "expense" && !this.settlement) {
-            const m = $("expMerchant"); if (m) m.value = e.merchant || "";
-            const c = $("expCat"); if (c) c.value = e.category || "Other";
-            const b = $("expBucket"); if (b) b.value = e.bucket || "spend";
-            const n = $("expNote"); if (n) n.value = e.note || "";
+        const execute = () => {
+          const aRaw = dom.byId("e-amount").value;
+          const name = (dom.byId("e-name").value || "").trim();
+          const a = Math.abs(money.num(aRaw));
+          if (!name || !a) {
+            toast.show("Not saved", "Enter amount + description");
+            return;
           }
 
-          if (this.activeType === "asset") {
-            const cat = $("asCat"); if (cat) cat.value = e.cat || "Other";
-          }
+          const now = new Date();
+          const date = nowISO();
+          const createdAt = now.toISOString();
 
-          if (this.activeType === "fiduciary") {
-            const g = $("fdGoal"); if (g) g.value = e.goal || "";
-            const u = $("fdUser"); if (u) u.value = e.user || "";
-          }
-
-          if (this.activeType === "creditor" || this.activeType === "debtor") {
-            const rate = $("iouRate"); if (rate) rate.value = e.rate || "";
-            const term = $("iouTerm"); if (term) term.value = e.term || "";
-          }
-
-          ui.toast("success","Duplicate","Prefilled (amount cleared)");
-          ui.vibrate(10);
-        },
-
-        execute(){
-          const amt = Math.abs(money.n($("amt").value));
-          const desc = ($("desc").value || "").trim();
-
-          if (!desc) { ui.toast("warn","Entry","Description required"); ui.vibrate(18); return; }
-          if (!amt) { ui.toast("warn","Entry","Amount required"); ui.vibrate(18); return; }
-
-          const now = Date.now();
-          const base = {
-            id: this.makeId(),
-            ts: now,
-            date: time.ymd(now),
-            type: this.activeType,
-            name: desc,
-            total: 0
+          // Base entry
+          const e = {
+            id: makeId(),
+            name,
+            type: activeType,
+            date,
+            time: timeHM(now),
+            createdAt,
+            total: 0,
+            category: "",
+            note: ""
           };
 
-          // Income
-          if (this.activeType === "income") {
-            if (this.settlement) {
-              base.type = "debt_repayment";
-              base.debtor = desc;
-              base.principal = -amt; // reduce owed to you
-              base.total = 0;
+          // INCOME
+          if (activeType === "income") {
+            if (settlementFlag) {
+              e.type = "debt_repayment";
+              e.debtor = name;
+              e.principal = -a;   // reduces outstanding owed to you
+              e.total = 0;        // IOU-only (no net worth / liquidity impact)
             } else {
-              // normalize split to 100
-              const pb = clamp100(money.n($("pBills").value));
-              const ps = clamp100(money.n($("pSave").value));
-              const pl = clamp100(money.n($("pSpend").value));
-              const fixed = normalize3(pb, ps, pl);
-              $("pBills").value = fixed.a;
-              $("pSave").value = fixed.b;
-              $("pSpend").value = fixed.c;
-
-              base.total = amt;
-              base.b = amt * (fixed.a / 100);
-              base.s = amt * (fixed.b / 100);
-              base.l = amt * (fixed.c / 100);
+              const bP = money.num(dom.byId("fluid-bills").value)/100;
+              const sP = money.num(dom.byId("fluid-save").value)/100;
+              const lP = money.num(dom.byId("fluid-spend").value)/100;
+              e.type = "income";
+              e.total = a;
+              e.b = a*bP; e.s = a*sP; e.l = a*lP;
             }
           }
 
-          // Expense
-          else if (this.activeType === "expense") {
-            if (this.settlement) {
-              base.type = "credit_settlement";
-              base.creditor = desc;
-              base.principal = -amt; // reduce you owe
-              base.total = 0;
+          // EXPENSE
+          else if (activeType === "expense") {
+            if (settlementFlag) {
+              e.type = "credit_settlement";
+              e.creditor = name;
+              e.principal = -a;   // reduces outstanding you owe
+              e.total = 0;        // IOU-only
             } else {
-              const bucket = $("expBucket")?.value || "spend";
-              const merchant = ($("expMerchant")?.value || "").trim();
-              const category = $("expCat")?.value || "Other";
-              const note = ($("expNote")?.value || "").trim();
-
-              base.type = "expense";
-              base.total = -amt;
-              base.bucket = bucket;
-              base.merchant = merchant;
-              base.category = CATEGORIES.includes(category) ? category : "Other";
-              base.note = note;
-
-              // cash bucket movement
-              if (bucket === "bills") base.b = -amt;
-              if (bucket === "save") base.s = -amt;
-              if (bucket === "spend") base.l = -amt;
+              e.type = "expense";
+              e.total = -a;
+              e.category = dom.byId("e-exp-cat")?.value || "";
+              const bucket = dom.byId("e-exp-bucket")?.value || "spend";
+              e.bucket = bucket;
+              if (bucket === "bills") e.b = -a;
+              if (bucket === "save")  e.s = -a;
+              if (bucket === "spend") e.l = -a;
             }
           }
 
-          // Asset
-          else if (this.activeType === "asset") {
-            base.total = amt;
-            base.cat = $("asCat")?.value || "Other";
+          // ASSET
+          else if (activeType === "asset") {
+            e.type = "asset";
+            e.total = a;
+            e.cat = dom.byId("e-as-cat")?.value || "Other";
           }
 
-          // IOU Borrow/Lend
-          else if (this.activeType === "creditor") {
-            base.total = 0;
-            base.principal = amt; // you owe increases
-            base.creditor = desc;
-            base.rate = $("iouRate")?.value || "";
-            base.term = $("iouTerm")?.value || "";
+          // IOU BORROW / LEND
+          else if (activeType === "creditor") {
+            e.type = "creditor";
+            e.total = 0;
+            e.principal = a; // outstanding you owe increases
+            e.creditor = name;
+            e.rate = dom.byId("e-rate")?.value || "";
+            e.term = dom.byId("e-term")?.value || "";
           }
-          else if (this.activeType === "debtor") {
-            base.total = 0;
-            base.principal = amt; // owed to you increases
-            base.debtor = desc;
-            base.rate = $("iouRate")?.value || "";
-            base.term = $("iouTerm")?.value || "";
-          }
-
-          // Fiduciary
-          else if (this.activeType === "fiduciary") {
-            base.total = amt;
-            base.goal = ($("fdGoal")?.value || "").trim();
-            base.user = ($("fdUser")?.value || "").trim();
+          else if (activeType === "debtor") {
+            e.type = "debtor";
+            e.total = 0;
+            e.principal = a; // outstanding owed to you increases
+            e.debtor = name;
+            e.rate = dom.byId("e-rate")?.value || "";
+            e.term = dom.byId("e-term")?.value || "";
           }
 
-          this.db.push(this.migrateEntry(base));
-          this.save();
-
-          ui.toast("success","Saved","Transaction recorded");
-          ui.vibrate(12);
-
-          views.show("dash");
-          render.all();
-        }
-      };
-
-      function clamp100(x){ return Math.max(0, Math.min(100, Math.round(x))); }
-
-      function normalize3(a,b,c){
-        let sum = a+b+c;
-        if (sum === 100) return {a,b,c};
-        if (sum === 0) return {a:40,b:40,c:20};
-        const scale = 100 / sum;
-        a = Math.round(a * scale);
-        b = Math.round(b * scale);
-        c = 100 - a - b;
-        return {a,b,c};
-      }
-
-      const views = {
-        ids: { dash:"viewDash", grid:"viewGrid", form:"viewForm", query:"viewQuery", settings:"viewSettings" },
-        show(which){
-          Object.values(this.ids).forEach(id => $(id).classList.add("hidden"));
-          $(this.ids[which]).classList.remove("hidden");
-          fab.update(which);
-          if (which === "query") query.run();
-        }
-      };
-
-      const fab = {
-        update(which){
-          const b = $("fab");
-          if (which === "dash") {
-            b.textContent = "+";
-            b.className = "fab fab-primary";
-            b.onclick = () => { ui.vibrate(8); views.show("grid"); };
-          } else {
-            b.textContent = "↩";
-            b.className = "fab fab-back";
-            b.onclick = () => { ui.vibrate(8); views.show("dash"); render.all(); };
-          }
-        }
-      };
-
-      const form = {
-        build(){
-          const t = core.activeType;
-          const settle = core.settlement;
-
-          // title
-          const mapTitle = {
-            income: settle ? "Recover Debt (IOU)" : "Inflow",
-            expense: settle ? "Pay Debt (IOU)" : "Expense",
-            asset: "Asset",
-            creditor: "Borrow (IOU)",
-            debtor: "Lend (IOU)",
-            fiduciary: "Fiduciary"
-          };
-          $("formTitle").textContent = mapTitle[t] || "Entry";
-
-          // settlement toggle (only for income/expense)
-          $("settleWrap").innerHTML = "";
-          if (t === "income" || t === "expense") {
-            const wrap = document.createElement("div");
-            wrap.className = "card";
-            wrap.style.margin = "0 0 12px 0";
-            wrap.style.borderRadius = "16px";
-
-            const inner = document.createElement("div");
-            inner.className = "p-16 grid2";
-
-            const left = document.createElement("button");
-            left.className = "btn";
-            left.textContent = (t === "income") ? "INFLOW" : "EXPENSE";
-            left.style.borderColor = (!core.settlement) ? "rgba(16,185,129,.35)" : "rgba(255,255,255,0.14)";
-            left.onclick = () => { core.settlement = false; ui.vibrate(6); this.build(); };
-
-            const right = document.createElement("button");
-            right.className = "btn";
-            right.textContent = (t === "income") ? "RECOVER DEBT" : "PAY DEBT";
-            right.style.borderColor = (core.settlement) ? "rgba(234,179,8,.35)" : "rgba(255,255,255,0.14)";
-            right.onclick = () => { core.settlement = true; ui.vibrate(6); this.build(); };
-
-            inner.appendChild(left);
-            inner.appendChild(right);
-            wrap.appendChild(inner);
-            $("settleWrap").appendChild(wrap);
+          // FIDUCIARY
+          else if (activeType === "fiduciary") {
+            e.type = "fiduciary";
+            e.total = a;
+            e.goal = dom.byId("e-fd-goal")?.value || "";
+            e.user = dom.byId("e-fd-user")?.value || "";
           }
 
-          // fluid only for income non-settlement
-          if (t === "income" && !core.settlement) $("fluidWrap").classList.remove("hidden");
-          else $("fluidWrap").classList.add("hidden");
-
-          // dynamic fields
-          const dyn = $("dyn");
-          dyn.innerHTML = "";
-
-          // description placeholder
-          $("desc").placeholder = core.settlement
-            ? (t === "income" ? "Payer name" : "Creditor name")
-            : (t === "creditor" ? "Lender name" : t === "debtor" ? "Borrower name" : t === "asset" ? "Asset name" : "Description");
-
-          // Expense extra fields (merchant free, category fixed)
-          if (t === "expense" && !core.settlement) {
-            dyn.appendChild(fieldSelect("expBucket", "Cash Bucket", [
-              {v:"spend", label:"Spend"},
-              {v:"bills", label:"Bills"},
-              {v:"save", label:"Savings"}
-            ]));
-
-            dyn.appendChild(fieldInput("expMerchant", "Merchant (optional)", "text"));
-            dyn.appendChild(fieldSelect("expCat", "Category", CATEGORIES.map(x => ({v:x, label:x}))));
-
-            dyn.appendChild(fieldInput("expNote", "Notes (optional)", "text"));
-          }
-
-          // Asset category
-          if (t === "asset") {
-            dyn.appendChild(fieldSelect("asCat", "Asset Category", [
-              {v:"Property", label:"Property"},
-              {v:"Vehicle", label:"Vehicle"},
-              {v:"Stock", label:"Stock"},
-              {v:"Business", label:"Business"},
-              {v:"Other", label:"Other"}
-            ]));
-          }
-
-          // IOU rate/term
-          if (t === "creditor" || t === "debtor") {
-            const grid = document.createElement("div");
-            grid.className = "grid2";
-            grid.appendChild(fieldInput("iouRate", "Rate % (optional)", "number", true));
-            grid.appendChild(fieldInput("iouTerm", "Due date (optional)", "date", true));
-            dyn.appendChild(grid);
-          }
-
-          // Fiduciary fields
-          if (t === "fiduciary") {
-            dyn.appendChild(fieldInput("fdGoal", "Project/Goal", "text"));
-            dyn.appendChild(fieldInput("fdUser", "Contributor", "text"));
-          }
-        }
-      };
-
-      function fieldInput(id, placeholder, type="text", noMargin=false){
-        const wrap = document.createElement("div");
-        if (!noMargin) wrap.className = "mb-16";
-        const inp = document.createElement("input");
-        inp.id = id;
-        inp.type = type;
-        inp.className = "input";
-        inp.placeholder = placeholder;
-        wrap.appendChild(inp);
-        return wrap;
-      }
-
-      function fieldSelect(id, label, options){
-        const wrap = document.createElement("div");
-        wrap.className = "mb-16";
-        const sel = document.createElement("select");
-        sel.id = id;
-        sel.className = "input";
-        const top = document.createElement("option");
-        top.value = "";
-        top.textContent = label;
-        top.disabled = true;
-        top.selected = true;
-        sel.appendChild(top);
-
-        options.forEach(o => {
-          const opt = document.createElement("option");
-          if (typeof o === "string") { opt.value = o; opt.textContent = o; }
-          else { opt.value = o.v; opt.textContent = o.label; }
-          sel.appendChild(opt);
-        });
-
-        // set a sane default for select fields
-        setTimeout(() => {
-          if (id === "expBucket") sel.value = "spend";
-          if (id === "expCat") sel.value = "Other";
-        }, 0);
-
-        wrap.appendChild(sel);
-        return wrap;
-      }
-
-      const sheet = {
-        open(e){
-          if (!e) return;
-          core.selectedTxId = e.id;
-
-          const badge = core.badgeFor(e);
-          $("sheetTitle").textContent = (e.name || "Transaction").toUpperCase();
-          $("sheetAmt").textContent = money.fmt(core.entryAmt(e));
-          $("sheetBadge").className = badge.cls;
-          $("sheetBadge").textContent = badge.text;
-
-          const kv = $("sheetKV");
-          kv.innerHTML = "";
-
-          const add = (k,v) => {
-            const r = document.createElement("div");
-            r.className = "kv-row";
-            const a = document.createElement("span"); a.textContent = k;
-            const b = document.createElement("span"); b.textContent = v;
-            r.appendChild(a); r.appendChild(b);
-            kv.appendChild(r);
-          };
-
-          add("Date/Time", time.ymdhm(e.ts));
-          add("Type", e.type);
-
-          if (e.type === "expense") {
-            add("Category", e.category || "Other");
-            add("Merchant", e.merchant ? e.merchant : "—");
-            add("Bucket", e.bucket || "spend");
-            add("Notes", e.note ? e.note : "—");
-          }
-
-          if (e.type === "income") {
-            add("Split", `Bills ${pct(e.b, e.total)} • Save ${pct(e.s, e.total)} • Spend ${pct(e.l, e.total)}`);
-          }
-
-          if (e.type === "asset") {
-            add("Asset Category", e.cat || "Other");
-          }
-
-          if (e.type === "debtor" || e.type === "debt_repayment") {
-            add("Debtor", e.debtor || "—");
-            add("IOU Delta", (e.principal ? money.fmt(e.principal) : "₦0"));
-            if (e.rate) add("Rate", e.rate + "%");
-            if (e.term) add("Due", e.term);
-          }
-
-          if (e.type === "creditor" || e.type === "credit_settlement") {
-            add("Creditor", e.creditor || "—");
-            add("IOU Delta", (e.principal ? money.fmt(e.principal) : "₦0"));
-            if (e.rate) add("Rate", e.rate + "%");
-            if (e.term) add("Due", e.term);
-          }
-
-          if (e.type === "fiduciary") {
-            add("Goal", e.goal || "—");
-            add("Contributor", e.user || "—");
-          }
-
-          // actions
-          $("dupBtn").onclick = () => {
-            ui.vibrate(10);
-            this.close();
-            core.duplicateToForm(e);
-          };
-
-          $("delBtn").onclick = () => {
-            ui.vibrate(18);
-            if (!confirm("Delete this transaction?")) return;
-            core.deleteById(e.id);
-            this.close();
-            render.all();
-          };
-
-          $("sheetBack").classList.add("show");
-          $("sheetBack").setAttribute("aria-hidden","false");
-        },
-        close(){
-          $("sheetBack").classList.remove("show");
-          $("sheetBack").setAttribute("aria-hidden","true");
-          core.selectedTxId = null;
-        }
-      };
-
-      function pct(part, total){
-        const p = money.n(part), t = money.n(total);
-        if (!t) return "0%";
-        return Math.round((p / t) * 100) + "%";
-      }
-
-      const query = {
-        type: "all",
-        run(){
-          const q = ($("qSearch").value || "").toLowerCase();
-          const qs = $("qStart").value || "";
-          const qe = $("qEnd").value || "";
-
-          const out = $("qRes");
-          out.innerHTML = "";
-
-          const list = core.db
-            .slice()
-            .sort((a,b) => (b.ts || 0) - (a.ts || 0))
-            .filter(e => {
-              const hay = [
-                e.name, e.merchant, e.category, e.note,
-                e.debtor, e.creditor, e.goal, e.user
-              ].filter(Boolean).join(" ").toLowerCase();
-
-              const matchText = hay.includes(q);
-
-              const matchType =
-                (this.type === "all") ||
-                (this.type === "income" && e.type === "income") ||
-                (this.type === "expense" && e.type === "expense") ||
-                (this.type === "asset" && e.type === "asset") ||
-                (this.type === "fiduciary" && e.type === "fiduciary") ||
-                (this.type === "iou" && (e.type === "creditor" || e.type === "debtor" || e.type === "credit_settlement" || e.type === "debt_repayment"));
-
-              const matchDate = (!qs || e.date >= qs) && (!qe || e.date <= qe);
-
-              return matchText && matchType && matchDate;
-            });
-
-          list.forEach(e => out.appendChild(render.txLine(e, true)));
-        }
-      };
-
-      const render = {
-        set(id, v){ $(id).textContent = money.fmt(v); },
-
-        txLine(e, withTime=false){
-          const wrap = document.createElement("div");
-          wrap.className = "tx-row row";
-          wrap.tabIndex = 0;
-          wrap.dataset.tx = e.id;
-
-          const left = document.createElement("div");
-          left.className = "tx-left";
-
-          const title = document.createElement("div");
-          title.className = "tx-title";
-          title.textContent = (e.name || "").toUpperCase();
-
-          const sub = document.createElement("div");
-          sub.className = "tx-sub";
-
-          const parts = [];
-          if (withTime) parts.push(time.ymdhm(e.ts));
-          else parts.push(e.date || time.ymd(e.ts));
-
-          // extra hints for expense
-          if (e.type === "expense") {
-            if (e.category) parts.push(e.category);
-            if (e.merchant) parts.push(e.merchant);
-            if (e.bucket) parts.push("• " + e.bucket.toUpperCase());
-          }
-
-          // IOU label
-          if (e.type === "creditor") parts.push("Borrowed");
-          if (e.type === "debtor") parts.push("Lent");
-          if (e.type === "credit_settlement") parts.push("Paid IOU");
-          if (e.type === "debt_repayment") parts.push("Recovered IOU");
-
-          sub.textContent = parts.join(" • ");
-
-          left.appendChild(title);
-          left.appendChild(sub);
-
-          const right = document.createElement("div");
-          right.className = "tx-right";
-
-          const amt = document.createElement("div");
-          amt.className = "tx-amt maskable";
-
-          // sign vibe
-          const a = core.entryAmt(e);
-          if (e.type === "expense") amt.textContent = "− " + money.fmt(a);
-          else if (e.type === "income") amt.textContent = "+ " + money.fmt(a);
-          else amt.textContent = money.fmt(a);
-
-          const badge = core.badgeFor(e);
-          const pill = document.createElement("div");
-          pill.className = badge.cls;
-          pill.textContent = badge.text;
-
-          right.appendChild(amt);
-          right.appendChild(pill);
-
-          wrap.appendChild(left);
-          wrap.appendChild(right);
-
-          return wrap;
-        },
-
-        // Group audit entries into Today/Yesterday/This Week/Last Week/Month buckets
-        groupAudit(list){
-          const now = Date.now();
-          const today0 = time.startOfDay(now);
-          const yest0 = today0 - 86400000;
-          const week0 = time.weekStart(now);
-          const lastWeek0 = week0 - 7*86400000;
-
-          const buckets = new Map();
-
-          const put = (key, label, e) => {
-            if (!buckets.has(key)) buckets.set(key, { key, label, items: [], expTotal: 0, catTotals: {} });
-            const b = buckets.get(key);
-            b.items.push(e);
-
-            if (e.type === "expense") {
-              const out = Math.abs(money.n(e.total));
-              b.expTotal += out;
-              const cat = e.category || "Other";
-              b.catTotals[cat] = (b.catTotals[cat] || 0) + out;
-            }
-          };
-
-          list.forEach(e => {
-            const ts = e.ts || Date.now();
-            if (ts >= today0) put("A_TODAY", "Today", e);
-            else if (ts >= yest0) put("B_YEST", "Yesterday", e);
-            else if (ts >= week0) put("C_WEEK", "This Week", e);
-            else if (ts >= lastWeek0) put("D_LWEEK", "Last Week", e);
-            else {
-              const mk = time.monthKey(ts);
-              put("M_" + mk, mk, e);
-            }
-          });
-
-          // sort bucket keys: fixed order first, then months desc
-          const keys = Array.from(buckets.keys());
-          const fixed = ["A_TODAY","B_YEST","C_WEEK","D_LWEEK"];
-          const fixedPresent = fixed.filter(k => buckets.has(k));
-          const months = keys.filter(k => k.startsWith("M_")).sort((a,b) => b.localeCompare(a));
-          return fixedPresent.concat(months).map(k => buckets.get(k));
-        },
-
-        sectionHeader(bucket){
-          const wrap = document.createElement("div");
-          wrap.className = "section";
-
-          const top = document.createElement("div");
-          top.className = "section-top";
-
-          const title = document.createElement("div");
-          title.className = "section-title";
-          title.textContent = bucket.label;
-
-          const total = document.createElement("div");
-          total.className = "tiny";
-          total.style.color = "rgba(239,68,68,.9)";
-          total.textContent = "Today total expenses: " + money.fmt(bucket.expTotal);
-
-          // for month/week labels, keep same pattern but remove "Today" word
-          if (bucket.label !== "Today") total.textContent = bucket.label + " total expenses: " + money.fmt(bucket.expTotal);
-
-          top.appendChild(title);
-          top.appendChild(total);
-
-          const sub = document.createElement("div");
-          sub.className = "section-sub";
-
-          // Top 3 categories + "+N more"
-          const entries = Object.entries(bucket.catTotals).sort((a,b) => b[1]-a[1]);
-          if (entries.length === 0) {
-            sub.innerHTML = `<span class="muted">No expenses in this period</span>`;
-          } else {
-            const top3 = entries.slice(0,3);
-            top3.forEach(([cat, val], idx) => {
-              const chip = document.createElement("span");
-              chip.className = "mini-pill";
-              chip.textContent = `${cat} ${money.fmt(val)}`;
-              sub.appendChild(chip);
-              if (idx < top3.length - 1) {
-                const dot = document.createElement("span");
-                dot.className = "dot";
-                dot.textContent = "";
-              }
-            });
-            if (entries.length > 3) {
-              const more = document.createElement("span");
-              more.className = "muted";
-              more.textContent = `+${entries.length - 3} more`;
-              sub.appendChild(more);
-            }
-          }
-
-          wrap.appendChild(top);
-          wrap.appendChild(sub);
-          return wrap;
-        },
-
-        all(){
-          // totals
-          let nw=0, b=0, s=0, l=0, assets=0, exp=0;
-          let debtorsTotal=0, creditorsTotal=0;
-
-          const debtorBal = Object.create(null);
-          const creditorBal = Object.create(null);
-
-          // sort newest first
-          const list = core.db.slice().sort((a,b) => (b.ts||0)-(a.ts||0));
-
-          // clear lists
-          $("expList").innerHTML = "";
-          $("astList").innerHTML = "";
-          $("debList").innerHTML = "";
-          $("credList").innerHTML = "";
-          $("auditList").innerHTML = "";
-
-          // compute & render drawers
-          list.forEach(e => {
-            // IOU books
+          db.push(e);
+          save();
+
+          // UX: clear amount (you asked)
+          dom.byId("e-amount").value = "";
+          dom.byId("e-name").value = "";
+
+          // haptics + toast
+          haptics.med();
+          const b = classifyBadge(e);
+          toast.show("Saved", `${b.txt} • ${money.fmt(Math.abs(entryAmount(e)))}`);
+
+          VaultUI.changeView("dashboard-view");
+        };
+
+        const duplicate = (id) => {
+          const src = db.find(x => x.id === id);
+          if (!src) return;
+          const now = new Date();
+          const copy = { ...src };
+          copy.id = makeId();
+          copy.date = nowISO();
+          copy.time = String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0");
+          copy.createdAt = now.toISOString();
+          db.push(copy);
+          save();
+          VaultUI.render();
+          toast.show("Duplicated", copy.name || "Transaction");
+        };
+
+        const personBalances = () => {
+          // Build outstanding balances by name
+          const debtorBal = Object.create(null);   // owed to you
+          const creditorBal = Object.create(null); // you owe
+
+          db.forEach(e => {
+            if (!e) return;
             if (e.type === "debtor" || e.type === "debt_repayment") {
               const who = e.debtor || e.name || "(unknown)";
-              debtorBal[who] = (debtorBal[who] || 0) + money.n(e.principal);
+              const d = (typeof e.principal === "number") ? e.principal : 0;
+              debtorBal[who] = (debtorBal[who] || 0) + d;
             }
             if (e.type === "creditor" || e.type === "credit_settlement") {
               const who = e.creditor || e.name || "(unknown)";
-              creditorBal[who] = (creditorBal[who] || 0) + money.n(e.principal);
-            }
-
-            // Net worth / cash (loan totals are always 0)
-            nw += money.n(e.total);
-            b += money.n(e.b);
-            s += money.n(e.s);
-            l += money.n(e.l);
-
-            if (e.type === "expense") {
-              exp += Math.abs(money.n(e.total));
-              $("expList").appendChild(this.txLine(e));
-            }
-            if (e.type === "asset") {
-              assets += money.n(e.total);
-              $("astList").appendChild(this.txLine(e));
+              const d = (typeof e.principal === "number") ? e.principal : 0;
+              creditorBal[who] = (creditorBal[who] || 0) + d;
             }
           });
 
-          // debtors/creditors summaries
-          Object.entries(debtorBal).forEach(([name, bal]) => {
-            if (!bal) return;
-            debtorsTotal += bal;
-            const e = { id: "DB_"+name, ts: Date.now(), date: time.ymd(Date.now()), type:"debtor", name, principal: bal };
-            const row = this.txLine(e);
-            row.dataset.tx = ""; // not a real transaction; no details
-            row.style.cursor = "default";
-            row.tabIndex = -1;
-            $("debList").appendChild(row);
-          });
+          // Return arrays sorted by biggest absolute
+          const debtors = Object.entries(debtorBal)
+            .map(([name, bal]) => ({ name, bal }))
+            .filter(x => x.bal !== 0)
+            .sort((a,b) => Math.abs(b.bal) - Math.abs(a.bal));
 
-          Object.entries(creditorBal).forEach(([name, bal]) => {
-            if (!bal) return;
-            creditorsTotal += bal;
-            const e = { id: "CR_"+name, ts: Date.now(), date: time.ymd(Date.now()), type:"creditor", name, principal: bal };
-            const row = this.txLine(e);
-            row.dataset.tx = "";
-            row.style.cursor = "default";
-            row.tabIndex = -1;
-            $("credList").appendChild(row);
-          });
+          const creditors = Object.entries(creditorBal)
+            .map(([name, bal]) => ({ name, bal }))
+            .filter(x => x.bal !== 0)
+            .sort((a,b) => Math.abs(b.bal) - Math.abs(a.bal));
 
-          const cash = b+s+l;
+          return { debtors, creditors };
+        };
 
-          this.set("nw", nw);
-          this.set("cashSplit", cash);
-          this.set("assetSplit", assets);
-          this.set("debtSplit", (debtorsTotal - creditorsTotal));
+        return {
+          load, save,
+          db: () => db,
+          config: () => config,
+          hasPin,
+          savePin,
+          verifyPin,
+          exportAll,
+          importAll,
+          deleteById,
+          wipe,
+          setQType,
+          setFdView,
+          toggleSetting,
+          entryAmount,
+          iouType,
+          classifyBadge,
 
-          this.set("liq", cash);
-          this.set("bills", b);
-          this.set("save", s);
-          this.set("spend", l);
+          // form
+          get activeType(){ return activeType; },
+          get settlementFlag(){ return settlementFlag; },
+          setActiveType,
+          setSettlement,
+          normalizeFluid,
+          execute,
+          duplicate,
+          personBalances
+        };
+      })();
 
-          this.set("expT", exp);
-          this.set("astT", assets);
-          this.set("debT", debtorsTotal);
-          this.set("credT", creditorsTotal);
+      /* ---------- Bottom Sheet (details) ---------- */
+      const Sheet = (() => {
+        let openId = null;
 
-          // audit trail grouped + subtotals
-          const filter = ($("auditFilter").value || "").toLowerCase();
-          const auditItems = list.filter(e => {
-            const hay = [
-              e.name, e.merchant, e.category, e.note,
-              e.debtor, e.creditor, e.goal, e.user,
-              e.type
-            ].filter(Boolean).join(" ").toLowerCase();
-            return !filter || hay.includes(filter);
-          });
-
-          const buckets = this.groupAudit(auditItems);
-          buckets.forEach(bucket => {
-            $("auditList").appendChild(this.sectionHeader(bucket));
-            bucket.items.forEach(e => $("auditList").appendChild(this.txLine(e, true)));
-          });
-        }
-      };
-
-      // --- EVENTS (delegation = no frozen click issues) ---
-      function bindEvents(){
-        // topbar
-        $("btnQuery").addEventListener("click", () => { ui.vibrate(8); views.show("query"); });
-        $("btnStealth").addEventListener("click", () => { ui.vibrate(6); document.body.classList.toggle("stealth-active"); });
-        $("btnSettings").addEventListener("click", () => { ui.vibrate(8); views.show("settings"); });
-
-        // open drawers by clicking card head (delegated)
-        document.addEventListener("click", (ev) => {
-          const head = ev.target.closest(".card-head");
-          if (head && head.parentElement?.classList.contains("card") && head.parentElement?.dataset.drawer) {
-            ui.vibrate(6);
-            head.parentElement.classList.toggle("open");
-          }
-        });
-
-        // keyboard open drawers
-        document.addEventListener("keydown", (ev) => {
-          if (ev.key !== "Enter" && ev.key !== " ") return;
-          const head = ev.target.closest(".card-head");
-          if (head && head.parentElement?.dataset.drawer) {
-            ev.preventDefault();
-            ui.vibrate(6);
-            head.parentElement.classList.toggle("open");
-          }
-        });
-
-        // audit row click -> sheet
-        document.addEventListener("click", (ev) => {
-          const row = ev.target.closest(".tx-row");
-          if (!row) return;
-          const id = row.dataset.tx;
-          if (!id) return; // non-clickable summary rows
-          const e = core.db.find(x => x.id === id);
+        const show = (entryId) => {
+          const e = VaultCore.db().find(x => x.id === entryId);
           if (!e) return;
-          ui.vibrate(8);
-          sheet.open(e);
-        });
 
-        // sheet close
-        $("closeSheet").addEventListener("click", () => sheet.close());
-        $("sheetBack").addEventListener("click", (ev) => {
-          if (ev.target === $("sheetBack")) sheet.close();
-        });
+          openId = entryId;
 
-        // grid
-        $("closeGrid").addEventListener("click", () => { ui.vibrate(6); views.show("dash"); render.all(); });
-        document.querySelectorAll("[data-open]").forEach(btn => {
-          btn.addEventListener("click", () => {
-            const t = btn.getAttribute("data-open");
-            ui.vibrate(8);
-            core.activeType = t;
-            core.settlement = false;
-            views.show("form");
-            form.build();
+          const badge = VaultCore.classifyBadge(e);
+
+          dom.byId("sheet-name").textContent = e.name || "Transaction";
+          dom.byId("sheet-meta").textContent = `${(e.date||"")} • ${(e.time||"")} • ${(badge.txt||"").toUpperCase()}`;
+
+          const body = dom.byId("sheet-body");
+          dom.clear(body);
+
+          // Rows: date/time, type badge, category/tags, bucket, notes, amount, people, term/rate
+          const add = (k, v) => {
+            const row = dom.el("div","row");
+            row.appendChild(dom.el("span", null, k));
+            row.appendChild(dom.el("span", "font-black", v));
+            body.appendChild(row);
+          };
+
+          const amt = Math.abs(VaultCore.entryAmount(e));
+          add("Amount", money.fmt(amt));
+
+          // Type badge
+          const rowT = dom.el("div","row");
+          rowT.appendChild(dom.el("span", null, "Type"));
+          const r = dom.el("span", badge.cls, badge.txt);
+          rowT.appendChild(r);
+          body.appendChild(rowT);
+
+          add("Date", e.date || "");
+          add("Time", e.time || "");
+
+          if (e.type === "expense") {
+            add("Category", e.category || "—");
+            add("Bucket", (e.bucket || "spend").toUpperCase());
+          }
+          if (e.type === "asset") add("Asset class", e.cat || "Other");
+
+          if (e.type === "debtor" || e.type === "debt_repayment") add("Debtor", e.debtor || e.name || "—");
+          if (e.type === "creditor" || e.type === "credit_settlement") add("Creditor", e.creditor || e.name || "—");
+
+          if (e.rate) add("Rate", String(e.rate));
+          if (e.term) add("Term", String(e.term));
+
+          if (e.type === "fiduciary") {
+            add("Goal", e.goal || "—");
+            add("User", e.user || "—");
+          }
+
+          // Buttons
+          dom.byId("sheet-del").onclick = () => {
+            if (!confirm("Delete this entry?")) return;
+            Sheet.hide();
+            VaultCore.deleteById(entryId);
+          };
+
+          dom.byId("sheet-dup").onclick = () => {
+            VaultCore.duplicate(entryId);
+            toast.show("Duplicated", e.name || "Transaction");
+          };
+
+          // show sheet
+          dom.byId("sheet-backdrop").classList.add("show");
+          dom.byId("sheet").classList.add("show");
+          haptics.light();
+        };
+
+        const hide = () => {
+          openId = null;
+          dom.byId("sheet-backdrop").classList.remove("show");
+          dom.byId("sheet").classList.remove("show");
+        };
+
+        const bind = () => {
+          dom.byId("sheet-backdrop").addEventListener("click", hide);
+          // allow ESC close
+          window.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") hide();
           });
-        });
+        };
 
-        // form close
-        $("closeForm").addEventListener("click", () => { ui.vibrate(6); views.show("grid"); });
-        $("exec").addEventListener("click", () => { ui.vibrate(10); core.execute(); });
+        return { show, hide, bind };
+      })();
 
-        // query close
-        $("closeQuery").addEventListener("click", () => { ui.vibrate(6); views.show("dash"); render.all(); });
+      /* ---------- UI ---------- */
+      const VaultUI = (() => {
+        const views = ["dashboard-view","entry-grid","entry-form","settings-view","query-lab"];
 
-        // query filters
-        $("qSearch").addEventListener("input", () => query.run());
-        $("qStart").addEventListener("change", () => query.run());
-        $("qEnd").addEventListener("change", () => query.run());
+        const setMoneyText = (id, value) => {
+          const el = dom.byId(id);
+          if (!el) return;
+          el.textContent = money.fmt(value);
+        };
 
-        document.querySelectorAll("[data-q]").forEach(btn => {
-          btn.addEventListener("click", () => {
-            ui.vibrate(6);
-            query.type = btn.getAttribute("data-q");
-            query.run();
+        const toggleDrawer = (cardId) => {
+          const card = dom.byId(cardId);
+          if (!card) return;
+          card.classList.toggle("drawer-open");
+          haptics.light();
+        };
+
+        const updateFab = (viewId) => {
+          const f = dom.byId("nav-fab");
+          if (viewId === "dashboard-view") {
+            f.className = "fab primary";
+            f.setAttribute("aria-label","Add");
+            f.innerHTML = `<span class="ic" data-ic="plus"></span>`;
+            icons.mount();
+            f.onclick = () => VaultUI.changeView("entry-grid");
+          } else {
+            f.className = "fab back";
+            f.setAttribute("aria-label","Back");
+            f.innerHTML = `<span class="ic muted" data-ic="arrowLeft"></span>`;
+            // add arrowLeft svg on demand (small trick)
+            const el = f.querySelector("[data-ic]");
+            if (el) el.innerHTML = `<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg>`;
+            f.onclick = () => VaultUI.changeView("dashboard-view");
+          }
+        };
+
+        const periodLabel = (isoDate) => {
+          // Compare by local date
+          const d = new Date(isoDate + "T00:00:00");
+          const now = new Date();
+          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          const that = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+          const diffDays = Math.round((today - that) / (24*60*60*1000));
+          if (diffDays === 0) return "Today";
+          if (diffDays === 1) return "Yesterday";
+          if (diffDays <= 7) return "Last 7 days";
+          if (diffDays <= 30) return "Last 30 days";
+          // Month label
+          const visible = d.toLocaleString(undefined, { month: "long", year: "numeric" });
+          return visible;
+        };
+
+        const badgeFor = (e) => {
+          const b = VaultCore.classifyBadge(e);
+          return `<span class="${b.cls}">${b.txt}</span>`;
+        };
+
+        const typeForQuery = (e, qtype) => {
+          if (qtype === "all") return true;
+          if (qtype === "iou") return VaultCore.iouType(e.type);
+          return e.type === qtype;
+        };
+
+        const rowForList = (e, context) => {
+          // A tappable row that opens details
+          // context: "audit" | "query" | "expenses" | "assets" | "iou"
+          const wrap = dom.el("div", "row tap");
+          wrap.dataset.open = e.id;
+
+          const left = dom.el("div", "flex-col");
+          left.style.gap = "6px";
+
+          const top = dom.el("div","flex items-center justify-between");
+          top.style.gap = "10px";
+
+          const name = dom.el("span", null, (e.name || "").toUpperCase());
+          name.style.maxWidth = "64%";
+          name.style.whiteSpace = "nowrap";
+          name.style.overflow = "hidden";
+          name.style.textOverflow = "ellipsis";
+
+          const amt = dom.el("span","font-black", money.fmt(Math.abs(VaultCore.entryAmount(e))));
+          if (e.type === "expense") amt.style.color = "rgba(239,68,68,.92)";
+          if (e.type === "income") amt.style.color = "rgba(16,185,129,.92)";
+          if (e.type === "asset") amt.style.color = "rgba(59,130,246,.92)";
+          if (VaultCore.iouType(e.type)) amt.style.color = "rgba(234,179,8,.92)";
+
+          top.appendChild(name);
+          top.appendChild(amt);
+
+          const meta = dom.el("div","flex items-center gap-2");
+          meta.innerHTML = `
+            ${badgeFor(e)}
+            <span class="tiny">${(e.date||"")} • ${(e.time||"")}</span>
+          `;
+
+          left.appendChild(top);
+          left.appendChild(meta);
+
+          wrap.appendChild(left);
+          // right chevron
+          const ch = dom.el("span","ic muted");
+          ch.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"></path></svg>`;
+          wrap.appendChild(ch);
+
+          return wrap;
+        };
+
+        const categoryMini = (expenses) => {
+          // expenses: array of expense entries (type expense) in the section
+          const totals = Object.create(null);
+          for (const e of expenses) {
+            const cat = (e.category || "Other").trim() || "Other";
+            const amt = Math.abs(money.num(e.total));
+            totals[cat] = (totals[cat] || 0) + amt;
+          }
+          const arr = Object.entries(totals)
+            .sort((a,b) => b[1]-a[1])
+            .slice(0,3); // top 3 to avoid clutter
+
+          return arr.map(([c,v]) => `<span class="pill">${c} ${money.fmt(v)}</span>`).join("");
+        };
+
+        const buildSection = (label, entries) => {
+          // Section header with subtotal + mini summary
+          const sec = dom.el("div","sec");
+          const hdr = dom.el("div","hdr");
+
+          // subtotal: expenses only inside this period (as requested "Today total expenses")
+          const expenses = entries.filter(e => e.type === "expense");
+          const expTotal = expenses.reduce((a,e) => a + Math.abs(money.num(e.total)), 0);
+
+          hdr.appendChild(dom.el("div","label", label));
+          hdr.appendChild(dom.el("div","subtotal", `Expenses ${money.fmt(expTotal)}`));
+          sec.appendChild(hdr);
+
+          const mini = dom.el("div","mini");
+          mini.innerHTML = categoryMini(expenses);
+          if (mini.innerHTML.trim()) sec.appendChild(mini);
+
+          return sec;
+        };
+
+        const renderAudit = (list, filterText) => {
+          const container = dom.byId("hi-list");
+          dom.clear(container);
+
+          // group by period label
+          const groups = new Map(); // label -> entries
+          for (const e of list) {
+            const lbl = periodLabel(e.date || "");
+            if (!groups.has(lbl)) groups.set(lbl, []);
+            groups.get(lbl).push(e);
+          }
+
+          // order groups: Today, Yesterday, Last 7, Last 30, then months (already in list order)
+          const preferred = ["Today","Yesterday","Last 7 days","Last 30 days"];
+          const ordered = [];
+          for (const p of preferred) if (groups.has(p)) ordered.push([p, groups.get(p)]);
+          // remaining keys
+          for (const [k,v] of groups.entries()) {
+            if (!preferred.includes(k)) ordered.push([k,v]);
+          }
+
+          for (const [label, entries] of ordered) {
+            // section header
+            container.appendChild(buildSection(label, entries));
+
+            // entries
+            for (const e of entries) {
+              const nm = (e.name||"").toLowerCase();
+              if (filterText && !nm.includes(filterText)) continue;
+              container.appendChild(rowForList(e, "audit"));
+            }
+          }
+        };
+
+        const renderLists = () => {
+          const db = VaultCore.db();
+
+          // totals
+          let nw=0, b=0, s=0, l=0, as=0, fd=0, ex=0;
+          let debtorsTotal=0, creditorsTotal=0;
+
+          // outstanding balances
+          const debtorBal = Object.create(null);
+          const creditorBal = Object.create(null);
+
+          // clear drawers
+          ["as-list","db-list","cr-list","fd-pivot-list","ex-list"].forEach(id => dom.clear(dom.byId(id)));
+
+          // fiduciary pivot
+          const piv = {};
+          const fView = VaultCore.config().fdView;
+          dom.byId("fd-v-goal").className = "seg-btn " + (fView==="goal" ? "active green" : "");
+          dom.byId("fd-v-user").className = "seg-btn " + (fView==="user" ? "active green" : "");
+
+          // prepare audit list newest first, by createdAt fallback date/time
+          const listNewest = db.slice().sort((a,b) => String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+
+          // collect for audit render
+          const hiS = (dom.byId("hi-search").value || "").toLowerCase();
+
+          // iterate newest-first for lists too
+          for (const e of listNewest) {
+            if (!e) continue;
+
+            // IOU ledger (does NOT affect nw/cash)
+            if (e.type === "debtor" || e.type === "debt_repayment") {
+              const who = e.debtor || e.name || "(unknown)";
+              const delta = (typeof e.principal === "number") ? e.principal : 0;
+              debtorBal[who] = (debtorBal[who]||0) + delta;
+            }
+            if (e.type === "creditor" || e.type === "credit_settlement") {
+              const who = e.creditor || e.name || "(unknown)";
+              const delta = (typeof e.principal === "number") ? e.principal : 0;
+              creditorBal[who] = (creditorBal[who]||0) + delta;
+            }
+
+            // fiduciary totals
+            if (e.type === "fiduciary") {
+              fd += money.num(e.total);
+              const main = fView==="goal" ? (e.goal||"(no goal)") : (e.user||"(no user)");
+              const sub  = fView==="goal" ? (e.user||"(no user)") : (e.goal||"(no goal)");
+              if (!piv[main]) piv[main] = { t:0, subs:[] };
+              piv[main].t += money.num(e.total);
+              piv[main].subs.push({ n: sub, a: money.num(e.total) });
+            }
+
+            // net worth + cash buckets for "real money" entries only (loan entries have total=0)
+            nw += money.num(e.total);
+            b += money.num(e.b);
+            s += money.num(e.s);
+            l += money.num(e.l);
+
+            // expenses list (tappable)
+            if (e.type === "expense") {
+              ex += Math.abs(money.num(e.total));
+              dom.byId("ex-list").appendChild(rowForList(e, "expenses"));
+            }
+
+            // assets list (tappable)
+            if (e.type === "asset") {
+              as += money.num(e.total);
+              dom.byId("as-list").appendChild(rowForList(e, "assets"));
+            }
+          }
+
+          // render IOU people lists (intuitive and tappable)
+          const debtArr = Object.entries(debtorBal)
+            .map(([name,bal]) => ({name,bal}))
+            .filter(x=>x.bal!==0)
+            .sort((a,b)=>Math.abs(b.bal)-Math.abs(a.bal));
+          const credArr = Object.entries(creditorBal)
+            .map(([name,bal]) => ({name,bal}))
+            .filter(x=>x.bal!==0)
+            .sort((a,b)=>Math.abs(b.bal)-Math.abs(a.bal));
+
+          for (const p of debtArr) {
+            debtorsTotal += p.bal;
+            const fake = {
+              id: "__iou_debtor__" + p.name,
+              name: p.name,
+              type: "debtor",
+              principal: p.bal,
+              date: "",
+              time: "",
+              createdAt: ""
+            };
+            const row = dom.el("div","row tap");
+            row.onclick = () => VaultUI.showIouPerson("debtor", p.name);
+            row.innerHTML = `<span>${p.name.toUpperCase()}</span><span class="font-black text-emerald">${money.fmt(p.bal)}</span>`;
+            dom.byId("db-list").appendChild(row);
+          }
+
+          for (const p of credArr) {
+            creditorsTotal += p.bal;
+            const row = dom.el("div","row tap");
+            row.onclick = () => VaultUI.showIouPerson("creditor", p.name);
+            row.innerHTML = `<span>${p.name.toUpperCase()}</span><span class="font-black text-red">${money.fmt(p.bal)}</span>`;
+            dom.byId("cr-list").appendChild(row);
+          }
+
+          // fiduciary pivot render
+          const pivotEl = dom.byId("fd-pivot-list");
+          dom.clear(pivotEl);
+          Object.keys(piv).forEach(k => {
+            const card = dom.el("div","p-4 mb-2 glass-panel");
+            card.style.borderRadius = "14px";
+
+            const head = dom.el("div","flex justify-between items-center");
+            const lft = dom.el("span","font-black text-xs uppercase text-yellow", k);
+            const rgt = dom.el("span","font-black text-xs uppercase text-yellow", money.fmt(piv[k].t));
+            head.appendChild(lft); head.appendChild(rgt);
+
+            const sub = dom.el("div","text-xs");
+            sub.style.marginTop = "10px";
+            sub.style.opacity = ".75";
+            piv[k].subs.slice(0,6).forEach(sb => {
+              const line = dom.el("div","flex justify-between");
+              line.style.padding = "6px 0";
+              line.innerHTML = `<span>${String(sb.n).toUpperCase()}</span><span>${money.fmt(sb.a)}</span>`;
+              sub.appendChild(line);
+            });
+
+            card.appendChild(head);
+            card.appendChild(sub);
+            pivotEl.appendChild(card);
           });
-        });
 
-        // settings close
-        $("closeSettings").addEventListener("click", () => { ui.vibrate(6); views.show("dash"); render.all(); });
+          // dashboard values
+          const cashTotal = b+s+l;
+          setMoneyText("nw-display", nw);
+          setMoneyText("split-cash", cashTotal);
+          setMoneyText("split-as", as);
+          setMoneyText("split-db", (debtorsTotal - creditorsTotal)); // IOU net
 
-        // settings toggles
-        $("pinToggle").addEventListener("change", () => {
-          core.cfg.reqPin = $("pinToggle").checked;
-          core.save();
-          ui.toast("success","Settings","Updated");
-          ui.vibrate(8);
-        });
+          setMoneyText("tc-display", cashTotal);
+          setMoneyText("b-total", b);
+          setMoneyText("s-total", s);
+          setMoneyText("l-total", l);
 
-        $("hapToggle").addEventListener("change", () => {
-          core.cfg.haptics = $("hapToggle").checked;
-          core.save();
-          ui.toast("success","Settings","Updated");
-          ui.vibrate(10);
-        });
+          setMoneyText("ex-display", ex);
+          setMoneyText("as-display", as);
+          setMoneyText("db-display", debtorsTotal);
+          setMoneyText("cr-display", creditorsTotal);
+          setMoneyText("fd-display", fd);
 
-        $("savePin").addEventListener("click", async () => {
-          ui.vibrate(10);
-          await core.savePin();
-        });
+          // audit trail grouped by period, newest first
+          renderAudit(listNewest, hiS);
 
-        $("backup").addEventListener("click", () => core.exportAll());
-        $("restore").addEventListener("click", () => $("file").click());
-        $("file").addEventListener("change", (ev) => {
-          const f = ev.target.files?.[0];
-          if (f) core.importAll(f);
-          ev.target.value = "";
-        });
+          // attach tap handlers to any newly-rendered rows via delegation (prevents "frozen clicks")
+          // (delegation is done in init() once; nothing else needed here)
+        };
 
-        $("reset").addEventListener("click", () => core.wipe());
+        const buildPicker = (mode) => {
+          // mode: "debtor" (recover debt) or "creditor" (pay debt)
+          const { debtors, creditors } = VaultCore.personBalances();
+          const list = (mode === "debtor") ? debtors : creditors;
 
-        // audit filter
-        $("auditFilter").addEventListener("input", () => render.all());
+          const wrap = dom.byId("picker-wrap");
+          const box = dom.byId("picker-list");
+          dom.clear(box);
 
-        // auth
-        $("authBtn").addEventListener("click", async () => {
-          const pin = ($("authPin").value || "").trim();
-          const ok = await core.verifyPin(pin);
-          if (!ok) { ui.toast("error","PIN","Wrong PIN"); ui.vibrate(30); return; }
-          $("authPin").value = "";
-          $("auth").classList.remove("show");
-          ui.toast("success","Welcome","Vault unlocked");
-          ui.vibrate(12);
-          render.all();
-        });
-      }
+          if (!list.length) {
+            wrap.classList.add("hidden");
+            return;
+          }
 
-      // --- INIT ---
-      function init(){
-        core.load();
-        bindEvents();
+          wrap.classList.remove("hidden");
 
-        // apply settings UI
-        $("pinToggle").checked = !!core.cfg.reqPin;
-        $("hapToggle").checked = !!core.cfg.haptics;
+          // show up to 8 for neatness
+          list.slice(0,8).forEach(p => {
+            const row = dom.el("div","row tap");
+            row.style.padding = "10px 0";
+            row.innerHTML = `
+              <span>${p.name.toUpperCase()}</span>
+              <span class="font-black ${mode==="debtor" ? "text-emerald" : "text-red"}">${money.fmt(Math.abs(p.bal))}</span>
+            `;
+            row.onclick = () => {
+              dom.byId("e-name").value = p.name;
+              haptics.light();
+              toast.show("Selected", `${p.name.toUpperCase()} • ${money.fmt(Math.abs(p.bal))}`, { ms: 1600 });
+            };
+            box.appendChild(row);
+          });
+        };
 
-        // auth gate
-        if (core.cfg.reqPin && core.hasPin()) {
-          $("auth").classList.add("show");
-          $("authHint").textContent = "PIN required";
-          fab.update("dash");
-          return;
-        }
+        return {
+          init(){
+            VaultCore.load();
+            icons.mount();
+            Sheet.bind();
 
-        // initial view
-        views.show("dash");
-        render.all();
+            // Top bar
+            dom.byId("btn-query").addEventListener("click", () => VaultUI.changeView("query-lab"));
+            dom.byId("btn-stealth").addEventListener("click", () => { document.body.classList.toggle("stealth-active"); haptics.light(); });
+            dom.byId("btn-settings").addEventListener("click", () => VaultUI.changeView("settings-view"));
 
-        // prevent silent "freeze": surface errors
-        window.addEventListener("error", (e) => {
-          console.error(e.error || e.message);
-          ui.toast("error","Error","Open console for details");
-        });
-      }
+            // Drawer toggles (fix frozen clicks: explicit listeners + delegation-safe)
+            document.querySelectorAll("[data-toggle]").forEach(el => {
+              el.addEventListener("click", () => toggleDrawer(el.getAttribute("data-toggle")));
+            });
 
-      window.addEventListener("load", init);
+            // Entry grid
+            dom.byId("btn-close-grid").addEventListener("click", () => VaultUI.changeView("dashboard-view"));
+            document.querySelectorAll("[data-open-form]").forEach(btn => {
+              btn.addEventListener("click", () => VaultUI.openForm(btn.getAttribute("data-open-form")));
+            });
+
+            // Close overlays
+            dom.byId("btn-close-form").addEventListener("click", () => VaultUI.changeView("entry-grid"));
+            dom.byId("btn-close-query").addEventListener("click", () => VaultUI.changeView("dashboard-view"));
+            dom.byId("btn-close-settings").addEventListener("click", () => VaultUI.changeView("dashboard-view"));
+
+            // Fluid sanity
+            ["fluid-bills","fluid-save","fluid-spend"].forEach(id => {
+              dom.byId(id).addEventListener("input", () => VaultCore.normalizeFluid());
+            });
+
+            // Execute
+            dom.byId("btn-exec").addEventListener("click", () => VaultCore.execute());
+
+            // Audit filter
+            dom.byId("hi-search").addEventListener("input", () => VaultUI.render());
+
+            // Query controls
+            dom.byId("q-search").addEventListener("input", () => VaultUI.runQuery());
+            dom.byId("q-start").addEventListener("change", () => VaultUI.runQuery());
+            dom.byId("q-end").addEventListener("change", () => VaultUI.runQuery());
+            dom.byId("btn-q-clear").addEventListener("click", () => { dom.byId("q-search").value=""; VaultUI.runQuery(); });
+
+            document.querySelectorAll("[data-qtype]").forEach(pill => {
+              pill.addEventListener("click", () => {
+                document.querySelectorAll("[data-qtype]").forEach(x => x.classList.remove("active"));
+                pill.classList.add("active");
+                VaultCore.setQType(pill.getAttribute("data-qtype"));
+                VaultUI.runQuery();
+                haptics.light();
+              });
+            });
+
+            // Fiduciary view
+            dom.byId("fd-v-goal").addEventListener("click", () => VaultCore.setFdView("goal"));
+            dom.byId("fd-v-user").addEventListener("click", () => VaultCore.setFdView("user"));
+
+            // Settings
+            dom.byId("tog-pin").checked = !!VaultCore.config().reqPin;
+            dom.byId("tog-pin").addEventListener("change", () => VaultCore.toggleSetting("reqPin"));
+            dom.byId("btn-save-pin").addEventListener("click", async () => VaultCore.savePin());
+
+            dom.byId("btn-backup").addEventListener("click", () => VaultCore.exportAll());
+            dom.byId("btn-restore").addEventListener("click", () => dom.byId("file-input").click());
+            dom.byId("file-input").addEventListener("change", (ev) => {
+              const file = ev.target.files?.[0];
+              if (file) VaultCore.importAll(file);
+              ev.target.value = "";
+            });
+            dom.byId("btn-reset").addEventListener("click", () => VaultCore.wipe());
+
+            // Unlock
+            dom.byId("btn-unlock").addEventListener("click", () => VaultUI.authenticate());
+
+            // Global delegation: tap any rendered row (audit/query/expenses/assets) to open details
+            document.body.addEventListener("click", (ev) => {
+              const row = ev.target.closest("[data-open]");
+              if (!row) return;
+              const id = row.getAttribute("data-open");
+              if (!id) return;
+              Sheet.show(id);
+            });
+
+            // FAB
+            updateFab("dashboard-view");
+
+            // Auth gate
+            const cfg = VaultCore.config();
+            if (cfg.reqPin && VaultCore.hasPin()) {
+              dom.byId("auth-screen").classList.remove("view-hidden");
+              return;
+            }
+
+            VaultUI.render();
+          },
+
+          async authenticate(){
+            const pin = dom.byId("auth-pin").value || "";
+            const ok = await VaultCore.verifyPin(pin);
+            if (!ok) return toast.show("Access denied", "Wrong PIN");
+            dom.byId("auth-pin").value = "";
+            dom.byId("auth-screen").classList.add("view-hidden");
+            toast.show("Unlocked", "Welcome back");
+            VaultUI.render();
+          },
+
+          changeView(id){
+            views.forEach(v => dom.byId(v)?.classList.add("view-hidden"));
+            dom.byId(id)?.classList.remove("view-hidden");
+            updateFab(id);
+
+            if (id === "query-lab") VaultUI.runQuery();
+            else VaultUI.render();
+          },
+
+          openForm(t){
+            VaultCore.setActiveType(t);
+            VaultUI.changeView("entry-form");
+            VaultUI.updateFormUI();
+          },
+
+          updateFormUI(){
+            // reset amount each time (you asked)
+            dom.byId("e-amount").value = "";
+            dom.byId("e-name").value = "";
+
+            const dyn = dom.byId("dynamic-inputs");
+            dom.clear(dyn helps = dyn); // no-op safety
+
+            const fluid = dom.byId("fluid-container");
+            const tog = dom.byId("settle-toggle-container");
+
+            dyn.innerHTML = "";
+            tog.innerHTML = "";
+            fluid.classList.add("hidden");
+
+            // hide picker by default
+            dom.byId("picker-wrap").classList.add("hidden");
+
+            const type = VaultCore.activeType;
+            const settlement = VaultCore.settlementFlag;
+
+            const buildSeg = (leftLabel, rightLabel, rightColor="yellow") => {
+              const wrap = dom.el("div","seg-control");
+              const left = dom.el("div","seg-btn " + (!settlement ? "active green" : ""), leftLabel);
+              const right = dom.el("div","seg-btn " + (settlement ? "active " + rightColor : ""), rightLabel);
+
+              left.addEventListener("click", () => { VaultCore.setSettlement(false); haptics.light(); });
+              right.addEventListener("click", () => { VaultCore.setSettlement(true); haptics.light(); });
+
+              wrap.appendChild(left);
+              wrap.appendChild(right);
+              tog.appendChild(wrap);
+            };
+
+            if (type === "income") {
+              fluid.classList.remove("hidden");
+              buildSeg("Inflow", "Recover debt");
+
+              // if settlement: show pick list (intuitive dropdown alternative)
+              if (VaultCore.settlementFlag) buildPicker("debtor");
+            }
+
+            else if (type === "expense") {
+              buildSeg("Expense", "Pay debt");
+
+              if (VaultCore.settlementFlag) {
+                buildPicker("creditor");
+              } else {
+                // Category + bucket selectors
+                const cat = dom.el("select","input-ghost");
+                cat.id = "e-exp-cat";
+                cat.innerHTML = `
+                  <option value="">Category (optional)</option>
+                  <option>Food</option>
+                  <option>Transport</option>
+                  <option>Bills</option>
+                  <option>Fuel</option>
+                  <option>Shopping</option>
+                  <option>Health</option>
+                  <option>Family</option>
+                  <option>Other</option>
+                `;
+                const bucket = dom.el("select","input-ghost");
+                bucket.id = "e-exp-bucket";
+                bucket.innerHTML = `
+                  <option value="spend">Spend bucket</option>
+                  <option value="bills">Bills bucket</option>
+                  <option value="save">Savings bucket</option>
+                `;
+                dyn.appendChild(cat);
+                dyn.appendChild(bucket);
+              }
+            }
+
+            else if (type === "debtor" || type === "creditor") {
+              const grid = dom.el("div","grid-2");
+              const rate = dom.el("input","input-ghost");
+              rate.id = "e-rate"; rate.type = "number"; rate.placeholder = "Rate % (optional)";
+              const term = dom.el("input","input-ghost");
+              term.id = "e-term"; term.type = "date";
+              grid.appendChild(rate); grid.appendChild(term);
+              dyn.appendChild(grid);
+
+              // show current people as picker too
+              buildPicker(type === "debtor" ? "debtor" : "creditor");
+            }
+
+            else if (type === "asset") {
+              const sel = dom.el("select","input-ghost");
+              sel.id = "e-as-cat";
+              sel.innerHTML = `
+                <option value="Property">Property</option>
+                <option value="Vehicle">Vehicle</option>
+                <option value="Stock">Stock</option>
+                <option value="Other">Other</option>
+              `;
+              dyn.appendChild(sel);
+            }
+
+            else if (type === "fiduciary") {
+              const goal = dom.el("input","input-ghost");
+              goal.id = "e-fd-goal"; goal.placeholder = "Project/Goal";
+              const user = dom.el("input","input-ghost");
+              user.id = "e-fd-user"; user.placeholder = "Contributor";
+              dyn.appendChild(goal);
+              dyn.appendChild(user);
+            }
+          },
+
+          runQuery(){
+            const s = (dom.byId("q-search").value || "").toLowerCase();
+            const qtype = VaultCore.config().activeQType;
+            const qs = dom.byId("q-start").value || "";
+            const qe = dom.byId("q-end").value || "";
+
+            const res = dom.byId("q-results");
+            dom.clear(res);
+
+            // list newest-first
+            const list = VaultCore.db()
+              .slice()
+              .sort((a,b) => String(b.createdAt||"").localeCompare(String(a.createdAt||"")))
+              .filter(e => {
+                if (!e) return false;
+
+                const hay = [
+                  (e.name||""),
+                  (e.debtor||""),
+                  (e.creditor||""),
+                  (e.goal||""),
+                  (e.user||""),
+                  (e.category||""),
+                  (e.bucket||"")
+                ].join(" ").toLowerCase();
+
+                const tM = hay.includes(s);
+                const cM = typeForQuery(e, qtype);
+                const dOK = (!qs || (e.date||"") >= qs) && (!qe || (e.date||"") <= qe);
+                return tM && cM && dOK;
+              });
+
+            if (!list.length) {
+              const empty = dom.el("div","glass-panel p-4");
+              empty.innerHTML = `<div class="tiny">No matches</div><div class="text-sm" style="margin-top:8px; color: rgba(255,255,255,.6);">Try fewer words or widen the date range.</div>`;
+              res.appendChild(empty);
+              return;
+            }
+
+            list.slice(0,80).forEach(e => {
+              const card = dom.el("div","glass-panel p-4");
+              card.style.borderRadius = "18px";
+              card.style.cursor = "pointer";
+              card.dataset.open = e.id;
+
+              const badge = VaultCore.classifyBadge(e);
+              const amt = money.fmt(Math.abs(VaultCore.entryAmount(e)));
+
+              card.innerHTML = `
+                <div class="flex justify-between items-center" style="gap:12px;">
+                  <div class="flex-col" style="gap:8px; max-width: 72%;">
+                    <div class="font-black uppercase" style="font-size: 12px; letter-spacing:.08em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                      ${(e.name||"").toUpperCase()}
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="${badge.cls}">${badge.txt}</span>
+                      <span class="tiny">${(e.date||"")} • ${(e.time||"")}</span>
+                      ${e.category ? `<span class="badge" style="opacity:.8;">${String(e.category).toUpperCase()}</span>` : ""}
+                    </div>
+                  </div>
+                  <div class="font-black" style="white-space:nowrap; color: rgba(255,255,255,.92);">
+                    ${amt}
+                  </div>
+                </div>
+              `;
+              res.appendChild(card);
+            });
+          },
+
+          showIouPerson(kind, name){
+            // Open a "details" view for IOU person: show their entries + balance in sheet
+            const db = VaultCore.db().slice().sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+            const relevant = db.filter(e => {
+              if (kind === "debtor") return (e.type === "debtor" || e.type === "debt_repayment") && (e.debtor||e.name) === name;
+              return (e.type === "creditor" || e.type === "credit_settlement") && (e.creditor||e.name) === name;
+            });
+
+            // build a fake "person sheet"
+            dom.byId("sheet-name").textContent = name.toUpperCase();
+            dom.byId("sheet-meta").textContent = (kind === "debtor") ? "DEBTOR • IOU LEDGER" : "CREDITOR • IOU LEDGER";
+            const body = dom.byId("sheet-body");
+            dom.clear(body);
+
+            let bal = 0;
+            for (const e of relevant) bal += (typeof e.principal === "number" ? e.principal : 0);
+
+            const add = (k,v) => {
+              const row = dom.el("div","row");
+              row.appendChild(dom.el("span",null,k));
+              row.appendChild(dom.el("span","font-black",v));
+              body.appendChild(row);
+            };
+
+            add("Outstanding", money.fmt(Math.abs(bal)));
+
+            const divider = dom.el("div","tiny");
+            divider.style.marginTop = "12px";
+            divider.textContent = "Latest activity";
+            body.appendChild(divider);
+
+            relevant.slice(0,12).forEach(e => {
+              const r = dom.el("div","row tap");
+              r.dataset.open = e.id;
+              r.innerHTML = `<span>${(e.date||"")} • ${(e.time||"")}</span><span class="font-black">${money.fmt(Math.abs(VaultCore.entryAmount(e)))}</span>`;
+              body.appendChild(r);
+            });
+
+            // actions: duplicate not relevant; delete person? no.
+            dom.byId("sheet-dup").classList.add("hidden");
+            dom.byId("sheet-del").classList.add("hidden");
+
+            dom.byId("sheet-backdrop").classList.add("show");
+            dom.byId("sheet").classList.add("show");
+          },
+
+          render(){
+            // restore hidden sheet buttons if needed
+            dom.byId("sheet-dup").classList.remove("hidden");
+            dom.byId("sheet-del").classList.remove("hidden");
+            renderLists();
+          }
+        };
+      })();
+
+      // Start
+      window.addEventListener("load", () => VaultUI.init());
     })();
   </script>
 </body>
