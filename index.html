@@ -1007,17 +1007,11 @@
 
   <script>
     /***********************
-     * Sovereign v87 (single file)
-     * Fixes + Additions:
-     * - Restore safety: schema versioning, migration, validation, pre-restore snapshot
-     * - No more "money()" absolute-value lie (negative balances show correctly)
-     * - Optional overdraft (default OFF) + insufficient funds guardrail
-     * - Net worth correctness (cash + assets), plus diagnostics
-     * - Asset form shows Initial vs Current and labels amount properly
-     * - Fiduciary drilldown cleaned: selected detail view w/ clear/back flow
-     * - IOU: rate, issued date, due date fields
-     * - Auto-backup locally on every state change + periodic snapshots
-     * - Backup cadence reminders (to prompt manual export)
+     * Sovereign v87 (patched)
+     * New patches included:
+     * - Inflow split (fluid): allocate by % or by amount; any 2 fields auto-complete the 3rd
+     * - Ledger search keyboard fix: no full re-render on every keystroke; filter rows in-place
+     * - Restore/backup hardening: autoSnapshot snapshots the state being saved, sanitize amounts, better restore errors, reset file inputs
      ***********************/
 
     const SCHEMA_VERSION = 1;
@@ -1223,6 +1217,7 @@
           fidDetail.mode = "goal";
           fidDetail.key = fidGoal.getAttribute("data-fid-goal");
           renderLedgerBody("fiduciary");
+          applyLedgerFilter("fiduciary", ledgerFilters.fiduciary || "");
           return;
         }
 
@@ -1231,6 +1226,7 @@
           fidDetail.mode = "person";
           fidDetail.key = fidPerson.getAttribute("data-fid-person");
           renderLedgerBody("fiduciary");
+          applyLedgerFilter("fiduciary", ledgerFilters.fiduciary || "");
           return;
         }
 
@@ -1238,6 +1234,7 @@
         if(fidClear){
           fidDetail.mode = null; fidDetail.key = null;
           renderLedgerBody("fiduciary");
+          applyLedgerFilter("fiduciary", ledgerFilters.fiduciary || "");
           return;
         }
 
@@ -1245,6 +1242,7 @@
         if(fidBack){
           fidDetail.mode = null; fidDetail.key = null;
           renderLedgerBody("fiduciary");
+          applyLedgerFilter("fiduciary", ledgerFilters.fiduciary || "");
           return;
         }
       });
@@ -1356,6 +1354,7 @@
           Liquidity: <b>${money(d.liquidityTotal)}</b><br/>
           Assets: <b>${money(d.assetsTotal)}</b><br/>
           Net worth: <b>${money(d.netWorth)}</b><br/>
+          Inflow split mode: <b>${esc(state.ui.inflowSplitMode || "off")}</b><br/>
         `;
       });
 
@@ -1462,6 +1461,7 @@
       const body = $(`[data-ledger-body="${key}"]`);
       body?.classList.add("open");
       renderLedgerBody(key);
+      if(ledgerFilters[key]) applyLedgerFilter(key, ledgerFilters[key]);
     }
 
     // ---------- Rendering ----------
@@ -1486,7 +1486,10 @@
       el.crTotal.textContent = money(d.creditorsOutstanding);
       el.fidTotal.textContent = money(d.fidTotal);
 
-      if(openLedger) renderLedgerBody(openLedger);
+      if(openLedger) {
+        renderLedgerBody(openLedger);
+        if(ledgerFilters[openLedger]) applyLedgerFilter(openLedger, ledgerFilters[openLedger]);
+      }
 
       renderAudit();
       renderDatalist();
@@ -1497,7 +1500,6 @@
       if(!body) return;
 
       const d = derive();
-      const filter = (ledgerFilters[key] || "").trim().toLowerCase();
 
       if(key === "liquidity"){
         const cSpend = (d.accounts.spend < 0) ? "var(--red)" : "var(--emerald)";
@@ -1528,17 +1530,19 @@
         return;
       }
 
+      // NOTE: For keyboard stability we render list once, then filter rows in-place.
+      // Every row includes data-hit for fast matching.
+
       if(key === "expenses"){
         const items = d.entriesActive
           .filter(e => e.kind === "expense")
-          .filter(e => searchHit(e, filter))
           .sort((a,b) => b.ts - a.ts);
 
         body.innerHTML = `
           ${ledgerSearchBox("expenses", "Search expenses…")}
           <div class="ledgerSubline">Latest</div>
-          <div>
-            ${items.length ? items.map(e => tightRow(e)).join("") : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`}
+          <div data-ledger-list="expenses">
+            ${items.length ? items.map(e => tightRow(e, { hit: ledgerHitBlob(e) })).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
           </div>
         `;
         wireLedgerSearch(body, "expenses");
@@ -1547,17 +1551,16 @@
 
       if(key === "assets"){
         const assets = d.assetsList
-          .filter(a => (a.name || "").toLowerCase().includes(filter))
           .sort((a,b) => Math.abs(b.current||0) - Math.abs(a.current||0));
 
         body.innerHTML = `
           ${ledgerSearchBox("assets", "Search assets…")}
           <div class="ledgerSubline">Initial • Current • Growth</div>
-          <div>
+          <div data-ledger-list="assets">
             ${
               assets.length
                 ? assets.map(a => `
-                    <div class="row tap" data-asset="${esc(a.name)}">
+                    <div class="row tap" data-asset="${esc(a.name)}" data-hit="${escAttr((a.name+" "+money(a.current)+" "+money(a.initial)).toLowerCase())}">
                       <div class="rowLeft">
                         <div class="rowName">${esc(a.name)}</div>
                         <div class="rowMeta">
@@ -1570,7 +1573,7 @@
                       </div>
                     </div>
                   `).join("")
-                : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`
+                : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`
             }
             ${d.assetDetail ? renderAssetDetail(d.assetDetail) : ""}
           </div>
@@ -1581,22 +1584,21 @@
 
       if(key === "debtors"){
         const list = d.debtorsList
-          .filter(p => (p.name||"").toLowerCase().includes(filter))
           .sort((a,b) => b.outstanding - a.outstanding);
 
         body.innerHTML = `
           ${ledgerSearchBox("debtors", "Search debtors…")}
           <div class="ledgerSubline">Tap a name to see itemised entries</div>
-          <div>
+          <div data-ledger-list="debtors">
             ${
               list.length
                 ? list.map(p => `
-                  <div class="listItem" data-debtor="${esc(p.name)}">
+                  <div class="listItem" data-debtor="${esc(p.name)}" data-hit="${escAttr((p.name+" "+money(p.outstanding)).toLowerCase())}">
                     <div class="liName">${esc(p.name)}</div>
                     <div class="liAmt mask" style="color:var(--emerald)">${money(p.outstanding)}</div>
                   </div>
                 `).join("")
-                : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`
+                : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`
             }
           </div>
           ${d.debtDetail?.mode === "debtors" ? renderDebtDetail(d.debtDetail) : ""}
@@ -1607,22 +1609,21 @@
 
       if(key === "creditors"){
         const list = d.creditorsList
-          .filter(p => (p.name||"").toLowerCase().includes(filter))
           .sort((a,b) => b.outstanding - a.outstanding);
 
         body.innerHTML = `
           ${ledgerSearchBox("creditors", "Search creditors…")}
           <div class="ledgerSubline">Tap a name to see itemised entries</div>
-          <div>
+          <div data-ledger-list="creditors">
             ${
               list.length
                 ? list.map(p => `
-                  <div class="listItem" data-creditor="${esc(p.name)}">
+                  <div class="listItem" data-creditor="${esc(p.name)}" data-hit="${escAttr((p.name+" "+money(p.outstanding)).toLowerCase())}">
                     <div class="liName">${esc(p.name)}</div>
                     <div class="liAmt mask" style="color:var(--red)">${money(p.outstanding)}</div>
                   </div>
                 `).join("")
-                : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`
+                : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`
             }
           </div>
           ${d.debtDetail?.mode === "creditors" ? renderDebtDetail(d.debtDetail) : ""}
@@ -1632,19 +1633,13 @@
       }
 
       if(key === "fiduciary"){
-        const goals = d.fidGoals
-          .filter(g => (g.key||"").toLowerCase().includes(filter))
-          .sort((a,b) => Math.abs(b.balance) - Math.abs(a.balance));
-        const persons = d.fidPersons
-          .filter(p => (p.key||"").toLowerCase().includes(filter))
-          .sort((a,b) => Math.abs(b.balance) - Math.abs(a.balance));
+        const goals = d.fidGoals.sort((a,b) => Math.abs(b.balance) - Math.abs(a.balance));
+        const persons = d.fidPersons.sort((a,b) => Math.abs(b.balance) - Math.abs(a.balance));
 
         const detail = (fidDetail.mode && fidDetail.key)
           ? buildFidDetail(d.entriesActive, fidDetail.mode, fidDetail.key)
           : null;
 
-        // Cleaner: when detail is selected, show a top detail view + back/clear,
-        // and keep lists below (so you can change selection without confusion).
         body.innerHTML = `
           ${ledgerSearchBox("fiduciary", "Search goals or people…")}
           <div class="ledgerSubline">Tap a purpose or person to drill down</div>
@@ -1661,8 +1656,8 @@
                 <div class="kv"><div class="kvL">Total out</div><div class="kvR mask">${money(detail.totals.out)}</div></div>
 
                 <div class="ledgerSubline" style="margin-top:12px;">Itemised entries</div>
-                <div>
-                  ${detail.entries.length ? detail.entries.map(e => tightRow(e, {compact:true})).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
+                <div data-ledger-list="fidDetail">
+                  ${detail.entries.length ? detail.entries.map(e => tightRow(e, {compact:true, hit: ledgerHitBlob(e) })).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
                 </div>
 
                 <div class="flex gap8" style="margin-top:12px;flex-wrap:wrap;">
@@ -1673,7 +1668,7 @@
             ` : ""
           }
 
-          <div class="twoCol">
+          <div class="twoCol" data-ledger-list="fiduciary">
             <div class="panel">
               <div class="panelHead">
                 <div class="panelTitle">By Purpose</div>
@@ -1681,11 +1676,11 @@
               </div>
               <div>
                 ${goals.length ? goals.map(g => `
-                  <div class="listItem" data-fid-goal="${esc(g.key)}">
+                  <div class="listItem" data-fid-goal="${esc(g.key)}" data-hit="${escAttr((g.key+" "+money(g.balance)).toLowerCase())}">
                     <div class="liName">${esc(g.key)}</div>
                     <div class="liAmt mask" style="color:var(--yellow)">${money(g.balance)}</div>
                   </div>
-                `).join("") : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`}
+                `).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
               </div>
             </div>
 
@@ -1696,11 +1691,11 @@
               </div>
               <div>
                 ${persons.length ? persons.map(p => `
-                  <div class="listItem" data-fid-person="${esc(p.key)}">
+                  <div class="listItem" data-fid-person="${esc(p.key)}" data-hit="${escAttr((p.key+" "+money(p.balance)).toLowerCase())}">
                     <div class="liName">${esc(p.key)}</div>
                     <div class="liAmt mask" style="color:var(--yellow)">${money(p.balance)}</div>
                   </div>
-                `).join("") : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`}
+                `).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
               </div>
             </div>
           </div>
@@ -1729,7 +1724,7 @@
         .slice(0, 120);
 
       el.auditList.innerHTML = entries.length
-        ? entries.map(e => tightRow(e, { audit:true })).join("")
+        ? entries.map(e => tightRow(e, { audit:true, hit: ledgerHitBlob(e) })).join("")
         : `<div class="rowMeta" style="padding:10px 0;">No audit entries</div>`;
     }
 
@@ -1760,7 +1755,7 @@
         .slice(0, 200);
 
       el.qRes.innerHTML = entries.length
-        ? entries.map(e => tightRow(e, { compact:true })).join("")
+        ? entries.map(e => tightRow(e, { compact:true, hit: ledgerHitBlob(e) })).join("")
         : `<div class="rowMeta" style="padding:10px 0;">No results</div>`;
     }
 
@@ -1769,12 +1764,14 @@
       state.ui.debtDetail = { mode, who };
       saveState("debt_detail");
       renderLedgerBody(mode);
+      if(ledgerFilters[mode]) applyLedgerFilter(mode, ledgerFilters[mode]);
     }
 
     function showAssetDetails(name){
       state.ui.assetDetailName = name;
       saveState("asset_detail");
       renderLedgerBody("assets");
+      if(ledgerFilters.assets) applyLedgerFilter("assets", ledgerFilters.assets);
     }
 
     function renderDebtDetail(detail){
@@ -1794,7 +1791,7 @@
 
           <div class="ledgerSubline" style="margin-top:12px;">Itemised entries</div>
           <div>
-            ${detail.entries.length ? detail.entries.map(e => tightRow(e, {compact:true})).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
+            ${detail.entries.length ? detail.entries.map(e => tightRow(e, {compact:true, hit: ledgerHitBlob(e) })).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
           </div>
         </div>
       `;
@@ -1814,7 +1811,7 @@
 
           <div class="ledgerSubline" style="margin-top:12px;">Valuation history</div>
           <div>
-            ${a.history.length ? a.history.map(e => tightRow(e, {compact:true})).join("") : `<div class="rowMeta" style="padding:10px 0;">No history</div>`}
+            ${a.history.length ? a.history.map(e => tightRow(e, {compact:true, hit: ledgerHitBlob(e)})).join("") : `<div class="rowMeta" style="padding:10px 0;">No history</div>`}
           </div>
         </div>
       `;
@@ -1833,13 +1830,68 @@
       `;
     }
 
+    // ✅ KEYBOARD FIX:
+    // We do NOT re-render ledger on each keystroke anymore.
+    // Instead we filter visible rows in-place using data-hit attributes.
     function wireLedgerSearch(body, key){
       const inp = body.querySelector(`[data-ledger-filter="${key}"]`);
       if(!inp) return;
-      inp.addEventListener("input", () => {
-        ledgerFilters[key] = inp.value || "";
-        renderLedgerBody(key);
-      }, { once:true });
+
+      inp.oninput = () => {
+        const val = inp.value || "";
+        ledgerFilters[key] = val;
+        applyLedgerFilter(key, val);
+      };
+    }
+
+    function applyLedgerFilter(key, text){
+      const body = $(`[data-ledger-body="${key}"]`);
+      if(!body) return;
+      const q = (text || "").trim().toLowerCase();
+
+      // Filter any element that has data-hit inside the ledger body
+      const nodes = $$("[data-hit]", body);
+      let shown = 0;
+
+      if(!q){
+        nodes.forEach(n => n.classList.remove("hidden"));
+        return;
+      }
+
+      for(const n of nodes){
+        const hit = (n.getAttribute("data-hit") || "").toLowerCase();
+        const ok = hit.includes(q);
+        n.classList.toggle("hidden", !ok);
+        if(ok) shown++;
+      }
+
+      // Optional: if none match, show a small hint row (without re-render)
+      const markerId = "ledgerNoMatch_" + key;
+      let marker = $("#"+markerId, body);
+
+      if(shown === 0){
+        if(!marker){
+          marker = document.createElement("div");
+          marker.id = markerId;
+          marker.className = "rowMeta";
+          marker.style.padding = "10px 0";
+          marker.textContent = "No matches";
+          body.appendChild(marker);
+        }
+      } else {
+        if(marker) marker.remove();
+      }
+    }
+
+    function ledgerHitBlob(e){
+      return [
+        e.kind, e.desc, e.note,
+        e.meta?.account, e.meta?.person, e.meta?.goal,
+        e.meta?.assetName, e.meta?.action,
+        e.meta?.rate, e.meta?.issuedTs, e.meta?.dueTs,
+        fmtDate(e.ts),
+        e.status
+      ].join(" ").toLowerCase();
     }
 
     // ---------- Form ----------
@@ -1885,6 +1937,7 @@
         buildSegment("Account", ["Spend","Bills","Savings"], acct, (val) => {
           state.ui.lastAccount = val;
           saveState("last_account");
+          // If inflow split is on, account segment becomes irrelevant, but we keep it for quick off-mode.
         });
 
         el.amountHint.classList.remove("hidden");
@@ -1893,11 +1946,21 @@
         el.amountHintRight.textContent = acct.toUpperCase();
 
         el.desc.placeholder = "Description";
+
+        // ✅ Inflow split UI (not available when editing an old entry, to keep edits safe)
+        if(kind === "income" && !currentEditId){
+          const mode = state.ui.inflowSplitMode || "off";
+          el.dyn.innerHTML = renderInflowSplitUI(mode);
+          wireInflowSplitUI();
+        }
       }
 
       if(kind === "asset"){
         const assetMode = opts.assetMode || pre?.meta?.action || "new";
-        buildSegment("Mode", ["New","Update"], assetMode === "update" ? "update":"new", () => {});
+        buildSegment("Mode", ["New","Update"], assetMode === "update" ? "update":"new", () => {
+          // live update of hint/placeholder
+          updateAssetHintUI();
+        });
         const assetName = opts.assetName || pre?.meta?.assetName || "";
         el.dyn.innerHTML = `
           <input id="assetName" class="input" placeholder="Asset name" value="${escAttr(assetName)}" list="assetList" />
@@ -1905,30 +1968,14 @@
         `;
         el.desc.placeholder = "Description (optional)";
 
-        // Asset hint: show current/initial if exists
-        if(assetName){
-          const snap = getAssetSnapshot(assetName);
-          if(snap){
-            el.amountHint.classList.remove("hidden");
-            if(assetMode === "update"){
-              el.amountHintTitle.textContent = "Asset update";
-              el.amount.placeholder = "New current value";
-              el.amountHintLeft.textContent = `Current: ${money(snap.current)} • Initial: ${money(snap.initial)}`;
-              el.amountHintRight.textContent = snap.lastTs ? fmtDateTime(snap.lastTs) : "—";
-            } else {
-              el.amountHintTitle.textContent = "Asset (new)";
-              el.amount.placeholder = "Initial value";
-              el.amountHintLeft.textContent = `Existing current: ${money(snap.current)}`;
-              el.amountHintRight.textContent = "You’re creating a new baseline";
-            }
-          }
-        } else {
-          el.amountHint.classList.remove("hidden");
-          el.amountHintTitle.textContent = (assetMode === "update") ? "Asset update" : "Asset (new)";
-          el.amount.placeholder = (assetMode === "update") ? "New current value" : "Initial value";
-          el.amountHintLeft.textContent = "Tip";
-          el.amountHintRight.textContent = (assetMode === "update") ? "Pick an existing asset name" : "Set your first value";
-        }
+        // Update hint based on current segment + current assetName
+        setTimeout(updateAssetHintUI, 0);
+
+        // When asset name changes, refresh hint
+        setTimeout(() => {
+          const an = $("#assetName");
+          if(an) an.addEventListener("input", () => updateAssetHintUI());
+        }, 0);
       }
 
       if(kind === "borrow" || kind === "lend"){
@@ -1951,7 +1998,7 @@
         `;
         el.desc.placeholder = "Description (optional)";
 
-        // Hide extra fields when settling (keeps the settle flow clean)
+        // Hide extra fields when settling
         setTimeout(() => {
           const segVal = getSegmentValue();
           const box = $("#iouExtra");
@@ -1987,6 +2034,152 @@
       fillDynamicDatalists();
       showView("form");
       el.amount.focus();
+    }
+
+    function renderInflowSplitUI(mode){
+      const m = mode || "off";
+      const onOff = (v) => (v === m ? "on" : "");
+      return `
+        <div class="tiny muted" style="margin:6px 0 8px 0;">Allocation</div>
+        <div class="seg" id="inflowSplitSeg" style="margin-bottom:10px;">
+          <button type="button" data-split="off" class="${onOff("off")}">Off</button>
+          <button type="button" data-split="pct" class="${onOff("pct")}">%</button>
+          <button type="button" data-split="amt" class="${onOff("amt")}">Amount</button>
+        </div>
+
+        <div id="inflowSplitBox" class="${m==="off" ? "hidden" : ""}">
+          <div class="ledgerSubline" style="margin-top:4px;">Fill any 2 fields — the 3rd auto-completes</div>
+
+          <div class="grid2" style="gap:12px;">
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Spend</div>
+              <input id="inSpend" class="input" type="number" inputmode="decimal" placeholder="${m==="pct" ? "Percent" : "Amount"}" />
+            </div>
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Bills</div>
+              <input id="inBills" class="input" type="number" inputmode="decimal" placeholder="${m==="pct" ? "Percent" : "Amount"}" />
+            </div>
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Savings</div>
+              <input id="inSavings" class="input" type="number" inputmode="decimal" placeholder="${m==="pct" ? "Percent" : "Amount"}" />
+            </div>
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Check</div>
+              <div id="inflowSplitCheck" class="hintBox" style="padding:12px;">
+                <div class="hintTitle">Total</div>
+                <div class="hintRow">
+                  <div class="muted">${m==="pct" ? "Must be 100%" : "Must equal amount"}</div>
+                  <div id="inflowSplitTotal" class="mask">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tiny muted" style="margin-top:10px;">
+            Tip: enter the big Amount first, then allocate.
+          </div>
+        </div>
+      `;
+    }
+
+    function wireInflowSplitUI(){
+      const seg = $("#inflowSplitSeg");
+      if(!seg) return;
+
+      const setMode = (mode) => {
+        state.ui.inflowSplitMode = mode;
+        saveState("inflow_split_mode");
+        // refresh UI without killing focus in amount input (only rebuild dyn)
+        el.dyn.innerHTML = renderInflowSplitUI(mode);
+        wireInflowSplitUI();
+        // keep amount input focused if user was typing
+      };
+
+      seg.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-split]");
+        if(!b) return;
+        $$("button", seg).forEach(x => x.classList.remove("on"));
+        b.classList.add("on");
+        setMode(b.getAttribute("data-split"));
+      });
+
+      const mode = state.ui.inflowSplitMode || "off";
+      if(mode === "off") return;
+
+      const A = $("#inSpend"), B = $("#inBills"), C = $("#inSavings");
+      const totalEl = $("#inflowSplitTotal");
+      const box = $("#inflowSplitBox");
+
+      if(!A || !B || !C || !totalEl || !box) return;
+
+      const recompute = (changed) => {
+        const total = Number(el.amount.value || 0);
+        if(!isFinite(total) || total <= 0){
+          totalEl.textContent = "Enter Amount";
+          return;
+        }
+
+        const a = parseNum(A.value);
+        const b = parseNum(B.value);
+        const c = parseNum(C.value);
+
+        if(mode === "pct"){
+          // Any two -> third = 100 - sum(two)
+          const filled = [
+            {k:"a", v:a, el:A},
+            {k:"b", v:b, el:B},
+            {k:"c", v:c, el:C},
+          ].filter(x => x.v !== null);
+
+          if(filled.length >= 2){
+            const sum = filled.reduce((s,x)=> s + x.v, 0);
+            const missing = [{k:"a", el:A, v:a},{k:"b", el:B, v:b},{k:"c", el:C, v:c}].find(x => x.v === null);
+            if(missing){
+              const val = clampNum(100 - sum, 0, 100);
+              missing.el.value = String(round2(val));
+            }
+          }
+
+          const aa = parseNum(A.value) ?? 0;
+          const bb = parseNum(B.value) ?? 0;
+          const cc = parseNum(C.value) ?? 0;
+          const sum2 = aa + bb + cc;
+          totalEl.textContent = round2(sum2) + "%";
+        }
+
+        if(mode === "amt"){
+          // Any two -> third = total - sum(two)
+          const filled = [
+            {k:"a", v:a, el:A},
+            {k:"b", v:b, el:B},
+            {k:"c", v:c, el:C},
+          ].filter(x => x.v !== null);
+
+          if(filled.length >= 2){
+            const sum = filled.reduce((s,x)=> s + x.v, 0);
+            const missing = [{k:"a", el:A, v:a},{k:"b", el:B, v:b},{k:"c", el:C, v:c}].find(x => x.v === null);
+            if(missing){
+              const val = clampNum(total - sum, 0, total);
+              missing.el.value = String(round2(val));
+            }
+          }
+
+          const aa = parseNum(A.value) ?? 0;
+          const bb = parseNum(B.value) ?? 0;
+          const cc = parseNum(C.value) ?? 0;
+          const sum2 = aa + bb + cc;
+          totalEl.textContent = money(sum2);
+        }
+      };
+
+      // Update on allocation typing (no re-render)
+      [A,B,C].forEach(inp => inp.addEventListener("input", () => recompute(inp.id)));
+
+      // Also recompute when Amount changes
+      el.amount.addEventListener("input", () => recompute("amount"), { once:true });
+
+      // initial check
+      setTimeout(() => recompute("init"), 0);
     }
 
     function buildSegment(label, labels, initialValue, onChange){
@@ -2031,6 +2224,37 @@
       return btn ? btn.getAttribute("data-seg") : null;
     }
 
+    function updateAssetHintUI(){
+      if(currentForm !== "asset") return;
+      const mode = getSegmentValue() || "new";
+      const assetName = ($("#assetName")?.value || "").trim();
+
+      el.amountHint.classList.remove("hidden");
+      if(assetName){
+        const snap = getAssetSnapshot(assetName);
+        if(snap){
+          if(mode === "update"){
+            el.amountHintTitle.textContent = "Asset update";
+            el.amount.placeholder = "New current value";
+            el.amountHintLeft.textContent = `Current: ${money(snap.current)} • Initial: ${money(snap.initial)}`;
+            el.amountHintRight.textContent = snap.lastTs ? fmtDateTime(snap.lastTs) : "—";
+            return;
+          } else {
+            el.amountHintTitle.textContent = "Asset (new)";
+            el.amount.placeholder = "Initial value";
+            el.amountHintLeft.textContent = `Existing current: ${money(snap.current)}`;
+            el.amountHintRight.textContent = "You’re creating a new baseline";
+            return;
+          }
+        }
+      }
+
+      el.amountHintTitle.textContent = (mode === "update") ? "Asset update" : "Asset (new)";
+      el.amount.placeholder = (mode === "update") ? "New current value" : "Initial value";
+      el.amountHintLeft.textContent = "Tip";
+      el.amountHintRight.textContent = (mode === "update") ? "Pick an existing asset name" : "Set your first value";
+    }
+
     async function executeForm(){
       const amt = Number(el.amount.value);
       if(!isFinite(amt) || amt <= 0){
@@ -2043,6 +2267,61 @@
 
       if(currentForm === "income" || currentForm === "expense"){
         const account = getSegmentValue() || state.ui.lastAccount || "spend";
+
+        // ✅ Inflow split execution
+        if(currentForm === "income" && !currentEditId){
+          const mode = state.ui.inflowSplitMode || "off";
+          if(mode !== "off"){
+            const A = $("#inSpend"), B = $("#inBills"), C = $("#inSavings");
+            if(!A || !B || !C) return toast("Allocation inputs missing");
+
+            if(mode === "pct"){
+              const pSpend = parseNum(A.value) ?? 0;
+              const pBills = parseNum(B.value) ?? 0;
+              const pSavings = parseNum(C.value) ?? 0;
+              const sum = round2(pSpend + pBills + pSavings);
+              if(Math.abs(sum - 100) > 0.01) return toast("Percent must total 100%");
+              const aAmt = round2((pSpend/100) * amt);
+              const bAmt = round2((pBills/100) * amt);
+              // Make last bucket absorb rounding errors
+              const cAmt = round2(amt - aAmt - bAmt);
+
+              const group = uid();
+              const entries = [
+                makeEntry("income", aAmt, desc, note, { account:"spend", splitGroupId: group, splitMode:"pct", splitValue:pSpend }),
+                makeEntry("income", bAmt, desc, note, { account:"bills", splitGroupId: group, splitMode:"pct", splitValue:pBills }),
+                makeEntry("income", cAmt, desc, note, { account:"savings", splitGroupId: group, splitMode:"pct", splitValue:pSavings }),
+              ].filter(x => x.amount > 0);
+
+              commitEntries(entries);
+              showView("dashboard");
+              renderAll();
+              toast("Saved (split)");
+              return;
+            }
+
+            if(mode === "amt"){
+              const aAmt = parseNum(A.value) ?? 0;
+              const bAmt = parseNum(B.value) ?? 0;
+              const cAmt = parseNum(C.value) ?? 0;
+              const sum = round2(aAmt + bAmt + cAmt);
+              if(Math.abs(sum - amt) > 0.01) return toast("Split amounts must equal Amount");
+
+              const group = uid();
+              const entries = [
+                makeEntry("income", aAmt, desc, note, { account:"spend", splitGroupId: group, splitMode:"amt" }),
+                makeEntry("income", bAmt, desc, note, { account:"bills", splitGroupId: group, splitMode:"amt" }),
+                makeEntry("income", cAmt, desc, note, { account:"savings", splitGroupId: group, splitMode:"amt" }),
+              ].filter(x => x.amount > 0);
+
+              commitEntries(entries);
+              showView("dashboard");
+              renderAll();
+              toast("Saved (split)");
+              return;
+            }
+          }
+        }
 
         // Guardrail: block spending from empty account unless overdraft is allowed
         if(currentForm === "expense" && !state.settings.allowOverdraft){
@@ -2057,7 +2336,7 @@
         commitEntry(entry, editOf);
         showView("dashboard");
         renderAll();
-        toast(currentEditId ? "Edited" : "Saved");
+        toast(currentEditId ? `Edited (${account.toUpperCase()})` : `Saved (${account.toUpperCase()})`);
         return;
       }
 
@@ -2128,13 +2407,20 @@
         id: uid(),
         ts: Date.now(),
         kind,
-        amount: Number(amount),
+        amount: safeNum(amount),
         desc: desc || "",
         note: note || "",
         meta,
         status: "active",
         supersedesId: null
       };
+    }
+
+    function commitEntries(entries){
+      for(const e of entries){
+        state.entries.push(e);
+      }
+      saveState("commit_entries");
     }
 
     function commitEntry(newEntry, oldEntry){
@@ -2176,12 +2462,12 @@
       for(const e of entriesActive){
         if(e.kind === "income"){
           const acct = e.meta?.account || "spend";
-          accounts[acct] = (accounts[acct] || 0) + e.amount;
+          accounts[acct] = (accounts[acct] || 0) + safeNum(e.amount);
         }
         if(e.kind === "expense"){
           const acct = e.meta?.account || "spend";
-          accounts[acct] = (accounts[acct] || 0) - e.amount;
-          expensesTotal += e.amount;
+          accounts[acct] = (accounts[acct] || 0) - safeNum(e.amount);
+          expensesTotal += safeNum(e.amount);
         }
       }
 
@@ -2199,14 +2485,14 @@
       const assetsList = [];
       for(const [name, list] of assetsMap.entries()){
         list.sort((a,b) => a.ts - b.ts);
-        const initial = list[0]?.amount || 0;
-        const current = list[list.length-1]?.amount || 0;
+        const initial = safeNum(list[0]?.amount || 0);
+        const current = safeNum(list[list.length-1]?.amount || 0);
         const growth = current - initial;
         const history = list.slice().sort((a,b)=> b.ts - a.ts);
         assetsList.push({ name, initial, current, growth, history, lastTs: list[list.length-1]?.ts || null });
       }
 
-      const assetsTotal = assetsList.reduce((s,a)=> s + (a.current||0), 0);
+      const assetsTotal = assetsList.reduce((s,a)=> s + safeNum(a.current||0), 0);
 
       // Debt (IOU)
       const iouEntries = entriesActive.filter(e => e.kind === "iou");
@@ -2221,8 +2507,8 @@
         if(!target.has(who)) target.set(who, { name: who, given:0, recovered:0, entries:[] });
         const box = target.get(who);
         const action = e.meta?.action || "new";
-        if(action === "settle") box.recovered += e.amount;
-        else box.given += e.amount;
+        if(action === "settle") box.recovered += safeNum(e.amount);
+        else box.given += safeNum(e.amount);
         box.entries.push(e);
       }
 
@@ -2243,7 +2529,7 @@
         const goal = (e.meta?.goal || "").trim();
         const person = (e.meta?.person || "").trim();
         const dir = e.meta?.action || "in";
-        const signed = (dir === "out") ? -e.amount : e.amount;
+        const signed = (dir === "out") ? -safeNum(e.amount) : safeNum(e.amount);
 
         fidTotal += signed;
 
@@ -2319,8 +2605,8 @@
       let tin = 0, tout = 0;
       for(const e of hits){
         const dir = e.meta?.action || "in";
-        if(dir === "out") tout += e.amount;
-        else tin += e.amount;
+        if(dir === "out") tout += safeNum(e.amount);
+        else tin += safeNum(e.amount);
       }
       const balance = tin - tout;
 
@@ -2346,6 +2632,7 @@
         <div class="kv"><div class="kvL">Date</div><div class="kvR">${fmtDateTime(e.ts)}</div></div>
         <div class="kv"><div class="kvL">Status</div><div class="kvR">${esc(e.status || "active")}${e.supersedesId ? " • revision" : ""}</div></div>
         ${e.meta?.account ? `<div class="kv"><div class="kvL">Account</div><div class="kvR">${esc(e.meta.account)}</div></div>` : ""}
+        ${e.meta?.splitGroupId ? `<div class="kv"><div class="kvL">Split</div><div class="kvR">${esc(e.meta.splitMode || "split")}</div></div>` : ""}
         ${e.meta?.assetName ? `<div class="kv"><div class="kvL">Asset</div><div class="kvR">${esc(e.meta.assetName)}</div></div>` : ""}
         ${e.meta?.person ? `<div class="kv"><div class="kvL">Person</div><div class="kvR">${esc(e.meta.person)}</div></div>` : ""}
         ${e.meta?.goal ? `<div class="kv"><div class="kvL">Purpose</div><div class="kvR">${esc(e.meta.goal)}</div></div>` : ""}
@@ -2380,9 +2667,10 @@
       const statusBadge = (e.status === "superseded") ? `<span class="badge bRev">REV</span>` :
                           (e.status === "deleted") ? `<span class="badge bRev">DEL</span>` : "";
       const metaLine = compactMeta(e);
+      const hit = opts.hit || ledgerHitBlob(e);
 
       return `
-        <div class="tightRow" data-entry-id="${escAttr(e.id)}" title="${escAttr(metaLine)}">
+        <div class="tightRow" data-entry-id="${escAttr(e.id)}" data-hit="${escAttr(hit)}" title="${escAttr(metaLine)}">
           <div class="tightLeft">
             <div class="tightTop">
               ${badge}
@@ -2448,6 +2736,7 @@
 
       if(e.kind === "income" || e.kind === "expense"){
         if(e.meta?.account) parts.push(e.meta.account);
+        if(e.meta?.splitGroupId) parts.push("split");
       }
       if(e.kind === "asset"){
         parts.push(e.meta?.action === "update" ? "update" : "new");
@@ -2585,7 +2874,6 @@
 
     // ---------- Backup / Restore ----------
     function backup(manual=false){
-      // Manual export backup file
       const payload = JSON.stringify(state, null, 2);
       const blob = new Blob([payload], { type:"application/json" });
       const a = document.createElement("a");
@@ -2617,15 +2905,21 @@
         const migrated = migrateState(raw);
         const valid = validateState(migrated);
         if(!valid.ok){
-          return toast("Invalid backup: " + valid.reason);
+          toast("Invalid backup: " + valid.reason);
+          return;
         }
 
         // persist + refresh
         persistState(migrated, { reason: "restore" });
         toast("Restored");
+        // reset file inputs so same file can be selected again
+        try{ el.file.value = ""; }catch{}
+        try{ el.file2.value = ""; }catch{}
         location.reload();
-      } catch {
-        toast("Restore failed");
+      } catch (err) {
+        toast("Restore failed: " + (err?.message || "unknown"));
+        try{ el.file.value = ""; }catch{}
+        try{ el.file2.value = ""; }catch{}
       }
     }
 
@@ -2639,7 +2933,6 @@
 
     // ---------- Storage + Safety ----------
     function loadState(){
-      // Try primary + legacy keys
       for(const k of STORE_KEYS){
         const raw = localStorage.getItem(k);
         if(!raw) continue;
@@ -2662,7 +2955,6 @@
         }
       }catch{}
 
-      // Fresh state
       return normalizeState({
         schema: SCHEMA_VERSION,
         entries: [],
@@ -2675,26 +2967,19 @@
           lastManualBackupTs: 0,
           lastReminderTs: 0
         },
-        ui: { searchType:"all", lastAccount:"spend" }
+        ui: { searchType:"all", lastAccount:"spend", inflowSplitMode:"off" }
       });
     }
 
     function migrateState(s){
-      // Accept raw backups, older states, partial objects
       const base = (s && typeof s === "object") ? s : {};
-      const schema = Number(base.schema || 0);
-
-      // v0 -> v1 migration (and "unknown" -> v1 best-effort)
       const out = normalizeState({
         schema: SCHEMA_VERSION,
         entries: Array.isArray(base.entries) ? base.entries : [],
         settings: base.settings || {},
         ui: base.ui || {}
       });
-
-      // Ensure required fields exist
       out.schema = SCHEMA_VERSION;
-
       return out;
     }
 
@@ -2720,7 +3005,9 @@
           lastGoal: s.ui?.lastGoal || "",
           lastPerson2: s.ui?.lastPerson2 || "",
           debtDetail: s.ui?.debtDetail || null,
-          assetDetailName: s.ui?.assetDetailName || null
+          assetDetailName: s.ui?.assetDetailName || null,
+
+          inflowSplitMode: s.ui?.inflowSplitMode || "off"
         }
       };
       return out;
@@ -2728,16 +3015,17 @@
 
     function normalizeEntry(e){
       const meta = e.meta || {};
+      const kind = (typeof e.kind === "string" ? e.kind : "log");
       return {
         id: e.id || uid(),
         ts: typeof e.ts === "number" ? e.ts : Date.now(),
-        kind: e.kind || "log",
-        amount: Number(e.amount || 0),
+        kind,
+        amount: safeNum(e.amount),
         desc: e.desc || "",
         note: e.note || "",
         meta: {
           ...meta,
-          rate: (meta.rate === null || meta.rate === undefined || meta.rate === "") ? null : Number(meta.rate),
+          rate: (meta.rate === null || meta.rate === undefined || meta.rate === "") ? null : safeNum(meta.rate),
           issuedTs: meta.issuedTs ? Number(meta.issuedTs) : null,
           dueTs: meta.dueTs ? Number(meta.dueTs) : null
         },
@@ -2752,14 +3040,12 @@
       if(!s.settings || typeof s.settings !== "object") return { ok:false, reason:"settings missing" };
       if(!s.ui || typeof s.ui !== "object") return { ok:false, reason:"ui missing" };
 
-      // Very basic sanity: entries must be objects with id/ts/kind/amount
       for(const e of s.entries.slice(0, 5000)){
         if(!e || typeof e !== "object") return { ok:false, reason:"bad entry" };
         if(!e.id || typeof e.id !== "string") return { ok:false, reason:"entry id missing" };
         if(typeof e.ts !== "number") return { ok:false, reason:"entry ts missing" };
-        if(typeof e.amount !== "number") return { ok:false, reason:"entry amount invalid" };
+        if(typeof e.amount !== "number" || !isFinite(e.amount)) return { ok:false, reason:"entry amount invalid" };
       }
-
       return { ok:true };
     }
 
@@ -2768,25 +3054,20 @@
     }
 
     function persistState(s, meta={}){
-      // 1) Write primary + legacy keys (compat)
       const payload = JSON.stringify(s);
-      try{
-        localStorage.setItem(STORE_KEYS[0], payload);
-      }catch{}
+      try{ localStorage.setItem(STORE_KEYS[0], payload); }catch{}
 
-      // Best-effort legacy (do not fail if quota)
       for(let i=1;i<STORE_KEYS.length;i++){
         try{ localStorage.setItem(STORE_KEYS[i], payload); }catch{}
       }
 
-      // 2) Auto-snapshot ring buffer
-      autoSnapshot(meta.reason || "change");
+      // ✅ snapshot the state being saved (NOT the global 'state' reference)
+      autoSnapshot(s, meta.reason || "change");
 
-      // 3) last-good snapshot
       try{ localStorage.setItem(AUTO_KEYS.lastGood, payload); }catch{}
     }
 
-    function autoSnapshot(reason="change"){
+    function autoSnapshot(s, reason="change"){
       if(!saneAutoEnabled()) return;
 
       try{
@@ -2795,23 +3076,18 @@
           schema: SCHEMA_VERSION,
           reason,
           at: Date.now(),
-          state
+          state: s
         };
         localStorage.setItem(AUTO_KEYS.ringPrefix + idx, JSON.stringify(stamp));
         localStorage.setItem(AUTO_KEYS.ringIndex, String((idx + 1) % AUTO_RING_SIZE));
       }catch{}
     }
 
-    function saneAutoEnabled(){
-      // Auto-backup is always on in this build (Option A),
-      // but leaving a function here makes future toggles easy.
-      return true;
-    }
+    function saneAutoEnabled(){ return true; }
 
     function startPeriodicSafety(){
       setInterval(() => {
-        // periodic snapshot even if no UI action
-        autoSnapshot("periodic");
+        autoSnapshot(state, "periodic");
       }, PERIODIC_SNAPSHOT_MS);
 
       setInterval(() => {
@@ -2833,10 +3109,7 @@
                     : 0;
       if(!interval) return;
 
-      // Nudge if overdue and we haven't nudged recently
       if(last && now - last < interval) return;
-
-      // Avoid spamming: one nudge per 6 hours max
       if(lastNudge && (now - lastNudge) < 6*3600*1000) return;
 
       state.settings.lastReminderTs = now;
@@ -2850,7 +3123,7 @@
 
     // ---------- Formatting ----------
     function money(n){
-      const x = Number(n||0);
+      const x = safeNum(n);
       const sign = (x < 0) ? "-" : "";
       const abs = Math.abs(x);
       return sign + "₦" + abs.toLocaleString(undefined, { maximumFractionDigits: 0 });
@@ -2959,6 +3232,31 @@
         const url = URL.createObjectURL(blob);
         await navigator.serviceWorker.register(url);
       } catch {}
+    }
+
+    // ---------- Utils ----------
+    function safeNum(x){
+      if(x === null || x === undefined) return 0;
+      const s = String(x).replace(/,/g,"").trim();
+      const n = Number(s);
+      return (isFinite(n) ? n : 0);
+    }
+
+    function parseNum(x){
+      if(x === null || x === undefined) return null;
+      const s = String(x).trim();
+      if(s === "") return null;
+      const n = Number(s);
+      return isFinite(n) ? n : null;
+    }
+
+    function clampNum(n, lo, hi){
+      if(!isFinite(n)) return lo;
+      return Math.max(lo, Math.min(hi, n));
+    }
+
+    function round2(n){
+      return Math.round((n + Number.EPSILON) * 100) / 100;
     }
   </script>
 </body>
