@@ -981,6 +981,9 @@
     let settlementMode = false;
     let lastDeleted = null;
 
+    // ✅ Fiduciary drill-down state
+    let openFidDrill = null; // { mode:"goal"|"user", key:string } | null
+
     // ---------- Utilities ----------
     function save(){
       localStorage.setItem(KEY.DB, JSON.stringify(db));
@@ -1279,6 +1282,10 @@
       closeAllInlineLedgers();
       body.classList.add("open");
       openInline = { kind, bodyEl: body };
+
+      // Reset fiduciary drill when opening a different ledger
+      if (kind !== "fiduciary") openFidDrill = null;
+
       renderInlineLedger(kind, body);
 
       // Small scroll assist: keep the opened body in view
@@ -1296,8 +1303,6 @@
       const sub = document.createElement("div");
       sub.className = "ledgerSubline";
       body.appendChild(sub);
-
-      const maxRows = 10;
 
       if (kind === "liquidity"){
         const accts = getAccounts(list);
@@ -1330,16 +1335,17 @@
           empty.textContent = "No account movements yet";
           body.appendChild(empty);
         } else {
-          for (const a of accts.slice(0, maxRows)){
-            body.appendChild(renderTapRow({
+          for (const a of accts.slice(0, 18)){
+            const r = renderTapRow({
               kind:"entry",
-              entryId:"", // not clickable; we’ll make it non-sheet
+              entryId:"",
               title: a.name,
               meta: "Balance",
               amt: money(a.balance),
               accent:"var(--emerald)"
-            }));
-            body.lastChild.dataset.open = ""; // disable sheet open
+            });
+            r.dataset.open = ""; // disable sheet open
+            body.appendChild(r);
           }
         }
 
@@ -1507,10 +1513,14 @@
         return;
       }
 
+      // ✅ Fiduciary deep dive: By purpose + By person + drilldowns
       if (kind === "fiduciary"){
-        sub.textContent = "Latest fiduciary entries";
-        const tx = list.filter(e => e.type === "fiduciary").slice(0, 18);
-        if (!tx.length){
+        const fidAll = list.filter(e => e.type === "fiduciary");
+        const total = fidAll.reduce((acc,e)=> acc + (Number(e.total)||0), 0);
+
+        sub.textContent = `Total ${money(total)} • Entries ${fidAll.length}`;
+
+        if (!fidAll.length){
           const empty = document.createElement("div");
           empty.className = "tiny muted";
           empty.style.marginTop = "10px";
@@ -1518,17 +1528,171 @@
           body.appendChild(empty);
           return;
         }
-        for (const e of tx){
-          const meta = `${e.goal ? e.goal : "—"} • ${e.user ? e.user : "—"}${e.acct ? (" • " + e.acct) : ""}`;
-          body.appendChild(renderTapRow({
-            kind:"entry",
-            entryId:e.id,
-            title:(e.name || "Fiduciary"),
-            meta,
-            amt: money(Math.abs(Number(e.total)||0)),
-            accent:"var(--yellow)"
-          }));
+
+        // Build nested aggregates:
+        // goalAgg[goal] = { total, byUser: {user: total} }
+        // userAgg[user] = { total, byGoal: {goal: total} }
+        const goalAgg = Object.create(null);
+        const userAgg = Object.create(null);
+
+        for (const e of fidAll){
+          const g = (e.goal || "").trim() || "—";
+          const u = (e.user || "").trim() || "—";
+          const amt = Number(e.total)||0;
+
+          if (!goalAgg[g]) goalAgg[g] = { total:0, byUser:Object.create(null) };
+          goalAgg[g].total += amt;
+          goalAgg[g].byUser[u] = (goalAgg[g].byUser[u] || 0) + amt;
+
+          if (!userAgg[u]) userAgg[u] = { total:0, byGoal:Object.create(null) };
+          userAgg[u].total += amt;
+          userAgg[u].byGoal[g] = (userAgg[u].byGoal[g] || 0) + amt;
         }
+
+        const goals = Object.entries(goalAgg).sort((a,b)=> Math.abs(b[1].total) - Math.abs(a[1].total));
+        const users = Object.entries(userAgg).sort((a,b)=> Math.abs(b[1].total) - Math.abs(a[1].total));
+
+        // helper: small section header
+        const sectionTitle = (txt) => {
+          const s = document.createElement("div");
+          s.className = "tiny muted";
+          s.style.marginTop = "14px";
+          s.textContent = txt;
+          body.appendChild(s);
+        };
+
+        // helper: compact title for opened drill blocks
+        const miniTitle = (txt) => {
+          const s = document.createElement("div");
+          s.className = "ledgerSubline";
+          s.style.marginTop = "10px";
+          s.textContent = txt;
+          body.appendChild(s);
+        };
+
+        // helper: expand panel rows under a drill
+        const renderDrillRows = (rows, labelLeft, accent) => {
+          for (const [name,amt] of rows){
+            const r = document.createElement("div");
+            r.className = "row";
+            r.style.padding = "8px 0";
+            r.style.borderBottom = "1px solid #101014";
+
+            const L = document.createElement("div");
+            L.className = "rowLeft";
+            const nm = document.createElement("div");
+            nm.className = "rowName";
+            nm.style.fontSize = "11px";
+            nm.textContent = name;
+            const mt = document.createElement("div");
+            mt.className = "rowMeta";
+            mt.textContent = labelLeft;
+            L.appendChild(nm); L.appendChild(mt);
+
+            const R = document.createElement("div");
+            R.className = "rowAmt mask";
+            R.style.color = accent || "";
+            R.textContent = money(Math.abs(amt));
+
+            r.appendChild(L); r.appendChild(R);
+            body.appendChild(r);
+          }
+        };
+
+        // ---- BY PURPOSE ----
+        sectionTitle("By purpose");
+
+        for (const [g, obj] of goals.slice(0, 10)){
+          const isOpen = openFidDrill && openFidDrill.mode === "goal" && openFidDrill.key === g;
+
+          const top = renderTapRow({
+            kind:"entry",
+            entryId:"",
+            title: (isOpen ? "▼ " : "► ") + g,
+            meta: "Tap to drill down",
+            amt: money(Math.abs(obj.total)),
+            accent:"var(--yellow)"
+          });
+
+          top.dataset.open = "fiddrill";
+          top.dataset.mode = "goal";
+          top.dataset.key = g;
+
+          // IMPORTANT: prevent it from trying to open sheet
+          top.dataset.id = "";
+
+          body.appendChild(top);
+
+          if (isOpen){
+            const byU = Object.entries(obj.byUser).sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]));
+            miniTitle("Contributors");
+            renderDrillRows(byU.slice(0, 12), "Total contributed", "var(--yellow)");
+
+            miniTitle("Recent entries");
+            const recent = fidAll
+              .filter(e => ((e.goal||"").trim()||"—") === g)
+              .slice(0, 8);
+
+            for (const e of recent){
+              const meta = `${e.user ? e.user : "—"}${e.acct ? (" • " + e.acct) : ""} • ${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim();
+              body.appendChild(renderTapRow({
+                kind:"entry",
+                entryId:e.id,
+                title:(e.name || "Fiduciary"),
+                meta,
+                amt: money(Math.abs(Number(e.total)||0)),
+                accent:"var(--yellow)"
+              }));
+            }
+          }
+        }
+
+        // ---- BY PERSON ----
+        sectionTitle("By person");
+
+        for (const [u, obj] of users.slice(0, 10)){
+          const isOpen = openFidDrill && openFidDrill.mode === "user" && openFidDrill.key === u;
+
+          const top = renderTapRow({
+            kind:"entry",
+            entryId:"",
+            title: (isOpen ? "▼ " : "► ") + u,
+            meta: "Tap to drill down",
+            amt: money(Math.abs(obj.total)),
+            accent:"var(--yellow)"
+          });
+
+          top.dataset.open = "fiddrill";
+          top.dataset.mode = "user";
+          top.dataset.key = u;
+          top.dataset.id = "";
+
+          body.appendChild(top);
+
+          if (isOpen){
+            const byG = Object.entries(obj.byGoal).sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]));
+            miniTitle("Purposes");
+            renderDrillRows(byG.slice(0, 12), "Total contributed", "var(--yellow)");
+
+            miniTitle("Recent entries");
+            const recent = fidAll
+              .filter(e => ((e.user||"").trim()||"—") === u)
+              .slice(0, 8);
+
+            for (const e of recent){
+              const meta = `${e.goal ? e.goal : "—"}${e.acct ? (" • " + e.acct) : ""} • ${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim();
+              body.appendChild(renderTapRow({
+                kind:"entry",
+                entryId:e.id,
+                title:(e.name || "Fiduciary"),
+                meta,
+                amt: money(Math.abs(Number(e.total)||0)),
+                accent:"var(--yellow)"
+              }));
+            }
+          }
+        }
+
         return;
       }
     }
@@ -1866,8 +2030,6 @@
         if (!name) return;
         const n = String(name).trim();
         if (!n) return;
-        // Store as a tiny, non-impacting marker entry? No. We just refresh list by adding to cfg cache.
-        // Minimal: set to that name immediately (still works even if it isn't in list yet).
         sel.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`);
         sel.value = n;
         showToast("Account added");
@@ -2029,9 +2191,6 @@
           const category = $("category")?.value || "Other";
           base.bucket = bucket;
           base.category = category;
-
-          // NOTE: We no longer write b/s/l for NEW entries; liquidity is accounts-based.
-          // Legacy entries with b/s/l still work via DEFAULT_ACCT mapping.
         }
       }
       else if (formType === "asset"){
@@ -2061,7 +2220,7 @@
         base.goal = $("goal")?.value || "";
         base.user = $("user")?.value || "";
         const acct = ($("acct")?.value || "").trim();
-        if (acct && acct !== DEFAULT_ACCT) base.acct = acct; // optional; only affects liquidity if present
+        if (acct && acct !== DEFAULT_ACCT) base.acct = acct; // keep your current behavior
       }
 
       db.push(base);
@@ -2232,14 +2391,31 @@
       if (tile){
         const ft = tile.getAttribute("data-form");
         openForm(ft);
-        // Ensure dynamic fields appear for the default mode right away
         rebuildDynamic();
+        return;
+      }
+
+      // ✅ Fiduciary drill toggle (must be before sheet open)
+      const fd = t.closest("[data-open='fiddrill']");
+      if (fd){
+        const mode = fd.getAttribute("data-mode");
+        const key = fd.getAttribute("data-key");
+        if (!mode || !key) return;
+
+        if (openFidDrill && openFidDrill.mode === mode && openFidDrill.key === key){
+          openFidDrill = null;
+        } else {
+          openFidDrill = { mode, key };
+        }
+
+        refreshOpenInlineLedger();
         return;
       }
 
       const open = t.closest("[data-open='sheet']");
       if (open){
         const id = open.getAttribute("data-id");
+        if (!id) return; // prevent drill rows from trying to open sheet
         const entry = db.find(x => x.id === id);
         if (entry) openEntrySheet(entry);
         return;
@@ -2324,6 +2500,7 @@
           db = [];
           cfg = { reqPin:false, qtype:"all", stealth:false };
           pinObj = null;
+          openFidDrill = null;
           document.body.classList.remove("stealth");
           closeAllInlineLedgers();
           showToast("Reset");
