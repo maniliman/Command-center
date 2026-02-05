@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
-  <title>Sovereign v86</title>
+  <title>Sovereign v87</title>
 
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -111,6 +111,7 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
+      font-variant-numeric: tabular-nums;
     }
     .miniLbl{
       margin-top:6px;
@@ -226,7 +227,7 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* Compact list row (Search results, tight) */
+    /* Compact list row */
     .tightRow{
       display:flex;
       justify-content:space-between;
@@ -284,6 +285,34 @@
       font-size:50px;font-weight:900;
       padding:18px 0;
       font-variant-numeric: tabular-nums;
+    }
+
+    .hintBox{
+      margin-top:8px;
+      border:1px solid #151518;
+      border-radius:18px;
+      padding:12px;
+      background:rgba(255,255,255,.03);
+    }
+    .hintTitle{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .hintRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding-top:10px;
+      font-size:12px;
+      font-weight:900;
+      font-variant-numeric: tabular-nums;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
     .btn{
@@ -596,6 +625,8 @@
       cursor:pointer;
       user-select:none;
     }
+    .chipDanger{border-color:rgba(239,68,68,.35);color:var(--red);}
+    .chipGood{border-color:rgba(16,185,129,.35);color:var(--emerald);}
   </style>
 </head>
 
@@ -620,7 +651,7 @@
 
   <!-- TOP BAR -->
   <div class="topbar flex between center">
-    <div class="tiny muted">SOVEREIGN V86</div>
+    <div class="tiny muted">SOVEREIGN V87</div>
     <div class="flex gap8">
       <button class="iconbtn" title="Search" data-view="search" aria-label="Search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -775,6 +806,14 @@
       </div>
     </div>
 
+    <div class="hintBox hidden" id="amountHint">
+      <div class="hintTitle" id="amountHintTitle">Amount</div>
+      <div class="hintRow">
+        <div id="amountHintLeft" class="muted">—</div>
+        <div id="amountHintRight" class="mask">—</div>
+      </div>
+    </div>
+
     <input id="amount" class="bigAmount" type="number" inputmode="numeric" placeholder="0" />
     <div id="segWrap" style="margin:0 0 16px 0" class="hidden"></div>
     <div id="dyn" style="margin:0 0 16px 0"></div>
@@ -883,13 +922,62 @@
     </div>
 
     <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:12px;background:rgba(255,255,255,.03);">
-      <div class="tiny muted">Data</div>
+      <div class="tiny muted">Money rules</div>
+
+      <div class="flex between center" style="margin-top:12px;">
+        <div>
+          <div class="tiny muted">Allow overdraft</div>
+          <div style="margin-top:4px;opacity:.9;font-size:14px;">Let accounts go negative</div>
+        </div>
+        <div id="odSwitch" class="switch" role="switch" aria-checked="false"></div>
+      </div>
+
+      <div class="tiny muted" style="margin-top:10px;">
+        Default is OFF. With overdraft OFF, an expense is blocked if the account has insufficient funds.
+      </div>
+    </div>
+
+    <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:12px;background:rgba(255,255,255,.03);">
+      <div class="tiny muted">Backup & safety</div>
+
+      <div class="flex between center" style="margin-top:12px;">
+        <div>
+          <div class="tiny muted">Auto-backup</div>
+          <div style="margin-top:4px;opacity:.9;font-size:14px;">Local snapshots on every change</div>
+        </div>
+        <div id="abSwitch" class="switch on" role="switch" aria-checked="true" title="Always on"></div>
+      </div>
+
+      <div class="flex between center" style="margin-top:14px;">
+        <div>
+          <div class="tiny muted">Backup reminder cadence</div>
+          <div style="margin-top:4px;opacity:.9;font-size:14px;">Nudge me to export a backup</div>
+        </div>
+      </div>
+      <select id="backupCadence" class="input" style="font-size:12px;">
+        <option value="off">Off</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+      </select>
+
       <div class="flex gap12" style="margin-top:12px;">
         <button class="btn" style="flex:1" id="backupBtn">Backup</button>
         <button class="btn" style="flex:1;color:var(--emerald)" id="restoreBtn">Restore</button>
         <input id="file" type="file" class="hidden" />
       </div>
+
       <button class="btn btnWide danger" id="wipeBtn" style="margin-top:12px;">Wipe device data</button>
+
+      <div class="tiny muted" style="margin-top:10px;">
+        Restore is migration-safe and will snapshot your current state before applying.
+      </div>
+    </div>
+
+    <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:12px;background:rgba(255,255,255,.03);">
+      <div class="tiny muted">Diagnostics</div>
+      <button class="btn btnWide" id="diagBtn" style="margin-top:12px;">Show quick diagnostics</button>
+      <div id="diagOut" class="tiny muted" style="margin-top:10px;line-height:1.5;"></div>
     </div>
   </div>
 
@@ -919,24 +1007,40 @@
 
   <script>
     /***********************
-     * Sovereign v86 (single file)
-     * Changes included:
-     * - Liquidity drilldown: S/B/S columns only
-     * - Per-ledger search
-     * - Fiduciary: 2-column (By Purpose / By Person) with details panel
-     * - Debts: itemised by person
-     * - Assets: initial vs current vs growth + valuation history
-     * - Edit button (immutable-ish: old entry becomes superseded; new one created)
-     * - Global search: compact one-line rows
+     * Sovereign v87 (single file)
+     * Fixes + Additions:
+     * - Restore safety: schema versioning, migration, validation, pre-restore snapshot
+     * - No more "money()" absolute-value lie (negative balances show correctly)
+     * - Optional overdraft (default OFF) + insufficient funds guardrail
+     * - Net worth correctness (cash + assets), plus diagnostics
+     * - Asset form shows Initial vs Current and labels amount properly
+     * - Fiduciary drilldown cleaned: selected detail view w/ clear/back flow
+     * - IOU: rate, issued date, due date fields
+     * - Auto-backup locally on every state change + periodic snapshots
+     * - Backup cadence reminders (to prompt manual export)
      ***********************/
 
+    const SCHEMA_VERSION = 1;
+
     const STORE_KEYS = [
+      "sovereign_v87_state",
       "sovereign_v86_state",
       "sovereign_v86",
       "sovereign_state",
       "vault_state",
       "vault_v86"
     ];
+
+    const AUTO_KEYS = {
+      lastGood: "sovereign_last_good",
+      preRestore: "sovereign_pre_restore",
+      ringPrefix: "sovereign_auto_",
+      ringIndex: "sovereign_auto_index"
+    };
+
+    const AUTO_RING_SIZE = 10;
+    const PERIODIC_SNAPSHOT_MS = 15 * 60 * 1000; // 15 minutes
+    const REMINDER_CHECK_MS = 60 * 1000;         // every 1 minute
 
     const $ = (sel, root=document) => root.querySelector(sel);
     const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
@@ -993,6 +1097,10 @@
 
       // form
       formTitle: $("#formTitle"),
+      amountHint: $("#amountHint"),
+      amountHintTitle: $("#amountHintTitle"),
+      amountHintLeft: $("#amountHintLeft"),
+      amountHintRight: $("#amountHintRight"),
       amount: $("#amount"),
       segWrap: $("#segWrap"),
       dyn: $("#dyn"),
@@ -1027,6 +1135,13 @@
       backupBtn2: $("#backupBtn2"),
       restoreBtn2: $("#restoreBtn2"),
       file2: $("#file2"),
+
+      odSwitch: $("#odSwitch"),
+      abSwitch: $("#abSwitch"),
+      backupCadence: $("#backupCadence"),
+
+      diagBtn: $("#diagBtn"),
+      diagOut: $("#diagOut"),
 
       // sheet
       sheetScrim: $("#sheetScrim"),
@@ -1072,7 +1187,7 @@
       // hero long-press stealth toggle
       setupLongPress(el.heroCard, () => {
         state.settings.stealth = !state.settings.stealth;
-        saveState();
+        saveState("stealth_toggle");
         applyStealth(state.settings.stealth);
         syncStealthSwitch();
         toast(state.settings.stealth ? "Stealth ON" : "Stealth OFF");
@@ -1086,38 +1201,22 @@
         toggleLedger(key);
       });
 
-      // ledger body interactions (details + entry taps)
+      // ledger body interactions
       el.ledger.addEventListener("click", (e) => {
         const entryId = e.target.closest("[data-entry-id]")?.getAttribute("data-entry-id");
         if(entryId) return openSheet(entryId);
 
         const deb = e.target.closest("[data-debtor]");
-        if(deb) {
-          const who = deb.getAttribute("data-debtor");
-          showDebtDetails("debtors", who);
-          return;
-        }
+        if(deb) return showDebtDetails("debtors", deb.getAttribute("data-debtor"));
 
         const cre = e.target.closest("[data-creditor]");
-        if(cre) {
-          const who = cre.getAttribute("data-creditor");
-          showDebtDetails("creditors", who);
-          return;
-        }
+        if(cre) return showDebtDetails("creditors", cre.getAttribute("data-creditor"));
 
         const asset = e.target.closest("[data-asset]");
-        if(asset) {
-          const name = asset.getAttribute("data-asset");
-          showAssetDetails(name);
-          return;
-        }
+        if(asset) return showAssetDetails(asset.getAttribute("data-asset"));
 
         const upd = e.target.closest("[data-asset-update]");
-        if(upd) {
-          const name = upd.getAttribute("data-asset-update");
-          openForm("asset", { assetMode:"update", assetName:name });
-          return;
-        }
+        if(upd) return openForm("asset", { assetMode:"update", assetName: upd.getAttribute("data-asset-update") });
 
         const fidGoal = e.target.closest("[data-fid-goal]");
         if(fidGoal) {
@@ -1139,6 +1238,14 @@
         if(fidClear){
           fidDetail.mode = null; fidDetail.key = null;
           renderLedgerBody("fiduciary");
+          return;
+        }
+
+        const fidBack = e.target.closest("[data-fid-back]");
+        if(fidBack){
+          fidDetail.mode = null; fidDetail.key = null;
+          renderLedgerBody("fiduciary");
+          return;
         }
       });
 
@@ -1158,10 +1265,7 @@
       el.execBtn.addEventListener("click", executeForm);
 
       // search overlay
-      el.clearQ.addEventListener("click", () => {
-        el.q.value = "";
-        renderSearch();
-      });
+      el.clearQ.addEventListener("click", () => { el.q.value = ""; renderSearch(); });
       el.q.addEventListener("input", renderSearch);
       el.qStart.addEventListener("change", renderSearch);
       el.qEnd.addEventListener("change", renderSearch);
@@ -1170,7 +1274,7 @@
           $$(".badge[data-qtype]", el.search).forEach(x => x.style.opacity = ".55");
           b.style.opacity = "1";
           state.ui.searchType = b.getAttribute("data-qtype");
-          saveState();
+          saveState("search_type");
           renderSearch();
         });
       });
@@ -1182,16 +1286,32 @@
       // stealth switch
       el.stealthSwitch.addEventListener("click", () => {
         state.settings.stealth = !state.settings.stealth;
-        saveState();
+        saveState("stealth_switch");
         applyStealth(state.settings.stealth);
         syncStealthSwitch();
         toast(state.settings.stealth ? "Stealth ON" : "Stealth OFF");
       });
 
+      // settings: overdraft
+      el.odSwitch.addEventListener("click", () => {
+        state.settings.allowOverdraft = !state.settings.allowOverdraft;
+        saveState("overdraft_toggle");
+        syncOdSwitch();
+        toast(state.settings.allowOverdraft ? "Overdraft allowed" : "Overdraft blocked");
+        renderAll();
+      });
+
+      // settings: cadence
+      el.backupCadence.addEventListener("change", () => {
+        state.settings.backupCadence = el.backupCadence.value;
+        saveState("cadence_change");
+        toast("Reminder cadence updated");
+      });
+
       // settings: pin
       el.reqPin.addEventListener("change", async () => {
         state.settings.requirePin = !!el.reqPin.checked;
-        saveState();
+        saveState("pin_toggle");
         toast(state.settings.requirePin ? "PIN startup enabled" : "PIN startup disabled");
       });
 
@@ -1200,19 +1320,17 @@
         if(pin.length !== 4) return toast("Enter a 4-digit PIN");
         state.settings.pinHash = await hashPin(pin);
         el.setPin.value = "";
-        saveState();
+        saveState("pin_update");
         toast("PIN updated");
       });
 
       // auth unlock
       el.unlockBtn.addEventListener("click", unlock);
-      el.authPin.addEventListener("keydown", (e) => {
-        if(e.key === "Enter") unlock();
-      });
+      el.authPin.addEventListener("keydown", (e) => { if(e.key === "Enter") unlock(); });
 
       // backup/restore (both places)
-      el.backupBtn.addEventListener("click", backup);
-      el.backupBtn2.addEventListener("click", backup);
+      el.backupBtn.addEventListener("click", () => backup(true));
+      el.backupBtn2.addEventListener("click", () => backup(true));
 
       el.restoreBtn.addEventListener("click", () => el.file.click());
       el.restoreBtn2.addEventListener("click", () => el.file2.click());
@@ -1224,6 +1342,21 @@
         if(!confirm("Wipe all device data for this app?")) return;
         wipeState();
         location.reload();
+      });
+
+      // diagnostics
+      el.diagBtn.addEventListener("click", () => {
+        const d = derive();
+        el.diagOut.innerHTML = `
+          Entries: <b>${state.entries.length}</b><br/>
+          Active: <b>${d.entriesActive.length}</b><br/>
+          Spend: <b>${money(d.accounts.spend)}</b><br/>
+          Bills: <b>${money(d.accounts.bills)}</b><br/>
+          Savings: <b>${money(d.accounts.savings)}</b><br/>
+          Liquidity: <b>${money(d.liquidityTotal)}</b><br/>
+          Assets: <b>${money(d.assetsTotal)}</b><br/>
+          Net worth: <b>${money(d.netWorth)}</b><br/>
+        `;
       });
 
       // sheet
@@ -1255,6 +1388,7 @@
 
       // initial view gating
       syncStealthSwitch();
+      syncOdSwitch();
       hydrateSearchTypeUI();
       if(state.settings.requirePin && state.settings.pinHash){
         showView("auth");
@@ -1262,14 +1396,19 @@
         showView("dashboard");
       }
 
+      // periodic snapshots + reminder checks
+      startPeriodicSafety();
+
       // service worker best-effort
       registerSW();
+
+      // nudge on boot if needed
+      setTimeout(checkBackupReminder, 1200);
     }
 
     // ---------- Views ----------
     function showView(view){
       currentView = view;
-      // overlays
       VIEWS.forEach(v => {
         if(v === "dashboard") return;
         const node = el[v];
@@ -1278,7 +1417,7 @@
         node.setAttribute("aria-hidden", v !== view ? "true" : "false");
       });
 
-      el.dashboard.style.display = (view === "dashboard") ? "block" : "block"; // dashboard stays under overlays
+      el.dashboard.style.display = "block";
 
       // fab mode
       if(view === "dashboard"){
@@ -1312,14 +1451,12 @@
 
     // ---------- Ledger open/close ----------
     function toggleLedger(key){
-      // close if already open
       if(openLedger === key){
         const body = $(`[data-ledger-body="${key}"]`);
         body?.classList.remove("open");
         openLedger = null;
         return;
       }
-      // close others
       $$(`.ledgerBody.open`).forEach(b => b.classList.remove("open"));
       openLedger = key;
       const body = $(`[data-ledger-body="${key}"]`);
@@ -1331,27 +1468,27 @@
     function renderAll(){
       const d = derive();
 
-      // hero
       el.nw.textContent = money(d.netWorth);
+
+      // cash display color reacts to negative liquidity
       el.cash.textContent = money(d.liquidityTotal);
+      el.cash.style.color = (d.liquidityTotal < 0) ? "var(--red)" : "var(--emerald)";
+
       el.assets.textContent = money(d.assetsTotal);
       el.debt.textContent = money(d.debtTotal);
 
-      // ledger totals
       el.liq.textContent = money(d.liquidityTotal);
+      el.liq.style.color = (d.liquidityTotal < 0) ? "var(--red)" : "var(--emerald)";
+
       el.exTotal.textContent = money(d.expensesTotal);
       el.asTotal.textContent = money(d.assetsTotal);
       el.dbTotal.textContent = money(d.debtorsOutstanding);
       el.crTotal.textContent = money(d.creditorsOutstanding);
       el.fidTotal.textContent = money(d.fidTotal);
 
-      // open ledger body refresh
       if(openLedger) renderLedgerBody(openLedger);
 
-      // audit
       renderAudit();
-
-      // datalist suggestions
       renderDatalist();
     }
 
@@ -1363,22 +1500,30 @@
       const filter = (ledgerFilters[key] || "").trim().toLowerCase();
 
       if(key === "liquidity"){
+        const cSpend = (d.accounts.spend < 0) ? "var(--red)" : "var(--emerald)";
+        const cBills = (d.accounts.bills < 0) ? "var(--red)" : "var(--emerald)";
+        const cSav = (d.accounts.savings < 0) ? "var(--red)" : "var(--emerald)";
         body.innerHTML = `
           <div class="ledgerSubline">Accounts</div>
           <div class="cols3">
             <div class="colCard">
               <div class="lbl">Spend</div>
-              <div class="amt mask" style="color:var(--emerald)">${money(d.accounts.spend)}</div>
+              <div class="amt mask" style="color:${cSpend}">${money(d.accounts.spend)}</div>
             </div>
             <div class="colCard">
               <div class="lbl">Bills</div>
-              <div class="amt mask" style="color:var(--emerald)">${money(d.accounts.bills)}</div>
+              <div class="amt mask" style="color:${cBills}">${money(d.accounts.bills)}</div>
             </div>
             <div class="colCard">
               <div class="lbl">Savings</div>
-              <div class="amt mask" style="color:var(--emerald)">${money(d.accounts.savings)}</div>
+              <div class="amt mask" style="color:${cSav}">${money(d.accounts.savings)}</div>
             </div>
           </div>
+          ${
+            (d.accounts.spend < 0 || d.accounts.bills < 0 || d.accounts.savings < 0)
+              ? `<div class="ledgerSubline" style="margin-top:10px;color:var(--red);">Overdrawn account detected</div>`
+              : ""
+          }
         `;
         return;
       }
@@ -1494,11 +1639,39 @@
           .filter(p => (p.key||"").toLowerCase().includes(filter))
           .sort((a,b) => Math.abs(b.balance) - Math.abs(a.balance));
 
-        const detail = (fidDetail.mode && fidDetail.key) ? buildFidDetail(d.entriesActive, fidDetail.mode, fidDetail.key) : null;
+        const detail = (fidDetail.mode && fidDetail.key)
+          ? buildFidDetail(d.entriesActive, fidDetail.mode, fidDetail.key)
+          : null;
 
+        // Cleaner: when detail is selected, show a top detail view + back/clear,
+        // and keep lists below (so you can change selection without confusion).
         body.innerHTML = `
           ${ledgerSearchBox("fiduciary", "Search goals or people…")}
-          <div class="ledgerSubline">Two views: By Purpose • By Person</div>
+          <div class="ledgerSubline">Tap a purpose or person to drill down</div>
+
+          ${
+            detail ? `
+              <div class="detailBox">
+                <div class="detailTitle">
+                  <div class="t">${detail.mode === "goal" ? "Purpose" : "Person"}: ${esc(detail.key)}</div>
+                  <div class="s mask" style="color:var(--yellow)">${money(detail.balance)}</div>
+                </div>
+
+                <div class="kv"><div class="kvL">Total in</div><div class="kvR mask">${money(detail.totals.in)}</div></div>
+                <div class="kv"><div class="kvL">Total out</div><div class="kvR mask">${money(detail.totals.out)}</div></div>
+
+                <div class="ledgerSubline" style="margin-top:12px;">Itemised entries</div>
+                <div>
+                  ${detail.entries.length ? detail.entries.map(e => tightRow(e, {compact:true})).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
+                </div>
+
+                <div class="flex gap8" style="margin-top:12px;flex-wrap:wrap;">
+                  <span class="chipBtn chipGood" data-fid-back="1">Back</span>
+                  <span class="chipBtn chipDanger" data-fid-clear="1">Clear</span>
+                </div>
+              </div>
+            ` : ""
+          }
 
           <div class="twoCol">
             <div class="panel">
@@ -1531,8 +1704,6 @@
               </div>
             </div>
           </div>
-
-          ${detail ? renderFidDetail(detail) : ""}
         `;
         wireLedgerSearch(body, "fiduciary");
         return;
@@ -1550,6 +1721,7 @@
             e.kind, e.desc, e.note,
             e.meta?.account, e.meta?.person, e.meta?.goal,
             e.meta?.assetName, e.meta?.action,
+            e.meta?.rate, e.meta?.issuedTs, e.meta?.dueTs,
             e.status, e.supersedesId
           ].join(" ").toLowerCase();
           return blob.includes(q);
@@ -1568,7 +1740,7 @@
       const end = el.qEnd.value ? (new Date(el.qEnd.value).getTime() + 24*3600*1000 - 1) : null;
 
       const entries = state.entries
-        .filter(e => e.status !== "deleted") // keep search clean
+        .filter(e => e.status !== "deleted")
         .filter(e => {
           if(type === "all") return true;
           if(type === "income") return e.kind === "income";
@@ -1583,10 +1755,7 @@
           if(end && e.ts > end) return false;
           return true;
         })
-        .filter(e => {
-          if(!q) return true;
-          return searchHit(e, q);
-        })
+        .filter(e => !q ? true : searchHit(e, q))
         .sort((a,b) => b.ts - a.ts)
         .slice(0, 200);
 
@@ -1598,16 +1767,17 @@
     // ---------- Detail Panels ----------
     function showDebtDetails(mode, who){
       state.ui.debtDetail = { mode, who };
+      saveState("debt_detail");
       renderLedgerBody(mode);
     }
 
     function showAssetDetails(name){
       state.ui.assetDetailName = name;
+      saveState("asset_detail");
       renderLedgerBody("assets");
     }
 
     function renderDebtDetail(detail){
-      // detail: {mode:'debtors'|'creditors', who:string, outstanding, given, recovered, entries:[]}
       const title = detail.mode === "debtors" ? "Debtor details" : "Creditor details";
       const color = detail.mode === "debtors" ? "var(--emerald)" : "var(--red)";
 
@@ -1650,31 +1820,6 @@
       `;
     }
 
-    function renderFidDetail(detail){
-      // detail: {mode:'goal'|'person', key, balance, totals:{in,out}, entries:[]}
-      const label = detail.mode === "goal" ? "Purpose" : "Person";
-      return `
-        <div class="detailBox">
-          <div class="detailTitle">
-            <div class="t">${label}: ${esc(detail.key)}</div>
-            <div class="s mask" style="color:var(--yellow)">${money(detail.balance)}</div>
-          </div>
-
-          <div class="kv"><div class="kvL">Total in</div><div class="kvR mask">${money(detail.totals.in)}</div></div>
-          <div class="kv"><div class="kvL">Total out</div><div class="kvR mask">${money(detail.totals.out)}</div></div>
-
-          <div class="ledgerSubline" style="margin-top:12px;">Itemised entries</div>
-          <div>
-            ${detail.entries.length ? detail.entries.map(e => tightRow(e, {compact:true})).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
-          </div>
-
-          <div style="margin-top:10px;">
-            <span class="chipBtn" data-fid-clear="1">Clear selection</span>
-          </div>
-        </div>
-      `;
-    }
-
     // ---------- Ledger Search box ----------
     function ledgerSearchBox(key, placeholder){
       return `
@@ -1695,7 +1840,6 @@
         ledgerFilters[key] = inp.value || "";
         renderLedgerBody(key);
       }, { once:true });
-      // caret to end on rerender is fine.
     }
 
     // ---------- Form ----------
@@ -1703,14 +1847,12 @@
       currentForm = kind;
       currentEditId = null;
 
-      // If opening from entry (edit or duplicate)
       if(opts.fromEntry){
         const e = opts.fromEntry;
-        if(!opts.duplicate) currentEditId = e.id; // edit mode: supersede old
+        if(!opts.duplicate) currentEditId = e.id;
         currentForm = e.kind;
       }
 
-      // title
       const title = (kind === "income") ? "Inflow"
                   : (kind === "expense") ? "Expense"
                   : (kind === "asset") ? "Asset"
@@ -1730,21 +1872,31 @@
       el.desc.placeholder = "Description";
       el.amount.placeholder = "0";
 
-      // build segments + dynamic fields
+      // hint reset
+      el.amountHint.classList.add("hidden");
+      el.amountHintTitle.textContent = "Amount";
+      el.amountHintLeft.textContent = "—";
+      el.amountHintRight.textContent = "—";
+
       const pre = opts.fromEntry ? opts.fromEntry : null;
 
       if(kind === "income" || kind === "expense"){
-        // account segment
         const acct = (opts.fromEntry?.meta?.account) || state.ui.lastAccount || "spend";
         buildSegment("Account", ["Spend","Bills","Savings"], acct, (val) => {
           state.ui.lastAccount = val;
-          saveState();
+          saveState("last_account");
         });
+
+        el.amountHint.classList.remove("hidden");
+        el.amountHintTitle.textContent = (kind === "income") ? "Inflow" : "Expense";
+        el.amountHintLeft.textContent = "Account";
+        el.amountHintRight.textContent = acct.toUpperCase();
+
         el.desc.placeholder = "Description";
       }
 
       if(kind === "asset"){
-        const assetMode = opts.assetMode || pre?.meta?.action || "new"; // 'new'|'update'
+        const assetMode = opts.assetMode || pre?.meta?.action || "new";
         buildSegment("Mode", ["New","Update"], assetMode === "update" ? "update":"new", () => {});
         const assetName = opts.assetName || pre?.meta?.assetName || "";
         el.dyn.innerHTML = `
@@ -1752,22 +1904,68 @@
           <datalist id="assetList"></datalist>
         `;
         el.desc.placeholder = "Description (optional)";
+
+        // Asset hint: show current/initial if exists
+        if(assetName){
+          const snap = getAssetSnapshot(assetName);
+          if(snap){
+            el.amountHint.classList.remove("hidden");
+            if(assetMode === "update"){
+              el.amountHintTitle.textContent = "Asset update";
+              el.amount.placeholder = "New current value";
+              el.amountHintLeft.textContent = `Current: ${money(snap.current)} • Initial: ${money(snap.initial)}`;
+              el.amountHintRight.textContent = snap.lastTs ? fmtDateTime(snap.lastTs) : "—";
+            } else {
+              el.amountHintTitle.textContent = "Asset (new)";
+              el.amount.placeholder = "Initial value";
+              el.amountHintLeft.textContent = `Existing current: ${money(snap.current)}`;
+              el.amountHintRight.textContent = "You’re creating a new baseline";
+            }
+          }
+        } else {
+          el.amountHint.classList.remove("hidden");
+          el.amountHintTitle.textContent = (assetMode === "update") ? "Asset update" : "Asset (new)";
+          el.amount.placeholder = (assetMode === "update") ? "New current value" : "Initial value";
+          el.amountHintLeft.textContent = "Tip";
+          el.amountHintRight.textContent = (assetMode === "update") ? "Pick an existing asset name" : "Set your first value";
+        }
       }
 
       if(kind === "borrow" || kind === "lend"){
-        // mode segment: new vs settle
-        const action = pre?.meta?.action || "new"; // 'new'|'settle'
+        const action = pre?.meta?.action || "new";
         buildSegment("Mode", ["New","Settle"], action === "settle" ? "settle":"new", () => {});
         const who = pre?.meta?.person || "";
+        const rate = pre?.meta?.rate ?? "";
+        const issuedTs = pre?.meta?.issuedTs ? fmtISODate(pre.meta.issuedTs) : "";
+        const dueTs = pre?.meta?.dueTs ? fmtISODate(pre.meta.dueTs) : "";
+
         el.dyn.innerHTML = `
           <input id="person" class="input" placeholder="Person" value="${escAttr(who)}" list="personList" />
           <datalist id="personList"></datalist>
+
+          <div id="iouExtra">
+            <input id="rate" class="input" type="number" inputmode="decimal" placeholder="Interest rate % (optional)" value="${escAttr(rate)}" />
+            <input id="issued" class="input" type="date" placeholder="Date issued (optional)" value="${escAttr(issuedTs)}" />
+            <input id="due" class="input" type="date" placeholder="Due date (optional)" value="${escAttr(dueTs)}" />
+          </div>
         `;
         el.desc.placeholder = "Description (optional)";
+
+        // Hide extra fields when settling (keeps the settle flow clean)
+        setTimeout(() => {
+          const segVal = getSegmentValue();
+          const box = $("#iouExtra");
+          if(box) box.style.display = (segVal === "settle") ? "none" : "block";
+          const seg = $("#seg", el.segWrap);
+          seg?.addEventListener("click", () => {
+            const v = getSegmentValue();
+            if(box) box.style.display = (v === "settle") ? "none" : "block";
+          });
+        }, 0);
       }
 
       if(kind === "fid"){
-        const action = pre?.meta?.action || "in"; // 'in'|'out'
+        const action = pre?.meta?.action || "in";
         buildSegment("Direction", ["In","Out"], action, () => {});
         const goal = pre?.meta?.goal || "";
         const person = pre?.meta?.person || "";
@@ -1780,16 +1978,13 @@
         el.desc.placeholder = "Description (optional)";
       }
 
-      // prefill common fields
       if(pre){
         el.amount.value = pre.amount ?? "";
         el.desc.value = pre.desc ?? "";
         el.note.value = pre.note ?? "";
       }
 
-      // fill datalists inside dyn
       fillDynamicDatalists();
-
       showView("form");
       el.amount.focus();
     }
@@ -1821,6 +2016,13 @@
         $$("button", seg).forEach(x => x.classList.remove("on"));
         b.classList.add("on");
         onChange(b.getAttribute("data-seg"));
+
+        // update hint for income/expense account view
+        if(currentForm === "income" || currentForm === "expense"){
+          el.amountHint.classList.remove("hidden");
+          el.amountHintLeft.textContent = "Account";
+          el.amountHintRight.textContent = (b.getAttribute("data-seg") || "").toUpperCase();
+        }
       });
     }
 
@@ -1837,12 +2039,20 @@
 
       const desc = (el.desc.value || "").trim();
       const note = (el.note.value || "").trim();
-
-      // when editing, we create new entry and supersede old
       const editOf = currentEditId ? getEntryById(currentEditId) : null;
 
       if(currentForm === "income" || currentForm === "expense"){
         const account = getSegmentValue() || state.ui.lastAccount || "spend";
+
+        // Guardrail: block spending from empty account unless overdraft is allowed
+        if(currentForm === "expense" && !state.settings.allowOverdraft){
+          const d = derive();
+          const bal = Number(d.accounts[account] || 0);
+          if(amt > bal){
+            return toast(`Insufficient funds in ${account.toUpperCase()} (${money(bal)})`);
+          }
+        }
+
         const entry = makeEntry(currentForm, amt, desc, note, { account });
         commitEntry(entry, editOf);
         showView("dashboard");
@@ -1852,9 +2062,10 @@
       }
 
       if(currentForm === "asset"){
-        const mode = getSegmentValue() || "new"; // 'new'|'update'
+        const mode = getSegmentValue() || "new";
         const assetName = ($("#assetName")?.value || "").trim();
         if(!assetName) return toast("Enter asset name");
+
         const entry = makeEntry("asset", amt, desc, note, { action: mode, assetName });
         commitEntry(entry, editOf);
         showView("dashboard");
@@ -1864,13 +2075,29 @@
       }
 
       if(currentForm === "borrow" || currentForm === "lend"){
-        const mode = getSegmentValue() || "new"; // 'new'|'settle'
+        const mode = getSegmentValue() || "new";
         const who = ($("#person")?.value || "").trim();
         if(!who) return toast("Enter person");
+
+        // Optional extras (only meaningful for "new")
+        let rate = null, issuedTs = null, dueTs = null;
+        if(mode === "new"){
+          const r = ($("#rate")?.value || "").trim();
+          rate = r === "" ? null : Number(r);
+          const issued = ($("#issued")?.value || "").trim();
+          const due = ($("#due")?.value || "").trim();
+          issuedTs = issued ? new Date(issued + "T00:00:00").getTime() : null;
+          dueTs = due ? new Date(due + "T00:00:00").getTime() : null;
+          if(rate !== null && (!isFinite(rate) || rate < 0)) return toast("Invalid rate");
+        }
+
         const entry = makeEntry("iou", amt, desc, note, {
           direction: currentForm === "lend" ? "debtors" : "creditors",
           action: mode,
-          person: who
+          person: who,
+          rate,
+          issuedTs,
+          dueTs
         });
         commitEntry(entry, editOf);
         showView("dashboard");
@@ -1911,7 +2138,6 @@
     }
 
     function commitEntry(newEntry, oldEntry){
-      // immutable-ish: do not overwrite old; mark old as superseded and add new referencing it
       if(oldEntry){
         const idx = state.entries.findIndex(x => x.id === oldEntry.id);
         if(idx !== -1){
@@ -1922,21 +2148,21 @@
       }
       state.entries.push(newEntry);
 
-      // remember last used values
       if(newEntry.kind === "asset") state.ui.lastAsset = newEntry.meta.assetName || state.ui.lastAsset;
       if(newEntry.kind === "iou") state.ui.lastPerson = newEntry.meta.person || state.ui.lastPerson;
       if(newEntry.kind === "fid") {
         state.ui.lastGoal = newEntry.meta.goal || state.ui.lastGoal;
         state.ui.lastPerson2 = newEntry.meta.person || state.ui.lastPerson2;
       }
-      saveState();
+
+      saveState("commit_entry");
     }
 
     function deleteEntry(id){
       const idx = state.entries.findIndex(e => e.id === id);
       if(idx === -1) return;
       state.entries[idx] = { ...state.entries[idx], status:"deleted" };
-      saveState();
+      saveState("delete_entry");
     }
 
     // ---------- Derivations ----------
@@ -1944,7 +2170,6 @@
       const entriesAll = state.entries.slice().sort((a,b) => a.ts - b.ts);
       const entriesActive = entriesAll.filter(e => e.status === "active");
 
-      // Accounts from income/expense only (S/B/S)
       const accounts = { spend:0, bills:0, savings:0 };
       let expensesTotal = 0;
 
@@ -1962,7 +2187,7 @@
 
       const liquidityTotal = accounts.spend + accounts.bills + accounts.savings;
 
-      // Assets (initial vs current)
+      // Assets
       const assetEntries = entriesActive.filter(e => e.kind === "asset" && e.meta?.assetName);
       const assetsMap = new Map();
       for(const e of assetEntries){
@@ -1978,68 +2203,58 @@
         const current = list[list.length-1]?.amount || 0;
         const growth = current - initial;
         const history = list.slice().sort((a,b)=> b.ts - a.ts);
-        assetsList.push({ name, initial, current, growth, history });
+        assetsList.push({ name, initial, current, growth, history, lastTs: list[list.length-1]?.ts || null });
       }
 
       const assetsTotal = assetsList.reduce((s,a)=> s + (a.current||0), 0);
 
-      // Debt (IOU) grouping + itemised
+      // Debt (IOU)
       const iouEntries = entriesActive.filter(e => e.kind === "iou");
-      const debtorsMap = new Map();   // person -> {given, recovered, entries}
+      const debtorsMap = new Map();
       const creditorsMap = new Map();
 
       for(const e of iouEntries){
-        const dir = e.meta?.direction; // 'debtors'|'creditors'
+        const dir = e.meta?.direction;
         const who = (e.meta?.person || "").trim();
         if(!who) continue;
         const target = (dir === "creditors") ? creditorsMap : debtorsMap;
         if(!target.has(who)) target.set(who, { name: who, given:0, recovered:0, entries:[] });
         const box = target.get(who);
-        const action = e.meta?.action || "new"; // 'new' increases outstanding, 'settle' reduces
+        const action = e.meta?.action || "new";
         if(action === "settle") box.recovered += e.amount;
         else box.given += e.amount;
         box.entries.push(e);
       }
 
-      const debtorsList = Array.from(debtorsMap.values()).map(p => ({
-        ...p,
-        outstanding: Math.max(0, p.given - p.recovered)
-      }));
-      const creditorsList = Array.from(creditorsMap.values()).map(p => ({
-        ...p,
-        outstanding: Math.max(0, p.given - p.recovered)
-      }));
+      const debtorsList = Array.from(debtorsMap.values()).map(p => ({ ...p, outstanding: Math.max(0, p.given - p.recovered) }));
+      const creditorsList = Array.from(creditorsMap.values()).map(p => ({ ...p, outstanding: Math.max(0, p.given - p.recovered) }));
 
       const debtorsOutstanding = debtorsList.reduce((s,p)=> s + p.outstanding, 0);
       const creditorsOutstanding = creditorsList.reduce((s,p)=> s + p.outstanding, 0);
       const debtTotal = debtorsOutstanding + creditorsOutstanding;
 
-      // Fiduciary 2-column grouping
+      // Fiduciary
       const fidEntries = entriesActive.filter(e => e.kind === "fid");
-      const fidGoalMap = new Map();   // goal -> balance
-      const fidPersonMap = new Map(); // person -> balance
+      const fidGoalMap = new Map();
+      const fidPersonMap = new Map();
 
       let fidTotal = 0;
       for(const e of fidEntries){
         const goal = (e.meta?.goal || "").trim();
         const person = (e.meta?.person || "").trim();
-        const dir = e.meta?.action || "in"; // 'in' adds, 'out' subtracts
+        const dir = e.meta?.action || "in";
         const signed = (dir === "out") ? -e.amount : e.amount;
 
         fidTotal += signed;
 
-        if(goal){
-          fidGoalMap.set(goal, (fidGoalMap.get(goal) || 0) + signed);
-        }
-        if(person){
-          fidPersonMap.set(person, (fidPersonMap.get(person) || 0) + signed);
-        }
+        if(goal) fidGoalMap.set(goal, (fidGoalMap.get(goal) || 0) + signed);
+        if(person) fidPersonMap.set(person, (fidPersonMap.get(person) || 0) + signed);
       }
 
       const fidGoals = Array.from(fidGoalMap.entries()).map(([key,balance]) => ({ key, balance }));
       const fidPersons = Array.from(fidPersonMap.entries()).map(([key,balance]) => ({ key, balance }));
 
-      // detail panels requested in UI state
+      // detail panels
       let debtDetail = null;
       if(state.ui.debtDetail?.mode && state.ui.debtDetail?.who){
         const mode = state.ui.debtDetail.mode;
@@ -2066,7 +2281,6 @@
         if(a) assetDetail = a;
       }
 
-      // net worth (cash + assets only; IOU + fiduciary excluded by design)
       const netWorth = liquidityTotal + assetsTotal;
 
       return {
@@ -2086,7 +2300,8 @@
         fidGoals,
         fidPersons,
         debtDetail,
-        assetDetail
+        assetDetail,
+        netWorth
       };
     }
 
@@ -2112,6 +2327,12 @@
       return { mode, key, balance, totals:{in:tin, out:tout}, entries: hits };
     }
 
+    function getAssetSnapshot(name){
+      const d = derive();
+      const a = d.assetsList.find(x => x.name === name);
+      return a ? { initial:a.initial, current:a.current, lastTs:a.lastTs } : null;
+    }
+
     // ---------- Sheet ----------
     function openSheet(id){
       const e = getEntryById(id);
@@ -2128,12 +2349,14 @@
         ${e.meta?.assetName ? `<div class="kv"><div class="kvL">Asset</div><div class="kvR">${esc(e.meta.assetName)}</div></div>` : ""}
         ${e.meta?.person ? `<div class="kv"><div class="kvL">Person</div><div class="kvR">${esc(e.meta.person)}</div></div>` : ""}
         ${e.meta?.goal ? `<div class="kv"><div class="kvL">Purpose</div><div class="kvR">${esc(e.meta.goal)}</div></div>` : ""}
+        ${(e.kind==="iou" && e.meta?.rate!=null) ? `<div class="kv"><div class="kvL">Rate</div><div class="kvR">${esc(String(e.meta.rate))}%</div></div>` : ""}
+        ${(e.kind==="iou" && e.meta?.issuedTs) ? `<div class="kv"><div class="kvL">Issued</div><div class="kvR">${fmtDate(e.meta.issuedTs)}</div></div>` : ""}
+        ${(e.kind==="iou" && e.meta?.dueTs) ? `<div class="kv"><div class="kvL">Due</div><div class="kvR">${fmtDate(e.meta.dueTs)}</div></div>` : ""}
         ${e.desc ? `<div class="kv"><div class="kvL">Desc</div><div class="kvR">${esc(e.desc)}</div></div>` : ""}
         ${e.note ? `<div class="kv"><div class="kvL">Note</div><div class="kvR">${esc(e.note)}</div></div>` : ""}
         ${e.supersedesId ? `<div class="kv"><div class="kvL">Edits</div><div class="kvR">${esc(e.supersedesId)}</div></div>` : ""}
       `;
 
-      // actions availability
       const canEdit = e.status === "active";
       el.editBtn.disabled = !canEdit;
       el.delBtn.disabled = (e.status === "deleted");
@@ -2156,8 +2379,6 @@
       const amtColor = amountColor(e);
       const statusBadge = (e.status === "superseded") ? `<span class="badge bRev">REV</span>` :
                           (e.status === "deleted") ? `<span class="badge bRev">DEL</span>` : "";
-
-      // One-line-ish: Date • Name • Amount (compact)
       const metaLine = compactMeta(e);
 
       return `
@@ -2232,10 +2453,11 @@
         parts.push(e.meta?.action === "update" ? "update" : "new");
       }
       if(e.kind === "iou"){
-        const who = e.meta?.person ? `• ${e.meta.person}` : "";
         const act = e.meta?.action === "settle" ? "settle" : "new";
         const dir = e.meta?.direction === "creditors" ? "you owe" : "owed to you";
-        parts.push(`${dir} • ${act}${who}`);
+        const r = (e.meta?.rate!=null && isFinite(e.meta.rate)) ? ` • ${e.meta.rate}%` : "";
+        const due = e.meta?.dueTs ? ` • due ${fmtDate(e.meta.dueTs)}` : "";
+        parts.push(`${dir} • ${act}${r}${due}`);
       }
       if(e.kind === "fid"){
         const g = e.meta?.goal || "";
@@ -2252,7 +2474,8 @@
       const blob = [
         e.kind, e.desc, e.note,
         e.meta?.account, e.meta?.person, e.meta?.goal,
-        e.meta?.assetName, e.meta?.action, e.status
+        e.meta?.assetName, e.meta?.action, e.status,
+        e.meta?.rate, e.meta?.issuedTs, e.meta?.dueTs
       ].join(" ").toLowerCase();
       return blob.includes(q);
     }
@@ -2261,7 +2484,6 @@
       const d = derive();
       const names = new Set();
 
-      // descriptions
       d.entriesActive.forEach(e => {
         if(e.desc) names.add(e.desc);
         if(e.meta?.person) names.add(e.meta.person);
@@ -2274,7 +2496,6 @@
     }
 
     function fillDynamicDatalists(){
-      // assetList, personList, goalList, etc if present
       const d = derive();
 
       const assetNames = Array.from(new Set(d.assetsList.map(a => a.name))).sort();
@@ -2313,7 +2534,9 @@
 
     function hydrateSettingsUI(){
       el.reqPin.checked = !!state.settings.requirePin;
-      // no pin shown
+      el.backupCadence.value = state.settings.backupCadence || "off";
+      syncStealthSwitch();
+      syncOdSwitch();
     }
 
     function applyStealth(on){
@@ -2326,13 +2549,18 @@
       el.stealthSwitch.setAttribute("aria-checked", on ? "true" : "false");
     }
 
+    function syncOdSwitch(){
+      const on = !!state.settings.allowOverdraft;
+      el.odSwitch.classList.toggle("on", on);
+      el.odSwitch.setAttribute("aria-checked", on ? "true" : "false");
+    }
+
     // ---------- Auth ----------
     async function unlock(){
       const pin = (el.authPin.value || "").trim();
       if(pin.length !== 4) return toast("Enter 4 digits");
       const h = await hashPin(pin);
       if(!state.settings.pinHash){
-        // no stored pin: treat as unlocked
         toast("No PIN set");
         showView("dashboard");
         el.authPin.value = "";
@@ -2351,32 +2579,49 @@
         const arr = Array.from(new Uint8Array(buf));
         return arr.map(b => b.toString(16).padStart(2,"0")).join("");
       } catch {
-        // fallback best-effort
         return btoa(pin.split("").reverse().join(""));
       }
     }
 
     // ---------- Backup / Restore ----------
-    function backup(){
+    function backup(manual=false){
+      // Manual export backup file
       const payload = JSON.stringify(state, null, 2);
       const blob = new Blob([payload], { type:"application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `sovereign_v86_backup_${new Date().toISOString().slice(0,10)}.json`;
+      a.download = `sovereign_v87_backup_${new Date().toISOString().slice(0,10)}.json`;
       a.click();
       URL.revokeObjectURL(a.href);
+
+      if(manual){
+        state.settings.lastManualBackupTs = Date.now();
+        state.settings.lastReminderTs = 0;
+        saveState("manual_backup");
+      }
       toast("Backup downloaded");
     }
 
     async function restoreFile(file){
       if(!file) return;
+
+      // Snapshot current state BEFORE doing anything
+      try{
+        localStorage.setItem(AUTO_KEYS.preRestore, JSON.stringify(state));
+      }catch{}
+
       try{
         const text = await file.text();
-        const obj = JSON.parse(text);
-        if(!obj || typeof obj !== "object" || !Array.isArray(obj.entries)){
-          return toast("Invalid backup file");
+        const raw = JSON.parse(text);
+
+        const migrated = migrateState(raw);
+        const valid = validateState(migrated);
+        if(!valid.ok){
+          return toast("Invalid backup: " + valid.reason);
         }
-        persistState(obj);
+
+        // persist + refresh
+        persistState(migrated, { reason: "restore" });
         toast("Restored");
         location.reload();
       } catch {
@@ -2385,35 +2630,87 @@
     }
 
     function wipeState(){
-      STORE_KEYS.forEach(k => localStorage.removeItem(k));
+      [...STORE_KEYS, AUTO_KEYS.lastGood, AUTO_KEYS.preRestore, AUTO_KEYS.ringIndex]
+        .forEach(k => localStorage.removeItem(k));
+      for(let i=0;i<AUTO_RING_SIZE;i++){
+        localStorage.removeItem(AUTO_KEYS.ringPrefix + i);
+      }
     }
 
-    // ---------- Storage ----------
+    // ---------- Storage + Safety ----------
     function loadState(){
+      // Try primary + legacy keys
       for(const k of STORE_KEYS){
         const raw = localStorage.getItem(k);
         if(!raw) continue;
         try{
           const obj = JSON.parse(raw);
-          if(obj && typeof obj === "object" && Array.isArray(obj.entries)){
-            return normalizeState(obj);
-          }
+          const migrated = migrateState(obj);
+          const valid = validateState(migrated);
+          if(valid.ok) return migrated;
         }catch{}
       }
+
+      // Try last-good snapshot
+      try{
+        const lg = localStorage.getItem(AUTO_KEYS.lastGood);
+        if(lg){
+          const obj = JSON.parse(lg);
+          const migrated = migrateState(obj);
+          const valid = validateState(migrated);
+          if(valid.ok) return migrated;
+        }
+      }catch{}
+
+      // Fresh state
       return normalizeState({
+        schema: SCHEMA_VERSION,
         entries: [],
-        settings: { stealth:false, requirePin:false, pinHash:null },
+        settings: {
+          stealth:false,
+          requirePin:false,
+          pinHash:null,
+          allowOverdraft:false,
+          backupCadence:"off",
+          lastManualBackupTs: 0,
+          lastReminderTs: 0
+        },
         ui: { searchType:"all", lastAccount:"spend" }
       });
     }
 
+    function migrateState(s){
+      // Accept raw backups, older states, partial objects
+      const base = (s && typeof s === "object") ? s : {};
+      const schema = Number(base.schema || 0);
+
+      // v0 -> v1 migration (and "unknown" -> v1 best-effort)
+      const out = normalizeState({
+        schema: SCHEMA_VERSION,
+        entries: Array.isArray(base.entries) ? base.entries : [],
+        settings: base.settings || {},
+        ui: base.ui || {}
+      });
+
+      // Ensure required fields exist
+      out.schema = SCHEMA_VERSION;
+
+      return out;
+    }
+
     function normalizeState(s){
       const out = {
+        schema: SCHEMA_VERSION,
         entries: Array.isArray(s.entries) ? s.entries.map(normalizeEntry) : [],
         settings: {
           stealth: !!(s.settings?.stealth),
           requirePin: !!(s.settings?.requirePin),
-          pinHash: s.settings?.pinHash || null
+          pinHash: s.settings?.pinHash || null,
+
+          allowOverdraft: !!(s.settings?.allowOverdraft),
+          backupCadence: s.settings?.backupCadence || "off",
+          lastManualBackupTs: Number(s.settings?.lastManualBackupTs || 0),
+          lastReminderTs: Number(s.settings?.lastReminderTs || 0)
         },
         ui: {
           searchType: s.ui?.searchType || "all",
@@ -2430,6 +2727,7 @@
     }
 
     function normalizeEntry(e){
+      const meta = e.meta || {};
       return {
         id: e.id || uid(),
         ts: typeof e.ts === "number" ? e.ts : Date.now(),
@@ -2437,18 +2735,113 @@
         amount: Number(e.amount || 0),
         desc: e.desc || "",
         note: e.note || "",
-        meta: e.meta || {},
+        meta: {
+          ...meta,
+          rate: (meta.rate === null || meta.rate === undefined || meta.rate === "") ? null : Number(meta.rate),
+          issuedTs: meta.issuedTs ? Number(meta.issuedTs) : null,
+          dueTs: meta.dueTs ? Number(meta.dueTs) : null
+        },
         status: e.status || "active",
         supersedesId: e.supersedesId || null
       };
     }
 
-    function saveState(){
-      persistState(state);
+    function validateState(s){
+      if(!s || typeof s !== "object") return { ok:false, reason:"not an object" };
+      if(!Array.isArray(s.entries)) return { ok:false, reason:"entries missing" };
+      if(!s.settings || typeof s.settings !== "object") return { ok:false, reason:"settings missing" };
+      if(!s.ui || typeof s.ui !== "object") return { ok:false, reason:"ui missing" };
+
+      // Very basic sanity: entries must be objects with id/ts/kind/amount
+      for(const e of s.entries.slice(0, 5000)){
+        if(!e || typeof e !== "object") return { ok:false, reason:"bad entry" };
+        if(!e.id || typeof e.id !== "string") return { ok:false, reason:"entry id missing" };
+        if(typeof e.ts !== "number") return { ok:false, reason:"entry ts missing" };
+        if(typeof e.amount !== "number") return { ok:false, reason:"entry amount invalid" };
+      }
+
+      return { ok:true };
     }
 
-    function persistState(s){
-      localStorage.setItem(STORE_KEYS[0], JSON.stringify(s));
+    function saveState(reason="save"){
+      persistState(state, { reason });
+    }
+
+    function persistState(s, meta={}){
+      // 1) Write primary + legacy keys (compat)
+      const payload = JSON.stringify(s);
+      try{
+        localStorage.setItem(STORE_KEYS[0], payload);
+      }catch{}
+
+      // Best-effort legacy (do not fail if quota)
+      for(let i=1;i<STORE_KEYS.length;i++){
+        try{ localStorage.setItem(STORE_KEYS[i], payload); }catch{}
+      }
+
+      // 2) Auto-snapshot ring buffer
+      autoSnapshot(meta.reason || "change");
+
+      // 3) last-good snapshot
+      try{ localStorage.setItem(AUTO_KEYS.lastGood, payload); }catch{}
+    }
+
+    function autoSnapshot(reason="change"){
+      if(!saneAutoEnabled()) return;
+
+      try{
+        const idx = Number(localStorage.getItem(AUTO_KEYS.ringIndex) || "0") % AUTO_RING_SIZE;
+        const stamp = {
+          schema: SCHEMA_VERSION,
+          reason,
+          at: Date.now(),
+          state
+        };
+        localStorage.setItem(AUTO_KEYS.ringPrefix + idx, JSON.stringify(stamp));
+        localStorage.setItem(AUTO_KEYS.ringIndex, String((idx + 1) % AUTO_RING_SIZE));
+      }catch{}
+    }
+
+    function saneAutoEnabled(){
+      // Auto-backup is always on in this build (Option A),
+      // but leaving a function here makes future toggles easy.
+      return true;
+    }
+
+    function startPeriodicSafety(){
+      setInterval(() => {
+        // periodic snapshot even if no UI action
+        autoSnapshot("periodic");
+      }, PERIODIC_SNAPSHOT_MS);
+
+      setInterval(() => {
+        checkBackupReminder();
+      }, REMINDER_CHECK_MS);
+    }
+
+    function checkBackupReminder(){
+      const cadence = state.settings.backupCadence || "off";
+      if(cadence === "off") return;
+
+      const now = Date.now();
+      const last = Number(state.settings.lastManualBackupTs || 0);
+      const lastNudge = Number(state.settings.lastReminderTs || 0);
+
+      const interval = cadence === "daily" ? 24*3600*1000
+                    : cadence === "weekly" ? 7*24*3600*1000
+                    : cadence === "monthly" ? 30*24*3600*1000
+                    : 0;
+      if(!interval) return;
+
+      // Nudge if overdue and we haven't nudged recently
+      if(last && now - last < interval) return;
+
+      // Avoid spamming: one nudge per 6 hours max
+      if(lastNudge && (now - lastNudge) < 6*3600*1000) return;
+
+      state.settings.lastReminderTs = now;
+      saveState("backup_reminder");
+      toast(`Backup reminder: export a backup (${cadence})`);
     }
 
     function getEntryById(id){
@@ -2458,9 +2851,9 @@
     // ---------- Formatting ----------
     function money(n){
       const x = Number(n||0);
+      const sign = (x < 0) ? "-" : "";
       const abs = Math.abs(x);
-      // compact-ish, but keep readable
-      return "₦" + abs.toLocaleString(undefined, { maximumFractionDigits: 0 });
+      return sign + "₦" + abs.toLocaleString(undefined, { maximumFractionDigits: 0 });
     }
 
     function pct(x){
@@ -2474,6 +2867,14 @@
       const mm = String(d.getMonth()+1).padStart(2,"0");
       const yy = d.getFullYear();
       return `${dd}-${mm}-${yy}`;
+    }
+
+    function fmtISODate(ts){
+      const d = new Date(ts);
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const day = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
     }
 
     function fmtDateTime(ts){
@@ -2505,7 +2906,7 @@
       el.toastText.textContent = msg;
       el.toast.classList.add("show");
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.toast.classList.remove("show"), 1600);
+      toastTimer = setTimeout(() => el.toast.classList.remove("show"), 1800);
     }
 
     // ---------- Long press ----------
@@ -2525,7 +2926,6 @@
       node.addEventListener("touchend", end, {passive:true});
       node.addEventListener("touchcancel", end, {passive:true});
 
-      // mouse fallback
       node.addEventListener("mousedown", start);
       node.addEventListener("mousemove", () => { moved = true; });
       node.addEventListener("mouseup", end);
@@ -2537,7 +2937,7 @@
       if(!("serviceWorker" in navigator)) return;
       try{
         const code = `
-          const CACHE = "sovereign-v86-cache";
+          const CACHE = "sovereign-v87-cache";
           self.addEventListener("install", (e) => {
             self.skipWaiting();
             e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./"])).catch(()=>{}));
