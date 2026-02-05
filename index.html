@@ -1,17 +1,16 @@
-<!-- FILE: Sovereign_Vault_v82.html | BUILD: v82.1 (UI/UX pass: topbar+more, date-grouped audit DD-MM-YYYY, better ledgers, history back, IOU details) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
-  <title>Sovereign Vault v82</title>
+  <title>Sovereign Vault v83</title>
 
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/512/shield.png" />
   <link
     rel="manifest"
-    href="data:application/manifest+json,{%22name%22:%22Vault%22,%22short_name%22:%22Vault%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#000000%22,%22theme_color%22:%22#10B981%22,%22icons%22:[{%22src%22:%22https%3A%2F%2Fimg.icons8.com%2Ffluency%2F512%2Fshield.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}"
+    href="data:application/manifest+json,{%22name%22:%22Vault%22,%22short_name%22:%22Vault%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#000000%22,%22theme_color%22:%22#10B981%22,%22icons%22:[{%22src%22:%22https://img.icons8.com/fluency/512/shield.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}"
   />
 
   <style>
@@ -35,213 +34,165 @@
       background:var(--bg);
       color:var(--fg);
       font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
-      padding-top:calc(var(--safe-top) + 6px);
+      padding-top:calc(var(--safe-top) + 10px);
       padding-bottom:110px;
       overflow-x:hidden;
     }
 
-    /* Layout helpers */
+    /* Helpers */
     .flex{display:flex;}
     .col{display:flex;flex-direction:column;}
     .between{justify-content:space-between;}
     .center{justify-content:center;align-items:center;}
     .gap8{gap:8px;}
     .gap12{gap:12px;}
-    .gap16{gap:16px;}
     .wfull{width:100%;}
     .mb8{margin-bottom:8px;}
     .mb12{margin-bottom:12px;}
     .mb16{margin-bottom:16px;}
-    .mb24{margin-bottom:24px;}
     .p12{padding:12px;}
     .p16{padding:16px;}
     .p20{padding:20px;}
-    .p24{padding:24px;}
     .xs{font-size:12px;}
     .sm{font-size:14px;}
-    .tiny{font-size:10px;letter-spacing:.08em;text-transform:uppercase;}
-    .bold{font-weight:700;}
+    .tiny{font-size:10px;letter-spacing:.14em;text-transform:uppercase;}
+    .bold{font-weight:800;}
     .black{font-weight:900;}
     .muted{color:var(--muted);}
     .hidden{display:none !important;}
+    .mask{}
+    .stealth .mask{filter:blur(16px);opacity:.25;}
 
-    /* Panels */
-    .topbar{padding:0 10px;margin-bottom:10px;}
+    /* Top bar (clean) */
+    .topbar{
+      padding:0 14px;
+      margin-bottom:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
     .brand{
-      font-size:10px;
-      letter-spacing:.10em;
+      font-size:12px;
+      letter-spacing:.18em;
       text-transform:uppercase;
-      color:var(--muted);
+      color:#cbd5e1;
+      opacity:.75;
       font-weight:900;
-      opacity:.9;
-      user-select:none;
     }
     .iconbtn{
       width:40px;height:40px;border-radius:14px;
-      background:var(--card2);border:1px solid var(--border);
+      background:rgba(17,17,20,.75);
+      border:1px solid rgba(255,255,255,.08);
       color:#fff;display:inline-flex;align-items:center;justify-content:center;
       cursor:pointer;
     }
 
-    /* Hero */
+    /* Hero (more breathing space, NW lower) */
     .hero{
-      margin:10px 10px 0 10px; /* lower it a bit */
+      margin:0 14px;
       border-radius:26px;
       background:linear-gradient(145deg,#0f0f11 0%, #050506 100%);
-      border:1px solid rgba(16,185,129,0.18);
-      padding:22px 18px;
+      border:1px solid rgba(255,255,255,0.06);
+      padding:34px 18px 22px 18px; /* top more */
+      box-shadow:0 18px 50px rgba(0,0,0,.55);
     }
     .networth{
       font-size:46px;
       font-weight:900;
       text-align:center;
-      margin:8px 0 12px 0;
+      margin:10px 0 16px 0;
       line-height:1.05;
     }
 
-    /* Cash / Assets / Debt: responsive (one-line when possible, stacked when not) */
-    .subline{
+    /* 3-column summary (single line) */
+    .summary3{
       display:grid;
+      grid-template-columns:1fr 1fr 1fr;
       gap:10px;
-      align-items:center;
-      justify-content:center;
-      color:var(--muted);
-      font-weight:800;
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.06em;
-      grid-template-columns: repeat(3, auto);
+      margin-top:2px;
     }
-    .subItem{
-      display:flex;
-      gap:8px;
-      align-items:baseline;
-      justify-content:center;
-      white-space:nowrap;
+    .sumCell{
+      text-align:center;
       min-width:0;
     }
-    .subItem b{font-weight:900;color:var(--fg);}
-    .dot{opacity:.35}
-
-    @media (max-width: 420px){
-      .subline{grid-template-columns:1fr; gap:8px;}
-      .subItem{justify-content:center;}
-      .dot{display:none;}
+    .sumVal{
+      font-weight:900;
+      font-size:13px;
+      letter-spacing:.02em;
+      margin-bottom:6px;
+    }
+    .sumLbl{
+      font-size:10px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--muted);
+      opacity:.85;
+      font-weight:900;
     }
 
-    .card{
-      margin:0 10px 12px 10px;
-      background:var(--card2);
-      border:1px solid var(--border);
+    /* Clean ledger rows (like screenshot list) */
+    .list{
+      margin:14px 14px 0 14px;
       border-radius:18px;
       overflow:hidden;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(12,12,14,.55);
+      backdrop-filter: blur(10px);
     }
-    .cardHead{
-      padding:18px 18px;
+    .listRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 14px;
+      border-bottom:1px solid rgba(255,255,255,.06);
       cursor:pointer;
       user-select:none;
     }
-    .cardTitle{
+    .listRow:last-child{border-bottom:none;}
+    .lrL{min-width:0;}
+    .lrTitle{
       font-size:12px;
       font-weight:900;
-      letter-spacing:.08em;
+      letter-spacing:.14em;
       text-transform:uppercase;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      opacity:.9;
     }
-    .cardVal{
-      font-size:14px;
-      font-weight:900;
-    }
-    .drawer{display:none;padding:16px 18px;background:var(--card);border-top:1px solid var(--border);}
-    .open > .drawer{display:block;}
-
-    /* Cleaner list rows: left is two-line, right is hard-right and never collides */
-    .row{
-      display:flex;
-      justify-content:space-between;
-      gap:14px;
-      padding:12px 0;
-      border-bottom:1px solid #1c1c20;
-      align-items:flex-start;
-    }
-    .row:last-child{border-bottom:none;}
-    .rowLeft{min-width:0; flex:1;}
-    .rowName{
-      font-size:12px;
-      font-weight:900;
-      letter-spacing:.06em;
-      text-transform:uppercase;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      line-height:1.1;
-    }
-    .rowMeta{
+    .lrMeta{
       font-size:11px;
       color:var(--muted);
       margin-top:4px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      opacity:.9;
     }
-    .rowAmt{
-      font-size:12px;
+    .lrAmt{
+      font-size:13px;
       font-weight:900;
       white-space:nowrap;
-      flex:0 0 auto;
       text-align:right;
-      min-width:88px;
     }
-    .tapRow{cursor:pointer;}
-
-    .input{
-      width:100%;
-      background:transparent;
-      border:none;
-      color:#fff;
-      font-size:16px;
-      outline:none;
-      padding:12px 0;
-      border-bottom:1px solid #2a2a2f;
-    }
-    .input:focus{border-bottom-color:var(--emerald);}
-
-    .bigAmount{
-      width:100%;
-      background:transparent;border:none;outline:none;
-      color:#fff;text-align:center;
-      font-size:50px;font-weight:900;
-      padding:18px 0;
-    }
-
-    .btn{
-      background:#101114;
-      border:1px solid #2a2a2f;
-      color:#fff;
-      border-radius:16px;
-      padding:14px 16px;
+    .chev{
+      opacity:.35;
       font-weight:900;
-      font-size:12px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      cursor:pointer;
+      margin-left:10px;
     }
-    .btnWide{width:100%;padding:18px 16px;font-size:13px;}
-    .danger{border-color:var(--red);color:var(--red);}
-    .ok{border-color:rgba(16,185,129,.35);color:var(--emerald);}
 
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-    .tile{
-      background:#101114;
-      border:1px solid #2a2a2f;
-      border-radius:20px;
-      padding:18px;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:10px;
-      cursor:pointer;
-      user-select:none;
+    /* Drawer inside list */
+    .drawer{
+      display:none;
+      padding:10px 14px 6px 14px;
+      background:rgba(0,0,0,.35);
+      border-bottom:1px solid rgba(255,255,255,.06);
     }
-    .tileIcon{width:22px;height:22px;opacity:.95;}
-    .tileLabel{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+    .open + .drawer{display:block;}
+
+    .miniRow{
+      display:flex;justify-content:space-between;gap:12px;
+      padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .miniRow:last-child{border-bottom:none;}
+    .miniL{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:.7;}
+    .miniR{font-size:12px;font-weight:900;}
 
     /* Overlay views */
     .overlay{
@@ -258,11 +209,60 @@
       padding-bottom:12px;
       background:rgba(0,0,0,.85);
       backdrop-filter: blur(14px);
-      border-bottom:1px solid #111;
+      border-bottom:1px solid rgba(255,255,255,.06);
       z-index:2100;
     }
     .overlayBar{padding:0 18px;display:flex;justify-content:space-between;align-items:center;}
     .xbtn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;}
+
+    /* Inputs / buttons */
+    .input{
+      width:100%;
+      background:transparent;
+      border:none;
+      color:#fff;
+      font-size:16px;
+      outline:none;
+      padding:12px 0;
+      border-bottom:1px solid #2a2a2f;
+    }
+    .input:focus{border-bottom-color:var(--emerald);}
+    .bigAmount{
+      width:100%;
+      background:transparent;border:none;outline:none;
+      color:#fff;text-align:center;
+      font-size:50px;font-weight:900;
+      padding:18px 0;
+    }
+    .btn{
+      background:#101114;
+      border:1px solid #2a2a2f;
+      color:#fff;
+      border-radius:16px;
+      padding:14px 16px;
+      font-weight:900;
+      font-size:12px;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      cursor:pointer;
+    }
+    .btnWide{width:100%;padding:18px 16px;font-size:13px;}
+    .danger{border-color:var(--red);color:var(--red);}
+
+    /* Entry grid tiles */
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .tile{
+      background:#101114;
+      border:1px solid #2a2a2f;
+      border-radius:20px;
+      padding:18px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:10px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .tileIcon{width:22px;height:22px;opacity:.95;}
+    .tileLabel{font-size:11px;font-weight:900;letter-spacing:.10em;text-transform:uppercase;}
 
     /* FAB */
     .fab{
@@ -275,23 +275,6 @@
     }
     .fabPlus{background:linear-gradient(135deg,var(--emerald),#059669);color:#001b12;font-size:28px;font-weight:900;}
     .fabBack{background:#232327;color:#fff;font-size:22px;font-weight:900;}
-
-    /* Badges */
-    .badge{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 10px;border-radius:999px;
-      border:1px solid #2a2a2f;
-      background:#0d0d10;
-      font-size:10px;font-weight:900;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:#cbd5e1;
-    }
-    .bIn{border-color:rgba(16,185,129,.35);color:var(--emerald);}
-    .bOut{border-color:rgba(239,68,68,.35);color:var(--red);}
-    .bAsset{border-color:rgba(59,130,246,.35);color:var(--blue);}
-    .bIOU{border-color:rgba(234,179,8,.35);color:var(--yellow);}
-    .bFid{border-color:rgba(234,179,8,.35);color:var(--yellow);}
 
     /* Toast */
     .toast{
@@ -313,11 +296,11 @@
       color:#fff;border-radius:12px;
       padding:8px 10px;
       font-weight:900;font-size:10px;
-      letter-spacing:.08em;text-transform:uppercase;
+      letter-spacing:.10em;text-transform:uppercase;
       cursor:pointer;
     }
 
-    /* Bottom sheet (Transaction details) */
+    /* Bottom sheet */
     .sheetScrim{
       position:fixed;inset:0;
       background:rgba(0,0,0,.6);
@@ -341,44 +324,40 @@
     }
     .sheet.on{transform:translateY(0);}
     .grab{width:46px;height:5px;border-radius:99px;background:#2a2a2f;margin:4px auto 12px auto;}
-    .sheetTitle{font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+    .sheetTitle{font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;}
     .sheetAmt{font-size:28px;font-weight:900;margin-top:8px;}
     .kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #151518;}
     .kv:last-child{border-bottom:none;}
-    .kvL{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:900;letter-spacing:.08em;}
+    .kvL{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:900;letter-spacing:.14em;}
     .kvR{font-size:12px;font-weight:900;color:#fff;text-align:right;max-width:65%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .sheetActions{display:flex;gap:10px;margin-top:14px;}
     .sheetActions .btn{flex:1}
 
-    /* More (⋯) menu sheet */
+    /* More menu (tiny sheet) */
+    .menuCard{
+      margin:10px 0 0 0;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(12,12,14,.65);
+      overflow:hidden;
+    }
     .menuItem{
       display:flex;justify-content:space-between;align-items:center;
-      padding:14px 2px;
-      border-bottom:1px solid #141418;
+      padding:14px 14px;
+      border-bottom:1px solid rgba(255,255,255,.06);
       cursor:pointer;
       user-select:none;
     }
     .menuItem:last-child{border-bottom:none;}
-    .menuL{display:flex;flex-direction:column;gap:4px;min-width:0;}
-    .menuT{font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .menuS{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .menuR{font-size:12px;font-weight:900;color:#fff;}
-    .togglePill{
-      width:44px;height:26px;border-radius:999px;
-      border:1px solid #2a2a2f;
-      background:#0f0f12;
-      position:relative;
+    .menuL{font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:.9;}
+    .menuR{font-size:12px;font-weight:900;color:var(--muted);}
+    .pill{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.25);
+      font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
     }
-    .toggleDot{
-      width:20px;height:20px;border-radius:999px;
-      background:#2a2a2f;
-      position:absolute;top:2px;left:2px;
-      transition:transform .15s ease, background .15s ease;
-    }
-    .togglePill.on{border-color:rgba(16,185,129,.35);}
-    .togglePill.on .toggleDot{transform:translateX(18px);background:var(--emerald);}
-
-    .stealth .mask{filter:blur(16px);opacity:.25;}
   </style>
 </head>
 
@@ -402,22 +381,17 @@
   </div>
 
   <!-- TOP BAR (Search + More only) -->
-  <div class="topbar flex between center">
-    <div class="brand">Sovereign v82</div>
+  <div class="topbar">
+    <div class="brand">Sovereign v83</div>
     <div class="flex gap8">
-      <button class="iconbtn" title="Search" data-view="search" aria-label="Search">
-        <!-- magnifier -->
+      <button class="iconbtn" title="Search" data-view="search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#fff" stroke-width="2" opacity=".9"/>
           <path d="M16.5 16.5 21 21" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".9"/>
         </svg>
       </button>
-
-      <button class="iconbtn" title="More" id="moreBtn" aria-label="More">
-        <!-- ellipsis -->
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <path d="M6 12h.01M12 12h.01M18 12h.01" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/>
-        </svg>
+      <button class="iconbtn" title="More" data-view="more">
+        <span style="font-size:22px;line-height:0;transform:translateY(-1px);">⋯</span>
       </button>
     </div>
   </div>
@@ -427,69 +401,101 @@
     <div class="hero">
       <div class="networth mask" id="nw">₦0</div>
 
-      <div class="subline">
-        <span class="subItem mask"><span class="muted">Cash</span> <b id="cash">₦0</b></span>
-        <span class="dot">•</span>
-        <span class="subItem mask"><span class="muted">Assets</span> <b id="assets">₦0</b></span>
-        <span class="dot">•</span>
-        <span class="subItem mask"><span class="muted">Debt</span> <b id="debt">₦0</b></span>
+      <div class="summary3">
+        <div class="sumCell">
+          <div class="sumVal mask" id="cash">₦0</div>
+          <div class="sumLbl">Cash</div>
+        </div>
+        <div class="sumCell">
+          <div class="sumVal mask" id="assets">₦0</div>
+          <div class="sumLbl">Assets</div>
+        </div>
+        <div class="sumCell">
+          <div class="sumVal mask" id="debt">₦0</div>
+          <div class="sumLbl">Debt</div>
+        </div>
       </div>
     </div>
 
-    <div style="margin-top:14px;">
-      <div class="card" id="cLiquidity">
-        <div class="cardHead flex between center" data-toggle="cLiquidity">
-          <div class="cardTitle">Liquidity</div>
-          <div class="cardVal mask" id="liq">₦0</div>
+    <!-- Clean list like your screenshot -->
+    <div class="list" style="margin-top:16px;">
+      <!-- Liquidity (with drawer) -->
+      <div class="listRow" data-toggle="liqRow" id="liqRow">
+        <div class="lrL">
+          <div class="lrTitle">Liquidity</div>
+          <div class="lrMeta">Bills • Savings • Spend</div>
         </div>
-        <div class="drawer">
-          <div class="row"><div class="rowName">Bills</div><div class="rowAmt mask" id="bills">₦0</div></div>
-          <div class="row"><div class="rowName">Savings</div><div class="rowAmt mask" id="savings">₦0</div></div>
-          <div class="row"><div class="rowName">Spend</div><div class="rowAmt mask" id="spend">₦0</div></div>
+        <div class="flex center">
+          <div class="lrAmt mask" id="liq">₦0</div>
+          <div class="chev">▾</div>
         </div>
       </div>
-
-      <div class="card" id="cExpenses">
-        <div class="cardHead flex between center" data-toggle="cExpenses">
-          <div class="cardTitle" style="color:var(--red)">Expenses</div>
-          <div class="cardVal mask" style="color:var(--red)" id="exTotal">₦0</div>
-        </div>
-        <div class="drawer" id="exList"></div>
+      <div class="drawer" id="liqDrawer">
+        <div class="miniRow"><div class="miniL">Bills</div><div class="miniR mask" id="bills">₦0</div></div>
+        <div class="miniRow"><div class="miniL">Savings</div><div class="miniR mask" id="savings">₦0</div></div>
+        <div class="miniRow"><div class="miniL">Spend</div><div class="miniR mask" id="spend">₦0</div></div>
       </div>
 
-      <div class="card" id="cAssets">
-        <div class="cardHead flex between center" data-toggle="cAssets">
-          <div class="cardTitle" style="color:var(--blue)">Assets</div>
-          <div class="cardVal mask" style="color:var(--blue)" id="asTotal">₦0</div>
+      <div class="listRow" data-toggle="exRow" id="exRow">
+        <div class="lrL">
+          <div class="lrTitle" style="color:var(--red);">Expenses</div>
+          <div class="lrMeta">Tap to view</div>
         </div>
-        <div class="drawer" id="asList"></div>
+        <div class="flex center">
+          <div class="lrAmt mask" style="color:var(--red);" id="exTotal">₦0</div>
+          <div class="chev">▾</div>
+        </div>
       </div>
+      <div class="drawer" id="exList"></div>
 
-      <div class="card" id="cDebtors">
-        <div class="cardHead flex between center" data-toggle="cDebtors">
-          <div class="cardTitle">Debtors</div>
-          <div class="cardVal mask" style="color:var(--emerald)" id="dbTotal">₦0</div>
+      <div class="listRow" data-toggle="asRow" id="asRow">
+        <div class="lrL">
+          <div class="lrTitle" style="color:var(--blue);">Assets</div>
+          <div class="lrMeta">Tap to view</div>
         </div>
-        <div class="drawer" id="dbList"></div>
+        <div class="flex center">
+          <div class="lrAmt mask" style="color:var(--blue);" id="asTotal">₦0</div>
+          <div class="chev">▾</div>
+        </div>
       </div>
+      <div class="drawer" id="asList"></div>
 
-      <div class="card" id="cCreditors">
-        <div class="cardHead flex between center" data-toggle="cCreditors">
-          <div class="cardTitle muted">Creditors</div>
-          <div class="cardVal mask" style="color:var(--red)" id="crTotal">₦0</div>
+      <div class="listRow" data-toggle="dbRow" id="dbRow">
+        <div class="lrL">
+          <div class="lrTitle" style="color:var(--emerald);">Debtors</div>
+          <div class="lrMeta">People owing you</div>
         </div>
-        <div class="drawer" id="crList"></div>
+        <div class="flex center">
+          <div class="lrAmt mask" style="color:var(--emerald);" id="dbTotal">₦0</div>
+          <div class="chev">▾</div>
+        </div>
       </div>
+      <div class="drawer" id="dbList"></div>
 
-      <div class="card" id="cAudit" style="opacity:.92;">
-        <div class="cardHead flex between center" data-toggle="cAudit">
-          <div class="cardTitle muted">Audit trail</div>
-          <div class="cardVal muted">▼</div>
+      <div class="listRow" data-toggle="crRow" id="crRow">
+        <div class="lrL">
+          <div class="lrTitle" style="color:var(--red);opacity:.8;">Creditors</div>
+          <div class="lrMeta">People you owe</div>
         </div>
-        <div class="drawer">
-          <input id="auditFilter" class="input xs mb12" placeholder="Filter..." />
-          <div id="auditList"></div>
+        <div class="flex center">
+          <div class="lrAmt mask" style="color:var(--red);" id="crTotal">₦0</div>
+          <div class="chev">▾</div>
         </div>
+      </div>
+      <div class="drawer" id="crList"></div>
+
+      <div class="listRow" data-toggle="auRow" id="auRow">
+        <div class="lrL">
+          <div class="lrTitle" style="opacity:.7;">Audit trail</div>
+          <div class="lrMeta">Grouped by date (DD-MM-YYYY)</div>
+        </div>
+        <div class="flex center">
+          <div class="lrAmt" style="opacity:.55;">▾</div>
+        </div>
+      </div>
+      <div class="drawer" id="auditDrawer">
+        <input id="auditFilter" class="input xs mb12" placeholder="Filter..." />
+        <div id="auditList"></div>
       </div>
     </div>
   </div>
@@ -565,7 +571,6 @@
     <input id="amount" class="bigAmount" type="number" inputmode="numeric" placeholder="0" />
 
     <div id="segWrap" class="mb16 hidden"></div>
-
     <div id="dyn" class="mb16"></div>
 
     <input id="desc" class="input" placeholder="Description" list="nameList" />
@@ -603,12 +608,12 @@
     </div>
 
     <div class="flex gap8" style="flex-wrap:wrap;margin-top:14px;">
-      <span class="badge" data-qtype="all">All</span>
-      <span class="badge bIn" data-qtype="income">IN</span>
-      <span class="badge bOut" data-qtype="expense">OUT</span>
-      <span class="badge bAsset" data-qtype="asset">ASSET</span>
-      <span class="badge bIOU" data-qtype="iou">IOU</span>
-      <span class="badge bFid" data-qtype="fid">FID</span>
+      <span class="pill" data-qtype="all">All</span>
+      <span class="pill" data-qtype="income">IN</span>
+      <span class="pill" data-qtype="expense">OUT</span>
+      <span class="pill" data-qtype="asset">ASSET</span>
+      <span class="pill" data-qtype="iou">IOU</span>
+      <span class="pill" data-qtype="fid">FID</span>
     </div>
 
     <div class="grid2" style="margin-top:14px;">
@@ -628,27 +633,56 @@
       </div>
     </div>
 
-    <div class="card" style="margin-top:10px;">
-      <div class="p20">
-        <div class="flex between center mb12">
-          <div class="tiny muted">PIN startup</div>
-          <input id="reqPin" type="checkbox" />
-        </div>
+    <div class="menuCard" style="margin-top:10px;">
+      <div class="menuItem">
+        <div class="menuL">PIN startup</div>
+        <div class="menuR"><input id="reqPin" type="checkbox" /></div>
+      </div>
+      <div class="p16">
         <input id="setPin" class="input" inputmode="numeric" maxlength="4"
                style="text-align:center;letter-spacing:10px;font-size:22px;"
                placeholder="••••" />
         <button class="btn btnWide" id="savePinBtn" style="margin-top:14px;">Update PIN</button>
-        <div class="tiny muted" style="margin-top:10px;">PIN is hashed (best-effort) — app won’t crash if crypto isn’t available.</div>
+        <div class="tiny muted" style="margin-top:10px;">PIN is hashed (best-effort).</div>
       </div>
     </div>
 
-    <div class="flex gap12" style="margin:12px 10px 12px 10px;">
+    <div class="flex gap12" style="margin:12px 0 12px 0;">
       <button class="btn" style="flex:1" id="backupBtn">Backup</button>
       <button class="btn" style="flex:1;color:var(--emerald)" id="restoreBtn">Restore</button>
       <input id="file" type="file" class="hidden" />
     </div>
 
-    <button class="btn danger" id="resetBtn" style="margin:0 10px;">Factory reset</button>
+    <button class="btn danger" id="resetBtn" style="width:100%;">Factory reset</button>
+  </div>
+
+  <!-- MORE MENU -->
+  <div id="more" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted">More</div>
+        <button class="xbtn" data-view="back">✕</button>
+      </div>
+    </div>
+
+    <div class="menuCard" style="margin-top:10px;">
+      <div class="menuItem" id="toggleStealth">
+        <div class="menuL">Stealth</div>
+        <div class="menuR" id="stealthState">Off</div>
+      </div>
+      <div class="menuItem" data-view="settings">
+        <div class="menuL">Settings</div>
+        <div class="menuR">›</div>
+      </div>
+      <div class="menuItem" id="moreBackup">
+        <div class="menuL">Backup</div>
+        <div class="menuR">Export</div>
+      </div>
+      <div class="menuItem" id="moreRestore">
+        <div class="menuL">Restore</div>
+        <div class="menuR">Import</div>
+      </div>
+    </div>
   </div>
 
   <!-- FAB -->
@@ -660,13 +694,13 @@
     <button id="toastAct" class="toastBtn hidden">Undo</button>
   </div>
 
-  <!-- Transaction Bottom sheet -->
+  <!-- Bottom sheet -->
   <div id="scrim" class="sheetScrim"></div>
   <div id="sheet" class="sheet" aria-hidden="true">
     <div class="grab"></div>
     <div class="flex between center">
       <div class="sheetTitle" id="shTitle">Transaction</div>
-      <span class="badge" id="shBadge">—</span>
+      <span class="pill" id="shBadge">—</span>
     </div>
     <div class="sheetAmt mask" id="shAmt">₦0</div>
     <div id="shKv" style="margin-top:10px;"></div>
@@ -676,77 +710,23 @@
     </div>
   </div>
 
-  <!-- More menu sheet -->
-  <div id="menuScrim" class="sheetScrim"></div>
-  <div id="menu" class="sheet" aria-hidden="true">
-    <div class="grab"></div>
-    <div class="flex between center">
-      <div class="sheetTitle">More</div>
-      <span class="badge" id="stealthBadge">Normal</span>
-    </div>
-
-    <div style="margin-top:10px;">
-      <div class="menuItem" id="mStealth">
-        <div class="menuL">
-          <div class="menuT">Stealth</div>
-          <div class="menuS">Blur all amounts</div>
-        </div>
-        <div class="menuR">
-          <div class="togglePill" id="stealthPill"><div class="toggleDot"></div></div>
-        </div>
-      </div>
-
-      <div class="menuItem" id="mSettings">
-        <div class="menuL">
-          <div class="menuT">Settings</div>
-          <div class="menuS">PIN, backup, restore</div>
-        </div>
-        <div class="menuR">›</div>
-      </div>
-
-      <div class="menuItem" id="mBackup">
-        <div class="menuL">
-          <div class="menuT">Backup</div>
-          <div class="menuS">Export JSON file</div>
-        </div>
-        <div class="menuR">›</div>
-      </div>
-
-      <div class="menuItem" id="mRestore">
-        <div class="menuL">
-          <div class="menuT">Restore</div>
-          <div class="menuS">Import from backup</div>
-        </div>
-        <div class="menuR">›</div>
-      </div>
-    </div>
-  </div>
-
   <script>
   (() => {
-    const KEY = {
-      DB: "SOV_DB_V82",
-      CFG:"SOV_CFG_V82",
-      PIN:"SOV_PIN_V82"
-    };
+    // Keep data keys on v82 so no data loss.
+    const KEY = { DB:"SOV_DB_V82", CFG:"SOV_CFG_V82", PIN:"SOV_PIN_V82" };
 
     const $ = (id) => document.getElementById(id);
-    const money = (n) => "₦" + (Number(n)||0).toLocaleString();
-
-    const nowISODate = () => new Date().toISOString().slice(0,10); // YYYY-MM-DD
-    const nowISOTime = () => new Date().toTimeString().slice(0,8);
-
     const safeJSON = (s, fallback) => { try { return JSON.parse(s) ?? fallback; } catch { return fallback; } };
 
-    // ---------- Date formatting (display DD-MM-YYYY) ----------
-    function fmtDDMMYYYY(iso){
-      if (!iso || typeof iso !== "string") return "—";
-      const parts = iso.split("-");
-      if (parts.length !== 3) return iso;
-      return `${parts[2]}-${parts[1]}-${parts[0]}`;
-    }
+    const money = (n) => "₦" + (Number(n)||0).toLocaleString();
+    const nowISODate = () => new Date().toISOString().slice(0,10);
+    const nowISOTime = () => new Date().toTimeString().slice(0,8);
 
-    function cmpISODesc(a,b){ return (a>b? -1 : a<b? 1 : 0); }
+    const fmtDDMMYYYY = (iso) => {
+      if (!iso || typeof iso !== "string" || iso.length < 10) return "—";
+      const [y,m,d] = iso.slice(0,10).split("-");
+      return `${d}-${m}-${y}`;
+    };
 
     // ---------- Toast ----------
     let toastTimer = null;
@@ -778,41 +758,22 @@
       toastUndo = null;
     }
 
-    // ---------- Bottom sheet (Transaction / IOU detail) ----------
+    // ---------- Bottom sheet ----------
     let openEntryId = null;
-
-    function badgeFor(e){
-      const t = e?.type || "";
-      if (t === "income") return { badgeText:"IN", badgeClass:"bIn" };
-      if (t === "expense") return { badgeText:"OUT", badgeClass:"bOut" };
-      if (t === "asset") return { badgeText:"ASSET", badgeClass:"bAsset" };
-      if (t === "debtor" || t === "debt_repayment" || t === "creditor" || t === "credit_settlement") return { badgeText:"IOU", badgeClass:"bIOU" };
-      if (t === "fiduciary") return { badgeText:"FID", badgeClass:"bFid" };
-      return { badgeText:"—", badgeClass:"" };
-    }
-
-    function entryAmount(e){
-      if (!e) return 0;
-      if (typeof e.principal === "number") return e.principal; // IOU flows
-      return Number(e.total)||0;
-    }
-
-    function openSheet(entry){
+    function openSheetEntry(entry){
       openEntryId = entry?.id ?? null;
       $("scrim").classList.add("on");
       $("sheet").classList.add("on");
       $("sheet").setAttribute("aria-hidden","false");
 
-      const { badgeText, badgeClass } = badgeFor(entry);
+      const badgeText = badgeFor(entry).badgeText;
       $("shTitle").textContent = (entry?.name || "Transaction");
-      const b = $("shBadge");
-      b.className = "badge " + badgeClass;
-      b.textContent = badgeText;
-
+      $("shBadge").textContent = badgeText;
       $("shAmt").textContent = money(Math.abs(entryAmount(entry)));
 
       const kv = $("shKv");
       kv.innerHTML = "";
+
       const add = (k,v) => {
         const d = document.createElement("div");
         d.className = "kv";
@@ -822,58 +783,65 @@
         kv.appendChild(d);
       };
 
-      // Always show date+time in requested display format
-      add("Date", `${fmtDDMMYYYY(entry.date || "")} ${entry.time || "—"}`);
+      add("Date", `${fmtDDMMYYYY(entry.date)} ${entry.time || "—"}`);
       add("Type", entry.type || "—");
 
-      if (entry.type === "expense"){
-        add("Category", entry.category || "Uncategorised");
-        add("Bucket", entry.bucket || "spend");
-      }
+      if (entry.type === "expense") { add("Category", entry.category || "Uncategorised"); add("Bucket", entry.bucket || "spend"); }
+      if (entry.type === "asset") add("Asset type", entry.cat || "Other");
 
-      if (entry.type === "asset"){
-        add("Asset type", entry.cat || "Other");
-      }
+      if (entry.type === "debtor" || entry.type === "debt_repayment") add("Debtor", entry.debtor || entry.name);
+      if (entry.type === "creditor" || entry.type === "credit_settlement") add("Creditor", entry.creditor || entry.name);
 
-      if (entry.type === "fiduciary"){
-        add("Goal", entry.goal || "—");
-        add("Contributor", entry.user || "—");
-      }
-
-      // IOU details (single record)
-      if (["debtor","creditor","debt_repayment","credit_settlement"].includes(entry.type)){
-        const who = entry.debtor || entry.creditor || entry.name || "—";
-        add(entry.type === "debtor" || entry.type === "debt_repayment" ? "Debtor" : "Creditor", who);
-        add("Principal delta", money(entry.principal || 0));
-        if (entry.rate) add("Rate", String(entry.rate) + "%");
-        if (entry.term) add("Due date", fmtDDMMYYYY(entry.term));
-      }
+      if (entry.rate) add("Rate", String(entry.rate));
+      if (entry.term) add("Due", entry.term ? fmtDDMMYYYY(entry.term) : "—");
 
       if (entry.note) add("Note", entry.note);
 
       $("dupBtn").onclick = () => duplicateEntry(entry);
       $("delBtn").onclick = () => deleteEntry(entry.id, true);
+      $("delBtn").classList.remove("hidden");
+      $("dupBtn").classList.remove("hidden");
     }
 
-    function openIouSummarySheet(kind, name, balance){
-      // kind: "debtor" (owed to you) or "creditor" (you owe)
-      openEntryId = `iou-${kind}-${name}`;
-
+    function openIouDetails(kind, name){
+      // kind: "debtor" | "creditor"
       $("scrim").classList.add("on");
       $("sheet").classList.add("on");
       $("sheet").setAttribute("aria-hidden","false");
 
-      const title = (kind === "debtor") ? "Debtor" : "Creditor";
-      $("shTitle").textContent = name || title;
+      $("shTitle").textContent = name;
+      $("shBadge").textContent = "IOU";
 
-      const b = $("shBadge");
-      b.className = "badge bIOU";
-      b.textContent = "IOU";
+      const entries = db
+        .filter(e => {
+          if (kind === "debtor") return (e.type === "debtor" || e.type === "debt_repayment") && (e.debtor || e.name) === name;
+          return (e.type === "creditor" || e.type === "credit_settlement") && (e.creditor || e.name) === name;
+        })
+        .slice()
+        .sort((a,b)=> (a.ts||0) - (b.ts||0));
 
-      $("shAmt").textContent = money(Math.abs(balance || 0));
+      let bal = 0;
+      let firstLoan = null;
+      let lastAct = null;
+      let nextDue = null;
+      let lastRate = null;
+
+      for (const e of entries){
+        bal += (Number(e.principal)||0);
+        firstLoan = firstLoan || (e.type === (kind==="debtor" ? "debtor" : "creditor") ? e : null);
+        lastAct = e;
+        if (e.rate) lastRate = e.rate;
+        if (e.term){
+          const dueIso = String(e.term).slice(0,10);
+          if (!nextDue || dueIso < nextDue) nextDue = dueIso;
+        }
+      }
+
+      $("shAmt").textContent = money(Math.abs(bal));
 
       const kv = $("shKv");
       kv.innerHTML = "";
+
       const add = (k,v) => {
         const d = document.createElement("div");
         d.className = "kv";
@@ -883,68 +851,40 @@
         kv.appendChild(d);
       };
 
-      // Build timeline + metadata from real db rows
-      const related = db
-        .filter(e => {
-          if (!e) return false;
-          if (kind === "debtor") return (e.type === "debtor" || e.type === "debt_repayment") && (e.debtor === name || e.name === name);
-          return (e.type === "creditor" || e.type === "credit_settlement") && (e.creditor === name || e.name === name);
-        })
-        .slice()
-        .sort((a,b)=> (b.ts||0) - (a.ts||0));
+      add("Role", kind === "debtor" ? "Owes you" : "You owe");
+      add("Balance", money(Math.abs(bal)));
+      add("Date taken", firstLoan?.date ? fmtDDMMYYYY(firstLoan.date) : "—");
+      add("Due date", nextDue ? fmtDDMMYYYY(nextDue) : "—");
+      add("Rate", lastRate ? String(lastRate) : "—");
+      add("Last activity", lastAct?.date ? `${fmtDDMMYYYY(lastAct.date)} ${lastAct.time||""}`.trim() : "—");
 
-      // Original loan info (most recent "principal +" record)
-      const orig = related.find(e => (e.type === kind) && (Number(e.principal)||0) > 0) || null;
-      const last = related[0] || null;
+      // Recent activity (last 10)
+      const recentWrap = document.createElement("div");
+      recentWrap.style.marginTop = "12px";
+      recentWrap.className = "tiny muted";
+      recentWrap.textContent = "Recent activity";
+      kv.appendChild(recentWrap);
 
-      add("Ledger", title);
-      add("Outstanding", money(balance || 0));
-      if (orig){
-        add("Date taken", `${fmtDDMMYYYY(orig.date || "")} ${orig.time || "—"}`);
-        if (orig.term) add("Due date", fmtDDMMYYYY(orig.term));
-        if (orig.rate) add("Rate", String(orig.rate) + "%");
-        add("Original principal", money(orig.principal || 0));
-      }
-      if (last){
-        add("Last activity", `${fmtDDMMYYYY(last.date || "")} ${last.time || "—"}`);
-      }
-
-      // Mini timeline (top 10)
-      if (related.length){
-        const sep = document.createElement("div");
-        sep.style.marginTop = "12px";
-        sep.className = "tiny muted";
-        sep.textContent = "Activity";
-        kv.appendChild(sep);
-
-        for (const e of related.slice(0, 10)){
-          const t = document.createElement("div");
-          t.className = "kv";
-          const L = document.createElement("div");
-          L.className = "kvL";
-          const isLoan = (e.type === kind);
-          const isSettle = (e.type === "debt_repayment" || e.type === "credit_settlement");
-          L.textContent = isLoan ? "Loan" : (isSettle ? "Settlement" : "Update");
-          const R = document.createElement("div");
-          R.className = "kvR";
-          const dt = `${fmtDDMMYYYY(e.date || "")} ${e.time || "—"}`;
-          const amt = money(Math.abs(Number(e.principal)||0));
-          R.textContent = `${dt} • ${amt}`;
-          t.appendChild(L); t.appendChild(R);
-          kv.appendChild(t);
-        }
+      const recent = entries.slice().sort((a,b)=> (b.ts||0) - (a.ts||0)).slice(0,10);
+      for (const e of recent){
+        const r = document.createElement("div");
+        r.className = "kv";
+        const L = document.createElement("div"); L.className="kvL";
+        const tag = (e.type === "debtor" || e.type === "creditor") ? "TAKEN" : "PAID";
+        L.textContent = `${tag} ${fmtDDMMYYYY(e.date)} ${e.time||""}`.trim();
+        const R = document.createElement("div"); R.className="kvR";
+        R.textContent = money(Math.abs(Number(e.principal)||0));
+        r.appendChild(L); r.appendChild(R);
+        kv.appendChild(r);
       }
 
-      // Duplicate/delete for summary doesn’t make sense: keep actions useful
+      // IOU aggregate is not a real DB row, so hide duplicate/delete.
+      $("dupBtn").classList.add("hidden");
+      $("delBtn").classList.add("hidden");
       $("dupBtn").onclick = null;
       $("delBtn").onclick = null;
-      $("dupBtn").textContent = "Close";
-      $("delBtn").textContent = "Close";
-      $("dupBtn").className = "btn";
-      $("delBtn").className = "btn";
 
-      $("dupBtn").onclick = closeSheet;
-      $("delBtn").onclick = closeSheet;
+      openEntryId = null;
     }
 
     function closeSheet(){
@@ -952,34 +892,9 @@
       $("sheet").classList.remove("on");
       $("sheet").setAttribute("aria-hidden","true");
       openEntryId = null;
-
-      // restore action button labels in case we opened IOU summary
-      $("dupBtn").textContent = "Duplicate";
-      $("delBtn").textContent = "Delete";
-      $("dupBtn").className = "btn";
-      $("delBtn").className = "btn danger";
     }
 
-    // ---------- More menu ----------
-    function openMenu(){
-      syncMenuUI();
-      $("menuScrim").classList.add("on");
-      $("menu").classList.add("on");
-      $("menu").setAttribute("aria-hidden","false");
-    }
-    function closeMenu(){
-      $("menuScrim").classList.remove("on");
-      $("menu").classList.remove("on");
-      $("menu").setAttribute("aria-hidden","true");
-    }
-    function syncMenuUI(){
-      const stealthOn = document.body.classList.contains("stealth");
-      $("stealthPill").classList.toggle("on", stealthOn);
-      $("stealthBadge").textContent = stealthOn ? "Stealth" : "Normal";
-      $("stealthBadge").className = "badge " + (stealthOn ? "bIOU" : "");
-    }
-
-    // ---------- Crypto (best effort, never crash app) ----------
+    // ---------- Crypto (best effort) ----------
     const cryptoUtil = {
       async sha256(str){
         try{
@@ -1008,8 +923,42 @@
     let settlementMode = false;
     let lastDeleted = null;
 
-    // simple nav history
-    const navStack = ["dashboard"];
+    // Simple view stack (Back shouldn’t always dump to dashboard)
+    const viewStack = [];
+    function showView(name, push=true){
+      closeSheet();
+
+      const views = ["dashboard","entry","form","search","settings","auth","more"];
+      for (const v of views){
+        const el = $(v);
+        if (el) el.classList.toggle("hidden", v !== name);
+      }
+
+      if (push && currentView && currentView !== name){
+        viewStack.push(currentView);
+        if (viewStack.length > 30) viewStack.shift();
+      }
+
+      currentView = name;
+
+      const fab = $("fab");
+      if (name === "dashboard"){
+        fab.className = "fab fabPlus";
+        fab.textContent = "+";
+      } else {
+        fab.className = "fab fabBack";
+        fab.textContent = "↩";
+      }
+
+      // Update stealth label in More
+      if (name === "more"){
+        $("stealthState").textContent = document.body.classList.contains("stealth") ? "On" : "Off";
+      }
+    }
+    function goBack(){
+      const prev = viewStack.pop();
+      showView(prev || "dashboard", false);
+    }
 
     // ---------- Utilities ----------
     function save(){
@@ -1020,52 +969,24 @@
     function uuid(){
       return (crypto?.randomUUID) ? crypto.randomUUID() : (Date.now()+"-"+Math.random().toString(16).slice(2));
     }
-
-    function viewEl(name){ return $(name); }
-
-    function setFabFor(view){
-      const fab = $("fab");
-      if (view === "dashboard"){
-        fab.className = "fab fabPlus";
-        fab.textContent = "+";
-      } else {
-        fab.className = "fab fabBack";
-        fab.textContent = "↩";
-      }
+    function entryAmount(e){
+      if (!e) return 0;
+      if (typeof e.principal === "number") return e.principal;
+      return Number(e.total)||0;
+    }
+    function badgeFor(e){
+      const t = e?.type || "";
+      if (t === "income") return { badgeText:"IN" };
+      if (t === "expense") return { badgeText:"OUT" };
+      if (t === "asset") return { badgeText:"ASSET" };
+      if (t === "debtor" || t === "debt_repayment" || t === "creditor" || t === "credit_settlement") return { badgeText:"IOU" };
+      if (t === "fiduciary") return { badgeText:"FID" };
+      return { badgeText:"—" };
     }
 
-    function showView(name, opts={ push:true }){
-      closeSheet();
-      closeMenu();
-
-      const views = ["dashboard","entry","form","search","settings","auth"];
-      for (const v of views){
-        const el = viewEl(v);
-        if (el) el.classList.toggle("hidden", v !== name);
-      }
-
-      if (opts.push){
-        const top = navStack[navStack.length - 1];
-        if (top !== name) navStack.push(name);
-      }
-
-      currentView = name;
-      setFabFor(name);
-    }
-
-    function goBack(){
-      closeSheet();
-      closeMenu();
-
-      if (navStack.length > 1) navStack.pop();
-      const prev = navStack[navStack.length - 1] || "dashboard";
-      // render view without pushing again
-      showView(prev, { push:false });
-    }
+    function clear(el){ if (el) el.innerHTML = ""; }
 
     // ---------- Rendering ----------
-    function clear(el){ if (!el) return; el.innerHTML = ""; }
-
     function render(){
       // Totals
       let netWorth = 0;
@@ -1073,11 +994,10 @@
       let assetsTotal = 0;
       let expensesTotal = 0;
 
-      // IOU ledgers (outstanding balances)
-      const debtorBal = Object.create(null);    // owed to you
-      const creditorBal = Object.create(null);  // you owe
+      // IOU balances
+      const debtorBal = Object.create(null);
+      const creditorBal = Object.create(null);
 
-      // Lists
       clear($("exList"));
       clear($("asList"));
       clear($("dbList"));
@@ -1086,14 +1006,20 @@
 
       const auditFilter = ($("auditFilter").value || "").toLowerCase();
 
-      // Iterate newest-first
       const list = db.slice().sort((a,b) => (b.ts||0) - (a.ts||0));
 
-      // Pass 1: totals + section side lists
+      // Group audit by exact date (DD-MM-YYYY)
+      const groups = new Map(); // dateIso -> entries[]
+      for (const e of list){
+        const key = (e.date || nowISODate()).slice(0,10);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(e);
+      }
+
+      // Pass totals + ledgers
       for (const e of list){
         const t = e.type;
 
-        // Net worth uses only real money totals (loans have total=0)
         netWorth += Number(e.total)||0;
 
         bills += Number(e.b)||0;
@@ -1102,28 +1028,27 @@
 
         if (t === "asset"){
           assetsTotal += Number(e.total)||0;
-          $("asList").appendChild(renderTapRow(
-            e,
-            `${e.name || "Asset"}`,
-            fmtDDMMYYYY(e.date),
-            money(Math.abs(e.total||0)),
-            "asset"
-          ));
+          $("asList").appendChild(renderRow({
+            open:"sheet", id:e.id,
+            title: (e.name || "Asset"),
+            meta: (e.cat || "Other"),
+            amt: money(Math.abs(e.total||0)),
+            amtColor:"var(--blue)"
+          }));
         }
 
         if (t === "expense"){
           expensesTotal += Math.abs(Number(e.total)||0);
-          const meta = e.category ? (e.category + " • " + (e.bucket || "spend")) : (e.bucket || "spend");
-          $("exList").appendChild(renderTapRow(
-            e,
-            `${e.name || "Expense"}`,
+          const meta = (e.category ? (e.category + " • " + (e.bucket || "spend")) : (e.bucket || "spend"));
+          $("exList").appendChild(renderRow({
+            open:"sheet", id:e.id,
+            title: (e.name || "Expense"),
             meta,
-            money(Math.abs(e.total||0)),
-            "expense"
-          ));
+            amt: money(Math.abs(e.total||0)),
+            amtColor:"var(--red)"
+          }));
         }
 
-        // IOU-only balances
         if (t === "debtor" || t === "debt_repayment"){
           const who = e.debtor || e.name || "Unknown";
           debtorBal[who] = (debtorBal[who] || 0) + (Number(e.principal)||0);
@@ -1134,25 +1059,35 @@
         }
       }
 
-      // Render IOU lists (compact but tappable -> summary sheet)
+      // IOU lists (tap opens real details)
       let debtorsTotal = 0;
       for (const [name,bal] of Object.entries(debtorBal).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]))){
         if (!bal) continue;
         debtorsTotal += bal;
-        const fake = { id: "iou-db-"+name, name, type:"iou_summary", principal:bal, date:"", time:"", ts:0, iouKind:"debtor", iouName:name, iouBal:bal };
-        $("dbList").appendChild(renderTapRow(fake, name, "Outstanding", money(bal), "iou"));
+        $("dbList").appendChild(renderRow({
+          open:"iou", kind:"debtor", name,
+          title: name,
+          meta: "Outstanding",
+          amt: money(bal),
+          amtColor:"var(--emerald)"
+        }));
       }
 
       let creditorsTotal = 0;
       for (const [name,bal] of Object.entries(creditorBal).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]))){
         if (!bal) continue;
         creditorsTotal += bal;
-        const fake = { id: "iou-cr-"+name, name, type:"iou_summary", principal:bal, date:"", time:"", ts:0, iouKind:"creditor", iouName:name, iouBal:bal };
-        $("crList").appendChild(renderTapRow(fake, name, "Outstanding", money(bal), "iou", true));
+        $("crList").appendChild(renderRow({
+          open:"iou", kind:"creditor", name,
+          title: name,
+          meta: "Outstanding",
+          amt: money(bal),
+          amtColor:"var(--red)"
+        }));
       }
 
-      // Dashboard simplified
       const cashTotal = bills + savings + spend;
+
       $("nw").textContent = money(netWorth);
       $("cash").textContent = money(cashTotal);
       $("assets").textContent = money(assetsTotal);
@@ -1168,180 +1103,65 @@
       $("dbTotal").textContent = money(debtorsTotal);
       $("crTotal").textContent = money(creditorsTotal);
 
-      // ---------- Audit: group by ISO date, display DD-MM-YYYY, include time in each row ----------
-      const byDate = Object.create(null); // isoDate -> entries[]
-      for (const e of list){
-        const d = e.date || nowISODate();
-        (byDate[d] ||= []).push(e);
-      }
-
-      const dates = Object.keys(byDate).sort(cmpISODesc);
-
-      for (const isoDate of dates){
-        const entries = byDate[isoDate] || [];
-        // header
-        const head = document.createElement("div");
-        head.style.marginTop = "14px";
-        head.style.marginBottom = "8px";
-        head.className = "flex between center";
-
-        const left = document.createElement("div");
-        left.className = "tiny muted";
-        left.textContent = fmtDDMMYYYY(isoDate);
-
-        const right = document.createElement("div");
-        right.className = "tiny muted";
-
-        // subtotal of expenses for that date
-        let secExp = 0;
-        for (const e of entries){
-          if (e.type === "expense") secExp += Math.abs(Number(e.total)||0);
-        }
-        right.textContent = secExp ? ("Expenses " + money(secExp)) : "";
-
-        head.appendChild(left);
-        head.appendChild(right);
-        $("auditList").appendChild(head);
+      // Audit: date sections (DD-MM-YYYY) + time in each row
+      const groupKeys = Array.from(groups.keys()).sort((a,b)=> (b > a ? 1 : -1));
+      for (const dateIso of groupKeys){
+        const entries = groups.get(dateIso) || [];
+        const header = document.createElement("div");
+        header.className = "tiny muted";
+        header.style.marginTop = "14px";
+        header.style.marginBottom = "8px";
+        header.textContent = fmtDDMMYYYY(dateIso);
+        $("auditList").appendChild(header);
 
         for (const e of entries){
           const name = e.name || "Transaction";
           if (auditFilter && !name.toLowerCase().includes(auditFilter)) continue;
-          const amt = money(Math.abs(entryAmount(e)));
-          const meta = `${fmtDDMMYYYY(e.date || "")} ${e.time || "—"}`;
-          $("auditList").appendChild(renderTapRow(e, name, meta, amt, "audit"));
+
+          const meta = `${fmtDDMMYYYY(e.date)} ${e.time || "—"}`;
+          $("auditList").appendChild(renderRow({
+            open:"sheet", id:e.id,
+            title:name,
+            meta,
+            amt: money(Math.abs(entryAmount(e))),
+            amtColor: (e.type==="expense" ? "var(--red)" : "")
+          }));
         }
       }
     }
 
-    function renderTapRow(entry, title, meta, amt, context, red=false){
+    function renderRow({open, id, kind, name, title, meta, amt, amtColor}){
       const row = document.createElement("div");
-      row.className = "row tapRow";
-      row.dataset.open = "sheet";
-      row.dataset.id = entry.id;
+      row.className = "miniRow";
+      row.style.cursor = "pointer";
+      row.dataset.open = open;
 
-      // carry IOU summary info when needed
-      if (entry.type === "iou_summary"){
-        row.dataset.iou = "1";
-        row.dataset.iouKind = entry.iouKind || "";
-        row.dataset.iouName = entry.iouName || "";
-        row.dataset.iouBal = String(entry.iouBal || 0);
-      }
+      if (open === "sheet") row.dataset.id = id;
+      if (open === "iou") { row.dataset.kind = kind; row.dataset.name = name; }
 
-      const left = document.createElement("div");
-      left.className = "rowLeft";
-      const nm = document.createElement("div");
-      nm.className = "rowName";
-      nm.textContent = title || "";
-      const mt = document.createElement("div");
-      mt.className = "rowMeta";
-      mt.textContent = meta || "";
-      left.appendChild(nm);
-      left.appendChild(mt);
+      const L = document.createElement("div");
+      L.style.minWidth = "0";
 
-      const right = document.createElement("div");
-      right.className = "rowAmt mask";
-      right.textContent = amt || "";
-      if (red) right.style.color = "var(--red)";
+      const t = document.createElement("div");
+      t.className = "lrTitle";
+      t.style.textTransform = "uppercase";
+      t.textContent = title || "";
 
-      row.appendChild(left);
-      row.appendChild(right);
+      const m = document.createElement("div");
+      m.className = "lrMeta";
+      m.textContent = meta || "";
+
+      L.appendChild(t);
+      L.appendChild(m);
+
+      const R = document.createElement("div");
+      R.className = "lrAmt mask";
+      R.textContent = amt || "";
+      if (amtColor) R.style.color = amtColor;
+
+      row.appendChild(L);
+      row.appendChild(R);
       return row;
-    }
-
-    // ---------- Search ----------
-    let qType = "all";
-    function setQType(t){
-      qType = t;
-      document.querySelectorAll('[data-qtype]').forEach(b => {
-        const is = (b.getAttribute("data-qtype") === t);
-        b.style.boxShadow = is ? "0 0 0 2px rgba(16,185,129,.18) inset" : "none";
-      });
-      runSearch();
-    }
-
-    function runSearch(){
-      const s = ($("q").value || "").toLowerCase().trim();
-      const qs = $("qStart").value || ""; // ISO
-      const qe = $("qEnd").value || "";
-
-      const out = $("qRes");
-      out.innerHTML = "";
-
-      const list = db.slice().sort((a,b) => (b.ts||0) - (a.ts||0)).filter(e => {
-        const hay = [
-          e.name, e.category, e.bucket, e.debtor, e.creditor, e.goal, e.user, e.note
-        ].filter(Boolean).join(" ").toLowerCase();
-
-        if (s && !hay.includes(s)) return false;
-        if (qs && (e.date || "") < qs) return false;
-        if (qe && (e.date || "") > qe) return false;
-
-        if (qType === "all") return true;
-        if (qType === "income") return e.type === "income";
-        if (qType === "expense") return e.type === "expense";
-        if (qType === "asset") return e.type === "asset";
-        if (qType === "fid") return e.type === "fiduciary";
-        if (qType === "iou"){
-          return ["debtor","debt_repayment","creditor","credit_settlement"].includes(e.type);
-        }
-        return true;
-      });
-
-      if (!list.length){
-        const empty = document.createElement("div");
-        empty.className = "tiny muted";
-        empty.style.marginTop = "12px";
-        empty.textContent = "No results";
-        out.appendChild(empty);
-        return;
-      }
-
-      for (const e of list){
-        const { badgeText, badgeClass } = badgeFor(e);
-
-        const card = document.createElement("div");
-        card.className = "card";
-        card.style.margin = "0 0 10px 0";
-        card.dataset.open = "sheet";
-        card.dataset.id = e.id;
-
-        const head = document.createElement("div");
-        head.className = "p16 flex between center";
-
-        const L = document.createElement("div");
-        L.style.minWidth = "0";
-
-        const t = document.createElement("div");
-        t.className = "rowName";
-        t.textContent = e.name || "Transaction";
-
-        const m = document.createElement("div");
-        m.className = "rowMeta";
-        m.textContent = `${fmtDDMMYYYY(e.date || "")} ${e.time || "—"}`;
-
-        L.appendChild(t);
-        L.appendChild(m);
-
-        const R = document.createElement("div");
-        R.className = "col";
-        R.style.alignItems = "flex-end";
-
-        const b = document.createElement("span");
-        b.className = "badge " + badgeClass;
-        b.textContent = badgeText;
-
-        const a = document.createElement("div");
-        a.className = "rowAmt mask";
-        a.textContent = money(Math.abs(entryAmount(e)));
-
-        R.appendChild(b);
-        R.appendChild(a);
-
-        head.appendChild(L);
-        head.appendChild(R);
-        card.appendChild(head);
-        out.appendChild(card);
-      }
     }
 
     // ---------- CRUD ----------
@@ -1363,9 +1183,7 @@
           render();
           showToast("Restored");
         });
-      } else {
-        showToast("Deleted");
-      }
+      } else showToast("Deleted");
 
       closeSheet();
     }
@@ -1404,21 +1222,19 @@
       if (type === "borrow" || type === "lend") buildLoanFields(type);
       if (type === "fid") buildFidFields();
 
-      showView("form", { push:true });
+      showView("form");
     }
 
     function buildSettlementSeg(left, right){
       $("segWrap").classList.remove("hidden");
       const wrap = document.createElement("div");
       wrap.className = "flex gap8";
+
       const a = document.createElement("button");
-      a.className = "btn";
-      a.style.flex = "1";
-      a.textContent = left;
+      a.className = "btn"; a.style.flex = "1"; a.textContent = left;
+
       const b = document.createElement("button");
-      b.className = "btn";
-      b.style.flex = "1";
-      b.textContent = right;
+      b.className = "btn"; b.style.flex = "1"; b.textContent = right;
 
       const apply = () => {
         a.style.borderColor = settlementMode ? "#2a2a2f" : "rgba(16,185,129,.5)";
@@ -1439,22 +1255,17 @@
       $("dyn").innerHTML = "";
       $("nameList").innerHTML = "";
 
-      if (formType === "income"){
-        if (settlementMode){
-          const names = getDebtorNamesWithBalances();
-          fillNameList(names.map(x=>x.name));
-          buildPicker(names, "Pick debtor (tap)", (n)=>{ $("desc").value=n; showToast("Selected"); });
-        }
+      if (formType === "income" && settlementMode){
+        const names = getDebtorNamesWithBalances();
+        fillNameList(names.map(x=>x.name));
+        buildPicker(names, "Pick debtor (tap)", (n)=>{ $("desc").value=n; showToast("Selected"); });
       }
-
       if (formType === "expense"){
         if (settlementMode){
           const names = getCreditorNamesWithBalances();
           fillNameList(names.map(x=>x.name));
           buildPicker(names, "Pick creditor (tap)", (n)=>{ $("desc").value=n; showToast("Selected"); });
-        } else {
-          buildExpenseFields();
-        }
+        } else buildExpenseFields();
       }
     }
 
@@ -1469,16 +1280,12 @@
 
     function buildPicker(items, label, onPick){
       const wrap = document.createElement("div");
-      wrap.className = "card";
-      wrap.style.margin = "10px 0 0 0";
+      wrap.className = "menuCard";
 
-      const h = document.createElement("div");
-      h.className = "p16";
-      const tt = document.createElement("div");
-      tt.className = "tiny muted";
-      tt.textContent = label;
-      h.appendChild(tt);
-      wrap.appendChild(h);
+      const top = document.createElement("div");
+      top.className = "p16";
+      top.innerHTML = `<div class="tiny muted">${label}</div>`;
+      wrap.appendChild(top);
 
       const body = document.createElement("div");
       body.className = "p16";
@@ -1492,27 +1299,9 @@
       } else {
         for (const it of items.slice(0, 12)){
           const r = document.createElement("div");
-          r.className = "row tapRow";
-          r.style.padding = "10px 0";
+          r.className = "menuItem";
           r.onclick = () => onPick(it.name);
-
-          const L = document.createElement("div");
-          L.className = "rowLeft";
-          const n = document.createElement("div");
-          n.className = "rowName";
-          n.textContent = it.name;
-
-          const m = document.createElement("div");
-          m.className = "rowMeta";
-          m.textContent = "Outstanding " + money(it.balance);
-
-          L.appendChild(n); L.appendChild(m);
-
-          const R = document.createElement("div");
-          R.className = "rowAmt";
-          R.textContent = "Tap";
-
-          r.appendChild(L); r.appendChild(R);
+          r.innerHTML = `<div class="menuL">${it.name}</div><div class="menuR">${money(it.balance)}</div>`;
           body.appendChild(r);
         }
       }
@@ -1575,8 +1364,7 @@
       const term = document.createElement("input");
       term.id = "term";
       term.className = "input";
-      term.type = "date"; // ISO input, display format happens elsewhere
-      term.placeholder = "Due date";
+      term.type = "date";
 
       $("dyn").appendChild(rate);
       $("dyn").appendChild(term);
@@ -1632,14 +1420,7 @@
       const desc = ($("desc").value || "").trim();
       if (!amt || !desc){ showToast("Enter amount + description"); return; }
 
-      const base = {
-        id: uuid(),
-        name: desc,
-        date: nowISODate(),
-        time: nowISOTime(),
-        ts: Date.now(),
-        total: 0
-      };
+      const base = { id: uuid(), name: desc, date: nowISODate(), time: nowISOTime(), ts: Date.now(), total: 0 };
 
       if (formType === "income"){
         if (settlementMode){
@@ -1653,7 +1434,6 @@
           base.l = amt;
         }
       }
-
       else if (formType === "expense"){
         if (settlementMode){
           base.type = "credit_settlement";
@@ -1674,13 +1454,11 @@
           else base.l = -amt;
         }
       }
-
       else if (formType === "asset"){
         base.type = "asset";
         base.total = amt;
         base.cat = $("assetCat")?.value || "Other";
       }
-
       else if (formType === "borrow"){
         base.type = "creditor";
         base.total = 0;
@@ -1689,7 +1467,6 @@
         base.rate = $("rate")?.value || "";
         base.term = $("term")?.value || "";
       }
-
       else if (formType === "lend"){
         base.type = "debtor";
         base.total = 0;
@@ -1698,7 +1475,6 @@
         base.rate = $("rate")?.value || "";
         base.term = $("term")?.value || "";
       }
-
       else if (formType === "fid"){
         base.type = "fiduciary";
         base.total = amt;
@@ -1714,7 +1490,7 @@
       $("desc").value = "";
 
       showToast("Saved");
-      showView("dashboard", { push:true });
+      showView("dashboard");
     }
 
     // ---------- PIN ----------
@@ -1724,11 +1500,8 @@
 
       const salt = cryptoUtil.salt();
       const hash = await cryptoUtil.sha256(`${salt}:${p}`);
-      if (!hash){
-        pinObj = { salt:"plain", hash:String(p), algo:"fallback" };
-      } else {
-        pinObj = { salt, hash, algo:"sha256(salt:pin)" };
-      }
+      pinObj = hash ? { salt, hash, algo:"sha256(salt:pin)" } : { salt:"plain", hash:String(p), algo:"fallback" };
+
       $("setPin").value = "";
       save();
       showToast("PIN updated");
@@ -1737,25 +1510,21 @@
     async function verifyPin(){
       const input = ($("authPin").value || "").trim();
       if (!pinObj) return true;
-
-      if (pinObj.algo === "fallback"){
-        return input === pinObj.hash;
-      }
+      if (pinObj.algo === "fallback") return input === pinObj.hash;
       const hash = await cryptoUtil.sha256(`${pinObj.salt}:${input}`);
       return !!hash && hash === pinObj.hash;
     }
 
     // ---------- Backup / Restore ----------
     function backup(){
-      const payload = { version:82, exportedAt:new Date().toISOString(), db, cfg };
+      const payload = { version:83, exportedAt:new Date().toISOString(), db, cfg };
       const blob = new Blob([JSON.stringify(payload,null,2)], { type:"application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "Vault_v82.json";
+      a.download = "Vault_v83.json";
       a.click();
       showToast("Backup exported");
     }
-
     function restore(file){
       const r = new FileReader();
       r.onload = (ev) => {
@@ -1765,7 +1534,6 @@
           else if (parsed && Array.isArray(parsed.db)) { db = parsed.db; cfg = { ...cfg, ...(parsed.cfg||parsed.config||{}) }; }
           else throw new Error("bad");
 
-          // enforce IOU policy: total=0 for loan types
           const loanTypes = ["debtor","debt_repayment","creditor","credit_settlement"];
           db = db.map(e => {
             if (!e) return e;
@@ -1785,7 +1553,7 @@
           save();
           render();
           showToast("Restored");
-          showView("dashboard", { push:true });
+          showView("dashboard");
         }catch{
           showToast("Invalid backup file");
         }
@@ -1793,86 +1561,148 @@
       r.readAsText(file);
     }
 
-    // ---------- Global click delegation ----------
-    function handleClick(e){
-      const t = e.target;
+    // ---------- Click delegation ----------
+    function handleClick(ev){
+      const t = ev.target;
 
-      // Close sheets if scrims tapped
       if (t === $("scrim")) { closeSheet(); return; }
-      if (t === $("menuScrim")) { closeMenu(); return; }
 
-      // Drawer toggles
-      const toggle = t.closest("[data-toggle]");
-      if (toggle){
-        const id = toggle.getAttribute("data-toggle");
-        const el = $(id);
-        if (el) el.classList.toggle("open");
-        return;
-      }
-
-      // View switches
       const viewBtn = t.closest("[data-view]");
       if (viewBtn){
         const v = viewBtn.getAttribute("data-view");
         if (v === "back") goBack();
-        else if (v === "dashboard") showView("dashboard", { push:true });
-        else if (v === "entry") showView("entry", { push:true });
-        else if (v === "search") { showView("search", { push:true }); runSearch(); }
-        else if (v === "settings") showView("settings", { push:true });
+        else showView(v);
         return;
       }
 
-      // Open form from tiles
+      const toggle = t.closest("[data-toggle]");
+      if (toggle){
+        const id = toggle.getAttribute("data-toggle");
+        if (id === "liqRow"){ $("liqRow").classList.toggle("open"); $("liqDrawer").classList.toggle("hidden"); $("liqDrawer").classList.toggle("hidden", false); }
+        // Use simple open/close by toggling next drawer display via class on row:
+        toggle.classList.toggle("open");
+        const next = toggle.nextElementSibling;
+        if (next && next.classList.contains("drawer")){
+          next.style.display = toggle.classList.contains("open") ? "block" : "none";
+        }
+        return;
+      }
+
       const tile = t.closest("[data-form]");
       if (tile){
-        const ft = tile.getAttribute("data-form");
-        openForm(ft);
+        openForm(tile.getAttribute("data-form"));
         return;
       }
 
-      // Open sheet from rows/cards
-      const open = t.closest("[data-open='sheet']");
+      const open = t.closest("[data-open]");
       if (open){
-        // IOU summary rows
-        if (open.dataset.iou === "1"){
-          const kind = open.dataset.iouKind || "";
-          const name = open.dataset.iouName || "";
-          const bal = Number(open.dataset.iouBal || 0);
-          if (kind && name) openIouSummarySheet(kind, name, bal);
+        const mode = open.getAttribute("data-open");
+        if (mode === "sheet"){
+          const id = open.getAttribute("data-id");
+          const entry = db.find(x => x.id === id);
+          if (entry) openSheetEntry(entry);
           return;
         }
+        if (mode === "iou"){
+          openIouDetails(open.getAttribute("data-kind"), open.getAttribute("data-name"));
+          return;
+        }
+      }
 
-        const id = open.getAttribute("data-id");
-        const entry = db.find(x => x.id === id);
-        if (entry) openSheet(entry);
+      const qt = t.closest("[data-qtype]");
+      if (qt){ setQType(qt.getAttribute("data-qtype")); return; }
+    }
+
+    // ---------- Search ----------
+    let qType = "all";
+    function setQType(t){
+      qType = t;
+      document.querySelectorAll('[data-qtype]').forEach(b => {
+        const is = (b.getAttribute("data-qtype") === t);
+        b.style.borderColor = is ? "rgba(16,185,129,.45)" : "rgba(255,255,255,.10)";
+      });
+      runSearch();
+    }
+
+    function runSearch(){
+      const s = ($("q").value || "").toLowerCase().trim();
+      const qs = $("qStart").value || "";
+      const qe = $("qEnd").value || "";
+      const out = $("qRes");
+      out.innerHTML = "";
+
+      const list = db.slice().sort((a,b) => (b.ts||0) - (a.ts||0)).filter(e => {
+        const hay = [e.name,e.category,e.bucket,e.debtor,e.creditor,e.goal,e.user,e.note].filter(Boolean).join(" ").toLowerCase();
+        if (s && !hay.includes(s)) return false;
+        if (qs && (e.date || "") < qs) return false;
+        if (qe && (e.date || "") > qe) return false;
+
+        if (qType === "all") return true;
+        if (qType === "income") return e.type === "income";
+        if (qType === "expense") return e.type === "expense";
+        if (qType === "asset") return e.type === "asset";
+        if (qType === "fid") return e.type === "fiduciary";
+        if (qType === "iou") return ["debtor","debt_repayment","creditor","credit_settlement"].includes(e.type);
+        return true;
+      });
+
+      if (!list.length){
+        const empty = document.createElement("div");
+        empty.className = "tiny muted";
+        empty.style.marginTop = "12px";
+        empty.textContent = "No results";
+        out.appendChild(empty);
         return;
       }
 
-      // Search type badges
-      const qt = t.closest("[data-qtype]");
-      if (qt){
-        setQType(qt.getAttribute("data-qtype"));
-        return;
+      for (const e of list){
+        const card = document.createElement("div");
+        card.className = "menuCard";
+        card.style.margin = "0 0 10px 0";
+        card.dataset.open = "sheet";
+        card.dataset.id = e.id;
+
+        const item = document.createElement("div");
+        item.className = "menuItem";
+        item.dataset.open = "sheet";
+        item.dataset.id = e.id;
+
+        const L = document.createElement("div");
+        L.style.minWidth = "0";
+        L.innerHTML = `<div class="menuL" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${(e.name||"Transaction")}</div>
+                       <div class="lrMeta">${fmtDDMMYYYY(e.date)} ${e.time||""}</div>`;
+
+        const R = document.createElement("div");
+        R.style.textAlign = "right";
+        R.innerHTML = `<div class="lrAmt mask">${money(Math.abs(entryAmount(e)))}</div>
+                       <div class="lrMeta">${badgeFor(e).badgeText}</div>`;
+
+        item.appendChild(L); item.appendChild(R);
+        card.appendChild(item);
+        out.appendChild(card);
       }
     }
 
     // ---------- Init ----------
     function init(){
       try{
-        showView("dashboard", { push:false });
+        showView("dashboard", false);
 
-        // More
-        $("moreBtn").onclick = openMenu;
-        $("mStealth").onclick = () => { document.body.classList.toggle("stealth"); syncMenuUI(); showToast(document.body.classList.contains("stealth") ? "Stealth on" : "Stealth off"); };
-        $("mSettings").onclick = () => { closeMenu(); showView("settings", { push:true }); };
-        $("mBackup").onclick = () => { backup(); closeMenu(); };
-        $("mRestore").onclick = () => { closeMenu(); $("file").click(); };
-
-        // FAB (real back stack)
+        // FAB: dashboard -> entry ; otherwise -> back
         $("fab").onclick = () => {
-          if (currentView === "dashboard") showView("entry", { push:true });
+          if (currentView === "dashboard") showView("entry");
           else goBack();
         };
+
+        // More menu actions
+        $("toggleStealth").onclick = () => {
+          document.body.classList.toggle("stealth");
+          $("stealthState").textContent = document.body.classList.contains("stealth") ? "On" : "Off";
+          showToast("Stealth " + ($("stealthState").textContent));
+        };
+
+        $("moreBackup").onclick = () => backup();
+        $("moreRestore").onclick = () => $("file").click();
 
         // Search events
         $("q").addEventListener("input", runSearch);
@@ -1898,6 +1728,7 @@
           if (f) restore(f);
           ev.target.value = "";
         };
+
         $("resetBtn").onclick = () => {
           if (!confirm("Reset app data?")) return;
           localStorage.removeItem(KEY.DB);
@@ -1908,9 +1739,7 @@
           pinObj = null;
           showToast("Reset");
           render();
-          showView("dashboard", { push:false });
-          navStack.length = 0;
-          navStack.push("dashboard");
+          showView("dashboard", false);
         };
 
         // Auth
@@ -1918,55 +1747,50 @@
           const ok = await verifyPin();
           if (!ok){ showToast("Wrong PIN"); return; }
           $("authPin").value = "";
-          showView("dashboard", { push:false });
-          navStack.length = 0;
-          navStack.push("dashboard");
+          showView("dashboard", false);
           render();
         };
-
-        // Sheet close on escape
-        document.addEventListener("keydown", (ev) => {
-          if (ev.key === "Escape"){
-            if ($("menu").classList.contains("on")) closeMenu();
-            else closeSheet();
-          }
-        });
 
         // Global click delegation
         document.body.addEventListener("click", handleClick, { passive:true });
 
-        // Scrims
+        // Sheet close
+        document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") closeSheet(); });
+
+        // Scrim click
         $("scrim").addEventListener("click", closeSheet);
-        $("menuScrim").addEventListener("click", closeMenu);
 
         // First render
         render();
 
-        // If PIN enabled and exists → show auth
+        // Default collapsed drawers
+        ["liqRow","exRow","asRow","dbRow","crRow","auRow"].forEach(id => {
+          const r = $(id);
+          const next = r?.nextElementSibling;
+          if (next && next.classList.contains("drawer")) next.style.display = "none";
+        });
+
+        // If PIN enabled and exists -> auth
         if (cfg.reqPin && pinObj){
-          showView("auth", { push:true });
+          showView("auth", false);
         }
 
-        // Search badge default highlight
+        // Search type default
         setQType("all");
-        syncMenuUI();
 
       }catch(err){
         console.error(err);
-        showView("dashboard", { push:false });
+        showView("dashboard", false);
         showToast("Recovered from an error");
       }
     }
 
-    // Global error trap
     window.addEventListener("error", () => showToast("Recovered from an error"));
     window.addEventListener("unhandledrejection", () => showToast("Recovered from an error"));
-
     window.addEventListener("load", init);
 
-    // expose for debugging if needed
+    // Expose
     window.VAULT = { get db(){ return db; }, render, showView };
-
   })();
   </script>
 </body>
