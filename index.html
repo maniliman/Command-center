@@ -129,25 +129,32 @@
     .drawer{display:none;padding:16px 18px;background:var(--card);border-top:1px solid var(--border);}
     .open > .drawer{display:block;}
 
-    /* Ledger rows: description left, amount right */
+    /* Ledger rows: fixed 2-column grid, always aligned */
     .row{
-      display:flex;justify-content:space-between;gap:12px;
-      padding:12px 0;border-bottom:1px solid #1c1c20;
-      align-items:flex-start;
+      display:grid;
+      grid-template-columns: 1fr minmax(120px, 170px);
+      gap:12px;
+      padding:12px 0;
+      border-bottom:1px solid #1c1c20;
+      align-items:start;
     }
     .row:last-child{border-bottom:none;}
-    .rowLeft{min-width:0;flex:1;}
+    .rowLeft{min-width:0;}
     .rowName{
       font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;
       white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
       max-width:100%;
     }
-    .rowMeta{font-size:11px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+    .rowMeta{
+      font-size:11px;color:var(--muted);margin-top:3px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+    }
     .rowAmt{
-      font-size:12px;font-weight:900;white-space:nowrap;
-      margin-left:auto;
+      justify-self:end;
       text-align:right;
-      flex:0 0 auto;
+      white-space:nowrap;
+      font-size:12px;
+      font-weight:900;
     }
     .tapRow{cursor:pointer;}
 
@@ -383,9 +390,19 @@
           <div class="cardVal mask" id="liq">₦0</div>
         </div>
         <div class="drawer">
-          <div class="row"><div class="rowName">Bills</div><div class="rowAmt mask" id="bills">₦0</div></div>
-          <div class="row"><div class="rowName">Savings</div><div class="rowAmt mask" id="savings">₦0</div></div>
-          <div class="row"><div class="rowName">Spend</div><div class="rowAmt mask" id="spend">₦0</div></div>
+          <!-- normalized rows (rowLeft + rowAmt) for perfect alignment -->
+          <div class="row">
+            <div class="rowLeft"><div class="rowName">Bills</div></div>
+            <div class="rowAmt mask" id="bills">₦0</div>
+          </div>
+          <div class="row">
+            <div class="rowLeft"><div class="rowName">Savings</div></div>
+            <div class="rowAmt mask" id="savings">₦0</div>
+          </div>
+          <div class="row">
+            <div class="rowLeft"><div class="rowName">Spend</div></div>
+            <div class="rowAmt mask" id="spend">₦0</div>
+          </div>
         </div>
       </div>
 
@@ -1897,17 +1914,10 @@
       }catch(err){
         console.error(err);
         showView("dashboard");
-        showToast("Recovered from an error");
       }
     }
 
-    window.addEventListener("error", () => showToast("Recovered from an error"));
-    window.addEventListener("unhandledrejection", () => showToast("Recovered from an error"));
-    window.addEventListener("load", init);
-
-    // expose for debugging if needed
-    window.VAULT = { get db(){ return db; }, render, showView };
-
+    init();
   })();
   </script>
 </body>
