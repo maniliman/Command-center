@@ -6,7 +6,7 @@
     name="viewport"
     content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
   />
-  <title>Sovereign Vault v81</title>
+  <title>Sovereign Vault v82</title>
 
   <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/512/shield.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -55,6 +55,7 @@
     .mb-2 { margin-bottom: 8px; }
     .mb-4 { margin-bottom: 16px; }
     .mb-6 { margin-bottom: 24px; }
+    .p-3 { padding: 12px; }
     .p-4 { padding: 16px; }
     .p-5 { padding: 20px; }
     .p-6 { padding: 24px; }
@@ -136,8 +137,27 @@
     .fab-primary { background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: black; }
     .fab-back { background: #333; color: white; }
 
-    .btn-dark { background: var(--zinc-900); color: white; border: 1px solid #333; border-radius: 16px; padding: 14px 16px; font-weight: 800; font-size: 12px; cursor: pointer; }
-    .btn-grid { background: var(--zinc-900); border: 1px solid #333; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; }
+    .btn-dark {
+      background: var(--zinc-900);
+      color: white;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-grid {
+      background: var(--zinc-900);
+      border: 1px solid #333;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
 
     /* FLUID BAR */
     .fluid-bar { display: flex; border-radius: 12px; overflow: hidden; margin: 20px 0; border: 1px solid #333; }
@@ -178,10 +198,78 @@
     input:checked + .slider:before { transform: translateX(22px); background-color: white; }
 
     /* SMALL HELPERS */
-    .row { display:flex; justify-content:space-between; align-items:center; padding: 10px 0; border-bottom: 1px solid #222; font-size: 12px; text-transform: uppercase; }
+    .row {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding: 10px 0;
+      border-bottom: 1px solid #222;
+      font-size: 12px;
+      text-transform: uppercase;
+      gap: 10px;
+    }
     .row:last-child { border-bottom: none; }
     .tiny { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #666; }
     .danger-outline { color: var(--accent-red); border-color: var(--accent-red); }
+    .meta-stack { display:flex; flex-direction:column; align-items:flex-end; gap: 4px; }
+
+    /* AUDIT GROUP HEADERS (bank vibe) */
+    .audit-header {
+      margin: 14px 0 8px;
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      gap: 12px;
+    }
+    .audit-title {
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #71717a;
+    }
+    .audit-subtotal {
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-red);
+      opacity: .9;
+      white-space: nowrap;
+    }
+
+    /* LOAN PERSON EXPANDERS */
+    details.loan-item { border-bottom: 1px solid #222; padding: 10px 0; }
+    details.loan-item:last-child { border-bottom: none; }
+    details.loan-item summary {
+      list-style: none;
+      cursor: pointer;
+      display:flex;
+      justify-content:space-between;
+      gap: 12px;
+      align-items:center;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    details.loan-item summary::-webkit-details-marker { display:none; }
+    .loan-left { display:flex; align-items:center; gap: 10px; min-width: 0; }
+    .loan-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width: 52vw; }
+    .loan-right { display:flex; align-items:center; gap: 10px; white-space: nowrap; }
+    .loan-meta { margin-top: 10px; opacity: .75; font-size: 10px; text-transform: uppercase; }
+    .loan-meta .mrow { display:flex; justify-content:space-between; padding: 4px 0; border-top: 1px dashed rgba(255,255,255,0.06); }
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #333;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      opacity: .95;
+    }
+    .badge.green { border-color: rgba(16,185,129,.5); color: var(--accent-green); background: rgba(16,185,129,.08); }
+    .badge.red { border-color: rgba(239,68,68,.5); color: var(--accent-red); background: rgba(239,68,68,.08); }
+    .badge.yellow { border-color: rgba(234,179,8,.5); color: var(--accent-yellow); background: rgba(234,179,8,.08); }
   </style>
 </head>
 
@@ -208,7 +296,7 @@
 
   <!-- TOP BAR -->
   <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 10px; margin-bottom: 20px;">
-    <span class="text-xs font-black uppercase text-zinc">Sovereign v81</span>
+    <span class="text-xs font-black uppercase text-zinc">Sovereign v82</span>
     <div class="flex gap-2">
       <button id="btn-query" class="btn-dark" style="width: 40px; height: 40px; border-radius: 50%; padding: 0;">🔍</button>
       <button id="btn-stealth" class="btn-dark" style="width: 40px; height: 40px; border-radius: 50%; padding: 0;">👁️</button>
@@ -240,7 +328,10 @@
       <div id="feat-tactical" class="vault-card">
         <div class="p-5 flex justify-between items-center" data-toggle="feat-tactical">
           <span class="text-xs font-bold uppercase">Liquidity</span>
-          <b id="tc-display" class="maskable text-sm text-emerald">₦0</b>
+          <div class="meta-stack">
+            <b id="tc-display" class="maskable text-sm text-emerald">₦0</b>
+            <div class="tiny">Bills + Save + Spend</div>
+          </div>
         </div>
         <div class="sub-drawer">
           <div class="row"><span>Bills</span><span id="b-total" class="maskable font-bold">₦0</span></div>
@@ -268,7 +359,10 @@
       <div id="feat-debtors" class="vault-card">
         <div class="p-5 flex justify-between items-center" data-toggle="feat-debtors">
           <span class="text-xs font-bold uppercase">Debtors</span>
-          <b id="db-display" class="maskable text-sm text-emerald">₦0</b>
+          <div class="meta-stack">
+            <b id="db-display" class="maskable text-sm text-emerald">₦0</b>
+            <div id="db-meta" class="tiny">0 people</div>
+          </div>
         </div>
         <div id="db-list" class="sub-drawer"></div>
       </div>
@@ -276,7 +370,10 @@
       <div id="feat-creditors" class="vault-card">
         <div class="p-5 flex justify-between items-center" data-toggle="feat-creditors">
           <span class="text-xs font-bold uppercase text-zinc">Creditors</span>
-          <b id="cr-display" class="maskable text-sm text-red">₦0</b>
+          <div class="meta-stack">
+            <b id="cr-display" class="maskable text-sm text-red">₦0</b>
+            <div id="cr-meta" class="tiny">0 people</div>
+          </div>
         </div>
         <div id="cr-list" class="sub-drawer"></div>
       </div>
@@ -301,7 +398,7 @@
         </div>
         <div class="sub-drawer">
           <input type="text" id="hi-search" class="input-ghost text-xs mb-4" placeholder="Filter..." />
-          <div id="hi-list" style="max-height: 300px; overflow-y: auto;"></div>
+          <div id="hi-list" style="max-height: 320px; overflow-y: auto;"></div>
         </div>
       </div>
     </div>
@@ -422,17 +519,16 @@
 
   <script>
     (() => {
-      const APP_VER = 81;
+      const APP_VER = 82;
 
       const KEYS = {
-        DB:  "SOV_DB_V81",
-        CFG: "SOV_CFG_V81",
-        PIN: "SOV_PIN_V81" // stores {salt, hash, algo}
+        DB:  "SOV_DB_V82",
+        CFG: "SOV_CFG_V82",
+        PIN: "SOV_PIN_V82"
       };
 
       const money = {
         fmt: (n) => "₦" + (Number(n) || 0).toLocaleString(),
-        // avoid floating rounding surprises for totals: store in kobo if you want later.
         num: (v) => {
           const x = Number(v);
           return Number.isFinite(x) ? x : 0;
@@ -441,18 +537,7 @@
 
       const dom = {
         byId: (id) => document.getElementById(id),
-        clear: (el) => { while (el.firstChild) el.removeChild(el.firstChild); },
-        row: (left, right, opts = {}) => {
-          const wrap = document.createElement("div");
-          wrap.className = "row" + (opts.className ? (" " + opts.className) : "");
-          const l = document.createElement("span");
-          l.textContent = left ?? "";
-          const r = document.createElement("span");
-          r.textContent = right ?? "";
-          wrap.appendChild(l);
-          wrap.appendChild(r);
-          return wrap;
-        },
+        clear: (el) => { while (el && el.firstChild) el.removeChild(el.firstChild); },
         chipLine: (left, right) => {
           const wrap = document.createElement("div");
           wrap.className = "glass-panel p-4 mb-2 flex justify-between uppercase text-xs";
@@ -480,50 +565,67 @@
           return cryptoUtil.toHex(buf);
         },
         async hashPin(pin, salt) {
-          // lightweight: SHA256(salt + ":" + pin). PBKDF2 would be stronger but more code + slower.
           return cryptoUtil.sha256(`${salt}:${pin}`);
+        }
+      };
+
+      // --- TIME HELPERS (local time, bank vibe) ---
+      const timeUtil = {
+        pad2: (n) => String(n).padStart(2, "0"),
+        formatTs: (ts) => {
+          const d = new Date(ts || Date.now());
+          const yyyy = d.getFullYear();
+          const mm = timeUtil.pad2(d.getMonth() + 1);
+          const dd = timeUtil.pad2(d.getDate());
+          const hh = timeUtil.pad2(d.getHours());
+          const mi = timeUtil.pad2(d.getMinutes());
+          return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+        },
+        startOfDay: (dt) => new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).getTime(),
+        todayStr: () => {
+          const d = new Date();
+          const yyyy = d.getFullYear();
+          const mm = timeUtil.pad2(d.getMonth() + 1);
+          const dd = timeUtil.pad2(d.getDate());
+          return `${yyyy}-${mm}-${dd}`;
+        },
+        periodLabel: (ts) => {
+          const d = new Date(ts);
+          const now = new Date();
+          const today0 = timeUtil.startOfDay(now);
+          const yday0 = today0 - 24 * 60 * 60 * 1000;
+          const d0 = timeUtil.startOfDay(d);
+
+          if (d0 === today0) return "Today";
+          if (d0 === yday0) return "Yesterday";
+
+          // Monday-start week
+          const dow = (now.getDay() + 6) % 7; // Mon=0..Sun=6
+          const week0 = today0 - dow * 24 * 60 * 60 * 1000;
+          if (d0 >= week0) return "This Week";
+
+          const lastWeek0 = week0 - 7 * 24 * 60 * 60 * 1000;
+          if (d0 >= lastWeek0) return "Last Week";
+
+          const yyyy = d.getFullYear();
+          const mm = timeUtil.pad2(d.getMonth() + 1);
+          return `${yyyy}-${mm}`;
+        },
+        parseLegacyTs: (e) => {
+          // Best-effort: if ts exists, keep it. If only date exists, pin to noon local time.
+          if (typeof e.ts === "number" && Number.isFinite(e.ts) && e.ts > 0) return e.ts;
+          if (typeof e.date === "string" && e.date.length >= 10) {
+            const guess = new Date(e.date + "T12:00:00").getTime();
+            if (Number.isFinite(guess)) return guess;
+          }
+          return Date.now();
         }
       };
 
       const VaultCore = (() => {
         let db = [];
         let config = { reqPin: false, activeQType: "all", fdView: "goal" };
-        let pinObj = null; // {salt, hash, algo}
-
-        const load = () => {
-          try { db = JSON.parse(localStorage.getItem(KEYS.DB)) || []; } catch { db = []; }
-          try { config = JSON.parse(localStorage.getItem(KEYS.CFG)) || config; } catch {}
-          try { pinObj = JSON.parse(localStorage.getItem(KEYS.PIN)) || null; } catch { pinObj = null; }
-
-          // Migration: accept old v80 keys if present (best-effort)
-          const oldDb = localStorage.getItem("SOV_DB_V80");
-          const oldCfg = localStorage.getItem("SOV_CFG_V80");
-          const oldPin = localStorage.getItem("SOV_PIN_V80"); // plaintext
-          if (db.length === 0 && oldDb) {
-            try { db = JSON.parse(oldDb) || []; } catch {}
-            // migrate old loan entries: make them IOU-only if they used total
-            db = db.map(e => {
-              if (!e) return e;
-              const loanTypes = ["creditor","credit_settlement","debtor","debt_repayment"];
-              if (loanTypes.includes(e.type) && typeof e.principal !== "number") {
-                const t = money.num(e.total);
-                if (e.type === "creditor") e.principal = Math.abs(t);
-                if (e.type === "credit_settlement") e.principal = -Math.abs(t);
-                if (e.type === "debtor") e.principal = Math.abs(t);
-                if (e.type === "debt_repayment") e.principal = -Math.abs(t);
-                e.total = 0;
-                delete e.b; delete e.s; delete e.l;
-              }
-              return e;
-            });
-          }
-          if (oldCfg) {
-            try { config = JSON.parse(oldCfg) || config; } catch {}
-          }
-          // if there was old plaintext PIN, do not auto-migrate it (security). User can re-set.
-
-          save();
-        };
+        let pinObj = null;
 
         const save = () => {
           localStorage.setItem(KEYS.DB, JSON.stringify(db));
@@ -532,6 +634,61 @@
         };
 
         const makeId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(16).slice(2));
+
+        const loanTypes = new Set(["creditor","credit_settlement","debtor","debt_repayment"]);
+
+        const enforceLoanPolicy = (e) => {
+          // Loans are IOU-only. Never touch total, b/s/l.
+          if (!e || !loanTypes.has(e.type)) return e;
+
+          // Convert legacy 'total' into principal if needed
+          if (typeof e.principal !== "number") {
+            const t = Math.abs(money.num(e.total));
+            if (e.type === "creditor") e.principal = t;
+            if (e.type === "debtor") e.principal = t;
+            if (e.type === "credit_settlement") e.principal = -t;
+            if (e.type === "debt_repayment") e.principal = -t;
+          }
+
+          e.total = 0;
+          delete e.b; delete e.s; delete e.l;
+          return e;
+        };
+
+        const load = () => {
+          // Load v82 keys
+          try { db = JSON.parse(localStorage.getItem(KEYS.DB)) || []; } catch { db = []; }
+          try { config = JSON.parse(localStorage.getItem(KEYS.CFG)) || config; } catch {}
+          try { pinObj = JSON.parse(localStorage.getItem(KEYS.PIN)) || null; } catch { pinObj = null; }
+
+          // Migration: v81
+          const v81db = localStorage.getItem("SOV_DB_V81");
+          const v81cfg = localStorage.getItem("SOV_CFG_V81");
+          const v81pin = localStorage.getItem("SOV_PIN_V81");
+          if (db.length === 0 && v81db) {
+            try { db = JSON.parse(v81db) || []; } catch { db = []; }
+          }
+          if (v81cfg) {
+            try { config = { ...config, ...(JSON.parse(v81cfg) || {}) }; } catch {}
+          }
+          // carry over hashed pin if present
+          if (!pinObj && v81pin) {
+            try {
+              const p = JSON.parse(v81pin);
+              if (p && p.hash && p.salt) pinObj = p;
+            } catch {}
+          }
+
+          // Normalize records: ensure ts + date exist; enforce loan policy
+          db = (db || []).map(e => {
+            if (!e) return e;
+            e.ts = timeUtil.parseLegacyTs(e);
+            if (!e.date) e.date = new Date(e.ts).toISOString().split("T")[0];
+            return enforceLoanPolicy(e);
+          });
+
+          save();
+        };
 
         const entryAmount = (e) => (typeof e.principal === "number" ? e.principal : money.num(e.total));
 
@@ -543,6 +700,7 @@
           setFdView: (v) => { config.fdView = v; save(); VaultUI.render(); },
           setQType: (t) => { config.activeQType = t; save(); },
           toggleSetting: (k) => { config[k] = !config[k]; save(); },
+
           async savePin() {
             const p = dom.byId("set-pin").value || "";
             if (p.length !== 4) return alert("4 Digits Required");
@@ -560,6 +718,7 @@
             const hash = await cryptoUtil.hashPin(inputPin, pinObj.salt);
             return hash === pinObj.hash;
           },
+
           exportAll() {
             const payload = {
               version: APP_VER,
@@ -580,7 +739,6 @@
               try {
                 const parsed = JSON.parse(ev.target.result);
 
-                // Accept either {db,config} payload or raw array (legacy)
                 if (Array.isArray(parsed)) {
                   db = parsed;
                 } else if (parsed && Array.isArray(parsed.db)) {
@@ -590,33 +748,22 @@
                   throw new Error("Invalid format");
                 }
 
-                // Enforce loan policy: IOU-only (total = 0) when type is a loan type
-                db = db.map(e => {
+                db = (db || []).map(e => {
                   if (!e) return e;
-                  const loanTypes = ["creditor","credit_settlement","debtor","debt_repayment"];
-                  if (loanTypes.includes(e.type)) {
-                    if (typeof e.principal !== "number") {
-                      // best effort: if total exists, convert to principal; otherwise set 0
-                      const t = money.num(e.total);
-                      if (e.type === "creditor") e.principal = Math.abs(t);
-                      if (e.type === "credit_settlement") e.principal = -Math.abs(t);
-                      if (e.type === "debtor") e.principal = Math.abs(t);
-                      if (e.type === "debt_repayment") e.principal = -Math.abs(t);
-                    }
-                    e.total = 0;
-                    delete e.b; delete e.s; delete e.l;
-                  }
-                  return e;
+                  e.ts = timeUtil.parseLegacyTs(e);
+                  if (!e.date) e.date = new Date(e.ts).toISOString().split("T")[0];
+                  return enforceLoanPolicy(e);
                 });
 
                 save();
                 location.reload();
-              } catch (err) {
+              } catch {
                 alert("Invalid backup file");
               }
             };
             r.readAsText(file);
           },
+
           deleteById(id) {
             if (!confirm("Delete?")) return;
             db = db.filter(x => x.id !== id);
@@ -628,11 +775,10 @@
             localStorage.removeItem(KEYS.DB);
             localStorage.removeItem(KEYS.CFG);
             localStorage.removeItem(KEYS.PIN);
-            // Do NOT clear entire localStorage.
             location.reload();
           },
 
-          // --- Form Execution ---
+          // Form state
           settlementFlag: false,
           activeType: "income",
           setSettlement(b) { this.settlementFlag = b; VaultUI.updateFormUI(); },
@@ -646,11 +792,15 @@
             const type = this.activeType;
             const settlement = this.settlementFlag;
 
+            const now = Date.now();
+            const iso = new Date(now).toISOString();
+
             const e = {
               id: makeId(),
               name: desc,
               type,
-              date: new Date().toISOString().split("T")[0],
+              ts: now,
+              date: iso.split("T")[0],
               total: 0
             };
 
@@ -729,28 +879,42 @@
 
           entryAmount
         };
+
+        function enforceLoanPolicy(e) {
+          // inlined wrapper to access within importAll mapping
+          const loanTypes = new Set(["creditor","credit_settlement","debtor","debt_repayment"]);
+          if (!e || !loanTypes.has(e.type)) return e;
+
+          if (typeof e.principal !== "number") {
+            const t = Math.abs(money.num(e.total));
+            if (e.type === "creditor") e.principal = t;
+            if (e.type === "debtor") e.principal = t;
+            if (e.type === "credit_settlement") e.principal = -t;
+            if (e.type === "debt_repayment") e.principal = -t;
+          }
+
+          e.total = 0;
+          delete e.b; delete e.s; delete e.l;
+          return e;
+        }
       })();
 
       const VaultUI = (() => {
         const views = ["dashboard-view", "entry-grid", "entry-form", "settings-view", "query-lab"];
 
-        const setText = (id, value) => {
+        const setMoney = (id, value) => {
           const el = dom.byId(id);
           if (!el) return;
           el.textContent = money.fmt(value);
         };
 
-        const toggleDrawer = (cardId) => dom.byId(cardId)?.classList.toggle("drawer-open");
-
         const normalizeFluid = () => {
-          // Force 0..100 and sum to 100
           let b = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-bills").value))));
           let s = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-save").value))));
           let l = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-spend").value))));
           const sum = b + s + l;
           if (sum === 100) return { b, s, l };
 
-          // Rescale gently
           const scale = sum ? 100 / sum : 1;
           b = Math.round(b * scale);
           s = Math.round(s * scale);
@@ -762,39 +926,7 @@
           return { b, s, l };
         };
 
-        const renderListRow = (container, left, right, opts = {}) => {
-          const row = dom.row(left, right, opts);
-          container.appendChild(row);
-        };
-
-        const renderHistoryRow = (container, e, hiS) => {
-          const nm = (e.name || "").toLowerCase();
-          if (hiS && !nm.includes(hiS)) return;
-
-          const wrap = document.createElement("div");
-          wrap.className = "row";
-          const left = document.createElement("span");
-          left.textContent = e.name || "";
-          const rightWrap = document.createElement("div");
-          rightWrap.className = "flex gap-4 items-center";
-
-          const amt = document.createElement("b");
-          amt.textContent = money.fmt(Math.abs(VaultCore.entryAmount(e)));
-
-          const del = document.createElement("button");
-          del.className = "btn-dark";
-          del.style.padding = "6px 10px";
-          del.style.borderRadius = "12px";
-          del.textContent = "✕";
-          del.onclick = () => VaultCore.deleteById(e.id);
-
-          rightWrap.appendChild(amt);
-          rightWrap.appendChild(del);
-
-          wrap.appendChild(left);
-          wrap.appendChild(rightWrap);
-          container.appendChild(wrap);
-        };
+        const toggleDrawer = (cardId) => dom.byId(cardId)?.classList.toggle("drawer-open");
 
         const updateFab = (viewId) => {
           const f = dom.byId("nav-fab");
@@ -807,6 +939,134 @@
             f.className = "fab-btn fab-back";
             f.onclick = () => VaultUI.changeView("dashboard-view");
           }
+        };
+
+        const makeAuditHeader = (label, expenseSubtotal) => {
+          const h = document.createElement("div");
+          h.className = "audit-header";
+
+          const t = document.createElement("div");
+          t.className = "audit-title";
+          t.textContent = label;
+
+          const s = document.createElement("div");
+          s.className = "audit-subtotal";
+          s.textContent = expenseSubtotal > 0 ? `Spent ${money.fmt(expenseSubtotal)}` : "";
+
+          h.appendChild(t);
+          h.appendChild(s);
+          return h;
+        };
+
+        const auditRow = (e) => {
+          const wrap = document.createElement("div");
+          wrap.className = "row";
+
+          const left = document.createElement("span");
+          const when = timeUtil.formatTs(e.ts);
+          const label = e.name || "";
+          left.textContent = `${when} • ${label}`;
+
+          const rightWrap = document.createElement("div");
+          rightWrap.className = "flex gap-2 items-center";
+
+          // type badge (subtle bank vibe)
+          const badge = document.createElement("span");
+          badge.className = "badge";
+
+          const t = e.type;
+          if (t === "expense") { badge.classList.add("red"); badge.textContent = "expense"; }
+          else if (t === "income") { badge.classList.add("green"); badge.textContent = "inflow"; }
+          else if (t === "asset") { badge.classList.add("yellow"); badge.textContent = "asset"; }
+          else if (t === "debtor") { badge.classList.add("green"); badge.textContent = "lend"; }
+          else if (t === "creditor") { badge.classList.add("red"); badge.textContent = "borrow"; }
+          else if (t === "debt_repayment") { badge.classList.add("green"); badge.textContent = "repay in"; }
+          else if (t === "credit_settlement") { badge.classList.add("red"); badge.textContent = "pay out"; }
+          else if (t === "fiduciary") { badge.classList.add("yellow"); badge.textContent = "fiduciary"; }
+          else { badge.textContent = "entry"; }
+
+          const amt = document.createElement("b");
+          amt.textContent = money.fmt(Math.abs(VaultCore.entryAmount(e)));
+
+          const del = document.createElement("button");
+          del.className = "btn-dark";
+          del.style.padding = "6px 10px";
+          del.style.borderRadius = "12px";
+          del.textContent = "✕";
+          del.onclick = () => VaultCore.deleteById(e.id);
+
+          rightWrap.appendChild(badge);
+          rightWrap.appendChild(amt);
+          rightWrap.appendChild(del);
+
+          wrap.appendChild(left);
+          wrap.appendChild(rightWrap);
+          return wrap;
+        };
+
+        const loanDetailsItem = ({ name, bal, last, overdue, kind }) => {
+          // kind: 'debtor' or 'creditor'
+          const d = document.createElement("details");
+          d.className = "loan-item";
+
+          const s = document.createElement("summary");
+
+          const left = document.createElement("div");
+          left.className = "loan-left";
+
+          const nm = document.createElement("span");
+          nm.className = "loan-name";
+          nm.textContent = name;
+
+          const status = document.createElement("span");
+          status.className = "badge " + (kind === "debtor" ? "green" : "red");
+          status.textContent = kind === "debtor" ? "owes me" : "i owe";
+
+          left.appendChild(status);
+          left.appendChild(nm);
+
+          const right = document.createElement("div");
+          right.className = "loan-right";
+
+          if (overdue) {
+            const ov = document.createElement("span");
+            ov.className = "badge red";
+            ov.textContent = "overdue";
+            right.appendChild(ov);
+          }
+
+          const amt = document.createElement("b");
+          amt.textContent = money.fmt(bal);
+          right.appendChild(amt);
+
+          s.appendChild(left);
+          s.appendChild(right);
+
+          const meta = document.createElement("div");
+          meta.className = "loan-meta";
+
+          const mrow = (k, v) => {
+            const r = document.createElement("div");
+            r.className = "mrow";
+            const a = document.createElement("span"); a.textContent = k;
+            const b = document.createElement("span"); b.textContent = v;
+            r.appendChild(a); r.appendChild(b);
+            return r;
+          };
+
+          if (last) {
+            meta.appendChild(mrow("Last activity", timeUtil.formatTs(last.ts)));
+            meta.appendChild(mrow("Action", last.action));
+            meta.appendChild(mrow("Amount", money.fmt(last.amount)));
+            if (last.term) meta.appendChild(mrow("Due date", last.term));
+            if (last.rate) meta.appendChild(mrow("Rate", `${last.rate}%`));
+          } else {
+            meta.appendChild(mrow("Last activity", "—"));
+          }
+
+          d.appendChild(s);
+          d.appendChild(meta);
+          return d;
         };
 
         return {
@@ -834,7 +1094,7 @@
             dom.byId("btn-close-query").onclick = () => VaultUI.changeView("dashboard-view");
             dom.byId("btn-close-settings").onclick = () => VaultUI.changeView("dashboard-view");
 
-            // Fluid inputs (keep sum sane)
+            // Fluid inputs
             ["fluid-bills","fluid-save","fluid-spend"].forEach(id => {
               dom.byId(id).oninput = () => normalizeFluid();
             });
@@ -874,14 +1134,13 @@
             dom.byId("file-input").onchange = (ev) => {
               const file = ev.target.files?.[0];
               if (file) VaultCore.importAll(file);
-              ev.target.value = ""; // allow re-import same file
+              ev.target.value = "";
             };
             dom.byId("btn-reset").onclick = () => VaultCore.wipe();
 
-            // Unlock button
+            // Unlock
             dom.byId("btn-unlock").onclick = async () => VaultUI.authenticate();
 
-            // Show auth if enabled
             const cfg = VaultCore.config();
             if (cfg.reqPin && VaultCore.hasPin()) {
               dom.byId("auth-hint").textContent = "PIN required";
@@ -962,7 +1221,9 @@
 
               if (settlement) {
                 name.placeholder = "Payer Name";
-                const names = [...new Set(VaultCore.db().filter(i => i.type === "debtor").map(i => i.debtor).filter(Boolean))];
+                const names = [...new Set(VaultCore.db()
+                  .filter(i => i.type === "debtor" && i.debtor)
+                  .map(i => i.debtor))];
                 names.forEach(n => {
                   const opt = document.createElement("option");
                   opt.value = n;
@@ -976,14 +1237,15 @@
 
               if (settlement) {
                 name.placeholder = "Creditor Name";
-                const names = [...new Set(VaultCore.db().filter(i => i.type === "creditor").map(i => i.creditor).filter(Boolean))];
+                const names = [...new Set(VaultCore.db()
+                  .filter(i => i.type === "creditor" && i.creditor)
+                  .map(i => i.creditor))];
                 names.forEach(n => {
                   const opt = document.createElement("option");
                   opt.value = n;
                   dl.appendChild(opt);
                 });
               } else {
-                // Bucket selector (makes liquidity meaningful)
                 const sel = document.createElement("select");
                 sel.id = "e-exp-bucket";
                 sel.className = "input-ghost";
@@ -999,6 +1261,7 @@
             else if (type === "debtor" || type === "creditor") {
               const grid = document.createElement("div");
               grid.className = "grid-2";
+
               const rate = document.createElement("input");
               rate.id = "e-rate";
               rate.type = "number";
@@ -1022,10 +1285,12 @@
               goal.id = "e-fd-goal";
               goal.className = "input-ghost mb-4";
               goal.placeholder = "Project/Goal";
+
               const user = document.createElement("input");
               user.id = "e-fd-user";
               user.className = "input-ghost";
               user.placeholder = "Contributor";
+
               dyn.appendChild(goal);
               dyn.appendChild(user);
             }
@@ -1054,30 +1319,33 @@
             const res = dom.byId("q-results");
             dom.clear(res);
 
-            const list = VaultCore.db().filter(i => {
-              const hay = [
-                (i.name || ""),
-                (i.debtor || ""),
-                (i.creditor || ""),
-                (i.goal || ""),
-                (i.user || "")
-              ].join(" ").toLowerCase();
+            const list = VaultCore.db()
+              .filter(i => {
+                const hay = [
+                  (i.name || ""),
+                  (i.debtor || ""),
+                  (i.creditor || ""),
+                  (i.goal || ""),
+                  (i.user || "")
+                ].join(" ").toLowerCase();
 
-              const tM = hay.includes(s);
+                const tM = hay.includes(s);
 
-              const cM =
-                type === "all" ||
-                i.type === type ||
-                (type === "debtor" && i.type === "debt_repayment") ||
-                (type === "creditor" && i.type === "credit_settlement");
+                const cM =
+                  type === "all" ||
+                  i.type === type ||
+                  (type === "debtor" && i.type === "debt_repayment") ||
+                  (type === "creditor" && i.type === "credit_settlement");
 
-              const dOK = (!qs || i.date >= qs) && (!qe || i.date <= qe);
+                const dOK = (!qs || i.date >= qs) && (!qe || i.date <= qe);
 
-              return tM && cM && dOK;
-            }).slice().reverse();
+                return tM && cM && dOK;
+              })
+              .slice()
+              .sort((a,b) => (b.ts||0) - (a.ts||0));
 
             list.forEach(i => {
-              const left = `${i.date} | ${i.name || ""}`;
+              const left = `${timeUtil.formatTs(i.ts)} | ${i.name || ""}`;
               const amt = Math.abs(VaultCore.entryAmount(i));
               res.appendChild(dom.chipLine(left, money.fmt(amt)));
             });
@@ -1088,11 +1356,14 @@
 
             // Totals
             let nw = 0, b = 0, s = 0, l = 0, as = 0, fd = 0, ex = 0;
-            let debtorsTotal = 0, creditorsTotal = 0;
 
-            // Maps for outstanding
+            // Loan ledgers
             const debtorBal = Object.create(null);
             const creditorBal = Object.create(null);
+            const debtorLast = Object.create(null);
+            const creditorLast = Object.create(null);
+            const debtorProfile = Object.create(null);   // {term, rate} latest
+            const creditorProfile = Object.create(null);
 
             // Clear lists
             ["as-list","db-list","cr-list","fd-pivot-list","hi-list","ex-list"].forEach(id => dom.clear(dom.byId(id)));
@@ -1105,8 +1376,27 @@
 
             const hiS = (dom.byId("hi-search").value || "").toLowerCase();
 
-            // Iterate newest-first
-            db.slice().reverse().forEach(i => {
+            // Iterate newest-first by ts (not just reverse)
+            const sorted = db.slice().sort((a,b) => (b.ts||0) - (a.ts||0));
+
+            // Pre-compute audit period expense subtotals (bank vibe)
+            const periodExpense = Object.create(null); // label -> sum expense
+            for (const e of sorted) {
+              if (hiS) {
+                const nm = (e.name || "").toLowerCase();
+                if (!nm.includes(hiS)) continue;
+              }
+              const label = timeUtil.periodLabel(e.ts || 0);
+              if (!periodExpense[label]) periodExpense[label] = 0;
+              if (e.type === "expense") periodExpense[label] += Math.abs(money.num(e.total));
+            }
+
+            // Walk entries: compute totals + lists + loan profiles/last activity
+            for (const i of sorted) {
+              // History filter check (applies only to audit UI and doesn't break totals)
+              const nm = (i.name || "").toLowerCase();
+              const passesHistory = !hiS || nm.includes(hiS);
+
               // Fiduciary
               if (i.type === "fiduciary") {
                 fd += money.num(i.total);
@@ -1117,60 +1407,89 @@
                 piv[main].subs.push({ n: sub, a: money.num(i.total) });
               }
 
-              // Loan book (IOU-only) affects only debtor/creditor totals
+              // Loan book (IOU-only)
               if (i.type === "debtor" || i.type === "debt_repayment") {
                 const who = i.debtor || i.name || "(unknown)";
                 const delta = (typeof i.principal === "number") ? i.principal : 0;
                 debtorBal[who] = (debtorBal[who] || 0) + delta;
+
+                // Keep latest profile (term/rate) from the most recent "debtor" entry
+                if (i.type === "debtor") {
+                  debtorProfile[who] = { term: i.term || "", rate: i.rate || "" };
+                }
+
+                // Last activity
+                if (!debtorLast[who]) {
+                  debtorLast[who] = {
+                    ts: i.ts || 0,
+                    action: i.type === "debtor" ? "lend" : "repayment",
+                    amount: Math.abs(delta),
+                    term: (i.term || "") || (debtorProfile[who]?.term || ""),
+                    rate: (i.rate || "") || (debtorProfile[who]?.rate || "")
+                  };
+                }
               }
+
               if (i.type === "creditor" || i.type === "credit_settlement") {
                 const who = i.creditor || i.name || "(unknown)";
                 const delta = (typeof i.principal === "number") ? i.principal : 0;
                 creditorBal[who] = (creditorBal[who] || 0) + delta;
+
+                if (i.type === "creditor") {
+                  creditorProfile[who] = { term: i.term || "", rate: i.rate || "" };
+                }
+
+                if (!creditorLast[who]) {
+                  creditorLast[who] = {
+                    ts: i.ts || 0,
+                    action: i.type === "creditor" ? "borrow" : "settlement",
+                    amount: Math.abs(delta),
+                    term: (i.term || "") || (creditorProfile[who]?.term || ""),
+                    rate: (i.rate || "") || (creditorProfile[who]?.rate || "")
+                  };
+                }
               }
 
-              // Real money flow for net worth & cash
-              // (loan entries have total=0 by design)
+              // Real money flow for net worth & cash (loan entries have total=0 and no b/s/l)
               nw += money.num(i.total);
-
-              // Cash bucket deltas (income adds, expense subtracts from chosen bucket)
               b += money.num(i.b);
               s += money.num(i.s);
               l += money.num(i.l);
 
-              // Lists
+              // Lists (simple summaries)
               if (i.type === "expense") {
                 ex += Math.abs(money.num(i.total));
-                renderListRow(dom.byId("ex-list"), i.name || "", money.fmt(Math.abs(money.num(i.total))));
+                const exList = dom.byId("ex-list");
+                const row = document.createElement("div");
+                row.className = "row";
+                row.innerHTML = `<span>${i.name || ""}</span><span>${money.fmt(Math.abs(money.num(i.total)))}</span>`;
+                exList.appendChild(row);
               }
+
               if (i.type === "asset") {
                 as += money.num(i.total);
-                renderListRow(dom.byId("as-list"), i.name || "", money.fmt(money.num(i.total)));
+                const asList = dom.byId("as-list");
+                const row = document.createElement("div");
+                row.className = "row";
+                row.innerHTML = `<span>${i.name || ""}</span><span>${money.fmt(money.num(i.total))}</span>`;
+                asList.appendChild(row);
               }
 
-              // History
-              renderHistoryRow(dom.byId("hi-list"), i, hiS);
-            });
-
-            // Render loan outstanding lists
-            Object.entries(debtorBal).forEach(([name, bal]) => {
-              if (!bal) return;
-              debtorsTotal += bal;
-              renderListRow(dom.byId("db-list"), name, money.fmt(bal));
-            });
-            Object.entries(creditorBal).forEach(([name, bal]) => {
-              if (!bal) return;
-              creditorsTotal += bal;
-              renderListRow(dom.byId("cr-list"), name, money.fmt(bal), { className: "text-red" });
-            });
+              // Audit Trail (grouped + timestamped + newest first)
+              if (passesHistory) {
+                const hiList = dom.byId("hi-list");
+                // We'll build grouped in a second pass below for clean section headers
+              }
+            }
 
             // Render fiduciary pivot
             const pivotEl = dom.byId("fd-pivot-list");
-            Object.keys(piv).forEach(k => {
+            for (const k of Object.keys(piv)) {
               const card = document.createElement("div");
               card.className = "p-3 mb-2";
               card.style.background = "var(--zinc-900)";
-              card.style.borderRadius = "8px";
+              card.style.borderRadius = "12px";
+              card.style.border = "1px solid #222";
 
               const head = document.createElement("div");
               head.className = "flex justify-between font-black text-xs text-yellow uppercase";
@@ -1180,42 +1499,116 @@
 
               const sub = document.createElement("div");
               sub.className = "text-xs mt-2";
-              piv[k].subs.forEach(sb => {
+              for (const sb of piv[k].subs) {
                 const line = document.createElement("div");
                 line.className = "flex justify-between py-1";
-                line.style.opacity = "0.6";
+                line.style.opacity = "0.65";
                 const a = document.createElement("span"); a.textContent = sb.n;
-                const b = document.createElement("span"); b.textContent = money.fmt(sb.a);
-                line.appendChild(a); line.appendChild(b);
+                const b2 = document.createElement("span"); b2.textContent = money.fmt(sb.a);
+                line.appendChild(a); line.appendChild(b2);
                 sub.appendChild(line);
-              });
+              }
 
               card.appendChild(head);
               card.appendChild(sub);
               pivotEl.appendChild(card);
-            });
+            }
+
+            // Render Loans (intuitive expanders + counts + overdue)
+            const today = timeUtil.todayStr();
+
+            const debtors = Object.entries(debtorBal)
+              .map(([name, bal]) => [name, Math.max(0, money.num(bal))])
+              .filter(([, bal]) => bal > 0.00001)
+              .sort((a,b) => b[1] - a[1]);
+
+            const creditors = Object.entries(creditorBal)
+              .map(([name, bal]) => [name, Math.max(0, money.num(bal))])
+              .filter(([, bal]) => bal > 0.00001)
+              .sort((a,b) => b[1] - a[1]);
+
+            let debtorsTotal = 0;
+            let creditorsTotal = 0;
+
+            const dbList = dom.byId("db-list");
+            const crList = dom.byId("cr-list");
+
+            for (const [name, bal] of debtors) {
+              debtorsTotal += bal;
+              const last = debtorLast[name] || null;
+              const prof = debtorProfile[name] || {};
+              const term = (last && last.term) ? last.term : (prof.term || "");
+              const rate = (last && last.rate) ? last.rate : (prof.rate || "");
+
+              const overdue = !!(term && term < today);
+              const item = loanDetailsItem({
+                name,
+                bal,
+                overdue,
+                kind: "debtor",
+                last: last ? { ...last, term, rate } : (term || rate ? { ts: 0, action: "—", amount: 0, term, rate } : null)
+              });
+              dbList.appendChild(item);
+            }
+
+            for (const [name, bal] of creditors) {
+              creditorsTotal += bal;
+              const last = creditorLast[name] || null;
+              const prof = creditorProfile[name] || {};
+              const term = (last && last.term) ? last.term : (prof.term || "");
+              const rate = (last && last.rate) ? last.rate : (prof.rate || "");
+
+              const overdue = !!(term && term < today);
+              const item = loanDetailsItem({
+                name,
+                bal,
+                overdue,
+                kind: "creditor",
+                last: last ? { ...last, term, rate } : (term || rate ? { ts: 0, action: "—", amount: 0, term, rate } : null)
+              });
+              crList.appendChild(item);
+            }
+
+            dom.byId("db-meta").textContent = `${debtors.length} people`;
+            dom.byId("cr-meta").textContent = `${creditors.length} people`;
+
+            // Render Audit Trail (grouped + section subtotal for expenses)
+            const hiList = dom.byId("hi-list");
+            dom.clear(hiList);
+
+            let lastSection = null;
+            for (const e of sorted) {
+              const nm = (e.name || "").toLowerCase();
+              if (hiS && !nm.includes(hiS)) continue;
+
+              const section = timeUtil.periodLabel(e.ts || 0);
+              if (section !== lastSection) {
+                lastSection = section;
+                hiList.appendChild(makeAuditHeader(section, periodExpense[section] || 0));
+              }
+              hiList.appendChild(auditRow(e));
+            }
 
             // Dashboard values
             const cashTotal = b + s + l;
-            setText("nw-display", nw);
-            setText("split-cash", cashTotal);
-            setText("split-as", as);
-            // "Debt" on hero shows your loan book totals (owed to you minus owed by you), pick your preference:
-            // Option A: show net debt (debtors - creditors)
-            // Option B: show total owed to you only
-            // Here: net debt (positive means people owe you more than you owe others)
-            setText("split-db", (debtorsTotal - creditorsTotal));
 
-            setText("tc-display", cashTotal);
-            setText("b-total", b);
-            setText("s-total", s);
-            setText("l-total", l);
+            setMoney("nw-display", nw);
+            setMoney("split-cash", cashTotal);
+            setMoney("split-as", as);
 
-            setText("ex-display", ex);
-            setText("as-display", as);
-            setText("db-display", debtorsTotal);
-            setText("cr-display", creditorsTotal);
-            setText("fd-display", fd);
+            // Hero "Debt": net position (owed to you minus owed by you)
+            setMoney("split-db", (debtorsTotal - creditorsTotal));
+
+            setMoney("tc-display", cashTotal);
+            setMoney("b-total", b);
+            setMoney("s-total", s);
+            setMoney("l-total", l);
+
+            setMoney("ex-display", ex);
+            setMoney("as-display", as);
+            setMoney("db-display", debtorsTotal);
+            setMoney("cr-display", creditorsTotal);
+            setMoney("fd-display", fd);
           }
         };
       })();
