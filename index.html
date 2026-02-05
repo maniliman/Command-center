@@ -2,15 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
   <title>Sovereign Vault v82</title>
 
-  <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/512/shield.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/512/shield.png" />
   <link
     rel="manifest"
     href="data:application/manifest+json,{%22name%22:%22Vault%22,%22short_name%22:%22Vault%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#000000%22,%22theme_color%22:%22#10B981%22,%22icons%22:[{%22src%22:%22https://img.icons8.com/fluency/512/shield.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}"
@@ -21,2263 +18,1702 @@
       --bg:#000;
       --fg:#e5e5e5;
       --muted:#9ca3af;
-      --card:#0b0b0d;
-      --card2:#101014;
-      --stroke: rgba(255,255,255,.10);
-      --stroke2: rgba(255,255,255,.16);
-
-      --green:#10b981;
+      --card:#0b0b0c;
+      --card2:#111114;
+      --border:#202024;
+      --emerald:#10b981;
       --red:#ef4444;
       --blue:#3b82f6;
       --yellow:#eab308;
-
       --safe-top: env(safe-area-inset-top, 20px);
     }
 
-    *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
     body{
+      margin:0;
       background:var(--bg);
       color:var(--fg);
-      font-family:-apple-system, system-ui, sans-serif;
-      margin:0;
-      padding:0;
-      padding-top: calc(var(--safe-top) + 10px);
-      padding-bottom: 120px;
+      font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      padding-top:calc(var(--safe-top) + 10px);
+      padding-bottom:110px;
       overflow-x:hidden;
     }
 
-    /* utilities */
-    .flex{ display:flex; }
-    .flex-col{ display:flex; flex-direction:column; }
-    .items-center{ align-items:center; }
-    .justify-between{ justify-content:space-between; }
-    .justify-center{ justify-content:center; }
-    .gap-2{ gap:8px; }
-    .gap-3{ gap:12px; }
-    .gap-4{ gap:16px; }
-    .w-full{ width:100%; }
-    .mb-2{ margin-bottom:8px; }
-    .mb-4{ margin-bottom:16px; }
-    .mb-6{ margin-bottom:24px; }
-    .p-4{ padding:16px; }
-    .p-5{ padding:20px; }
-    .p-6{ padding:24px; }
-    .text-center{ text-align:center; }
-    .text-xs{ font-size:12px; }
-    .text-sm{ font-size:14px; }
-    .font-bold{ font-weight:700; }
-    .font-black{ font-weight:900; }
-    .uppercase{ text-transform:uppercase; letter-spacing:.08em; }
-    .hidden{ display:none !important; }
+    /* Layout helpers */
+    .flex{display:flex;}
+    .col{display:flex;flex-direction:column;}
+    .between{justify-content:space-between;}
+    .center{justify-content:center;align-items:center;}
+    .gap8{gap:8px;}
+    .gap12{gap:12px;}
+    .gap16{gap:16px;}
+    .wfull{width:100%;}
+    .mb8{margin-bottom:8px;}
+    .mb12{margin-bottom:12px;}
+    .mb16{margin-bottom:16px;}
+    .mb24{margin-bottom:24px;}
+    .p12{padding:12px;}
+    .p16{padding:16px;}
+    .p20{padding:20px;}
+    .p24{padding:24px;}
+    .xs{font-size:12px;}
+    .sm{font-size:14px;}
+    .tiny{font-size:10px;letter-spacing:.08em;text-transform:uppercase;}
+    .bold{font-weight:700;}
+    .black{font-weight:900;}
+    .muted{color:var(--muted);}
+    .hidden{display:none !important;}
 
-    .view-hidden{ display:none !important; }
-    .full-overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.98);
-      z-index:2000;
-      padding:20px;
-      padding-top:80px;
-      overflow-y:auto;
-      -webkit-overflow-scrolling: touch;
+    /* Panels */
+    .topbar{padding:0 10px;margin-bottom:16px;}
+    .iconbtn{
+      width:40px;height:40px;border-radius:14px;
+      background:var(--card2);border:1px solid var(--border);
+      color:#fff;display:inline-flex;align-items:center;justify-content:center;
+      cursor:pointer;
     }
 
-    .stealth-active .maskable{ filter: blur(14px); opacity:.28; }
+    .hero{
+      margin:0 10px;
+      border-radius:26px;
+      background:linear-gradient(145deg,#0f0f11 0%, #050506 100%);
+      border:1px solid rgba(16,185,129,0.18);
+      padding:22px 18px;
+    }
+    .networth{
+      font-size:46px;
+      font-weight:900;
+      text-align:center;
+      margin:8px 0 10px 0;
+      line-height:1.05;
+    }
+    .subline{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-weight:800;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+    .dot{opacity:.35}
 
-    /* bank-ish surfaces */
-    .hero-card{
-      background: radial-gradient(1200px 500px at 30% -40%, rgba(16,185,129,.22) 0%, rgba(16,185,129,0) 55%),
-                  linear-gradient(180deg, #0b0b0d 0%, #050506 100%);
-      border:1px solid rgba(16,185,129,.16);
-      border-radius: 28px;
-      padding: 28px;
-      margin-top: 14px;
-      position:relative;
+    .card{
+      margin:0 10px 12px 10px;
+      background:var(--card2);
+      border:1px solid var(--border);
+      border-radius:18px;
       overflow:hidden;
     }
-    .hero-card:after{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background: linear-gradient(135deg, rgba(16,185,129,.22), rgba(59,130,246,.12), rgba(234,179,8,.08));
-      opacity:.25;
-      filter: blur(22px);
-      z-index:0;
-    }
-    .hero-card > *{ position:relative; z-index:1; }
-
-    .vault-card{
-      background: linear-gradient(180deg, var(--card) 0%, #070708 100%);
-      border: 1px solid var(--stroke);
-      border-radius: 18px;
-      margin-bottom: 12px;
-      width: 100%;
-      overflow: hidden;
-    }
-    .drawer-head{
+    .cardHead{
+      padding:18px 18px;
       cursor:pointer;
       user-select:none;
     }
-    .sub-drawer{
-      display:none;
-      padding:18px 20px;
-      background: linear-gradient(180deg, var(--card2) 0%, #070708 100%);
-      border-top: 1px solid var(--stroke);
+    .cardTitle{
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
     }
-    .drawer-open > .sub-drawer{ display:block; }
-
-    .glass-panel{
-      background: rgba(16,16,18,.86);
-      backdrop-filter: blur(18px);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
+    .cardVal{
+      font-size:14px;
+      font-weight:900;
     }
+    .drawer{display:none;padding:16px 18px;background:var(--card);border-top:1px solid var(--border);}
+    .open > .drawer{display:block;}
 
-    .input-ghost{
+    .row{
+      display:flex;justify-content:space-between;gap:12px;
+      padding:12px 0;border-bottom:1px solid #1c1c20;
+    }
+    .row:last-child{border-bottom:none;}
+    .rowLeft{min-width:0;}
+    .rowName{
+      font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .rowMeta{font-size:11px;color:var(--muted);margin-top:3px;}
+    .rowAmt{font-size:12px;font-weight:900;white-space:nowrap;}
+    .tapRow{cursor:pointer;}
+
+    .input{
+      width:100%;
       background:transparent;
       border:none;
       color:#fff;
       font-size:16px;
-      width:100%;
       outline:none;
       padding:12px 0;
-      border-bottom: 1px solid rgba(255,255,255,.14);
-      border-radius:0;
+      border-bottom:1px solid #2a2a2f;
     }
-    .input-ghost:focus{ border-bottom-color: rgba(16,185,129,.9); }
+    .input:focus{border-bottom-color:var(--emerald);}
 
-    .amount-hero{
-      font-size: 46px;
-      font-weight: 900;
-      text-align:center;
-      color:#fff;
+    .bigAmount{
       width:100%;
-      background:transparent;
-      border:none;
-      outline:none;
-      padding: 14px 0;
-      letter-spacing: -0.02em;
+      background:transparent;border:none;outline:none;
+      color:#fff;text-align:center;
+      font-size:50px;font-weight:900;
+      padding:18px 0;
     }
 
     .btn{
-      background: #0f0f12;
+      background:#101114;
+      border:1px solid #2a2a2f;
       color:#fff;
-      border:1px solid rgba(255,255,255,.14);
-      border-radius: 16px;
-      padding: 14px 16px;
-      font-weight: 900;
-      font-size: 12px;
+      border-radius:16px;
+      padding:14px 16px;
+      font-weight:900;
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
       cursor:pointer;
     }
-    .btn:active{ transform: translateY(1px); }
-    .btn.primary{
-      background: linear-gradient(135deg, rgba(16,185,129,1) 0%, rgba(5,150,105,1) 100%);
-      border:none;
-      color:#05120b;
-    }
-    .btn.danger{
-      color: var(--red);
-      border-color: rgba(239,68,68,.7);
-      background: rgba(239,68,68,.06);
-    }
+    .btnWide{width:100%;padding:18px 16px;font-size:13px;}
+    .danger{border-color:var(--red);color:var(--red);}
 
-    .btn-icon{
-      width:40px; height:40px;
-      border-radius: 16px;
-      padding:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#0f0f12;
-      border:1px solid rgba(255,255,255,.14);
-      cursor:pointer;
-    }
-    .btn-icon.round{ border-radius: 999px; }
-
-    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    .btn-grid{
-      background: #0f0f12;
-      border:1px solid rgba(255,255,255,.14);
-      border-radius: 22px;
-      padding: 18px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .tile{
+      background:#101114;
+      border:1px solid #2a2a2f;
+      border-radius:20px;
+      padding:18px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
       gap:10px;
       cursor:pointer;
-    }
-    .btn-grid:active{ transform: translateY(1px); }
-
-    /* icons - Option A inline SVG */
-    .ic{
-      width: 20px;
-      height: 20px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .ic svg{
-      width:20px; height:20px;
-      stroke: rgba(255,255,255,0.92);
-      stroke-width: 2;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    .ic.muted svg{ stroke: rgba(255,255,255,0.70); }
-    .ic.green svg{ stroke: var(--green); }
-    .ic.red svg{ stroke: var(--red); }
-    .ic.blue svg{ stroke: var(--blue); }
-    .ic.yellow svg{ stroke: var(--yellow); }
-
-    /* badges */
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing:.10em;
-      text-transform: uppercase;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      color: rgba(255,255,255,.82);
-      white-space:nowrap;
-    }
-    .badge.in{ border-color: rgba(16,185,129,.45); background: rgba(16,185,129,.10); color: rgba(16,185,129,.95); }
-    .badge.out{ border-color: rgba(239,68,68,.45); background: rgba(239,68,68,.10); color: rgba(239,68,68,.95); }
-    .badge.asset{ border-color: rgba(59,130,246,.45); background: rgba(59,130,246,.10); color: rgba(59,130,246,.95); }
-    .badge.iou{ border-color: rgba(234,179,8,.45); background: rgba(234,179,8,.10); color: rgba(234,179,8,.95); }
-    .badge.fid{ border-color: rgba(234,179,8,.38); background: rgba(234,179,8,.08); color: rgba(234,179,8,.92); }
-
-    /* rows */
-    .row{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing:.06em;
-    }
-    .row:last-child{ border-bottom:none; }
-    .row.tap{
-      cursor:pointer;
       user-select:none;
     }
-    .row.tap:active{ opacity:.8; }
+    .tileIcon{width:22px;height:22px;opacity:.95;}
+    .tileLabel{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
 
-    .tiny{
-      font-size: 10px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing:.12em;
-      color: rgba(255,255,255,.45);
-    }
-
-    /* segment control */
-    .seg-control{
-      display:flex;
-      background: rgba(255,255,255,.04);
-      padding: 4px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      margin-bottom: 16px;
-    }
-    .seg-btn{
-      flex:1;
-      text-align:center;
-      padding: 10px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing:.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.45);
-      border-radius: 10px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .seg-btn.active.green{ background: rgba(16,185,129,.16); color: rgba(16,185,129,.95); }
-    .seg-btn.active.yellow{ background: rgba(234,179,8,.14); color: rgba(234,179,8,.92); }
-
-    /* fluid bar */
-    .fluid-bar{ display:flex; border-radius: 14px; overflow:hidden; margin: 18px 0; border: 1px solid rgba(255,255,255,.12); }
-    .fluid-seg{ padding: 12px 0; text-align:center; font-size: 10px; font-weight: 900; letter-spacing:.10em; text-transform: uppercase; background: rgba(255,255,255,.04); border-right: 1px solid rgba(255,255,255,.08); color: rgba(255,255,255,.45); width:33.33%; }
-    .fluid-seg:last-child{ border-right:none; }
-    .fluid-input{ background:transparent; width:100%; text-align:center; color: var(--green); outline:none; font-size: 14px; font-weight: 900; border:none; padding-top:4px; }
-
-    /* fab */
-    .fab{
-      position: fixed;
-      bottom: 26px;
-      right: 26px;
-      width: 64px;
-      height: 64px;
-      border-radius: 999px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      z-index: 2500;
-      border: none;
-      box-shadow: 0 16px 40px rgba(0,0,0,.55);
-      cursor:pointer;
-    }
-    .fab.primary{
-      background: linear-gradient(135deg, rgba(16,185,129,1) 0%, rgba(5,150,105,1) 100%);
-      color:#04110a;
-    }
-    .fab.back{
-      background: rgba(255,255,255,.10);
-      color: rgba(255,255,255,.9);
-      border: 1px solid rgba(255,255,255,.14);
-      backdrop-filter: blur(18px);
-    }
-
-    /* toast */
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 26px;
-      transform: translateX(-50%);
-      background: rgba(16,16,18,.92);
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 16px;
-      padding: 12px 14px;
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      z-index: 4000;
-      max-width: 92vw;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 16px 50px rgba(0,0,0,.55);
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .18s ease, transform .18s ease;
-    }
-    .toast.show{
-      opacity:1;
-      pointer-events:auto;
-      transform: translateX(-50%) translateY(-4px);
-    }
-    .toast .msg{
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing:.08em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.9);
-    }
-    .toast .sub{
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing:.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.55);
-      margin-top:2px;
-    }
-    .toast .undo{
-      margin-left:auto;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.14);
-      color: rgba(255,255,255,.9);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing:.10em;
-      text-transform: uppercase;
-      cursor:pointer;
-    }
-
-    /* bottom sheet */
-    .sheet-backdrop{
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,.55);
-      z-index: 3500;
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .18s ease;
-    }
-    .sheet-backdrop.show{ opacity:1; pointer-events:auto; }
-    .sheet{
-      position: fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      z-index: 3600;
-      transform: translateY(110%);
-      transition: transform .22s ease;
-      padding: 14px 14px calc(16px + env(safe-area-inset-bottom, 0px));
-    }
-    .sheet.show{ transform: translateY(0%); }
-    .sheet .panel{
-      background: rgba(12,12,14,.96);
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 22px;
-      padding: 14px 14px 12px;
-      backdrop-filter: blur(22px);
-      box-shadow: 0 18px 70px rgba(0,0,0,.65);
-      max-height: 72vh;
+    /* Overlay views */
+    .overlay{
+      position:fixed;inset:0;
+      background:#000;
+      z-index:2000;
+      padding:18px 18px 120px 18px;
+      padding-top:80px;
       overflow:auto;
-      -webkit-overflow-scrolling: touch;
     }
-    .sheet .grab{
-      width: 42px;
-      height: 5px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.22);
-      margin: 0 auto 12px;
+    .overlayTop{
+      position:fixed;left:0;right:0;top:0;
+      padding-top:calc(var(--safe-top) + 12px);
+      padding-bottom:12px;
+      background:rgba(0,0,0,.85);
+      backdrop-filter: blur(14px);
+      border-bottom:1px solid #111;
+      z-index:2100;
     }
-    .sheet .title{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-      padding: 4px 2px 10px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      margin-bottom: 10px;
+    .overlayBar{padding:0 18px;display:flex;justify-content:space-between;align-items:center;}
+    .xbtn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;}
+
+    /* FAB */
+    .fab{
+      position:fixed;right:22px;bottom:26px;
+      width:64px;height:64px;border-radius:999px;
+      border:none;cursor:pointer;
+      box-shadow:0 16px 40px rgba(0,0,0,.6);
+      z-index:5000;
+      display:flex;align-items:center;justify-content:center;
     }
-    .sheet .title .left{
-      display:flex;
-      flex-direction:column;
-      gap: 4px;
-    }
-    .sheet .title .name{
-      font-weight: 900;
-      text-transform: uppercase;
+    .fabPlus{background:linear-gradient(135deg,var(--emerald),#059669);color:#001b12;font-size:28px;font-weight:900;}
+    .fabBack{background:#232327;color:#fff;font-size:22px;font-weight:900;}
+
+    /* Badges */
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid #2a2a2f;
+      background:#0d0d10;
+      font-size:10px;font-weight:900;
       letter-spacing:.08em;
-      font-size: 12px;
-      color: rgba(255,255,255,.92);
+      text-transform:uppercase;
+      color:#cbd5e1;
     }
-    .sheet .title .meta{
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing:.10em;
-      color: rgba(255,255,255,.45);
-    }
-    .sheet .actions{
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-    .sheet .actions .btn{
-      padding: 10px 12px;
-      border-radius: 14px;
-      font-size: 10px;
-      letter-spacing:.10em;
-      text-transform: uppercase;
-    }
+    .bIn{border-color:rgba(16,185,129,.35);color:var(--emerald);}
+    .bOut{border-color:rgba(239,68,68,.35);color:var(--red);}
+    .bAsset{border-color:rgba(59,130,246,.35);color:var(--blue);}
+    .bIOU{border-color:rgba(234,179,8,.35);color:var(--yellow);}
+    .bFid{border-color:rgba(234,179,8,.35);color:var(--yellow);}
 
-    /* section headers in audit list */
-    .sec{
-      margin-top: 14px;
-      padding: 14px 0 10px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-    }
-    .sec .hdr{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap: 12px;
-    }
-    .sec .label{
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing:.14em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.70);
-    }
-    .sec .subtotal{
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing:.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.82);
-    }
-    .sec .mini{
-      margin-top: 8px;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing:.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.45);
-      display:flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .mini .pill{
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      border-radius: 999px;
-      padding: 6px 10px;
-      white-space:nowrap;
-    }
-
-    /* tidy search results */
-    .qbox{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      padding: 12px 12px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.03);
-      margin-bottom: 14px;
-    }
-    .qbox input{
-      border:none;
-      background:transparent;
-      outline:none;
+    /* Toast */
+    .toast{
+      position:fixed;left:50%;transform:translateX(-50%);
+      bottom:110px;
+      background:rgba(16,16,20,.92);
+      border:1px solid #2a2a2f;
       color:#fff;
-      font-size:16px;
-      width:100%;
+      padding:12px 14px;
+      border-radius:16px;
+      z-index:6000;
+      min-width:260px;
+      max-width:92vw;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      backdrop-filter: blur(14px);
     }
-    .qbox input::placeholder{ color: rgba(255,255,255,.40); }
-
-    .q-pill-row{ display:flex; gap:10px; overflow-x:auto; padding-bottom: 8px; }
-    .q-pill{
-      padding: 9px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.12);
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing:.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.45);
-      background: rgba(255,255,255,.03);
-      white-space:nowrap;
+    .toastBtn{
+      background:transparent;border:1px solid #2a2a2f;
+      color:#fff;border-radius:12px;
+      padding:8px 10px;
+      font-weight:900;font-size:10px;
+      letter-spacing:.08em;text-transform:uppercase;
       cursor:pointer;
     }
-    .q-pill.active{
-      border-color: rgba(16,185,129,.55);
-      color: rgba(16,185,129,.96);
-      background: rgba(16,185,129,.10);
+
+    /* Bottom sheet */
+    .sheetScrim{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.6);
+      z-index:8000;
+      opacity:0;pointer-events:none;
+      transition:opacity .15s ease;
     }
-
-    /* switch */
-    .switch{ position:relative; display:inline-block; width:50px; height:28px; }
-    .switch input{ opacity:0; width:0; height:0; }
-    .slider{ position:absolute; cursor:pointer; inset:0; background: rgba(255,255,255,.10); transition:.2s; border-radius: 999px; border: 1px solid rgba(255,255,255,.10); }
-    .slider:before{ position:absolute; content:""; height: 22px; width: 22px; left: 3px; bottom: 3px; background: rgba(255,255,255,.40); transition:.2s; border-radius: 999px; }
-    input:checked + .slider{ background: rgba(16,185,129,.32); border-color: rgba(16,185,129,.40); }
-    input:checked + .slider:before{ transform: translateX(22px); background: rgba(255,255,255,.92); }
-
-    /* colors */
-    .text-emerald{ color: var(--green); }
-    .text-red{ color: var(--red); }
-    .text-blue{ color: var(--blue); }
-    .text-yellow{ color: var(--yellow); }
-    .text-zinc{ color: rgba(255,255,255,.45); }
-
+    .sheetScrim.on{opacity:1;pointer-events:auto;}
+    .sheet{
+      position:fixed;left:0;right:0;bottom:0;
+      z-index:9000;
+      transform:translateY(110%);
+      transition:transform .18s ease;
+      background:#070708;
+      border-top:1px solid #222;
+      border-top-left-radius:22px;
+      border-top-right-radius:22px;
+      padding:14px 16px 18px 16px;
+      max-height:78vh;
+      overflow:auto;
+    }
+    .sheet.on{transform:translateY(0);}
+    .grab{width:46px;height:5px;border-radius:99px;background:#2a2a2f;margin:4px auto 12px auto;}
+    .sheetTitle{font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+    .sheetAmt{font-size:28px;font-weight:900;margin-top:8px;}
+    .kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #151518;}
+    .kv:last-child{border-bottom:none;}
+    .kvL{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:900;letter-spacing:.08em;}
+    .kvR{font-size:12px;font-weight:900;color:#fff;text-align:right;max-width:65%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .sheetActions{display:flex;gap:10px;margin-top:14px;}
+    .sheetActions .btn{flex:1}
+    .stealth .mask{filter:blur(16px);opacity:.25;}
   </style>
 </head>
 
 <body>
   <!-- AUTH -->
-  <div id="auth-screen" class="full-overlay view-hidden" style="z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:center;">
-    <div class="ic muted" data-ic="lock" style="transform: scale(1.35); margin-bottom: 18px;"></div>
-    <input id="auth-pin" type="password" class="input-ghost"
-      style="text-align:center;font-size:40px;letter-spacing:10px;width:220px;"
-      placeholder="••••" maxlength="4" inputmode="numeric" />
-    <button id="btn-unlock" class="btn primary" style="margin-top:30px; width: 220px;">Unlock</button>
-    <div id="auth-hint" class="tiny" style="margin-top: 14px;">PIN required</div>
+  <div id="auth" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted">Security</div>
+        <button class="xbtn" data-view="dashboard">✕</button>
+      </div>
+    </div>
+    <div class="col center" style="min-height: calc(100vh - 200px);">
+      <div style="font-size:44px;margin-bottom:10px;">🔒</div>
+      <input id="authPin" class="input" inputmode="numeric" maxlength="4"
+             style="text-align:center;font-size:40px;letter-spacing:10px;width:220px;"
+             placeholder="••••" />
+      <button class="btn btnWide" id="unlockBtn" style="margin-top:26px;">Unlock</button>
+      <div class="tiny muted" style="margin-top:14px;">PIN required</div>
+    </div>
   </div>
 
   <!-- TOP BAR -->
-  <div style="display:flex;justify-content:space-between;align-items:center;padding:0 10px;margin-bottom:16px;">
-    <div class="flex items-center gap-2">
-      <span class="text-xs font-black uppercase text-zinc">Sovereign v82</span>
-      <span class="badge" style="opacity:.7;">Offline</span>
-    </div>
-    <div class="flex gap-2">
-      <button id="btn-query" class="btn-icon round" aria-label="Search">
-        <span class="ic muted" data-ic="search"></span>
+  <div class="topbar flex between center">
+    <div class="tiny muted">Sovereign v82</div>
+    <div class="flex gap8">
+      <button class="iconbtn" title="Search" data-view="search">
+        <!-- magnifier -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#fff" stroke-width="2" opacity=".9"/>
+          <path d="M16.5 16.5 21 21" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+        </svg>
       </button>
-      <button id="btn-stealth" class="btn-icon round" aria-label="Stealth">
-        <span class="ic muted" data-ic="eye"></span>
+      <button class="iconbtn" title="Stealth" id="stealthBtn">
+        <!-- eye -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z" stroke="#fff" stroke-width="2" opacity=".9"/>
+          <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="#fff" stroke-width="2" opacity=".9"/>
+        </svg>
       </button>
-      <button id="btn-settings" class="btn-icon round" aria-label="Settings">
-        <span class="ic muted" data-ic="gear"></span>
+      <button class="iconbtn" title="Settings" data-view="settings">
+        <!-- gear -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="#fff" stroke-width="2" opacity=".9"/>
+          <path d="M19.4 15a7.8 7.8 0 0 0 .1-1l2-1.2-2-3.4-2.3.6a7.8 7.8 0 0 0-1.7-1l-.3-2.4H10l-.3 2.4a7.8 7.8 0 0 0-1.7 1l-2.3-.6-2 3.4 2 1.2a7.8 7.8 0 0 0 0 2l-2 1.2 2 3.4 2.3-.6c.5.4 1.1.7 1.7 1l.3 2.4h4.9l.3-2.4c.6-.3 1.2-.6 1.7-1l2.3.6 2-3.4-2-1.2Z"
+                stroke="#fff" stroke-width="1.6" opacity=".35" />
+        </svg>
       </button>
     </div>
   </div>
 
   <!-- DASHBOARD -->
-  <div id="dashboard-view">
-    <div class="hero-card text-center">
-      <div class="tiny" style="margin-bottom: 8px;">Net worth</div>
-      <h1 id="nw-display" class="amount-hero maskable">₦0</h1>
-
-      <div class="flex justify-center gap-4" style="opacity:.95;">
-        <div class="text-center">
-          <p id="split-cash" class="text-xs font-black maskable text-emerald">₦0</p>
-          <p class="tiny">Liquidity</p>
-        </div>
-        <div class="text-center">
-          <p id="split-as" class="text-xs font-black maskable text-blue">₦0</p>
-          <p class="tiny">Assets</p>
-        </div>
-        <div class="text-center">
-          <p id="split-db" class="text-xs font-black maskable text-yellow">₦0</p>
-          <p class="tiny">IOU Net</p>
-        </div>
-      </div>
-
-      <div class="flex justify-between items-center" style="margin-top: 14px; padding-top: 14px; border-top:1px solid rgba(255,255,255,.08);">
-        <div class="flex items-center gap-2">
-          <span class="badge in">IN</span>
-          <span class="badge out">OUT</span>
-          <span class="badge asset">ASSET</span>
-          <span class="badge iou">IOU</span>
-        </div>
-        <div class="tiny">Tap rows for details</div>
+  <div id="dashboard">
+    <div class="hero">
+      <div class="networth mask" id="nw">₦0</div>
+      <div class="subline">
+        <span class="mask"><span class="muted">Cash</span> <b id="cash">₦0</b></span>
+        <span class="dot">•</span>
+        <span class="mask"><span class="muted">Assets</span> <b id="assets">₦0</b></span>
+        <span class="dot">•</span>
+        <span class="mask"><span class="muted">Debt</span> <b id="debt">₦0</b></span>
       </div>
     </div>
 
-    <div id="cards-container" style="margin-top: 18px;">
-      <!-- Liquidity -->
-      <div id="feat-tactical" class="vault-card">
-        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-tactical">
-          <div class="flex items-center gap-3">
-            <span class="ic green" data-ic="wallet"></span>
-            <span class="text-xs font-black uppercase">Liquidity</span>
-          </div>
-          <b id="tc-display" class="maskable text-sm text-emerald">₦0</b>
+    <div style="margin-top:14px;">
+      <div class="card" id="cLiquidity">
+        <div class="cardHead flex between center" data-toggle="cLiquidity">
+          <div class="cardTitle">Liquidity</div>
+          <div class="cardVal mask" id="liq">₦0</div>
         </div>
-        <div class="sub-drawer">
-          <div class="row"><span>Bills</span><span id="b-total" class="maskable font-black">₦0</span></div>
-          <div class="row"><span>Savings</span><span id="s-total" class="maskable font-black">₦0</span></div>
-          <div class="row"><span>Spend</span><span id="l-total" class="maskable font-black">₦0</span></div>
-          <div class="tiny" style="margin-top: 10px;">Expenses subtract from your chosen bucket.</div>
+        <div class="drawer">
+          <div class="row"><div class="rowName">Bills</div><div class="rowAmt mask" id="bills">₦0</div></div>
+          <div class="row"><div class="rowName">Savings</div><div class="rowAmt mask" id="savings">₦0</div></div>
+          <div class="row"><div class="rowName">Spend</div><div class="rowAmt mask" id="spend">₦0</div></div>
         </div>
       </div>
 
-      <!-- Expenses -->
-      <div id="feat-expenses" class="vault-card">
-        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-expenses">
-          <div class="flex items-center gap-3">
-            <span class="ic red" data-ic="arrowUp"></span>
-            <span class="text-xs font-black uppercase text-red">Expenses</span>
-          </div>
-          <b id="ex-display" class="maskable text-sm text-red">₦0</b>
+      <div class="card" id="cExpenses">
+        <div class="cardHead flex between center" data-toggle="cExpenses">
+          <div class="cardTitle" style="color:var(--red)">Expenses</div>
+          <div class="cardVal mask" style="color:var(--red)" id="exTotal">₦0</div>
         </div>
-        <div id="ex-list" class="sub-drawer"></div>
+        <div class="drawer" id="exList"></div>
       </div>
 
-      <!-- Assets -->
-      <div id="feat-assets" class="vault-card">
-        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-assets">
-          <div class="flex items-center gap-3">
-            <span class="ic blue" data-ic="diamond"></span>
-            <span class="text-xs font-black uppercase text-blue">Assets</span>
-          </div>
-          <b id="as-display" class="maskable text-sm text-blue">₦0</b>
+      <div class="card" id="cAssets">
+        <div class="cardHead flex between center" data-toggle="cAssets">
+          <div class="cardTitle" style="color:var(--blue)">Assets</div>
+          <div class="cardVal mask" style="color:var(--blue)" id="asTotal">₦0</div>
         </div>
-        <div id="as-list" class="sub-drawer"></div>
+        <div class="drawer" id="asList"></div>
       </div>
 
-      <!-- Debtors -->
-      <div id="feat-debtors" class="vault-card">
-        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-debtors">
-          <div class="flex items-center gap-3">
-            <span class="ic green" data-ic="iouIn"></span>
-            <span class="text-xs font-black uppercase">Debtors</span>
-          </div>
-          <b id="db-display" class="maskable text-sm text-emerald">₦0</b>
+      <div class="card" id="cDebtors">
+        <div class="cardHead flex between center" data-toggle="cDebtors">
+          <div class="cardTitle">Debtors</div>
+          <div class="cardVal mask" style="color:var(--emerald)" id="dbTotal">₦0</div>
         </div>
-        <div id="db-list" class="sub-drawer"></div>
+        <div class="drawer" id="dbList"></div>
       </div>
 
-      <!-- Creditors -->
-      <div id="feat-creditors" class="vault-card">
-        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-creditors">
-          <div class="flex items-center gap-3">
-            <span class="ic red" data-ic="iouOut"></span>
-            <span class="text-xs font-black uppercase text-zinc">Creditors</span>
-          </div>
-          <b id="cr-display" class="maskable text-sm text-red">₦0</b>
+      <div class="card" id="cCreditors">
+        <div class="cardHead flex between center" data-toggle="cCreditors">
+          <div class="cardTitle muted">Creditors</div>
+          <div class="cardVal mask" style="color:var(--red)" id="crTotal">₦0</div>
         </div>
-        <div id="cr-list" class="sub-drawer"></div>
+        <div class="drawer" id="crList"></div>
       </div>
 
-      <!-- Fiduciary -->
-      <div id="feat-fiduciary" class="vault-card">
-        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-fiduciary">
-          <div class="flex items-center gap-3">
-            <span class="ic yellow" data-ic="briefcase"></span>
-            <span class="text-xs font-black uppercase text-yellow">Fiduciary</span>
-          </div>
-          <b id="fd-display" class="maskable text-sm text-yellow">₦0</b>
+      <div class="card" id="cAudit" style="opacity:.92;">
+        <div class="cardHead flex between center" data-toggle="cAudit">
+          <div class="cardTitle muted">Audit trail</div>
+          <div class="cardVal muted">▼</div>
         </div>
-        <div class="sub-drawer">
-          <div class="seg-control">
-            <div class="seg-btn" id="fd-v-goal">Goal</div>
-            <div class="seg-btn" id="fd-v-user">User</div>
-          </div>
-          <div id="fd-pivot-list"></div>
-        </div>
-      </div>
-
-      <!-- Audit trail -->
-      <div id="feat-history" class="vault-card" style="opacity:.92;">
-        <div class="p-5 flex justify-between items-center drawer-head" data-toggle="feat-history">
-          <div class="flex items-center gap-3">
-            <span class="ic muted" data-ic="clock"></span>
-            <span class="text-xs font-black uppercase text-zinc">Audit Trail</span>
-          </div>
-          <span class="tiny">Newest first</span>
-        </div>
-        <div class="sub-drawer">
-          <div class="qbox" style="margin-bottom:12px;">
-            <span class="ic muted" data-ic="filter"></span>
-            <input type="text" id="hi-search" placeholder="Filter by name..." />
-          </div>
-          <div id="hi-list" style="max-height: 360px; overflow-y:auto;"></div>
+        <div class="drawer">
+          <input id="auditFilter" class="input xs mb12" placeholder="Filter..." />
+          <div id="auditList"></div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- ENTRY GRID -->
-  <div id="entry-grid" class="full-overlay view-hidden">
-    <div class="flex justify-between mb-6">
-      <h2 class="text-sm font-black uppercase">New entry</h2>
-      <button id="btn-close-grid" class="btn-icon round" aria-label="Close">
-        <span class="ic muted" data-ic="x"></span>
-      </button>
-    </div>
-
-    <div class="grid-2">
-      <button data-open-form="income" class="btn-grid" style="border-color: rgba(16,185,129,.45);">
-        <span class="ic green" data-ic="arrowDown"></span>
-        <span class="text-xs font-black uppercase text-emerald">Inflow</span>
-      </button>
-
-      <button data-open-form="expense" class="btn-grid" style="border-color: rgba(239,68,68,.45);">
-        <span class="ic red" data-ic="arrowUp"></span>
-        <span class="text-xs font-black uppercase text-red">Expense</span>
-      </button>
-
-      <button data-open-form="asset" class="btn-grid" style="border-color: rgba(59,130,246,.45);">
-        <span class="ic blue" data-ic="diamond"></span>
-        <span class="text-xs font-black uppercase text-blue">Asset</span>
-      </button>
-
-      <button data-open-form="creditor" class="btn-grid" style="border-color: rgba(239,68,68,.30);">
-        <span class="ic red" data-ic="iouOut"></span>
-        <span class="text-xs font-black uppercase text-red">Borrow</span>
-      </button>
-
-      <button data-open-form="debtor" class="btn-grid" style="border-color: rgba(16,185,129,.30);">
-        <span class="ic green" data-ic="iouIn"></span>
-        <span class="text-xs font-black uppercase text-emerald">Lend</span>
-      </button>
-
-      <button data-open-form="fiduciary" class="btn-grid" style="border-color: rgba(234,179,8,.35);">
-        <span class="ic yellow" data-ic="briefcase"></span>
-        <span class="text-xs font-black uppercase text-yellow">Fiduciary</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- ENTRY FORM -->
-  <div id="entry-form" class="full-overlay view-hidden">
-    <div class="flex justify-between mb-6">
-      <div id="settle-toggle-container" class="w-full" style="margin-right: 16px;"></div>
-      <button id="btn-close-form" class="btn-icon round" aria-label="Close">
-        <span class="ic muted" data-ic="x"></span>
-      </button>
-    </div>
-
-    <input id="e-amount" type="number" class="amount-hero" placeholder="0" inputmode="numeric" />
-
-    <div id="fluid-container" class="hidden">
-      <div class="fluid-bar">
-        <div class="fluid-seg">Bills<input id="fluid-bills" type="number" class="fluid-input" value="40" /></div>
-        <div class="fluid-seg">Save<input id="fluid-save" type="number" class="fluid-input" value="40" /></div>
-        <div class="fluid-seg">Spend<input id="fluid-spend" type="number" class="fluid-input" value="20" /></div>
+  <div id="entry" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted">New entry</div>
+        <button class="xbtn" data-view="dashboard">✕</button>
       </div>
     </div>
 
-    <div id="dynamic-inputs" class="mb-4" style="margin-top: 14px;"></div>
+    <div class="grid2" style="margin-top:10px;">
+      <div class="tile" data-form="income" style="border-color:rgba(16,185,129,.35)">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v18" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+          <path d="M7 8l5-5 5 5" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--emerald)">Inflow</div>
+      </div>
 
-    <!-- Intelligent picker area (debtor/creditor) -->
-    <div id="picker-wrap" class="hidden">
-      <div class="tiny mb-2">Choose from existing</div>
-      <div id="picker-list" class="glass-panel p-4" style="padding: 12px 14px;"></div>
-      <div class="tiny" style="margin-top: 10px;">Tap a person to auto-fill + see balance.</div>
-      <div style="height: 14px;"></div>
-    </div>
+      <div class="tile" data-form="expense" style="border-color:rgba(239,68,68,.35)">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 21V3" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+          <path d="M17 16l-5 5-5-5" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--red)">Expense</div>
+      </div>
 
-    <div class="qbox">
-      <span class="ic muted" data-ic="tag"></span>
-      <input id="e-name" placeholder="Description" />
-    </div>
+      <div class="tile" data-form="asset">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Z" stroke="#3b82f6" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--blue)">Asset</div>
+      </div>
 
-    <button id="btn-exec" class="btn primary" style="margin-top: 14px; padding: 18px; font-size: 12px; width:100%;">
-      Execute transaction
-    </button>
+      <div class="tile" data-form="borrow">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M7 7h10v10H7z" stroke="#ef4444" stroke-width="2" opacity=".9"/>
+          <path d="M12 7v10" stroke="#ef4444" stroke-width="2" opacity=".6"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--red)">Borrow</div>
+      </div>
 
-    <div class="tiny" style="margin-top: 12px;">
-      Loans (Borrow/Lend/Settlements) are IOUs only: they never change Net Worth or Liquidity.
+      <div class="tile" data-form="lend">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M7 7h10v10H7z" stroke="#10b981" stroke-width="2" opacity=".9"/>
+          <path d="M7 12h10" stroke="#10b981" stroke-width="2" opacity=".6"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--emerald)">Lend</div>
+      </div>
+
+      <div class="tile" data-form="fid">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M7 7h10v14H7z" stroke="#eab308" stroke-width="2"/>
+          <path d="M9 3h6v4H9z" stroke="#eab308" stroke-width="2"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--yellow)">Fiduciary</div>
+      </div>
     </div>
   </div>
 
-  <!-- QUERY LAB -->
-  <div id="query-lab" class="full-overlay view-hidden">
-    <div class="flex justify-between mb-6">
-      <h2 class="text-sm font-black uppercase">Search</h2>
-      <button id="btn-close-query" class="btn-icon round" aria-label="Close">
-        <span class="ic muted" data-ic="x"></span>
+  <!-- FORM -->
+  <div id="form" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted" id="formTitle">Entry</div>
+        <button class="xbtn" data-view="entry">✕</button>
+      </div>
+    </div>
+
+    <input id="amount" class="bigAmount" type="number" inputmode="numeric" placeholder="0" />
+
+    <div id="segWrap" class="mb16 hidden"></div>
+
+    <div id="dyn" class="mb16"></div>
+
+    <input id="desc" class="input" placeholder="Description" list="nameList" />
+    <datalist id="nameList"></datalist>
+
+    <button class="btn btnWide" id="execBtn" style="margin-top:22px;">Execute</button>
+
+    <div class="tiny muted" style="margin-top:14px;">
+      Loans (Borrow/Lend/Settlements) are IOU-only: they do not change Net Worth or Liquidity.
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div id="search" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted">Search</div>
+        <button class="xbtn" data-view="dashboard">✕</button>
+      </div>
+    </div>
+
+    <div class="flex gap12" style="align-items:center;margin-top:10px;">
+      <div class="flex gap8" style="flex:1;align-items:center;border:1px solid #1f1f24;border-radius:16px;padding:10px 12px;background:#0a0a0c;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#9ca3af" stroke-width="2"/>
+          <path d="M16.5 16.5 21 21" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input id="q" class="input" style="border:none;padding:0;margin:0;" placeholder="Search anything…" />
+      </div>
+      <button class="iconbtn" id="clearQ" title="Clear">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+        </svg>
       </button>
     </div>
 
-    <!-- tidy search bar -->
-    <div class="qbox">
-      <span class="ic muted" data-ic="search"></span>
-      <input type="text" id="q-search" placeholder="Search transactions, names, tags..." />
-      <button id="btn-q-clear" class="btn-icon round" style="width:36px;height:36px;">
-        <span class="ic muted" data-ic="x"></span>
-      </button>
+    <div class="flex gap8" style="flex-wrap:wrap;margin-top:14px;">
+      <span class="badge" data-qtype="all">All</span>
+      <span class="badge bIn" data-qtype="income">IN</span>
+      <span class="badge bOut" data-qtype="expense">OUT</span>
+      <span class="badge bAsset" data-qtype="asset">ASSET</span>
+      <span class="badge bIOU" data-qtype="iou">IOU</span>
+      <span class="badge bFid" data-qtype="fid">FID</span>
     </div>
 
-    <div class="q-pill-row" id="q-type-filters" style="margin-top: 10px;">
-      <button class="q-pill active" data-qtype="all">All</button>
-      <button class="q-pill" data-qtype="income">In</button>
-      <button class="q-pill" data-qtype="expense">Out</button>
-      <button class="q-pill" data-qtype="asset">Asset</button>
-      <button class="q-pill" data-qtype="iou">IOU</button>
-      <button class="q-pill" data-qtype="fiduciary">Fid</button>
+    <div class="grid2" style="margin-top:14px;">
+      <input id="qStart" class="input xs" type="date" />
+      <input id="qEnd" class="input xs" type="date" />
     </div>
 
-    <div class="grid-2" style="margin-top: 14px; margin-bottom: 16px;">
-      <input type="date" id="q-start" class="input-ghost text-xs" />
-      <input type="date" id="q-end" class="input-ghost text-xs" />
-    </div>
-
-    <div id="q-results" class="flex-col gap-2"></div>
-
-    <div class="tiny" style="margin-top: 14px;">
-      Tip: tap any result to open details.
-    </div>
+    <div id="qRes" class="col" style="margin-top:14px;"></div>
   </div>
 
   <!-- SETTINGS -->
-  <div id="settings-view" class="full-overlay view-hidden">
-    <div class="flex justify-between mb-6">
-      <h2 class="text-sm font-black uppercase">Settings</h2>
-      <button id="btn-close-settings" class="btn-icon round" aria-label="Close">
-        <span class="ic muted" data-ic="x"></span>
-      </button>
-    </div>
-
-    <div class="vault-card p-6 mb-4">
-      <div class="flex justify-between items-center mb-4">
-        <p class="text-xs font-black uppercase">PIN startup</p>
-        <label class="switch">
-          <input type="checkbox" id="tog-pin" />
-          <span class="slider"></span>
-        </label>
+  <div id="settings" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted">Settings</div>
+        <button class="xbtn" data-view="dashboard">✕</button>
       </div>
-
-      <input id="set-pin" type="password" maxlength="4" class="input-ghost" style="text-align:center; letter-spacing: 6px; margin-bottom: 16px;" placeholder="••••" inputmode="numeric" />
-      <button id="btn-save-pin" class="btn w-full">Update PIN</button>
-      <div class="tiny" style="margin-top: 10px;">PIN stored as hash (not plaintext).</div>
     </div>
 
-    <div class="flex gap-2 mb-4">
-      <button id="btn-backup" class="btn w-full">Backup</button>
-      <button id="btn-restore" class="btn w-full" style="color: var(--green);">Restore</button>
-      <input type="file" id="file-input" class="hidden" />
+    <div class="card" style="margin-top:10px;">
+      <div class="p20">
+        <div class="flex between center mb12">
+          <div class="tiny muted">PIN startup</div>
+          <input id="reqPin" type="checkbox" />
+        </div>
+        <input id="setPin" class="input" inputmode="numeric" maxlength="4"
+               style="text-align:center;letter-spacing:10px;font-size:22px;"
+               placeholder="••••" />
+        <button class="btn btnWide" id="savePinBtn" style="margin-top:14px;">Update PIN</button>
+        <div class="tiny muted" style="margin-top:10px;">PIN is hashed (best-effort) — app won’t crash if crypto isn’t available.</div>
+      </div>
     </div>
 
-    <button id="btn-reset" class="btn danger w-full">Factory reset</button>
+    <div class="flex gap12" style="margin:12px 10px 12px 10px;">
+      <button class="btn" style="flex:1" id="backupBtn">Backup</button>
+      <button class="btn" style="flex:1;color:var(--emerald)" id="restoreBtn">Restore</button>
+      <input id="file" type="file" class="hidden" />
+    </div>
+
+    <button class="btn danger" id="resetBtn" style="margin:0 10px;">Factory reset</button>
   </div>
 
   <!-- FAB -->
-  <button id="nav-fab" class="fab primary" aria-label="Add">
-    <span class="ic" data-ic="plus"></span>
-  </button>
+  <button id="fab" class="fab fabPlus">+</button>
 
-  <!-- TOAST -->
-  <div id="toast" class="toast" role="status" aria-live="polite">
-    <span class="ic muted" data-ic="check"></span>
-    <div class="flex-col" style="gap:2px;">
-      <div id="toast-msg" class="msg">Saved</div>
-      <div id="toast-sub" class="sub">Done</div>
-    </div>
-    <button id="toast-undo" class="undo hidden">Undo</button>
+  <!-- Toast -->
+  <div id="toast" class="toast hidden">
+    <div id="toastMsg" class="sm bold" style="opacity:.92;">Saved</div>
+    <button id="toastAct" class="toastBtn hidden">Undo</button>
   </div>
 
-  <!-- BOTTOM SHEET -->
-  <div id="sheet-backdrop" class="sheet-backdrop"></div>
-  <div id="sheet" class="sheet">
-    <div class="panel">
-      <div class="grab"></div>
-      <div class="title">
-        <div class="left">
-          <div id="sheet-name" class="name">Transaction</div>
-          <div id="sheet-meta" class="meta">—</div>
-        </div>
-        <div class="actions">
-          <button id="sheet-dup" class="btn">Duplicate</button>
-          <button id="sheet-del" class="btn danger">Delete</button>
-        </div>
-      </div>
-
-      <div id="sheet-body"></div>
-
-      <div class="tiny" style="margin-top: 12px;">
-        Edit is next (we left the door open).
-      </div>
+  <!-- Bottom sheet -->
+  <div id="scrim" class="sheetScrim"></div>
+  <div id="sheet" class="sheet" aria-hidden="true">
+    <div class="grab"></div>
+    <div class="flex between center">
+      <div class="sheetTitle" id="shTitle">Transaction</div>
+      <span class="badge" id="shBadge">—</span>
+    </div>
+    <div class="sheetAmt mask" id="shAmt">₦0</div>
+    <div id="shKv" style="margin-top:10px;"></div>
+    <div class="sheetActions">
+      <button class="btn" id="dupBtn">Duplicate</button>
+      <button class="btn danger" id="delBtn">Delete</button>
     </div>
   </div>
 
   <script>
-    (() => {
-      const APP_VER = 82;
+  (() => {
+    const KEY = {
+      DB: "SOV_DB_V82",
+      CFG:"SOV_CFG_V82",
+      PIN:"SOV_PIN_V82"
+    };
 
-      const KEYS = {
-        DB:  "SOV_DB_V82",
-        CFG: "SOV_CFG_V82",
-        PIN: "SOV_PIN_V82" // {salt, hash, algo}
+    const $ = (id) => document.getElementById(id);
+    const money = (n) => "₦" + (Number(n)||0).toLocaleString();
+    const nowISODate = () => new Date().toISOString().slice(0,10);
+    const nowISOTime = () => new Date().toTimeString().slice(0,8);
+
+    const safeJSON = (s, fallback) => { try { return JSON.parse(s) ?? fallback; } catch { return fallback; } };
+
+    // ---------- Toast ----------
+    let toastTimer = null;
+    let toastUndo = null;
+    function showToast(msg, undoFn=null){
+      const t = $("toast");
+      $("toastMsg").textContent = msg || "";
+      toastUndo = undoFn;
+      const act = $("toastAct");
+      if (undoFn){
+        act.classList.remove("hidden");
+        act.onclick = () => {
+          const fn = toastUndo;
+          toastUndo = null;
+          hideToast();
+          try { fn && fn(); } catch {}
+        };
+      } else {
+        act.classList.add("hidden");
+        act.onclick = null;
+      }
+      t.classList.remove("hidden");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(hideToast, 2200);
+    }
+    function hideToast(){
+      $("toast").classList.add("hidden");
+      $("toastAct").classList.add("hidden");
+      toastUndo = null;
+    }
+
+    // ---------- Bottom sheet ----------
+    let openEntryId = null;
+    function openSheet(entry){
+      openEntryId = entry?.id ?? null;
+      $("scrim").classList.add("on");
+      $("sheet").classList.add("on");
+      $("sheet").setAttribute("aria-hidden","false");
+
+      const { badgeText, badgeClass } = badgeFor(entry);
+      $("shTitle").textContent = (entry?.name || "Transaction");
+      const b = $("shBadge");
+      b.className = "badge " + badgeClass;
+      b.textContent = badgeText;
+
+      $("shAmt").textContent = money(Math.abs(entryAmount(entry)));
+
+      const kv = $("shKv");
+      kv.innerHTML = "";
+      const add = (k,v) => {
+        const d = document.createElement("div");
+        d.className = "kv";
+        const L = document.createElement("div"); L.className="kvL"; L.textContent=k;
+        const R = document.createElement("div"); R.className="kvR"; R.textContent=v || "—";
+        d.appendChild(L); d.appendChild(R);
+        kv.appendChild(d);
       };
 
-      const money = {
-        fmt: (n) => "₦" + (Number(n) || 0).toLocaleString(),
-        num: (v) => {
-          const x = Number(v);
-          return Number.isFinite(x) ? x : 0;
-        }
-      };
+      add("Date", (entry.date || "—") + " " + (entry.time || "—"));
+      add("Type", entry.type || "—");
 
-      const dom = {
-        byId: (id) => document.getElementById(id),
-        clear: (el) => { if(!el) return; while(el.firstChild) el.removeChild(el.firstChild); },
-        el: (tag, cls, text) => {
-          const e = document.createElement(tag);
-          if (cls) e.className = cls;
-          if (text !== undefined) e.textContent = text;
-          return e;
-        }
-      };
+      if (entry.type === "expense") add("Category", entry.category || "Uncategorised");
+      if (entry.type === "expense") add("Bucket", entry.bucket || "spend");
 
-      /* ---------- Icons (Option A) ---------- */
-      const icons = (() => {
-        const svgs = {
-          search: `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.2-3.2"></path></svg>`,
-          eye: `<svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
-          gear: `<svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path><path d="M19.4 15a7.8 7.8 0 0 0 .1-2l2-1.2-2-3.4-2.3.6a7.7 7.7 0 0 0-1.7-1L13 2h-4l-.5 2.9a7.7 7.7 0 0 0-1.7 1l-2.3-.6-2 3.4 2 1.2a7.8 7.8 0 0 0 0 2l-2 1.2 2 3.4 2.3-.6a7.7 7.7 0 0 0 1.7 1L9 22h4l.5-2.9a7.7 7.7 0 0 0 1.7-1l2.3.6 2-3.4-2-1.2z"></path></svg>`,
-          arrowDown: `<svg viewBox="0 0 24 24"><path d="M12 4v12"></path><path d="M7 13l5 5 5-5"></path></svg>`,
-          arrowUp: `<svg viewBox="0 0 24 24"><path d="M12 20V8"></path><path d="M7 11l5-5 5 5"></path></svg>`,
-          diamond: `<svg viewBox="0 0 24 24"><path d="M12 2l4 6-4 14L8 8l4-6z"></path><path d="M8 8h8"></path></svg>`,
-          briefcase: `<svg viewBox="0 0 24 24"><path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1"></path><path d="M4 7h16v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z"></path><path d="M4 12h16"></path></svg>`,
-          wallet: `<svg viewBox="0 0 24 24"><path d="M3 7h18v14H3z"></path><path d="M3 7l14-3v3"></path><path d="M17 13h4v4h-4z"></path></svg>`,
-          clock: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6l4 2"></path></svg>`,
-          filter: `<svg viewBox="0 0 24 24"><path d="M4 5h16"></path><path d="M7 12h10"></path><path d="M10 19h4"></path></svg>`,
-          tag: `<svg viewBox="0 0 24 24"><path d="M20 13l-7 7-11-11V2h7l11 11z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>`,
-          x: `<svg viewBox="0 0 24 24"><path d="M18 6L6 18"></path><path d="M6 6l12 12"></path></svg>`,
-          plus: `<svg viewBox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>`,
-          check: `<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg>`,
-          lock: `<svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3"></path><path d="M6 11h12v10H6z"></path></svg>`,
-          iouIn: `<svg viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M7 12h10"></path><path d="M4 17h6"></path><path d="M14 17l2 2 4-4"></path></svg>`,
-          iouOut:`<svg viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M7 12h10"></path><path d="M4 17h6"></path><path d="M14 15l6 6"></path><path d="M20 15l-6 6"></path></svg>`
-        };
+      if (entry.type === "debtor" || entry.type === "debt_repayment") add("Debtor", entry.debtor || entry.name);
+      if (entry.type === "creditor" || entry.type === "credit_settlement") add("Creditor", entry.creditor || entry.name);
 
-        const mount = () => {
-          document.querySelectorAll("[data-ic]").forEach(el => {
-            const key = el.getAttribute("data-ic");
-            if (svgs[key]) el.innerHTML = svgs[key];
-          });
-        };
+      if (entry.type === "asset") add("Asset type", entry.cat || "Other");
+      if (entry.type === "fiduciary") { add("Goal", entry.goal || "—"); add("Contributor", entry.user || "—"); }
 
-        return { mount };
-      })();
+      if (entry.note) add("Note", entry.note);
 
-      /* ---------- Haptics (soft) ---------- */
-      const haptics = {
-        light: () => { try { if (navigator.vibrate) navigator.vibrate(10); } catch {} },
-        med:   () => { try { if (navigator.vibrate) navigator.vibrate([15,10,15]); } catch {} }
-      };
+      $("dupBtn").onclick = () => duplicateEntry(entry);
+      $("delBtn").onclick = () => deleteEntry(entry.id, true);
+    }
+    function closeSheet(){
+      $("scrim").classList.remove("on");
+      $("sheet").classList.remove("on");
+      $("sheet").setAttribute("aria-hidden","true");
+      openEntryId = null;
+    }
 
-      /* ---------- Toast ---------- */
-      const toast = (() => {
-        let tId = null;
-        let undoFn = null;
-
-        const show = (msg, sub = "", opts = {}) => {
-          const el = dom.byId("toast");
-          dom.byId("toast-msg").textContent = msg;
-          dom.byId("toast-sub").textContent = sub || "";
-
-          const undoBtn = dom.byId("toast-undo");
-          undoFn = opts.undo || null;
-
-          if (undoFn) {
-            undoBtn.classList.remove("hidden");
-            undoBtn.onclick = () => {
-              try { undoFn(); } finally { hide(); }
-            };
-          } else {
-            undoBtn.classList.add("hidden");
-            undoBtn.onclick = null;
-          }
-
-          el.classList.add("show");
-          clearTimeout(tId);
-          tId = setTimeout(hide, opts.ms || 2200);
-        };
-
-        const hide = () => {
-          dom.byId("toast").classList.remove("show");
-          undoFn = null;
-        };
-
-        return { show, hide };
-      })();
-
-      /* ---------- PIN Hash ---------- */
-      const cryptoUtil = {
-        randSalt: () => {
-          const a = new Uint8Array(16);
-          crypto.getRandomValues(a);
-          return Array.from(a).map(b => b.toString(16).padStart(2,"0")).join("");
-        },
-        toHex: (buf) => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join(""),
-        async sha256(str){
+    // ---------- Crypto (best effort, never crash app) ----------
+    const cryptoUtil = {
+      async sha256(str){
+        try{
+          if (!crypto?.subtle) return null;
           const data = new TextEncoder().encode(str);
           const buf = await crypto.subtle.digest("SHA-256", data);
-          return cryptoUtil.toHex(buf);
-        },
-        async hashPin(pin, salt){
-          return cryptoUtil.sha256(`${salt}:${pin}`);
+          return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+        }catch{ return null; }
+      },
+      salt(){
+        try{
+          const a = new Uint8Array(16);
+          crypto.getRandomValues(a);
+          return [...a].map(b=>b.toString(16).padStart(2,"0")).join("");
+        }catch{ return String(Date.now()); }
+      }
+    };
+
+    // ---------- State ----------
+    let db = safeJSON(localStorage.getItem(KEY.DB), []);
+    let cfg = safeJSON(localStorage.getItem(KEY.CFG), { reqPin:false, qtype:"all" });
+    let pinObj = safeJSON(localStorage.getItem(KEY.PIN), null);
+
+    let currentView = "dashboard";
+    let formType = null;
+    let settlementMode = false;
+    let lastDeleted = null;
+
+    // ---------- Utilities ----------
+    function save(){
+      localStorage.setItem(KEY.DB, JSON.stringify(db));
+      localStorage.setItem(KEY.CFG, JSON.stringify(cfg));
+      localStorage.setItem(KEY.PIN, JSON.stringify(pinObj));
+    }
+    function uuid(){
+      return (crypto?.randomUUID) ? crypto.randomUUID() : (Date.now()+"-"+Math.random().toString(16).slice(2));
+    }
+    function entryAmount(e){
+      if (!e) return 0;
+      if (typeof e.principal === "number") return e.principal; // IOU flows
+      return Number(e.total)||0;
+    }
+    function badgeFor(e){
+      const t = e?.type || "";
+      if (t === "income") return { badgeText:"IN", badgeClass:"bIn" };
+      if (t === "expense") return { badgeText:"OUT", badgeClass:"bOut" };
+      if (t === "asset") return { badgeText:"ASSET", badgeClass:"bAsset" };
+      if (t === "debtor" || t === "debt_repayment" || t === "creditor" || t === "credit_settlement") return { badgeText:"IOU", badgeClass:"bIOU" };
+      if (t === "fiduciary") return { badgeText:"FID", badgeClass:"bFid" };
+      return { badgeText:"—", badgeClass:"" };
+    }
+
+    function viewEl(name){ return $(name); }
+    function showView(name){
+      // Close sheet if switching views
+      closeSheet();
+
+      const views = ["dashboard","entry","form","search","settings","auth"];
+      for (const v of views){
+        const el = viewEl(v);
+        if (el) el.classList.toggle("hidden", v !== name);
+      }
+      currentView = name;
+
+      // FAB behavior
+      const fab = $("fab");
+      if (name === "dashboard"){
+        fab.className = "fab fabPlus";
+        fab.textContent = "+";
+      } else {
+        fab.className = "fab fabBack";
+        fab.textContent = "↩";
+      }
+    }
+
+    // ---------- Rendering ----------
+    function clear(el){ if (!el) return; el.innerHTML = ""; }
+
+    function groupLabel(dateStr){
+      // dateStr: YYYY-MM-DD
+      const d = new Date(dateStr + "T00:00:00");
+      const today = new Date();
+      const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const d0 = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const diffDays = Math.round((t0 - d0) / 86400000);
+
+      if (diffDays === 0) return "Today";
+      if (diffDays === 1) return "Yesterday";
+      if (diffDays <= 7) return "Last 7 days";
+      if (diffDays <= 30) return "Last 30 days";
+
+      const m = d.toLocaleString(undefined, { month:"long", year:"numeric" });
+      return m;
+    }
+
+    function render(){
+      // Totals
+      let netWorth = 0;
+      let bills = 0, savings = 0, spend = 0;
+      let assetsTotal = 0;
+      let expensesTotal = 0;
+
+      // IOU ledgers (outstanding balances)
+      const debtorBal = Object.create(null);    // owed to you
+      const creditorBal = Object.create(null);  // you owe
+
+      // Lists
+      clear($("exList"));
+      clear($("asList"));
+      clear($("dbList"));
+      clear($("crList"));
+      clear($("auditList"));
+
+      const auditFilter = ($("auditFilter").value || "").toLowerCase();
+
+      // Build category totals for Today section (expenses only)
+      const todayKey = nowISODate();
+      const todayCatTotals = Object.create(null);
+      let todayExpensesTotal = 0;
+
+      // Iterate newest-first
+      const list = db.slice().sort((a,b) => (b.ts||0) - (a.ts||0));
+
+      // For audit grouping
+      const groups = new Map(); // label -> entries[]
+      for (const e of list){
+        const label = groupLabel(e.date || todayKey);
+        if (!groups.has(label)) groups.set(label, []);
+        groups.get(label).push(e);
+      }
+
+      // Pass 1: totals + section side lists
+      for (const e of list){
+        const t = e.type;
+
+        // Net worth uses only real money totals (loans have total=0)
+        netWorth += Number(e.total)||0;
+
+        bills += Number(e.b)||0;
+        savings += Number(e.s)||0;
+        spend += Number(e.l)||0;
+
+        if (t === "asset"){
+          assetsTotal += Number(e.total)||0;
+          $("asList").appendChild(renderTapRow(e, `${e.name || "Asset"}`, e.date, money(Math.abs(e.total||0)), "asset"));
         }
+
+        if (t === "expense"){
+          expensesTotal += Math.abs(Number(e.total)||0);
+          $("exList").appendChild(renderTapRow(
+            e,
+            `${e.name || "Expense"}`,
+            (e.category ? (e.category + " • " + (e.bucket || "spend")) : (e.bucket || "spend")),
+            money(Math.abs(e.total||0)),
+            "expense"
+          ));
+
+          if (e.date === todayKey){
+            todayExpensesTotal += Math.abs(Number(e.total)||0);
+            const cat = e.category || "Uncategorised";
+            todayCatTotals[cat] = (todayCatTotals[cat] || 0) + Math.abs(Number(e.total)||0);
+          }
+        }
+
+        // IOU-only balances
+        if (t === "debtor" || t === "debt_repayment"){
+          const who = e.debtor || e.name || "Unknown";
+          debtorBal[who] = (debtorBal[who] || 0) + (Number(e.principal)||0);
+        }
+        if (t === "creditor" || t === "credit_settlement"){
+          const who = e.creditor || e.name || "Unknown";
+          creditorBal[who] = (creditorBal[who] || 0) + (Number(e.principal)||0);
+        }
+      }
+
+      // Render IOU lists (compact)
+      let debtorsTotal = 0;
+      for (const [name,bal] of Object.entries(debtorBal)){
+        if (!bal) continue;
+        debtorsTotal += bal;
+        const fake = { id: "iou-db-"+name, name, type:"debtor", principal:bal, date:"", time:"", ts:0, debtor:name };
+        $("dbList").appendChild(renderTapRow(fake, name, "Outstanding", money(bal), "iou"));
+      }
+
+      let creditorsTotal = 0;
+      for (const [name,bal] of Object.entries(creditorBal)){
+        if (!bal) continue;
+        creditorsTotal += bal;
+        const fake = { id: "iou-cr-"+name, name, type:"creditor", principal:bal, date:"", time:"", ts:0, creditor:name };
+        $("crList").appendChild(renderTapRow(fake, name, "Outstanding", money(bal), "iou", true));
+      }
+
+      // Dashboard simplified
+      const cashTotal = bills + savings + spend;
+      $("nw").textContent = money(netWorth);
+      $("cash").textContent = money(cashTotal);
+      $("assets").textContent = money(assetsTotal);
+      $("debt").textContent = money(debtorsTotal - creditorsTotal);
+
+      $("liq").textContent = money(cashTotal);
+      $("bills").textContent = money(bills);
+      $("savings").textContent = money(savings);
+      $("spend").textContent = money(spend);
+
+      $("exTotal").textContent = money(expensesTotal);
+      $("asTotal").textContent = money(assetsTotal);
+      $("dbTotal").textContent = money(debtorsTotal);
+      $("crTotal").textContent = money(creditorsTotal);
+
+      // Audit Trail grouped sections with subtotals + compact category breakdown for Today
+      for (const [label, entries] of groups.entries()){
+        // section header
+        const head = document.createElement("div");
+        head.style.marginTop = "14px";
+        head.style.marginBottom = "8px";
+        head.className = "flex between center";
+
+        const left = document.createElement("div");
+        left.className = "tiny muted";
+        left.textContent = label;
+
+        const right = document.createElement("div");
+        right.className = "tiny muted";
+
+        // subtotal of expenses for that section
+        let secExp = 0;
+        for (const e of entries){
+          if (e.type === "expense") secExp += Math.abs(Number(e.total)||0);
+        }
+        right.textContent = secExp ? ("Expenses " + money(secExp)) : "";
+
+        head.appendChild(left);
+        head.appendChild(right);
+
+        $("auditList").appendChild(head);
+
+        // Today category mini breakdown (top 3 only)
+        if (label === "Today" && todayExpensesTotal){
+          const wrap = document.createElement("div");
+          wrap.style.marginBottom = "10px";
+          wrap.className = "flex gap8";
+          wrap.style.flexWrap = "wrap";
+
+          const topCats = Object.entries(todayCatTotals)
+            .sort((a,b)=>b[1]-a[1])
+            .slice(0,3);
+
+          for (const [cat,amt] of topCats){
+            const chip = document.createElement("span");
+            chip.className = "badge";
+            chip.style.opacity = ".92";
+            chip.textContent = `${cat} ${money(amt)}`;
+            wrap.appendChild(chip);
+          }
+          $("auditList").appendChild(wrap);
+        }
+
+        // rows
+        for (const e of entries){
+          const name = e.name || "Transaction";
+          const amt = money(Math.abs(entryAmount(e)));
+          const meta = (e.date || "") + (e.time ? (" " + e.time) : "");
+          if (auditFilter && !name.toLowerCase().includes(auditFilter)) continue;
+          $("auditList").appendChild(renderTapRow(e, name, meta, amt, "audit"));
+        }
+      }
+    }
+
+    function renderTapRow(entry, title, meta, amt, context, red=false){
+      const row = document.createElement("div");
+      row.className = "row tapRow";
+      row.dataset.open = "sheet";
+      row.dataset.id = entry.id;
+
+      const left = document.createElement("div");
+      left.className = "rowLeft";
+      const nm = document.createElement("div");
+      nm.className = "rowName";
+      nm.textContent = title || "";
+      const mt = document.createElement("div");
+      mt.className = "rowMeta";
+      mt.textContent = meta || "";
+      left.appendChild(nm);
+      left.appendChild(mt);
+
+      const right = document.createElement("div");
+      right.className = "rowAmt mask";
+      right.textContent = amt || "";
+      if (red) right.style.color = "var(--red)";
+
+      row.appendChild(left);
+      row.appendChild(right);
+      return row;
+    }
+
+    // ---------- Search ----------
+    let qType = "all";
+    function setQType(t){
+      qType = t;
+      // visual: highlight badge
+      document.querySelectorAll('[data-qtype]').forEach(b => {
+        const is = (b.getAttribute("data-qtype") === t);
+        b.style.boxShadow = is ? "0 0 0 2px rgba(16,185,129,.18) inset" : "none";
+      });
+      runSearch();
+    }
+    function runSearch(){
+      const s = ($("q").value || "").toLowerCase().trim();
+      const qs = $("qStart").value || "";
+      const qe = $("qEnd").value || "";
+
+      const out = $("qRes");
+      out.innerHTML = "";
+
+      const list = db.slice().sort((a,b) => (b.ts||0) - (a.ts||0)).filter(e => {
+        const hay = [
+          e.name, e.category, e.bucket, e.debtor, e.creditor, e.goal, e.user, e.note
+        ].filter(Boolean).join(" ").toLowerCase();
+
+        if (s && !hay.includes(s)) return false;
+        if (qs && (e.date || "") < qs) return false;
+        if (qe && (e.date || "") > qe) return false;
+
+        // Option A mapping
+        if (qType === "all") return true;
+        if (qType === "income") return e.type === "income";
+        if (qType === "expense") return e.type === "expense";
+        if (qType === "asset") return e.type === "asset";
+        if (qType === "fid") return e.type === "fiduciary";
+        if (qType === "iou"){
+          return ["debtor","debt_repayment","creditor","credit_settlement"].includes(e.type);
+        }
+        return true;
+      });
+
+      if (!list.length){
+        const empty = document.createElement("div");
+        empty.className = "tiny muted";
+        empty.style.marginTop = "12px";
+        empty.textContent = "No results";
+        out.appendChild(empty);
+        return;
+      }
+
+      for (const e of list){
+        const { badgeText, badgeClass } = badgeFor(e);
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.style.margin = "0 0 10px 0";
+        card.dataset.open = "sheet";
+        card.dataset.id = e.id;
+
+        const head = document.createElement("div");
+        head.className = "p16 flex between center";
+
+        const L = document.createElement("div");
+        L.style.minWidth = "0";
+
+        const t = document.createElement("div");
+        t.className = "rowName";
+        t.textContent = e.name || "Transaction";
+
+        const m = document.createElement("div");
+        m.className = "rowMeta";
+        m.textContent = (e.date || "") + (e.time ? (" " + e.time) : "");
+
+        L.appendChild(t);
+        L.appendChild(m);
+
+        const R = document.createElement("div");
+        R.className = "col";
+        R.style.alignItems = "flex-end";
+        const b = document.createElement("span");
+        b.className = "badge " + badgeClass;
+        b.textContent = badgeText;
+        const a = document.createElement("div");
+        a.className = "rowAmt mask";
+        a.textContent = money(Math.abs(entryAmount(e)));
+        R.appendChild(b);
+        R.appendChild(a);
+
+        head.appendChild(L);
+        head.appendChild(R);
+        card.appendChild(head);
+        out.appendChild(card);
+      }
+    }
+
+    // ---------- CRUD ----------
+    function deleteEntry(id, allowUndo){
+      const idx = db.findIndex(x => x.id === id);
+      if (idx < 0) return;
+
+      const removed = db.splice(idx,1)[0];
+      save();
+      render();
+
+      if (allowUndo){
+        lastDeleted = removed;
+        showToast("Deleted", () => {
+          if (!lastDeleted) return;
+          db.push(lastDeleted);
+          lastDeleted = null;
+          save();
+          render();
+          showToast("Restored");
+        });
+      } else {
+        showToast("Deleted");
+      }
+
+      closeSheet();
+    }
+
+    function duplicateEntry(entry){
+      if (!entry) return;
+      const copy = JSON.parse(JSON.stringify(entry));
+      copy.id = uuid();
+      copy.ts = Date.now();
+      copy.date = nowISODate();
+      copy.time = nowISOTime();
+      db.push(copy);
+      save();
+      render();
+      showToast("Duplicated");
+      closeSheet();
+    }
+
+    // ---------- Forms ----------
+    function openForm(type){
+      formType = type;
+      settlementMode = false;
+      $("amount").value = "";
+      $("desc").value = "";
+      $("nameList").innerHTML = "";
+      $("dyn").innerHTML = "";
+      $("segWrap").innerHTML = "";
+      $("segWrap").classList.add("hidden");
+
+      const titleMap = { income:"Inflow", expense:"Expense", asset:"Asset", borrow:"Borrow", lend:"Lend", fid:"Fiduciary" };
+      $("formTitle").textContent = titleMap[type] || "Entry";
+
+      // Build form fields
+      if (type === "income"){
+        buildSettlementSeg("INFLOW", "RECOVER DEBT");
+      }
+      if (type === "expense"){
+        buildSettlementSeg("EXPENSE", "PAY DEBT");
+        // default: bucket + category
+        buildExpenseFields();
+      }
+      if (type === "asset"){
+        buildAssetFields();
+      }
+      if (type === "borrow" || type === "lend"){
+        buildLoanFields(type);
+      }
+      if (type === "fid"){
+        buildFidFields();
+      }
+
+      showView("form");
+    }
+
+    function buildSettlementSeg(left, right){
+      $("segWrap").classList.remove("hidden");
+      const wrap = document.createElement("div");
+      wrap.className = "flex gap8";
+      const a = document.createElement("button");
+      a.className = "btn";
+      a.style.flex = "1";
+      a.textContent = left;
+      const b = document.createElement("button");
+      b.className = "btn";
+      b.style.flex = "1";
+      b.textContent = right;
+
+      const apply = () => {
+        a.style.borderColor = settlementMode ? "#2a2a2f" : "rgba(16,185,129,.5)";
+        a.style.color = settlementMode ? "#fff" : "var(--emerald)";
+        b.style.borderColor = settlementMode ? "rgba(234,179,8,.5)" : "#2a2a2f";
+        b.style.color = settlementMode ? "var(--yellow)" : "#fff";
       };
 
-      /* ---------- Core ---------- */
-      const VaultCore = (() => {
-        let db = [];
-        let config = { reqPin:false, activeQType:"all", fdView:"goal" };
-        let pinObj = null; // {salt, hash, algo}
+      a.onclick = () => { settlementMode = false; rebuildDynamic(); apply(); };
+      b.onclick = () => { settlementMode = true; rebuildDynamic(); apply(); };
 
-        const loanTypes = new Set(["creditor","credit_settlement","debtor","debt_repayment"]);
-        const iouType = (t) => loanTypes.has(t);
+      wrap.appendChild(a); wrap.appendChild(b);
+      $("segWrap").appendChild(wrap);
+      apply();
+    }
 
-        const nowISO = () => {
-          const d = new Date();
-          const y = d.getFullYear();
-          const m = String(d.getMonth()+1).padStart(2,"0");
-          const da = String(d.getDate()).padStart(2,"0");
-          return `${y}-${m}-${da}`;
-        };
+    function rebuildDynamic(){
+      // rebuild parts based on settlement toggle
+      $("dyn").innerHTML = "";
+      $("nameList").innerHTML = "";
 
-        const timeHM = (d) => {
-          const h = String(d.getHours()).padStart(2,"0");
-          const m = String(d.getMinutes()).padStart(2,"0");
-          return `${h}:${m}`;
-        };
+      if (formType === "income"){
+        if (settlementMode){
+          // debtor picker list
+          const names = getDebtorNamesWithBalances();
+          fillNameList(names.map(x=>x.name));
+          buildPicker(names, "Pick debtor (tap)", (n)=>{ $("desc").value=n; showToast("Selected"); });
+        } else {
+          // nothing extra
+        }
+      }
 
-        const makeId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(16).slice(2));
+      if (formType === "expense"){
+        if (settlementMode){
+          const names = getCreditorNamesWithBalances();
+          fillNameList(names.map(x=>x.name));
+          buildPicker(names, "Pick creditor (tap)", (n)=>{ $("desc").value=n; showToast("Selected"); });
+        } else {
+          buildExpenseFields();
+        }
+      }
+    }
 
-        const save = () => {
-          localStorage.setItem(KEYS.DB, JSON.stringify(db));
-          localStorage.setItem(KEYS.CFG, JSON.stringify(config));
-          localStorage.setItem(KEYS.PIN, JSON.stringify(pinObj));
-        };
+    function fillNameList(names){
+      const dl = $("nameList");
+      for (const n of names){
+        const o = document.createElement("option");
+        o.value = n;
+        dl.appendChild(o);
+      }
+    }
 
-        const load = () => {
-          // prefer v82
-          try { db = JSON.parse(localStorage.getItem(KEYS.DB)) || []; } catch { db = []; }
-          try { config = JSON.parse(localStorage.getItem(KEYS.CFG)) || config; } catch {}
-          try { pinObj = JSON.parse(localStorage.getItem(KEYS.PIN)) || null; } catch { pinObj = null; }
+    function buildPicker(items, label, onPick){
+      const wrap = document.createElement("div");
+      wrap.className = "card";
+      wrap.style.margin = "10px 0 0 0";
 
-          // migrate from v81 if needed
-          if (!db.length) {
-            const v81 = localStorage.getItem("SOV_DB_V81");
-            const v80 = localStorage.getItem("SOV_DB_V80");
-            const src = v81 || v80;
-            if (src) {
-              try { db = JSON.parse(src) || []; } catch { db = []; }
-            }
-          }
+      const h = document.createElement("div");
+      h.className = "p16";
+      const tt = document.createElement("div");
+      tt.className = "tiny muted";
+      tt.textContent = label;
+      h.appendChild(tt);
+      wrap.appendChild(h);
 
-          // normalize: ensure createdAt exists; ensure IOUs total=0 and principal exists
+      const body = document.createElement("div");
+      body.className = "p16";
+      body.style.paddingTop = "0";
+
+      if (!items.length){
+        const empty = document.createElement("div");
+        empty.className = "tiny muted";
+        empty.textContent = "No saved names yet";
+        body.appendChild(empty);
+      } else {
+        for (const it of items.slice(0, 12)){
+          const r = document.createElement("div");
+          r.className = "row tapRow";
+          r.style.padding = "10px 0";
+          r.onclick = () => onPick(it.name);
+
+          const L = document.createElement("div");
+          L.className = "rowLeft";
+          const n = document.createElement("div");
+          n.className = "rowName";
+          n.textContent = it.name;
+
+          const m = document.createElement("div");
+          m.className = "rowMeta";
+          m.textContent = "Outstanding " + money(it.balance);
+
+          L.appendChild(n); L.appendChild(m);
+
+          const R = document.createElement("div");
+          R.className = "rowAmt";
+          R.textContent = "Tap";
+
+          r.appendChild(L); r.appendChild(R);
+          body.appendChild(r);
+        }
+      }
+
+      wrap.appendChild(body);
+      $("dyn").appendChild(wrap);
+    }
+
+    function buildExpenseFields(){
+      // bucket selector + category selector
+      const bucket = document.createElement("select");
+      bucket.id = "bucket";
+      bucket.className = "input";
+      bucket.innerHTML = `
+        <option value="spend">Spend bucket</option>
+        <option value="bills">Bills bucket</option>
+        <option value="savings">Savings bucket</option>
+      `;
+
+      const category = document.createElement("select");
+      category.id = "category";
+      category.className = "input";
+      category.innerHTML = `
+        <option value="Food">Food</option>
+        <option value="Transport">Transport</option>
+        <option value="Fuel">Fuel</option>
+        <option value="Bills">Bills</option>
+        <option value="Health">Health</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Other">Other</option>
+      `;
+
+      $("dyn").appendChild(bucket);
+      $("dyn").appendChild(category);
+    }
+
+    function buildAssetFields(){
+      const cat = document.createElement("select");
+      cat.id = "assetCat";
+      cat.className = "input";
+      cat.innerHTML = `
+        <option value="Property">Property</option>
+        <option value="Vehicle">Vehicle</option>
+        <option value="Stock">Stock</option>
+        <option value="Other">Other</option>
+      `;
+      $("dyn").appendChild(cat);
+    }
+
+    function buildLoanFields(type){
+      // debtor/creditor picker here too (intuitive)
+      const names = (type === "lend") ? getDebtorNamesWithBalances() : getCreditorNamesWithBalances();
+      fillNameList(names.map(x=>x.name));
+      buildPicker(names, (type==="lend" ? "Pick borrower (tap)" : "Pick lender (tap)"), (n)=>{ $("desc").value=n; showToast("Selected"); });
+
+      const rate = document.createElement("input");
+      rate.id = "rate";
+      rate.className = "input";
+      rate.type = "number";
+      rate.placeholder = "Rate % (optional)";
+
+      const term = document.createElement("input");
+      term.id = "term";
+      term.className = "input";
+      term.type = "date";
+
+      $("dyn").appendChild(rate);
+      $("dyn").appendChild(term);
+
+      $("desc").placeholder = (type === "lend") ? "Borrower name" : "Lender name";
+    }
+
+    function buildFidFields(){
+      const goal = document.createElement("input");
+      goal.id = "goal";
+      goal.className = "input";
+      goal.placeholder = "Project / Goal";
+
+      const user = document.createElement("input");
+      user.id = "user";
+      user.className = "input";
+      user.placeholder = "Contributor";
+
+      $("dyn").appendChild(goal);
+      $("dyn").appendChild(user);
+    }
+
+    function getDebtorNamesWithBalances(){
+      const bal = Object.create(null);
+      for (const e of db){
+        if (e.type === "debtor" || e.type === "debt_repayment"){
+          const who = e.debtor || e.name || "Unknown";
+          bal[who] = (bal[who] || 0) + (Number(e.principal)||0);
+        }
+      }
+      return Object.entries(bal)
+        .filter(([_,v]) => v)
+        .sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]))
+        .map(([name,balance]) => ({ name, balance }));
+    }
+
+    function getCreditorNamesWithBalances(){
+      const bal = Object.create(null);
+      for (const e of db){
+        if (e.type === "creditor" || e.type === "credit_settlement"){
+          const who = e.creditor || e.name || "Unknown";
+          bal[who] = (bal[who] || 0) + (Number(e.principal)||0);
+        }
+      }
+      return Object.entries(bal)
+        .filter(([_,v]) => v)
+        .sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]))
+        .map(([name,balance]) => ({ name, balance }));
+    }
+
+    function execute(){
+      const amt = Math.abs(Number($("amount").value)||0);
+      const desc = ($("desc").value || "").trim();
+      if (!amt || !desc){ showToast("Enter amount + description"); return; }
+
+      const base = {
+        id: uuid(),
+        name: desc,
+        date: nowISODate(),
+        time: nowISOTime(),
+        ts: Date.now(),
+        total: 0
+      };
+
+      // INCOME
+      if (formType === "income"){
+        if (settlementMode){
+          // recover from debtor: IOU-only reduces outstanding owed to you
+          base.type = "debt_repayment";
+          base.debtor = desc;
+          base.principal = -amt;
+          base.total = 0;
+        } else {
+          base.type = "income";
+          base.total = amt;
+          // (simple: put everything into spend unless you later add fluid split again)
+          base.l = amt;
+        }
+      }
+
+      // EXPENSE
+      else if (formType === "expense"){
+        if (settlementMode){
+          base.type = "credit_settlement";
+          base.creditor = desc;
+          base.principal = -amt; // reduce what you owe
+          base.total = 0;
+        } else {
+          base.type = "expense";
+          base.total = -amt;
+
+          const bucket = $("bucket")?.value || "spend";
+          const category = $("category")?.value || "Other";
+          base.bucket = bucket;
+          base.category = category;
+
+          if (bucket === "bills") base.b = -amt;
+          else if (bucket === "savings") base.s = -amt;
+          else base.l = -amt;
+        }
+      }
+
+      // ASSET
+      else if (formType === "asset"){
+        base.type = "asset";
+        base.total = amt;
+        base.cat = $("assetCat")?.value || "Other";
+      }
+
+      // BORROW (creditor) IOU-only
+      else if (formType === "borrow"){
+        base.type = "creditor";
+        base.total = 0;
+        base.creditor = desc;
+        base.principal = amt;
+        base.rate = $("rate")?.value || "";
+        base.term = $("term")?.value || "";
+      }
+
+      // LEND (debtor) IOU-only
+      else if (formType === "lend"){
+        base.type = "debtor";
+        base.total = 0;
+        base.debtor = desc;
+        base.principal = amt;
+        base.rate = $("rate")?.value || "";
+        base.term = $("term")?.value || "";
+      }
+
+      // FID
+      else if (formType === "fid"){
+        base.type = "fiduciary";
+        base.total = amt;
+        base.goal = $("goal")?.value || "";
+        base.user = $("user")?.value || "";
+      }
+
+      db.push(base);
+      save();
+      render();
+
+      // clear amount + desc (your requirement)
+      $("amount").value = "";
+      $("desc").value = "";
+
+      showToast("Saved");
+      showView("dashboard");
+    }
+
+    // ---------- PIN ----------
+    async function setPin(){
+      const p = ($("setPin").value || "").trim();
+      if (p.length !== 4){ showToast("PIN must be 4 digits"); return; }
+
+      const salt = cryptoUtil.salt();
+      const hash = await cryptoUtil.sha256(`${salt}:${p}`);
+      if (!hash){
+        // still store something simple rather than crash
+        pinObj = { salt:"plain", hash:String(p), algo:"fallback" };
+      } else {
+        pinObj = { salt, hash, algo:"sha256(salt:pin)" };
+      }
+      $("setPin").value = "";
+      save();
+      showToast("PIN updated");
+    }
+
+    async function verifyPin(){
+      const input = ($("authPin").value || "").trim();
+      if (!pinObj) return true;
+
+      if (pinObj.algo === "fallback"){
+        return input === pinObj.hash;
+      }
+      const hash = await cryptoUtil.sha256(`${pinObj.salt}:${input}`);
+      return !!hash && hash === pinObj.hash;
+    }
+
+    // ---------- Backup / Restore ----------
+    function backup(){
+      const payload = { version:82, exportedAt:new Date().toISOString(), db, cfg };
+      const blob = new Blob([JSON.stringify(payload,null,2)], { type:"application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "Vault_v82.json";
+      a.click();
+      showToast("Backup exported");
+    }
+    function restore(file){
+      const r = new FileReader();
+      r.onload = (ev) => {
+        try{
+          const parsed = JSON.parse(ev.target.result);
+          if (Array.isArray(parsed)) db = parsed;
+          else if (parsed && Array.isArray(parsed.db)) { db = parsed.db; cfg = { ...cfg, ...(parsed.cfg||parsed.config||{}) }; }
+          else throw new Error("bad");
+
+          // enforce IOU policy: total=0 for loan types
+          const loanTypes = ["debtor","debt_repayment","creditor","credit_settlement"];
           db = db.map(e => {
-            if (!e || typeof e !== "object") return e;
-            if (!e.createdAt) {
-              // If there was no time, set midday to avoid timezone weirdness
-              const d = e.date ? new Date(e.date + "T12:00:00") : new Date();
-              e.createdAt = d.toISOString();
-            }
-            if (iouType(e.type)) {
-              if (typeof e.principal !== "number") {
-                // best effort from old total
-                const t = money.num(e.total);
-                const a = Math.abs(t);
-                if (e.type === "creditor") e.principal = a;
-                if (e.type === "credit_settlement") e.principal = -a;
-                if (e.type === "debtor") e.principal = a;
-                if (e.type === "debt_repayment") e.principal = -a;
+            if (!e) return e;
+            if (loanTypes.includes(e.type)){
+              if (typeof e.principal !== "number"){
+                // best effort conversion
+                const t = Number(e.total)||0;
+                e.principal = Math.abs(t);
               }
               e.total = 0;
               delete e.b; delete e.s; delete e.l;
             }
-            // lightweight tag/category fields
-            if (!e.category) e.category = "";
-            if (!e.note) e.note = "";
+            if (!e.ts) e.ts = Date.now();
+            if (!e.time) e.time = "00:00:00";
             return e;
           });
 
           save();
+          render();
+          showToast("Restored");
+          showView("dashboard");
+        }catch{
+          showToast("Invalid backup file");
+        }
+      };
+      r.readAsText(file);
+    }
+
+    // ---------- Global click delegation (fixes “frozen” after re-render) ----------
+    function handleClick(e){
+      const t = e.target;
+
+      // Close sheet if scrim tapped
+      if (t === $("scrim")) { closeSheet(); return; }
+
+      // Drawer toggles
+      const toggle = t.closest("[data-toggle]");
+      if (toggle){
+        const id = toggle.getAttribute("data-toggle");
+        const el = $(id);
+        if (el) el.classList.toggle("open");
+        return;
+      }
+
+      // View switches
+      const viewBtn = t.closest("[data-view]");
+      if (viewBtn){
+        const v = viewBtn.getAttribute("data-view");
+        if (v === "dashboard") showView("dashboard");
+        else if (v === "entry") showView("entry");
+        else if (v === "search") { showView("search"); runSearch(); }
+        else if (v === "settings") showView("settings");
+        return;
+      }
+
+      // Open form from tiles
+      const tile = t.closest("[data-form]");
+      if (tile){
+        const ft = tile.getAttribute("data-form");
+        openForm(ft);
+        return;
+      }
+
+      // Open sheet from rows/cards
+      const open = t.closest("[data-open='sheet']");
+      if (open){
+        const id = open.getAttribute("data-id");
+        const entry = db.find(x => x.id === id);
+        if (entry) openSheet(entry);
+        return;
+      }
+
+      // Search type badges
+      const qt = t.closest("[data-qtype]");
+      if (qt){
+        setQType(qt.getAttribute("data-qtype"));
+        return;
+      }
+    }
+
+    // ---------- Init (never crash the app) ----------
+    function init(){
+      try{
+        // Default view
+        showView("dashboard");
+
+        // Stealth
+        $("stealthBtn").onclick = () => document.body.classList.toggle("stealth");
+
+        // FAB
+        $("fab").onclick = () => {
+          if (currentView === "dashboard") showView("entry");
+          else showView("dashboard");
         };
 
-        const entryAmount = (e) => (typeof e.principal === "number" ? e.principal : money.num(e.total));
+        // Search events
+        $("q").addEventListener("input", runSearch);
+        $("qStart").addEventListener("change", runSearch);
+        $("qEnd").addEventListener("change", runSearch);
+        $("clearQ").onclick = () => { $("q").value=""; runSearch(); };
 
-        const setQType = (t) => { config.activeQType = t; save(); };
-        const setFdView = (v) => { config.fdView = v; save(); VaultUI.render(); };
-        const toggleSetting = (k) => { config[k] = !config[k]; save(); };
+        // Audit filter
+        $("auditFilter").addEventListener("input", render);
 
-        const hasPin = () => !!(pinObj && pinObj.hash && pinObj.salt);
+        // Execute
+        $("execBtn").onclick = execute;
 
-        const savePin = async () => {
-          const p = dom.byId("set-pin").value || "";
-          if (p.length !== 4) return toast.show("PIN not saved", "4 digits required");
-          if (!crypto?.subtle) return toast.show("Not supported", "Browser can't hash PIN");
+        // Settings
+        $("reqPin").checked = !!cfg.reqPin;
+        $("reqPin").onchange = () => { cfg.reqPin = !!$("reqPin").checked; save(); showToast("Updated"); };
+        $("savePinBtn").onclick = setPin;
 
-          const salt = cryptoUtil.randSalt();
-          const hash = await cryptoUtil.hashPin(p, salt);
-          pinObj = { salt, hash, algo: "sha256(salt:pin)" };
-          save();
-          dom.byId("set-pin").value = "";
-          toast.show("PIN updated", "Startup lock configured");
+        $("backupBtn").onclick = backup;
+        $("restoreBtn").onclick = () => $("file").click();
+        $("file").onchange = (ev) => {
+          const f = ev.target.files && ev.target.files[0];
+          if (f) restore(f);
+          ev.target.value = "";
+        };
+        $("resetBtn").onclick = () => {
+          if (!confirm("Reset app data?")) return;
+          localStorage.removeItem(KEY.DB);
+          localStorage.removeItem(KEY.CFG);
+          localStorage.removeItem(KEY.PIN);
+          db = [];
+          cfg = { reqPin:false, qtype:"all" };
+          pinObj = null;
+          showToast("Reset");
+          render();
+          showView("dashboard");
         };
 
-        const verifyPin = async (inputPin) => {
-          if (!pinObj?.hash || !pinObj?.salt) return true;
-          const hash = await cryptoUtil.hashPin(inputPin, pinObj.salt);
-          return hash === pinObj.hash;
+        // Auth
+        $("unlockBtn").onclick = async () => {
+          const ok = await verifyPin();
+          if (!ok){ showToast("Wrong PIN"); return; }
+          $("authPin").value = "";
+          showView("dashboard");
+          render();
         };
 
-        const exportAll = () => {
-          const payload = { version: APP_VER, exportedAt: new Date().toISOString(), db, config };
-          const b = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(b);
-          a.download = `Vault_v${APP_VER}.json`;
-          a.click();
-        };
+        // Sheet close on escape
+        document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") closeSheet(); });
 
-        const importAll = (file) => {
-          const r = new FileReader();
-          r.onload = (ev) => {
-            try{
-              const parsed = JSON.parse(ev.target.result);
-              if (Array.isArray(parsed)) db = parsed;
-              else if (parsed && Array.isArray(parsed.db)) {
-                db = parsed.db;
-                if (parsed.config && typeof parsed.config === "object") config = { ...config, ...parsed.config };
-              } else throw new Error("Bad file");
+        // Global click delegation
+        document.body.addEventListener("click", handleClick, { passive:true });
 
-              // normalize on import
-              db = db.map(e => {
-                if (!e) return e;
-                if (!e.createdAt) e.createdAt = new Date((e.date||nowISO()) + "T12:00:00").toISOString();
-                if (iouType(e.type)) {
-                  if (typeof e.principal !== "number") {
-                    const t = money.num(e.total);
-                    const a = Math.abs(t);
-                    if (e.type === "creditor") e.principal = a;
-                    if (e.type === "credit_settlement") e.principal = -a;
-                    if (e.type === "debtor") e.principal = a;
-                    if (e.type === "debt_repayment") e.principal = -a;
-                  }
-                  e.total = 0;
-                  delete e.b; delete e.s; delete e.l;
-                }
-                if (!e.category) e.category = "";
-                if (!e.note) e.note = "";
-                return e;
-              });
+        // Sheet close when scrim tapped
+        $("scrim").addEventListener("click", closeSheet);
 
-              save();
-              location.reload();
-            } catch {
-              toast.show("Restore failed", "Invalid backup file");
-            }
-          };
-          r.readAsText(file);
-        };
+        // First render
+        render();
 
-        const deleteById = (id) => {
-          const idx = db.findIndex(x => x.id === id);
-          if (idx < 0) return;
-          const removed = db[idx];
-          db.splice(idx,1);
-          save();
-          VaultUI.render();
-          toast.show("Deleted", removed?.name || "Transaction", {
-            undo: () => {
-              db.push(removed);
-              // keep order roughly by createdAt if present
-              db.sort((a,b) => String(a.createdAt||"").localeCompare(String(b.createdAt||"")));
-              save();
-              VaultUI.render();
-              toast.show("Restored", "Undo complete");
-            },
-            ms: 3500
-          });
-        };
+        // If PIN enabled and exists → show auth
+        if (cfg.reqPin && pinObj){
+          showView("auth");
+        }
 
-        const wipe = () => {
-          if (!confirm("RESET?")) return;
-          localStorage.removeItem(KEYS.DB);
-          localStorage.removeItem(KEYS.CFG);
-          localStorage.removeItem(KEYS.PIN);
-          location.reload();
-        };
+        // Search badge default highlight
+        setQType("all");
 
-        // runtime form state
-        let activeType = "income";
-        let settlementFlag = false;
+      }catch(err){
+        // If anything goes wrong, never “freeze”: show a toast and keep the dashboard visible.
+        console.error(err);
+        showView("dashboard");
+        showToast("Recovered from an error");
+      }
+    }
 
-        const setActiveType = (t) => { activeType = t; settlementFlag = false; };
-        const setSettlement = (b) => { settlementFlag = b; VaultUI.updateFormUI(); };
+    // Global error trap: prevents silent freeze
+    window.addEventListener("error", () => showToast("Recovered from an error"));
+    window.addEventListener("unhandledrejection", () => showToast("Recovered from an error"));
 
-        const normalizeFluid = () => {
-          let b = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-bills").value))));
-          let s = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-save").value))));
-          let l = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-spend").value))));
-          const sum = b+s+l;
-          if (sum === 100) return {b,s,l};
-          const scale = sum ? 100/sum : 1;
-          b = Math.round(b*scale);
-          s = Math.round(s*scale);
-          l = 100 - b - s;
-          dom.byId("fluid-bills").value = b;
-          dom.byId("fluid-save").value = s;
-          dom.byId("fluid-spend").value = l;
-          return {b,s,l};
-        };
+    // Start
+    window.addEventListener("load", init);
 
-        const classifyBadge = (e) => {
-          if (!e) return { cls:"badge", txt:"" };
-          if (e.type === "income") return { cls:"badge in", txt:"IN" };
-          if (e.type === "expense") return { cls:"badge out", txt:"OUT" };
-          if (e.type === "asset") return { cls:"badge asset", txt:"ASSET" };
-          if (e.type === "fiduciary") return { cls:"badge fid", txt:"FID" };
-          if (iouType(e.type)) return { cls:"badge iou", txt:"IOU" };
-          return { cls:"badge", txt:(e.type||"").toUpperCase().slice(0,6) };
-        };
+    // expose for debugging if needed
+    window.VAULT = { get db(){ return db; }, render, showView };
 
-        const execute = () => {
-          const aRaw = dom.byId("e-amount").value;
-          const name = (dom.byId("e-name").value || "").trim();
-          const a = Math.abs(money.num(aRaw));
-          if (!name || !a) {
-            toast.show("Not saved", "Enter amount + description");
-            return;
-          }
-
-          const now = new Date();
-          const date = nowISO();
-          const createdAt = now.toISOString();
-
-          // Base entry
-          const e = {
-            id: makeId(),
-            name,
-            type: activeType,
-            date,
-            time: timeHM(now),
-            createdAt,
-            total: 0,
-            category: "",
-            note: ""
-          };
-
-          // INCOME
-          if (activeType === "income") {
-            if (settlementFlag) {
-              e.type = "debt_repayment";
-              e.debtor = name;
-              e.principal = -a;   // reduces outstanding owed to you
-              e.total = 0;        // IOU-only (no net worth / liquidity impact)
-            } else {
-              const bP = money.num(dom.byId("fluid-bills").value)/100;
-              const sP = money.num(dom.byId("fluid-save").value)/100;
-              const lP = money.num(dom.byId("fluid-spend").value)/100;
-              e.type = "income";
-              e.total = a;
-              e.b = a*bP; e.s = a*sP; e.l = a*lP;
-            }
-          }
-
-          // EXPENSE
-          else if (activeType === "expense") {
-            if (settlementFlag) {
-              e.type = "credit_settlement";
-              e.creditor = name;
-              e.principal = -a;   // reduces outstanding you owe
-              e.total = 0;        // IOU-only
-            } else {
-              e.type = "expense";
-              e.total = -a;
-              e.category = dom.byId("e-exp-cat")?.value || "";
-              const bucket = dom.byId("e-exp-bucket")?.value || "spend";
-              e.bucket = bucket;
-              if (bucket === "bills") e.b = -a;
-              if (bucket === "save")  e.s = -a;
-              if (bucket === "spend") e.l = -a;
-            }
-          }
-
-          // ASSET
-          else if (activeType === "asset") {
-            e.type = "asset";
-            e.total = a;
-            e.cat = dom.byId("e-as-cat")?.value || "Other";
-          }
-
-          // IOU BORROW / LEND
-          else if (activeType === "creditor") {
-            e.type = "creditor";
-            e.total = 0;
-            e.principal = a; // outstanding you owe increases
-            e.creditor = name;
-            e.rate = dom.byId("e-rate")?.value || "";
-            e.term = dom.byId("e-term")?.value || "";
-          }
-          else if (activeType === "debtor") {
-            e.type = "debtor";
-            e.total = 0;
-            e.principal = a; // outstanding owed to you increases
-            e.debtor = name;
-            e.rate = dom.byId("e-rate")?.value || "";
-            e.term = dom.byId("e-term")?.value || "";
-          }
-
-          // FIDUCIARY
-          else if (activeType === "fiduciary") {
-            e.type = "fiduciary";
-            e.total = a;
-            e.goal = dom.byId("e-fd-goal")?.value || "";
-            e.user = dom.byId("e-fd-user")?.value || "";
-          }
-
-          db.push(e);
-          save();
-
-          // UX: clear amount (you asked)
-          dom.byId("e-amount").value = "";
-          dom.byId("e-name").value = "";
-
-          // haptics + toast
-          haptics.med();
-          const b = classifyBadge(e);
-          toast.show("Saved", `${b.txt} • ${money.fmt(Math.abs(entryAmount(e)))}`);
-
-          VaultUI.changeView("dashboard-view");
-        };
-
-        const duplicate = (id) => {
-          const src = db.find(x => x.id === id);
-          if (!src) return;
-          const now = new Date();
-          const copy = { ...src };
-          copy.id = makeId();
-          copy.date = nowISO();
-          copy.time = String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0");
-          copy.createdAt = now.toISOString();
-          db.push(copy);
-          save();
-          VaultUI.render();
-          toast.show("Duplicated", copy.name || "Transaction");
-        };
-
-        const personBalances = () => {
-          // Build outstanding balances by name
-          const debtorBal = Object.create(null);   // owed to you
-          const creditorBal = Object.create(null); // you owe
-
-          db.forEach(e => {
-            if (!e) return;
-            if (e.type === "debtor" || e.type === "debt_repayment") {
-              const who = e.debtor || e.name || "(unknown)";
-              const d = (typeof e.principal === "number") ? e.principal : 0;
-              debtorBal[who] = (debtorBal[who] || 0) + d;
-            }
-            if (e.type === "creditor" || e.type === "credit_settlement") {
-              const who = e.creditor || e.name || "(unknown)";
-              const d = (typeof e.principal === "number") ? e.principal : 0;
-              creditorBal[who] = (creditorBal[who] || 0) + d;
-            }
-          });
-
-          // Return arrays sorted by biggest absolute
-          const debtors = Object.entries(debtorBal)
-            .map(([name, bal]) => ({ name, bal }))
-            .filter(x => x.bal !== 0)
-            .sort((a,b) => Math.abs(b.bal) - Math.abs(a.bal));
-
-          const creditors = Object.entries(creditorBal)
-            .map(([name, bal]) => ({ name, bal }))
-            .filter(x => x.bal !== 0)
-            .sort((a,b) => Math.abs(b.bal) - Math.abs(a.bal));
-
-          return { debtors, creditors };
-        };
-
-        return {
-          load, save,
-          db: () => db,
-          config: () => config,
-          hasPin,
-          savePin,
-          verifyPin,
-          exportAll,
-          importAll,
-          deleteById,
-          wipe,
-          setQType,
-          setFdView,
-          toggleSetting,
-          entryAmount,
-          iouType,
-          classifyBadge,
-
-          // form
-          get activeType(){ return activeType; },
-          get settlementFlag(){ return settlementFlag; },
-          setActiveType,
-          setSettlement,
-          normalizeFluid,
-          execute,
-          duplicate,
-          personBalances
-        };
-      })();
-
-      /* ---------- Bottom Sheet (details) ---------- */
-      const Sheet = (() => {
-        let openId = null;
-
-        const show = (entryId) => {
-          const e = VaultCore.db().find(x => x.id === entryId);
-          if (!e) return;
-
-          openId = entryId;
-
-          const badge = VaultCore.classifyBadge(e);
-
-          dom.byId("sheet-name").textContent = e.name || "Transaction";
-          dom.byId("sheet-meta").textContent = `${(e.date||"")} • ${(e.time||"")} • ${(badge.txt||"").toUpperCase()}`;
-
-          const body = dom.byId("sheet-body");
-          dom.clear(body);
-
-          // Rows: date/time, type badge, category/tags, bucket, notes, amount, people, term/rate
-          const add = (k, v) => {
-            const row = dom.el("div","row");
-            row.appendChild(dom.el("span", null, k));
-            row.appendChild(dom.el("span", "font-black", v));
-            body.appendChild(row);
-          };
-
-          const amt = Math.abs(VaultCore.entryAmount(e));
-          add("Amount", money.fmt(amt));
-
-          // Type badge
-          const rowT = dom.el("div","row");
-          rowT.appendChild(dom.el("span", null, "Type"));
-          const r = dom.el("span", badge.cls, badge.txt);
-          rowT.appendChild(r);
-          body.appendChild(rowT);
-
-          add("Date", e.date || "");
-          add("Time", e.time || "");
-
-          if (e.type === "expense") {
-            add("Category", e.category || "—");
-            add("Bucket", (e.bucket || "spend").toUpperCase());
-          }
-          if (e.type === "asset") add("Asset class", e.cat || "Other");
-
-          if (e.type === "debtor" || e.type === "debt_repayment") add("Debtor", e.debtor || e.name || "—");
-          if (e.type === "creditor" || e.type === "credit_settlement") add("Creditor", e.creditor || e.name || "—");
-
-          if (e.rate) add("Rate", String(e.rate));
-          if (e.term) add("Term", String(e.term));
-
-          if (e.type === "fiduciary") {
-            add("Goal", e.goal || "—");
-            add("User", e.user || "—");
-          }
-
-          // Buttons
-          dom.byId("sheet-del").onclick = () => {
-            if (!confirm("Delete this entry?")) return;
-            Sheet.hide();
-            VaultCore.deleteById(entryId);
-          };
-
-          dom.byId("sheet-dup").onclick = () => {
-            VaultCore.duplicate(entryId);
-            toast.show("Duplicated", e.name || "Transaction");
-          };
-
-          // show sheet
-          dom.byId("sheet-backdrop").classList.add("show");
-          dom.byId("sheet").classList.add("show");
-          haptics.light();
-        };
-
-        const hide = () => {
-          openId = null;
-          dom.byId("sheet-backdrop").classList.remove("show");
-          dom.byId("sheet").classList.remove("show");
-        };
-
-        const bind = () => {
-          dom.byId("sheet-backdrop").addEventListener("click", hide);
-          // allow ESC close
-          window.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") hide();
-          });
-        };
-
-        return { show, hide, bind };
-      })();
-
-      /* ---------- UI ---------- */
-      const VaultUI = (() => {
-        const views = ["dashboard-view","entry-grid","entry-form","settings-view","query-lab"];
-
-        const setMoneyText = (id, value) => {
-          const el = dom.byId(id);
-          if (!el) return;
-          el.textContent = money.fmt(value);
-        };
-
-        const toggleDrawer = (cardId) => {
-          const card = dom.byId(cardId);
-          if (!card) return;
-          card.classList.toggle("drawer-open");
-          haptics.light();
-        };
-
-        const updateFab = (viewId) => {
-          const f = dom.byId("nav-fab");
-          if (viewId === "dashboard-view") {
-            f.className = "fab primary";
-            f.setAttribute("aria-label","Add");
-            f.innerHTML = `<span class="ic" data-ic="plus"></span>`;
-            icons.mount();
-            f.onclick = () => VaultUI.changeView("entry-grid");
-          } else {
-            f.className = "fab back";
-            f.setAttribute("aria-label","Back");
-            f.innerHTML = `<span class="ic muted" data-ic="arrowLeft"></span>`;
-            // add arrowLeft svg on demand (small trick)
-            const el = f.querySelector("[data-ic]");
-            if (el) el.innerHTML = `<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg>`;
-            f.onclick = () => VaultUI.changeView("dashboard-view");
-          }
-        };
-
-        const periodLabel = (isoDate) => {
-          // Compare by local date
-          const d = new Date(isoDate + "T00:00:00");
-          const now = new Date();
-          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          const that = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-          const diffDays = Math.round((today - that) / (24*60*60*1000));
-          if (diffDays === 0) return "Today";
-          if (diffDays === 1) return "Yesterday";
-          if (diffDays <= 7) return "Last 7 days";
-          if (diffDays <= 30) return "Last 30 days";
-          // Month label
-          const visible = d.toLocaleString(undefined, { month: "long", year: "numeric" });
-          return visible;
-        };
-
-        const badgeFor = (e) => {
-          const b = VaultCore.classifyBadge(e);
-          return `<span class="${b.cls}">${b.txt}</span>`;
-        };
-
-        const typeForQuery = (e, qtype) => {
-          if (qtype === "all") return true;
-          if (qtype === "iou") return VaultCore.iouType(e.type);
-          return e.type === qtype;
-        };
-
-        const rowForList = (e, context) => {
-          // A tappable row that opens details
-          // context: "audit" | "query" | "expenses" | "assets" | "iou"
-          const wrap = dom.el("div", "row tap");
-          wrap.dataset.open = e.id;
-
-          const left = dom.el("div", "flex-col");
-          left.style.gap = "6px";
-
-          const top = dom.el("div","flex items-center justify-between");
-          top.style.gap = "10px";
-
-          const name = dom.el("span", null, (e.name || "").toUpperCase());
-          name.style.maxWidth = "64%";
-          name.style.whiteSpace = "nowrap";
-          name.style.overflow = "hidden";
-          name.style.textOverflow = "ellipsis";
-
-          const amt = dom.el("span","font-black", money.fmt(Math.abs(VaultCore.entryAmount(e))));
-          if (e.type === "expense") amt.style.color = "rgba(239,68,68,.92)";
-          if (e.type === "income") amt.style.color = "rgba(16,185,129,.92)";
-          if (e.type === "asset") amt.style.color = "rgba(59,130,246,.92)";
-          if (VaultCore.iouType(e.type)) amt.style.color = "rgba(234,179,8,.92)";
-
-          top.appendChild(name);
-          top.appendChild(amt);
-
-          const meta = dom.el("div","flex items-center gap-2");
-          meta.innerHTML = `
-            ${badgeFor(e)}
-            <span class="tiny">${(e.date||"")} • ${(e.time||"")}</span>
-          `;
-
-          left.appendChild(top);
-          left.appendChild(meta);
-
-          wrap.appendChild(left);
-          // right chevron
-          const ch = dom.el("span","ic muted");
-          ch.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"></path></svg>`;
-          wrap.appendChild(ch);
-
-          return wrap;
-        };
-
-        const categoryMini = (expenses) => {
-          // expenses: array of expense entries (type expense) in the section
-          const totals = Object.create(null);
-          for (const e of expenses) {
-            const cat = (e.category || "Other").trim() || "Other";
-            const amt = Math.abs(money.num(e.total));
-            totals[cat] = (totals[cat] || 0) + amt;
-          }
-          const arr = Object.entries(totals)
-            .sort((a,b) => b[1]-a[1])
-            .slice(0,3); // top 3 to avoid clutter
-
-          return arr.map(([c,v]) => `<span class="pill">${c} ${money.fmt(v)}</span>`).join("");
-        };
-
-        const buildSection = (label, entries) => {
-          // Section header with subtotal + mini summary
-          const sec = dom.el("div","sec");
-          const hdr = dom.el("div","hdr");
-
-          // subtotal: expenses only inside this period (as requested "Today total expenses")
-          const expenses = entries.filter(e => e.type === "expense");
-          const expTotal = expenses.reduce((a,e) => a + Math.abs(money.num(e.total)), 0);
-
-          hdr.appendChild(dom.el("div","label", label));
-          hdr.appendChild(dom.el("div","subtotal", `Expenses ${money.fmt(expTotal)}`));
-          sec.appendChild(hdr);
-
-          const mini = dom.el("div","mini");
-          mini.innerHTML = categoryMini(expenses);
-          if (mini.innerHTML.trim()) sec.appendChild(mini);
-
-          return sec;
-        };
-
-        const renderAudit = (list, filterText) => {
-          const container = dom.byId("hi-list");
-          dom.clear(container);
-
-          // group by period label
-          const groups = new Map(); // label -> entries
-          for (const e of list) {
-            const lbl = periodLabel(e.date || "");
-            if (!groups.has(lbl)) groups.set(lbl, []);
-            groups.get(lbl).push(e);
-          }
-
-          // order groups: Today, Yesterday, Last 7, Last 30, then months (already in list order)
-          const preferred = ["Today","Yesterday","Last 7 days","Last 30 days"];
-          const ordered = [];
-          for (const p of preferred) if (groups.has(p)) ordered.push([p, groups.get(p)]);
-          // remaining keys
-          for (const [k,v] of groups.entries()) {
-            if (!preferred.includes(k)) ordered.push([k,v]);
-          }
-
-          for (const [label, entries] of ordered) {
-            // section header
-            container.appendChild(buildSection(label, entries));
-
-            // entries
-            for (const e of entries) {
-              const nm = (e.name||"").toLowerCase();
-              if (filterText && !nm.includes(filterText)) continue;
-              container.appendChild(rowForList(e, "audit"));
-            }
-          }
-        };
-
-        const renderLists = () => {
-          const db = VaultCore.db();
-
-          // totals
-          let nw=0, b=0, s=0, l=0, as=0, fd=0, ex=0;
-          let debtorsTotal=0, creditorsTotal=0;
-
-          // outstanding balances
-          const debtorBal = Object.create(null);
-          const creditorBal = Object.create(null);
-
-          // clear drawers
-          ["as-list","db-list","cr-list","fd-pivot-list","ex-list"].forEach(id => dom.clear(dom.byId(id)));
-
-          // fiduciary pivot
-          const piv = {};
-          const fView = VaultCore.config().fdView;
-          dom.byId("fd-v-goal").className = "seg-btn " + (fView==="goal" ? "active green" : "");
-          dom.byId("fd-v-user").className = "seg-btn " + (fView==="user" ? "active green" : "");
-
-          // prepare audit list newest first, by createdAt fallback date/time
-          const listNewest = db.slice().sort((a,b) => String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
-
-          // collect for audit render
-          const hiS = (dom.byId("hi-search").value || "").toLowerCase();
-
-          // iterate newest-first for lists too
-          for (const e of listNewest) {
-            if (!e) continue;
-
-            // IOU ledger (does NOT affect nw/cash)
-            if (e.type === "debtor" || e.type === "debt_repayment") {
-              const who = e.debtor || e.name || "(unknown)";
-              const delta = (typeof e.principal === "number") ? e.principal : 0;
-              debtorBal[who] = (debtorBal[who]||0) + delta;
-            }
-            if (e.type === "creditor" || e.type === "credit_settlement") {
-              const who = e.creditor || e.name || "(unknown)";
-              const delta = (typeof e.principal === "number") ? e.principal : 0;
-              creditorBal[who] = (creditorBal[who]||0) + delta;
-            }
-
-            // fiduciary totals
-            if (e.type === "fiduciary") {
-              fd += money.num(e.total);
-              const main = fView==="goal" ? (e.goal||"(no goal)") : (e.user||"(no user)");
-              const sub  = fView==="goal" ? (e.user||"(no user)") : (e.goal||"(no goal)");
-              if (!piv[main]) piv[main] = { t:0, subs:[] };
-              piv[main].t += money.num(e.total);
-              piv[main].subs.push({ n: sub, a: money.num(e.total) });
-            }
-
-            // net worth + cash buckets for "real money" entries only (loan entries have total=0)
-            nw += money.num(e.total);
-            b += money.num(e.b);
-            s += money.num(e.s);
-            l += money.num(e.l);
-
-            // expenses list (tappable)
-            if (e.type === "expense") {
-              ex += Math.abs(money.num(e.total));
-              dom.byId("ex-list").appendChild(rowForList(e, "expenses"));
-            }
-
-            // assets list (tappable)
-            if (e.type === "asset") {
-              as += money.num(e.total);
-              dom.byId("as-list").appendChild(rowForList(e, "assets"));
-            }
-          }
-
-          // render IOU people lists (intuitive and tappable)
-          const debtArr = Object.entries(debtorBal)
-            .map(([name,bal]) => ({name,bal}))
-            .filter(x=>x.bal!==0)
-            .sort((a,b)=>Math.abs(b.bal)-Math.abs(a.bal));
-          const credArr = Object.entries(creditorBal)
-            .map(([name,bal]) => ({name,bal}))
-            .filter(x=>x.bal!==0)
-            .sort((a,b)=>Math.abs(b.bal)-Math.abs(a.bal));
-
-          for (const p of debtArr) {
-            debtorsTotal += p.bal;
-            const fake = {
-              id: "__iou_debtor__" + p.name,
-              name: p.name,
-              type: "debtor",
-              principal: p.bal,
-              date: "",
-              time: "",
-              createdAt: ""
-            };
-            const row = dom.el("div","row tap");
-            row.onclick = () => VaultUI.showIouPerson("debtor", p.name);
-            row.innerHTML = `<span>${p.name.toUpperCase()}</span><span class="font-black text-emerald">${money.fmt(p.bal)}</span>`;
-            dom.byId("db-list").appendChild(row);
-          }
-
-          for (const p of credArr) {
-            creditorsTotal += p.bal;
-            const row = dom.el("div","row tap");
-            row.onclick = () => VaultUI.showIouPerson("creditor", p.name);
-            row.innerHTML = `<span>${p.name.toUpperCase()}</span><span class="font-black text-red">${money.fmt(p.bal)}</span>`;
-            dom.byId("cr-list").appendChild(row);
-          }
-
-          // fiduciary pivot render
-          const pivotEl = dom.byId("fd-pivot-list");
-          dom.clear(pivotEl);
-          Object.keys(piv).forEach(k => {
-            const card = dom.el("div","p-4 mb-2 glass-panel");
-            card.style.borderRadius = "14px";
-
-            const head = dom.el("div","flex justify-between items-center");
-            const lft = dom.el("span","font-black text-xs uppercase text-yellow", k);
-            const rgt = dom.el("span","font-black text-xs uppercase text-yellow", money.fmt(piv[k].t));
-            head.appendChild(lft); head.appendChild(rgt);
-
-            const sub = dom.el("div","text-xs");
-            sub.style.marginTop = "10px";
-            sub.style.opacity = ".75";
-            piv[k].subs.slice(0,6).forEach(sb => {
-              const line = dom.el("div","flex justify-between");
-              line.style.padding = "6px 0";
-              line.innerHTML = `<span>${String(sb.n).toUpperCase()}</span><span>${money.fmt(sb.a)}</span>`;
-              sub.appendChild(line);
-            });
-
-            card.appendChild(head);
-            card.appendChild(sub);
-            pivotEl.appendChild(card);
-          });
-
-          // dashboard values
-          const cashTotal = b+s+l;
-          setMoneyText("nw-display", nw);
-          setMoneyText("split-cash", cashTotal);
-          setMoneyText("split-as", as);
-          setMoneyText("split-db", (debtorsTotal - creditorsTotal)); // IOU net
-
-          setMoneyText("tc-display", cashTotal);
-          setMoneyText("b-total", b);
-          setMoneyText("s-total", s);
-          setMoneyText("l-total", l);
-
-          setMoneyText("ex-display", ex);
-          setMoneyText("as-display", as);
-          setMoneyText("db-display", debtorsTotal);
-          setMoneyText("cr-display", creditorsTotal);
-          setMoneyText("fd-display", fd);
-
-          // audit trail grouped by period, newest first
-          renderAudit(listNewest, hiS);
-
-          // attach tap handlers to any newly-rendered rows via delegation (prevents "frozen clicks")
-          // (delegation is done in init() once; nothing else needed here)
-        };
-
-        const buildPicker = (mode) => {
-          // mode: "debtor" (recover debt) or "creditor" (pay debt)
-          const { debtors, creditors } = VaultCore.personBalances();
-          const list = (mode === "debtor") ? debtors : creditors;
-
-          const wrap = dom.byId("picker-wrap");
-          const box = dom.byId("picker-list");
-          dom.clear(box);
-
-          if (!list.length) {
-            wrap.classList.add("hidden");
-            return;
-          }
-
-          wrap.classList.remove("hidden");
-
-          // show up to 8 for neatness
-          list.slice(0,8).forEach(p => {
-            const row = dom.el("div","row tap");
-            row.style.padding = "10px 0";
-            row.innerHTML = `
-              <span>${p.name.toUpperCase()}</span>
-              <span class="font-black ${mode==="debtor" ? "text-emerald" : "text-red"}">${money.fmt(Math.abs(p.bal))}</span>
-            `;
-            row.onclick = () => {
-              dom.byId("e-name").value = p.name;
-              haptics.light();
-              toast.show("Selected", `${p.name.toUpperCase()} • ${money.fmt(Math.abs(p.bal))}`, { ms: 1600 });
-            };
-            box.appendChild(row);
-          });
-        };
-
-        return {
-          init(){
-            VaultCore.load();
-            icons.mount();
-            Sheet.bind();
-
-            // Top bar
-            dom.byId("btn-query").addEventListener("click", () => VaultUI.changeView("query-lab"));
-            dom.byId("btn-stealth").addEventListener("click", () => { document.body.classList.toggle("stealth-active"); haptics.light(); });
-            dom.byId("btn-settings").addEventListener("click", () => VaultUI.changeView("settings-view"));
-
-            // Drawer toggles (fix frozen clicks: explicit listeners + delegation-safe)
-            document.querySelectorAll("[data-toggle]").forEach(el => {
-              el.addEventListener("click", () => toggleDrawer(el.getAttribute("data-toggle")));
-            });
-
-            // Entry grid
-            dom.byId("btn-close-grid").addEventListener("click", () => VaultUI.changeView("dashboard-view"));
-            document.querySelectorAll("[data-open-form]").forEach(btn => {
-              btn.addEventListener("click", () => VaultUI.openForm(btn.getAttribute("data-open-form")));
-            });
-
-            // Close overlays
-            dom.byId("btn-close-form").addEventListener("click", () => VaultUI.changeView("entry-grid"));
-            dom.byId("btn-close-query").addEventListener("click", () => VaultUI.changeView("dashboard-view"));
-            dom.byId("btn-close-settings").addEventListener("click", () => VaultUI.changeView("dashboard-view"));
-
-            // Fluid sanity
-            ["fluid-bills","fluid-save","fluid-spend"].forEach(id => {
-              dom.byId(id).addEventListener("input", () => VaultCore.normalizeFluid());
-            });
-
-            // Execute
-            dom.byId("btn-exec").addEventListener("click", () => VaultCore.execute());
-
-            // Audit filter
-            dom.byId("hi-search").addEventListener("input", () => VaultUI.render());
-
-            // Query controls
-            dom.byId("q-search").addEventListener("input", () => VaultUI.runQuery());
-            dom.byId("q-start").addEventListener("change", () => VaultUI.runQuery());
-            dom.byId("q-end").addEventListener("change", () => VaultUI.runQuery());
-            dom.byId("btn-q-clear").addEventListener("click", () => { dom.byId("q-search").value=""; VaultUI.runQuery(); });
-
-            document.querySelectorAll("[data-qtype]").forEach(pill => {
-              pill.addEventListener("click", () => {
-                document.querySelectorAll("[data-qtype]").forEach(x => x.classList.remove("active"));
-                pill.classList.add("active");
-                VaultCore.setQType(pill.getAttribute("data-qtype"));
-                VaultUI.runQuery();
-                haptics.light();
-              });
-            });
-
-            // Fiduciary view
-            dom.byId("fd-v-goal").addEventListener("click", () => VaultCore.setFdView("goal"));
-            dom.byId("fd-v-user").addEventListener("click", () => VaultCore.setFdView("user"));
-
-            // Settings
-            dom.byId("tog-pin").checked = !!VaultCore.config().reqPin;
-            dom.byId("tog-pin").addEventListener("change", () => VaultCore.toggleSetting("reqPin"));
-            dom.byId("btn-save-pin").addEventListener("click", async () => VaultCore.savePin());
-
-            dom.byId("btn-backup").addEventListener("click", () => VaultCore.exportAll());
-            dom.byId("btn-restore").addEventListener("click", () => dom.byId("file-input").click());
-            dom.byId("file-input").addEventListener("change", (ev) => {
-              const file = ev.target.files?.[0];
-              if (file) VaultCore.importAll(file);
-              ev.target.value = "";
-            });
-            dom.byId("btn-reset").addEventListener("click", () => VaultCore.wipe());
-
-            // Unlock
-            dom.byId("btn-unlock").addEventListener("click", () => VaultUI.authenticate());
-
-            // Global delegation: tap any rendered row (audit/query/expenses/assets) to open details
-            document.body.addEventListener("click", (ev) => {
-              const row = ev.target.closest("[data-open]");
-              if (!row) return;
-              const id = row.getAttribute("data-open");
-              if (!id) return;
-              Sheet.show(id);
-            });
-
-            // FAB
-            updateFab("dashboard-view");
-
-            // Auth gate
-            const cfg = VaultCore.config();
-            if (cfg.reqPin && VaultCore.hasPin()) {
-              dom.byId("auth-screen").classList.remove("view-hidden");
-              return;
-            }
-
-            VaultUI.render();
-          },
-
-          async authenticate(){
-            const pin = dom.byId("auth-pin").value || "";
-            const ok = await VaultCore.verifyPin(pin);
-            if (!ok) return toast.show("Access denied", "Wrong PIN");
-            dom.byId("auth-pin").value = "";
-            dom.byId("auth-screen").classList.add("view-hidden");
-            toast.show("Unlocked", "Welcome back");
-            VaultUI.render();
-          },
-
-          changeView(id){
-            views.forEach(v => dom.byId(v)?.classList.add("view-hidden"));
-            dom.byId(id)?.classList.remove("view-hidden");
-            updateFab(id);
-
-            if (id === "query-lab") VaultUI.runQuery();
-            else VaultUI.render();
-          },
-
-          openForm(t){
-            VaultCore.setActiveType(t);
-            VaultUI.changeView("entry-form");
-            VaultUI.updateFormUI();
-          },
-
-          updateFormUI(){
-            // reset amount each time (you asked)
-            dom.byId("e-amount").value = "";
-            dom.byId("e-name").value = "";
-
-            const dyn = dom.byId("dynamic-inputs");
-            dom.clear(dyn helps = dyn); // no-op safety
-
-            const fluid = dom.byId("fluid-container");
-            const tog = dom.byId("settle-toggle-container");
-
-            dyn.innerHTML = "";
-            tog.innerHTML = "";
-            fluid.classList.add("hidden");
-
-            // hide picker by default
-            dom.byId("picker-wrap").classList.add("hidden");
-
-            const type = VaultCore.activeType;
-            const settlement = VaultCore.settlementFlag;
-
-            const buildSeg = (leftLabel, rightLabel, rightColor="yellow") => {
-              const wrap = dom.el("div","seg-control");
-              const left = dom.el("div","seg-btn " + (!settlement ? "active green" : ""), leftLabel);
-              const right = dom.el("div","seg-btn " + (settlement ? "active " + rightColor : ""), rightLabel);
-
-              left.addEventListener("click", () => { VaultCore.setSettlement(false); haptics.light(); });
-              right.addEventListener("click", () => { VaultCore.setSettlement(true); haptics.light(); });
-
-              wrap.appendChild(left);
-              wrap.appendChild(right);
-              tog.appendChild(wrap);
-            };
-
-            if (type === "income") {
-              fluid.classList.remove("hidden");
-              buildSeg("Inflow", "Recover debt");
-
-              // if settlement: show pick list (intuitive dropdown alternative)
-              if (VaultCore.settlementFlag) buildPicker("debtor");
-            }
-
-            else if (type === "expense") {
-              buildSeg("Expense", "Pay debt");
-
-              if (VaultCore.settlementFlag) {
-                buildPicker("creditor");
-              } else {
-                // Category + bucket selectors
-                const cat = dom.el("select","input-ghost");
-                cat.id = "e-exp-cat";
-                cat.innerHTML = `
-                  <option value="">Category (optional)</option>
-                  <option>Food</option>
-                  <option>Transport</option>
-                  <option>Bills</option>
-                  <option>Fuel</option>
-                  <option>Shopping</option>
-                  <option>Health</option>
-                  <option>Family</option>
-                  <option>Other</option>
-                `;
-                const bucket = dom.el("select","input-ghost");
-                bucket.id = "e-exp-bucket";
-                bucket.innerHTML = `
-                  <option value="spend">Spend bucket</option>
-                  <option value="bills">Bills bucket</option>
-                  <option value="save">Savings bucket</option>
-                `;
-                dyn.appendChild(cat);
-                dyn.appendChild(bucket);
-              }
-            }
-
-            else if (type === "debtor" || type === "creditor") {
-              const grid = dom.el("div","grid-2");
-              const rate = dom.el("input","input-ghost");
-              rate.id = "e-rate"; rate.type = "number"; rate.placeholder = "Rate % (optional)";
-              const term = dom.el("input","input-ghost");
-              term.id = "e-term"; term.type = "date";
-              grid.appendChild(rate); grid.appendChild(term);
-              dyn.appendChild(grid);
-
-              // show current people as picker too
-              buildPicker(type === "debtor" ? "debtor" : "creditor");
-            }
-
-            else if (type === "asset") {
-              const sel = dom.el("select","input-ghost");
-              sel.id = "e-as-cat";
-              sel.innerHTML = `
-                <option value="Property">Property</option>
-                <option value="Vehicle">Vehicle</option>
-                <option value="Stock">Stock</option>
-                <option value="Other">Other</option>
-              `;
-              dyn.appendChild(sel);
-            }
-
-            else if (type === "fiduciary") {
-              const goal = dom.el("input","input-ghost");
-              goal.id = "e-fd-goal"; goal.placeholder = "Project/Goal";
-              const user = dom.el("input","input-ghost");
-              user.id = "e-fd-user"; user.placeholder = "Contributor";
-              dyn.appendChild(goal);
-              dyn.appendChild(user);
-            }
-          },
-
-          runQuery(){
-            const s = (dom.byId("q-search").value || "").toLowerCase();
-            const qtype = VaultCore.config().activeQType;
-            const qs = dom.byId("q-start").value || "";
-            const qe = dom.byId("q-end").value || "";
-
-            const res = dom.byId("q-results");
-            dom.clear(res);
-
-            // list newest-first
-            const list = VaultCore.db()
-              .slice()
-              .sort((a,b) => String(b.createdAt||"").localeCompare(String(a.createdAt||"")))
-              .filter(e => {
-                if (!e) return false;
-
-                const hay = [
-                  (e.name||""),
-                  (e.debtor||""),
-                  (e.creditor||""),
-                  (e.goal||""),
-                  (e.user||""),
-                  (e.category||""),
-                  (e.bucket||"")
-                ].join(" ").toLowerCase();
-
-                const tM = hay.includes(s);
-                const cM = typeForQuery(e, qtype);
-                const dOK = (!qs || (e.date||"") >= qs) && (!qe || (e.date||"") <= qe);
-                return tM && cM && dOK;
-              });
-
-            if (!list.length) {
-              const empty = dom.el("div","glass-panel p-4");
-              empty.innerHTML = `<div class="tiny">No matches</div><div class="text-sm" style="margin-top:8px; color: rgba(255,255,255,.6);">Try fewer words or widen the date range.</div>`;
-              res.appendChild(empty);
-              return;
-            }
-
-            list.slice(0,80).forEach(e => {
-              const card = dom.el("div","glass-panel p-4");
-              card.style.borderRadius = "18px";
-              card.style.cursor = "pointer";
-              card.dataset.open = e.id;
-
-              const badge = VaultCore.classifyBadge(e);
-              const amt = money.fmt(Math.abs(VaultCore.entryAmount(e)));
-
-              card.innerHTML = `
-                <div class="flex justify-between items-center" style="gap:12px;">
-                  <div class="flex-col" style="gap:8px; max-width: 72%;">
-                    <div class="font-black uppercase" style="font-size: 12px; letter-spacing:.08em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                      ${(e.name||"").toUpperCase()}
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <span class="${badge.cls}">${badge.txt}</span>
-                      <span class="tiny">${(e.date||"")} • ${(e.time||"")}</span>
-                      ${e.category ? `<span class="badge" style="opacity:.8;">${String(e.category).toUpperCase()}</span>` : ""}
-                    </div>
-                  </div>
-                  <div class="font-black" style="white-space:nowrap; color: rgba(255,255,255,.92);">
-                    ${amt}
-                  </div>
-                </div>
-              `;
-              res.appendChild(card);
-            });
-          },
-
-          showIouPerson(kind, name){
-            // Open a "details" view for IOU person: show their entries + balance in sheet
-            const db = VaultCore.db().slice().sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
-            const relevant = db.filter(e => {
-              if (kind === "debtor") return (e.type === "debtor" || e.type === "debt_repayment") && (e.debtor||e.name) === name;
-              return (e.type === "creditor" || e.type === "credit_settlement") && (e.creditor||e.name) === name;
-            });
-
-            // build a fake "person sheet"
-            dom.byId("sheet-name").textContent = name.toUpperCase();
-            dom.byId("sheet-meta").textContent = (kind === "debtor") ? "DEBTOR • IOU LEDGER" : "CREDITOR • IOU LEDGER";
-            const body = dom.byId("sheet-body");
-            dom.clear(body);
-
-            let bal = 0;
-            for (const e of relevant) bal += (typeof e.principal === "number" ? e.principal : 0);
-
-            const add = (k,v) => {
-              const row = dom.el("div","row");
-              row.appendChild(dom.el("span",null,k));
-              row.appendChild(dom.el("span","font-black",v));
-              body.appendChild(row);
-            };
-
-            add("Outstanding", money.fmt(Math.abs(bal)));
-
-            const divider = dom.el("div","tiny");
-            divider.style.marginTop = "12px";
-            divider.textContent = "Latest activity";
-            body.appendChild(divider);
-
-            relevant.slice(0,12).forEach(e => {
-              const r = dom.el("div","row tap");
-              r.dataset.open = e.id;
-              r.innerHTML = `<span>${(e.date||"")} • ${(e.time||"")}</span><span class="font-black">${money.fmt(Math.abs(VaultCore.entryAmount(e)))}</span>`;
-              body.appendChild(r);
-            });
-
-            // actions: duplicate not relevant; delete person? no.
-            dom.byId("sheet-dup").classList.add("hidden");
-            dom.byId("sheet-del").classList.add("hidden");
-
-            dom.byId("sheet-backdrop").classList.add("show");
-            dom.byId("sheet").classList.add("show");
-          },
-
-          render(){
-            // restore hidden sheet buttons if needed
-            dom.byId("sheet-dup").classList.remove("hidden");
-            dom.byId("sheet-del").classList.remove("hidden");
-            renderLists();
-          }
-        };
-      })();
-
-      // Start
-      window.addEventListener("load", () => VaultUI.init());
-    })();
+  })();
   </script>
 </body>
 </html>
