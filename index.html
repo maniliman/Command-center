@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
-  <title>Sovereign v85</title>
+  <title>Sovereign v86</title>
 
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -50,6 +50,7 @@
     .between{justify-content:space-between;}
     .center{align-items:center;}
     .gap8{gap:8px;}
+    .gap12{gap:12px;}
     .col{display:flex;flex-direction:column;}
     .hidden{display:none !important;}
     .tiny{font-size:10px;letter-spacing:.12em;text-transform:uppercase;}
@@ -72,7 +73,7 @@
     }
     .kebab{font-size:22px;letter-spacing:2px;line-height:0;transform:translateY(-1px)}
 
-    /* Hero like screenshot */
+    /* Hero */
     .hero{
       margin:0 12px;
       border-radius:26px;
@@ -120,13 +121,11 @@
     .cAssets{color:var(--blue)}
     .cDebt{color:var(--yellow)}
 
-    /* Ledger list (this is the “names aligned” fix) */
+    /* Ledger list */
     .ledger{
       margin:14px 12px 0 12px;
       border-top:1px solid var(--line2);
     }
-
-    /* EXACT alignment: fixed 2-column grid everywhere */
     .ledgerRow{
       display:grid;
       grid-template-columns: 1fr minmax(140px, 180px);
@@ -156,10 +155,34 @@
       letter-spacing:.01em;
       padding-right:2px;
     }
-
-    /* Tap + subtle feedback */
     .tap{cursor:pointer;}
     .tap:active{opacity:.75;}
+
+    /* Inline ledger dropdown bodies */
+    .ledgerBody{
+      display:none;
+      padding:10px 0 2px 0;
+      border-bottom:1px solid var(--line2);
+    }
+    .ledgerBody.open{display:block;}
+    .ledgerSubline{
+      margin:2px 0 8px 0;
+      font-size:11px;
+      color:var(--muted);
+      font-weight:800;
+      letter-spacing:.03em;
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid #2a2a2f;
+      background:#0d0d10;
+      font-size:10px;font-weight:900;
+      letter-spacing:.08em;text-transform:uppercase;
+      color:#cbd5e1;
+      margin-right:8px;
+      margin-bottom:8px;
+    }
 
     /* Audit dropdown */
     .auditWrap{
@@ -184,7 +207,7 @@
     }
     .open .auditBody{display:block;}
 
-    /* Row style reused inside audit/search */
+    /* Row style */
     .row{
       display:grid;
       grid-template-columns: 1fr minmax(140px, 180px);
@@ -412,7 +435,7 @@
 
   <!-- TOP BAR -->
   <div class="topbar flex between center">
-    <div class="tiny muted">SOVEREIGN V85</div>
+    <div class="tiny muted">SOVEREIGN V86</div>
     <div class="flex gap8">
       <button class="iconbtn" title="Search" data-view="search" aria-label="Search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -447,40 +470,46 @@
       </div>
     </div>
 
-    <!-- Ledger list (matches screenshot layout; names/values perfectly aligned) -->
+    <!-- Ledger list -->
     <div class="ledger" id="ledger">
       <div class="ledgerRow tap" data-open-ledger="liquidity">
         <div class="ledgerName" style="color:var(--emerald)">Liquidity</div>
         <div class="ledgerVal mask" style="color:var(--emerald)" id="liq">₦0</div>
       </div>
+      <div class="ledgerBody" data-ledger-body="liquidity"></div>
 
       <div class="ledgerRow tap" data-open-ledger="expenses">
         <div class="ledgerName" style="color:var(--red)">Expenses</div>
         <div class="ledgerVal mask" style="color:var(--red)" id="exTotal">₦0</div>
       </div>
+      <div class="ledgerBody" data-ledger-body="expenses"></div>
 
       <div class="ledgerRow tap" data-open-ledger="assets">
         <div class="ledgerName" style="color:var(--blue)">Assets</div>
         <div class="ledgerVal mask" style="color:var(--blue)" id="asTotal">₦0</div>
       </div>
+      <div class="ledgerBody" data-ledger-body="assets"></div>
 
       <div class="ledgerRow tap" data-open-ledger="debtors">
         <div class="ledgerName" style="color:var(--emerald)">Debtors</div>
         <div class="ledgerVal mask" style="color:var(--emerald)" id="dbTotal">₦0</div>
       </div>
+      <div class="ledgerBody" data-ledger-body="debtors"></div>
 
       <div class="ledgerRow tap" data-open-ledger="creditors">
         <div class="ledgerName" style="color:rgba(255,255,255,.35)">Creditors</div>
         <div class="ledgerVal mask" style="color:var(--red)" id="crTotal">₦0</div>
       </div>
+      <div class="ledgerBody" data-ledger-body="creditors"></div>
 
       <div class="ledgerRow tap" data-open-ledger="fiduciary">
         <div class="ledgerName" style="color:var(--yellow)">Fiduciary</div>
         <div class="ledgerVal mask" style="color:var(--yellow)" id="fidTotal">₦0</div>
       </div>
+      <div class="ledgerBody" data-ledger-body="fiduciary"></div>
     </div>
 
-    <!-- AUDIT TRAIL (dropdown like screenshot) -->
+    <!-- AUDIT TRAIL -->
     <div class="auditWrap" id="cAudit" style="opacity:.92;">
       <div class="auditHead" data-toggle="cAudit">
         <div class="ledgerName muted">Audit trail</div>
@@ -550,19 +579,6 @@
         <div class="tileLabel" style="color:var(--yellow)">Fiduciary</div>
       </div>
     </div>
-  </div>
-
-  <!-- LEDGER DETAIL (tap any ledger row) -->
-  <div id="ledgerDetail" class="overlay hidden" aria-hidden="true">
-    <div class="overlayTop">
-      <div class="overlayBar">
-        <div class="tiny muted" id="ledgerTitle">Ledger</div>
-        <button class="xbtn" data-view="dashboard">✕</button>
-      </div>
-    </div>
-
-    <div id="ledgerSub" class="tiny muted" style="margin-top:10px;"></div>
-    <div id="ledgerList" class="col" style="margin-top:14px;"></div>
   </div>
 
   <!-- FORM -->
@@ -724,6 +740,8 @@
       PIN:"SOV_PIN_V82"
     };
 
+    const DEFAULT_ACCT = "Default Account";
+
     const $ = (id) => document.getElementById(id);
     const money = (n) => "₦" + (Number(n)||0).toLocaleString();
 
@@ -842,6 +860,8 @@
         ["Type", entry.type || "—"],
       ];
 
+      if (entry.acct) kvs.push(["Account", entry.acct]);
+
       if (entry.type === "expense"){
         kvs.push(["Category", entry.category || "Uncategorised"]);
         kvs.push(["Bucket", entry.bucket || "spend"]);
@@ -854,6 +874,7 @@
       if (entry.type === "fiduciary"){
         kvs.push(["Goal", entry.goal || "—"]);
         kvs.push(["Contributor", entry.user || "—"]);
+        if (entry.acct) kvs.push(["Funding acct", entry.acct]);
       }
 
       if (entry.type === "debtor" || entry.type === "debt_repayment"){
@@ -973,8 +994,10 @@
     function viewEl(name){ return $(name); }
     function showView(name){
       closeSheet();
+      // Close inline ledger dropdowns when leaving dashboard
+      if (name !== "dashboard") closeAllInlineLedgers();
 
-      const views = ["dashboard","entry","form","search","settings","more","auth","ledgerDetail"];
+      const views = ["dashboard","entry","form","search","settings","more","auth"];
       for (const v of views){
         const el = viewEl(v);
         if (el) el.classList.toggle("hidden", v !== name);
@@ -991,6 +1014,79 @@
       }
     }
 
+    // ---------- Accounting / Liquidity ----------
+    function legacyCashDelta(e){
+      // Old versions used b/s/l cash buckets; treat their sum as a cash delta to DEFAULT_ACCT.
+      const b = Number(e?.b)||0;
+      const s = Number(e?.s)||0;
+      const l = Number(e?.l)||0;
+      return b + s + l;
+    }
+
+    function isCashFlowType(t){
+      return (t === "income" || t === "expense");
+    }
+
+    function getAccounts(list){
+      const bal = Object.create(null);
+
+      for (const e of list){
+        const t = e.type;
+
+        // IOU never affects cash
+        if (["debtor","debt_repayment","creditor","credit_settlement"].includes(t)) continue;
+
+        // New model: income/expense affects acct (if present), else fallback
+        if (t === "income"){
+          const acct = (e.acct || "").trim() || DEFAULT_ACCT;
+          bal[acct] = (bal[acct] || 0) + (Number(e.total)||0);
+          continue;
+        }
+
+        if (t === "expense"){
+          const acct = (e.acct || "").trim() || DEFAULT_ACCT;
+          // expense total is negative
+          bal[acct] = (bal[acct] || 0) + (Number(e.total)||0);
+          continue;
+        }
+
+        // Fiduciary: only affects cash IF an acct was selected (funding from cash)
+        if (t === "fiduciary"){
+          if (e.acct){
+            const acct = (e.acct || "").trim() || DEFAULT_ACCT;
+            bal[acct] = (bal[acct] || 0) - Math.abs(Number(e.total)||0);
+          }
+          continue;
+        }
+
+        // Legacy fallback (only if no acct + has bucket deltas)
+        const d = legacyCashDelta(e);
+        if (d){
+          bal[DEFAULT_ACCT] = (bal[DEFAULT_ACCT] || 0) + d;
+        }
+      }
+
+      // Remove zero-ish accounts
+      const rows = Object.entries(bal)
+        .filter(([_,v]) => Math.round(Number(v)||0) !== 0)
+        .sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]));
+
+      return rows.map(([name, balance]) => ({ name, balance }));
+    }
+
+    function accountsTotal(accts){
+      return accts.reduce((acc,a)=> acc + (Number(a.balance)||0), 0);
+    }
+
+    function getKnownAccounts(){
+      // Pull known accounts from existing data (acct fields) + ensure default exists
+      const set = new Set([DEFAULT_ACCT, "Cash", "Main Bank"]);
+      for (const e of db){
+        if (e?.acct && String(e.acct).trim()) set.add(String(e.acct).trim());
+      }
+      return Array.from(set).sort((a,b)=> a.localeCompare(b));
+    }
+
     // ---------- Rendering ----------
     function clear(el){ if (!el) return; el.innerHTML = ""; }
 
@@ -1000,11 +1096,9 @@
 
     function render(){
       let netWorth = 0;
-      let bills = 0, savings = 0, spend = 0;
 
       let assetsTotal = 0;
       let expensesTotal = 0;
-
       let fiduciaryTotal = 0;
 
       const debtorBal = Object.create(null);
@@ -1029,18 +1123,12 @@
 
         netWorth += Number(e.total)||0;
 
-        bills += Number(e.b)||0;
-        savings += Number(e.s)||0;
-        spend += Number(e.l)||0;
-
         if (t === "asset"){
           assetsTotal += Number(e.total)||0;
         }
-
         if (t === "expense"){
           expensesTotal += Math.abs(Number(e.total)||0);
         }
-
         if (t === "fiduciary"){
           fiduciaryTotal += Number(e.total)||0;
         }
@@ -1061,7 +1149,9 @@
       let creditorsTotal = 0;
       for (const bal of Object.values(creditorBal)) creditorsTotal += (bal||0);
 
-      const cashTotal = bills + savings + spend;
+      // Liquidity = SUM(accounts), not buckets
+      const accts = getAccounts(list);
+      const cashTotal = accountsTotal(accts);
 
       $("nw").textContent = money(netWorth);
       $("cash").textContent = money(cashTotal);
@@ -1120,6 +1210,9 @@
           }));
         }
       }
+
+      // If any inline ledger is open, re-render it so totals stay correct
+      refreshOpenInlineLedger();
     }
 
     function renderTapRow({kind, entryId, side, person, title, meta, amt, accent}){
@@ -1155,43 +1248,164 @@
       return row;
     }
 
-    // ---------- Ledger Detail ----------
-    function openLedger(kind){
-      $("ledgerList").innerHTML = "";
-      $("ledgerSub").textContent = "";
+    // ---------- Inline ledger dropdown (deep-dive without full screen) ----------
+    let openInline = null; // { kind, bodyEl }
+    function closeAllInlineLedgers(){
+      document.querySelectorAll("[data-ledger-body]").forEach(b => {
+        b.classList.remove("open");
+        b.innerHTML = "";
+      });
+      openInline = null;
+    }
+
+    function refreshOpenInlineLedger(){
+      if (!openInline) return;
+      renderInlineLedger(openInline.kind, openInline.bodyEl);
+    }
+
+    function toggleLedgerInline(kind, rowEl){
+      const body = rowEl?.nextElementSibling;
+      if (!body || !body.matches("[data-ledger-body]")) return;
+
+      // If tapping same open ledger -> close
+      if (body.classList.contains("open")){
+        body.classList.remove("open");
+        body.innerHTML = "";
+        openInline = null;
+        return;
+      }
+
+      // Close others, open this
+      closeAllInlineLedgers();
+      body.classList.add("open");
+      openInline = { kind, bodyEl: body };
+      renderInlineLedger(kind, body);
+
+      // Small scroll assist: keep the opened body in view
+      try{
+        const y = rowEl.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top:y, behavior:"smooth" });
+      }catch{}
+    }
+
+    function renderInlineLedger(kind, body){
+      body.innerHTML = "";
+
       const list = db.slice().sort((a,b)=> (b.ts||0) - (a.ts||0));
 
+      const sub = document.createElement("div");
+      sub.className = "ledgerSubline";
+      body.appendChild(sub);
+
+      const maxRows = 10;
+
       if (kind === "liquidity"){
-        $("ledgerTitle").textContent = "Liquidity";
-        // derive from cash buckets
-        let bills = 0, savings = 0, spend = 0;
-        for (const e of list){
-          bills += Number(e.b)||0;
-          savings += Number(e.s)||0;
-          spend += Number(e.l)||0;
+        const accts = getAccounts(list);
+        const total = accountsTotal(accts);
+
+        // Summary line
+        const acctCount = accts.length || 0;
+        sub.textContent = `Accounts ${acctCount} • Total ${money(total)}`;
+
+        // Pills
+        const pills = document.createElement("div");
+        pills.style.marginTop = "8px";
+        pills.innerHTML = `
+          <span class="pill">Liquidity = accounts only</span>
+          <span class="pill">Old bucket entries map to "${DEFAULT_ACCT}"</span>
+        `;
+        body.appendChild(pills);
+
+        // Account balances
+        const sec1 = document.createElement("div");
+        sec1.className = "tiny muted";
+        sec1.style.marginTop = "10px";
+        sec1.textContent = "Accounts";
+        body.appendChild(sec1);
+
+        if (!accts.length){
+          const empty = document.createElement("div");
+          empty.className = "tiny muted";
+          empty.style.marginTop = "10px";
+          empty.textContent = "No account movements yet";
+          body.appendChild(empty);
+        } else {
+          for (const a of accts.slice(0, maxRows)){
+            body.appendChild(renderTapRow({
+              kind:"entry",
+              entryId:"", // not clickable; we’ll make it non-sheet
+              title: a.name,
+              meta: "Balance",
+              amt: money(a.balance),
+              accent:"var(--emerald)"
+            }));
+            body.lastChild.dataset.open = ""; // disable sheet open
+          }
         }
-        const total = bills + savings + spend;
-        $("ledgerSub").textContent = `Total ${money(total)}  •  Bills ${money(bills)}  •  Savings ${money(savings)}  •  Spend ${money(spend)}`;
-        // show last 40 non-zero liquidity affecting entries
-        const tx = list.filter(e => (Number(e.b)||0) || (Number(e.s)||0) || (Number(e.l)||0)).slice(0,40);
-        for (const e of tx){
-          const meta = `${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim();
-          $("ledgerList").appendChild(renderTapRow({
-            kind:"entry",
-            entryId:e.id,
-            title:(e.name || "Transaction"),
-            meta,
-            amt: money(Math.abs(Number(e.b||0) + Number(e.s||0) + Number(e.l||0)))
-          }));
+
+        // Recent cash moves
+        const sec2 = document.createElement("div");
+        sec2.className = "tiny muted";
+        sec2.style.marginTop = "14px";
+        sec2.textContent = "Recent cash moves";
+        body.appendChild(sec2);
+
+        const tx = list.filter(e => {
+          if (isCashFlowType(e.type)) return true;
+          // legacy bucket entries
+          return !!legacyCashDelta(e);
+        }).slice(0, 18);
+
+        if (!tx.length){
+          const empty = document.createElement("div");
+          empty.className = "tiny muted";
+          empty.style.marginTop = "10px";
+          empty.textContent = "No cash moves yet";
+          body.appendChild(empty);
+        } else {
+          for (const e of tx){
+            const metaParts = [];
+            const acct = (e.acct || "").trim();
+            if (acct) metaParts.push(acct);
+            else if (legacyCashDelta(e)) metaParts.push(DEFAULT_ACCT);
+
+            metaParts.push(`${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim());
+            const meta = metaParts.join(" • ");
+
+            let amt = 0;
+            if (isCashFlowType(e.type)) amt = Number(e.total)||0;
+            else amt = legacyCashDelta(e);
+
+            body.appendChild(renderTapRow({
+              kind:"entry",
+              entryId:e.id,
+              title:(e.name || "Transaction"),
+              meta,
+              amt: money(Math.abs(amt))
+            }));
+          }
         }
+        return;
       }
 
       if (kind === "expenses"){
-        $("ledgerTitle").textContent = "Expenses";
-        const tx = list.filter(e => e.type === "expense").slice(0,60);
+        sub.textContent = "Latest expenses";
+        const tx = list.filter(e => e.type === "expense").slice(0, 18);
+        if (!tx.length){
+          const empty = document.createElement("div");
+          empty.className = "tiny muted";
+          empty.style.marginTop = "10px";
+          empty.textContent = "No expenses yet";
+          body.appendChild(empty);
+          return;
+        }
         for (const e of tx){
-          const meta = (e.category ? (e.category + " • " + (e.bucket || "spend")) : (e.bucket || "spend"));
-          $("ledgerList").appendChild(renderTapRow({
+          const meta = [
+            (e.acct ? e.acct : ""),
+            (e.category ? e.category : ""),
+            (e.bucket ? e.bucket : "")
+          ].filter(Boolean).join(" • ") || `${fmtDDMMYYYY(e.date)}`;
+          body.appendChild(renderTapRow({
             kind:"entry",
             entryId:e.id,
             title:(e.name || "Expense"),
@@ -1199,14 +1413,23 @@
             amt: money(Math.abs(Number(e.total)||0))
           }));
         }
+        return;
       }
 
       if (kind === "assets"){
-        $("ledgerTitle").textContent = "Assets";
-        const tx = list.filter(e => e.type === "asset").slice(0,60);
+        sub.textContent = "Latest assets";
+        const tx = list.filter(e => e.type === "asset").slice(0, 18);
+        if (!tx.length){
+          const empty = document.createElement("div");
+          empty.className = "tiny muted";
+          empty.style.marginTop = "10px";
+          empty.textContent = "No assets yet";
+          body.appendChild(empty);
+          return;
+        }
         for (const e of tx){
           const meta = e.cat ? e.cat : fmtDDMMYYYY(e.date);
-          $("ledgerList").appendChild(renderTapRow({
+          body.appendChild(renderTapRow({
             kind:"entry",
             entryId:e.id,
             title:(e.name || "Asset"),
@@ -1215,10 +1438,11 @@
             accent:"var(--blue)"
           }));
         }
+        return;
       }
 
       if (kind === "debtors"){
-        $("ledgerTitle").textContent = "Debtors";
+        sub.textContent = "Outstanding debtors";
         const bal = Object.create(null);
         for (const e of list){
           if (e.type === "debtor" || e.type === "debt_repayment"){
@@ -1227,7 +1451,15 @@
           }
         }
         const rows = Object.entries(bal).filter(([_,v]) => v).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]));
-        for (const [name,amt] of rows){
+        if (!rows.length){
+          const empty = document.createElement("div");
+          empty.className = "tiny muted";
+          empty.style.marginTop = "10px";
+          empty.textContent = "No debtors yet";
+          body.appendChild(empty);
+          return;
+        }
+        for (const [name,amt] of rows.slice(0, 18)){
           const r = renderTapRow({
             kind:"iou",
             side:"debtor",
@@ -1237,12 +1469,13 @@
             amt: money(Math.abs(amt)),
             accent:"var(--emerald)"
           });
-          $("ledgerList").appendChild(r);
+          body.appendChild(r);
         }
+        return;
       }
 
       if (kind === "creditors"){
-        $("ledgerTitle").textContent = "Creditors";
+        sub.textContent = "Outstanding creditors";
         const bal = Object.create(null);
         for (const e of list){
           if (e.type === "creditor" || e.type === "credit_settlement"){
@@ -1251,7 +1484,15 @@
           }
         }
         const rows = Object.entries(bal).filter(([_,v]) => v).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]));
-        for (const [name,amt] of rows){
+        if (!rows.length){
+          const empty = document.createElement("div");
+          empty.className = "tiny muted";
+          empty.style.marginTop = "10px";
+          empty.textContent = "No creditors yet";
+          body.appendChild(empty);
+          return;
+        }
+        for (const [name,amt] of rows.slice(0, 18)){
           const r = renderTapRow({
             kind:"iou",
             side:"creditor",
@@ -1261,16 +1502,25 @@
             amt: money(Math.abs(amt)),
             accent:"var(--red)"
           });
-          $("ledgerList").appendChild(r);
+          body.appendChild(r);
         }
+        return;
       }
 
       if (kind === "fiduciary"){
-        $("ledgerTitle").textContent = "Fiduciary";
-        const tx = list.filter(e => e.type === "fiduciary").slice(0,80);
+        sub.textContent = "Latest fiduciary entries";
+        const tx = list.filter(e => e.type === "fiduciary").slice(0, 18);
+        if (!tx.length){
+          const empty = document.createElement("div");
+          empty.className = "tiny muted";
+          empty.style.marginTop = "10px";
+          empty.textContent = "No fiduciary entries yet";
+          body.appendChild(empty);
+          return;
+        }
         for (const e of tx){
-          const meta = `${e.goal ? e.goal : "—"} • ${e.user ? e.user : "—"}`;
-          $("ledgerList").appendChild(renderTapRow({
+          const meta = `${e.goal ? e.goal : "—"} • ${e.user ? e.user : "—"}${e.acct ? (" • " + e.acct) : ""}`;
+          body.appendChild(renderTapRow({
             kind:"entry",
             entryId:e.id,
             title:(e.name || "Fiduciary"),
@@ -1279,9 +1529,8 @@
             accent:"var(--yellow)"
           }));
         }
+        return;
       }
-
-      showView("ledgerDetail");
     }
 
     // ---------- Search ----------
@@ -1304,7 +1553,7 @@
 
       const list = db.slice().sort((a,b) => (b.ts||0) - (a.ts||0)).filter(e => {
         const hay = [
-          e.name, e.category, e.bucket, e.debtor, e.creditor, e.goal, e.user, e.note, e.term, e.rate
+          e.name, e.category, e.bucket, e.debtor, e.creditor, e.goal, e.user, e.note, e.term, e.rate, e.acct
         ].filter(Boolean).join(" ").toLowerCase();
 
         if (s && !hay.includes(s)) return false;
@@ -1355,7 +1604,8 @@
 
         const m = document.createElement("div");
         m.className = "rowMeta";
-        m.textContent = `${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim();
+        const acct = e.acct ? (e.acct + " • ") : "";
+        m.textContent = acct + `${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim();
 
         L.appendChild(t);
         L.appendChild(m);
@@ -1483,6 +1733,8 @@
           const names = getDebtorNamesWithBalances();
           fillNameList(names.map(x=>x.name));
           buildPicker(names, "Pick debtor (tap)", (n)=>{ $("desc").value=n; showToast("Selected"); });
+        } else {
+          buildAccountSelector("acct", "Account (where money lands)");
         }
       }
 
@@ -1492,12 +1744,17 @@
           fillNameList(names.map(x=>x.name));
           buildPicker(names, "Pick creditor (tap)", (n)=>{ $("desc").value=n; showToast("Selected"); });
         } else {
+          buildAccountSelector("acct", "Account (money leaves)");
           buildExpenseFields();
         }
       }
 
       if (formType === "borrow" || formType === "lend"){
         buildLoanFields(formType);
+      }
+
+      if (formType === "fid"){
+        buildFidFields();
       }
     }
 
@@ -1561,6 +1818,61 @@
 
       wrap.appendChild(body);
       $("dyn").appendChild(wrap);
+    }
+
+    function buildAccountSelector(id, label){
+      const wrap = document.createElement("div");
+      wrap.style.border = "1px solid #151518";
+      wrap.style.borderRadius = "18px";
+      wrap.style.padding = "12px 14px";
+      wrap.style.background = "rgba(255,255,255,.03)";
+      wrap.style.marginTop = "10px";
+
+      const tt = document.createElement("div");
+      tt.className = "tiny muted";
+      tt.textContent = label;
+      wrap.appendChild(tt);
+
+      const sel = document.createElement("select");
+      sel.id = id;
+      sel.className = "input";
+      sel.style.marginTop = "6px";
+
+      const accts = getKnownAccounts();
+      sel.innerHTML = accts.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
+
+      // Prefer "Main Bank" if user has it, else Default
+      if (accts.includes("Main Bank")) sel.value = "Main Bank";
+      else sel.value = DEFAULT_ACCT;
+
+      wrap.appendChild(sel);
+
+      const hint = document.createElement("div");
+      hint.className = "tiny muted";
+      hint.style.marginTop = "10px";
+      hint.textContent = "Liquidity reads accounts only (bank/cash).";
+      wrap.appendChild(hint);
+
+      $("dyn").appendChild(wrap);
+
+      // Quick add account
+      const add = document.createElement("button");
+      add.className = "btn";
+      add.style.marginTop = "10px";
+      add.style.width = "100%";
+      add.textContent = "Add new account";
+      add.onclick = () => {
+        const name = prompt("New account name (e.g., GTBank, Cash, Wallet):");
+        if (!name) return;
+        const n = String(name).trim();
+        if (!n) return;
+        // Store as a tiny, non-impacting marker entry? No. We just refresh list by adding to cfg cache.
+        // Minimal: set to that name immediately (still works even if it isn't in list yet).
+        sel.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`);
+        sel.value = n;
+        showToast("Account added");
+      };
+      $("dyn").appendChild(add);
     }
 
     function buildExpenseFields(){
@@ -1627,6 +1939,9 @@
     }
 
     function buildFidFields(){
+      // Optional: allow selecting a funding account; if selected, it reduces liquidity.
+      buildAccountSelector("acct", "Funding account (optional)");
+
       const goal = document.createElement("input");
       goal.id = "goal";
       goal.className = "input";
@@ -1695,7 +2010,7 @@
         } else {
           base.type = "income";
           base.total = amt;
-          base.l = amt;
+          base.acct = ($("acct")?.value || DEFAULT_ACCT).trim() || DEFAULT_ACCT;
         }
       }
       else if (formType === "expense"){
@@ -1708,14 +2023,15 @@
           base.type = "expense";
           base.total = -amt;
 
+          base.acct = ($("acct")?.value || DEFAULT_ACCT).trim() || DEFAULT_ACCT;
+
           const bucket = $("bucket")?.value || "spend";
           const category = $("category")?.value || "Other";
           base.bucket = bucket;
           base.category = category;
 
-          if (bucket === "bills") base.b = -amt;
-          else if (bucket === "savings") base.s = -amt;
-          else base.l = -amt;
+          // NOTE: We no longer write b/s/l for NEW entries; liquidity is accounts-based.
+          // Legacy entries with b/s/l still work via DEFAULT_ACCT mapping.
         }
       }
       else if (formType === "asset"){
@@ -1744,6 +2060,8 @@
         base.total = amt;
         base.goal = $("goal")?.value || "";
         base.user = $("user")?.value || "";
+        const acct = ($("acct")?.value || "").trim();
+        if (acct && acct !== DEFAULT_ACCT) base.acct = acct; // optional; only affects liquidity if present
       }
 
       db.push(base);
@@ -1788,11 +2106,11 @@
 
     // ---------- Backup / Restore ----------
     function backup(){
-      const payload = { version:85, exportedAt:new Date().toISOString(), db, cfg };
+      const payload = { version:86, exportedAt:new Date().toISOString(), db, cfg };
       const blob = new Blob([JSON.stringify(payload,null,2)], { type:"application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "Vault_v85.json";
+      a.download = "Vault_v86.json";
       a.click();
       showToast("Backup exported");
     }
@@ -1805,6 +2123,7 @@
           else if (parsed && Array.isArray(parsed.db)) { db = parsed.db; cfg = { ...cfg, ...(parsed.cfg||parsed.config||{}) }; }
           else throw new Error("bad");
 
+          // Normalize IOU types
           const loanTypes = ["debtor","debt_repayment","creditor","credit_settlement"];
           db = db.map(e => {
             if (!e) return e;
@@ -1873,6 +2192,16 @@
       hero.addEventListener("mouseleave", end);
     }
 
+    // ---------- HTML escape ----------
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
     // ---------- Global click delegation ----------
     function handleClick(e){
       const t = e.target;
@@ -1903,6 +2232,8 @@
       if (tile){
         const ft = tile.getAttribute("data-form");
         openForm(ft);
+        // Ensure dynamic fields appear for the default mode right away
+        rebuildDynamic();
         return;
       }
 
@@ -1934,9 +2265,10 @@
         return;
       }
 
+      // ✅ Ledger deep-dive now inline dropdown (no full screen)
       const led = t.closest("[data-open-ledger]");
       if (led){
-        openLedger(led.getAttribute("data-open-ledger"));
+        toggleLedgerInline(led.getAttribute("data-open-ledger"), led);
         return;
       }
     }
@@ -1993,6 +2325,7 @@
           cfg = { reqPin:false, qtype:"all", stealth:false };
           pinObj = null;
           document.body.classList.remove("stealth");
+          closeAllInlineLedgers();
           showToast("Reset");
           render();
           syncStealthUI();
