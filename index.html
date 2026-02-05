@@ -31,6 +31,7 @@
       --yellow:#eab308;
 
       --safe-top: env(safe-area-inset-top, 20px);
+      --safe-bot: env(safe-area-inset-bottom, 0px);
     }
 
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -41,7 +42,7 @@
       color:var(--fg);
       font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
       padding-top:calc(var(--safe-top) + 10px);
-      padding-bottom:110px;
+      padding-bottom:calc(110px + var(--safe-bot));
       overflow-x:hidden;
     }
 
@@ -58,6 +59,8 @@
     .muted{color:var(--muted);}
     .black{font-weight:900;}
     .bold{font-weight:700;}
+    .tap{cursor:pointer;}
+    .tap:active{opacity:.75;}
 
     /* Top bar */
     .topbar{
@@ -155,8 +158,6 @@
       letter-spacing:.01em;
       padding-right:2px;
     }
-    .tap{cursor:pointer;}
-    .tap:active{opacity:.75;}
 
     /* Inline ledger dropdown bodies */
     .ledgerBody{
@@ -171,17 +172,6 @@
       color:var(--muted);
       font-weight:800;
       letter-spacing:.03em;
-    }
-    .pill{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 10px;border-radius:999px;
-      border:1px solid #2a2a2f;
-      background:#0d0d10;
-      font-size:10px;font-weight:900;
-      letter-spacing:.08em;text-transform:uppercase;
-      color:#cbd5e1;
-      margin-right:8px;
-      margin-bottom:8px;
     }
 
     /* Audit dropdown */
@@ -234,6 +224,44 @@
       font-size:12px;
       font-weight:900;
       font-variant-numeric: tabular-nums;
+    }
+
+    /* Compact list row (Search results, tight) */
+    .tightRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:10px 0;
+      border-bottom:1px solid #121216;
+      cursor:pointer;
+      user-select:none;
+    }
+    .tightLeft{min-width:0;display:flex;flex-direction:column;gap:4px;}
+    .tightTop{display:flex;align-items:center;gap:8px;min-width:0;}
+    .tightText{
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.02em;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+    }
+    .tightMeta{
+      font-size:11px;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+    }
+    .tightAmt{
+      font-size:12px;
+      font-weight:900;
+      font-variant-numeric: tabular-nums;
+      white-space:nowrap;
+      text-align:right;
     }
 
     /* Inputs */
@@ -293,7 +321,7 @@
       position:fixed;inset:0;
       background:#000;
       z-index:2000;
-      padding:18px 18px 120px 18px;
+      padding:18px 18px calc(120px + var(--safe-bot)) 18px;
       padding-top:80px;
       overflow:auto;
     }
@@ -311,7 +339,7 @@
 
     /* FAB */
     .fab{
-      position:fixed;right:22px;bottom:26px;
+      position:fixed;right:22px;bottom:calc(26px + var(--safe-bot));
       width:64px;height:64px;border-radius:999px;
       border:none;cursor:pointer;
       box-shadow:0 16px 40px rgba(0,0,0,.6);
@@ -331,17 +359,19 @@
       letter-spacing:.08em;
       text-transform:uppercase;
       color:#cbd5e1;
+      flex:0 0 auto;
     }
     .bIn{border-color:rgba(16,185,129,.35);color:var(--emerald);}
     .bOut{border-color:rgba(239,68,68,.35);color:var(--red);}
     .bAsset{border-color:rgba(59,130,246,.35);color:var(--blue);}
     .bIOU{border-color:rgba(234,179,8,.35);color:var(--yellow);}
     .bFid{border-color:rgba(234,179,8,.35);color:var(--yellow);}
+    .bRev{border-color:rgba(255,255,255,.18);color:rgba(255,255,255,.65);}
 
     /* Toast */
     .toast{
       position:fixed;left:50%;transform:translateX(-50%);
-      bottom:110px;
+      bottom:calc(110px + var(--safe-bot));
       background:rgba(16,16,20,.92);
       border:1px solid #2a2a2f;
       color:#fff;
@@ -350,9 +380,11 @@
       z-index:6000;
       min-width:260px;
       max-width:92vw;
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      display:none;
+      align-items:center;justify-content:space-between;gap:12px;
       backdrop-filter: blur(14px);
     }
+    .toast.show{display:flex;}
     .toastBtn{
       background:transparent;border:1px solid #2a2a2f;
       color:#fff;border-radius:12px;
@@ -380,7 +412,7 @@
       border-top:1px solid #222;
       border-top-left-radius:22px;
       border-top-right-radius:22px;
-      padding:14px 16px 18px 16px;
+      padding:14px 16px calc(18px + var(--safe-bot)) 16px;
       max-height:78vh;
       overflow:auto;
     }
@@ -411,6 +443,159 @@
     }
     .switch.on{background:rgba(16,185,129,.22);border-color:rgba(16,185,129,.4);}
     .switch.on::after{transform:translateX(20px);background:var(--emerald);opacity:1;}
+
+    /* Segments */
+    .seg{
+      display:flex;
+      gap:8px;
+      background:#0a0a0c;
+      border:1px solid #1f1f24;
+      border-radius:18px;
+      padding:6px;
+      overflow:hidden;
+    }
+    .seg button{
+      flex:1;
+      background:transparent;
+      border:1px solid transparent;
+      color:#fff;
+      padding:10px 10px;
+      border-radius:14px;
+      font-weight:900;
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      cursor:pointer;
+      opacity:.75;
+    }
+    .seg button.on{
+      background:#101114;
+      border-color:#2a2a2f;
+      opacity:1;
+    }
+
+    /* Liquidity columns */
+    .cols3{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+      margin-top:8px;
+    }
+    .colCard{
+      background:rgba(255,255,255,.03);
+      border:1px solid #151518;
+      border-radius:18px;
+      padding:12px;
+      min-width:0;
+    }
+    .colCard .lbl{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .colCard .amt{
+      margin-top:8px;
+      font-size:14px;
+      font-weight:900;
+      font-variant-numeric: tabular-nums;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    /* Ledger embedded search */
+    .miniSearch{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid #1f1f24;
+      border-radius:16px;
+      padding:10px 12px;
+      background:#0a0a0c;
+      margin:6px 0 10px 0;
+    }
+    .miniSearch input{
+      border:none !important;
+      padding:0 !important;
+      margin:0 !important;
+      font-size:12px !important;
+    }
+
+    /* Two column fiduciary */
+    .twoCol{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:6px;
+    }
+    .panel{
+      background:rgba(255,255,255,.03);
+      border:1px solid #151518;
+      border-radius:18px;
+      padding:10px 12px;
+      min-width:0;
+    }
+    .panelHead{
+      display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:8px;
+    }
+    .panelTitle{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .listItem{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      padding:10px 0;
+      border-bottom:1px solid #121216;
+      cursor:pointer;
+      user-select:none;
+    }
+    .listItem:last-child{border-bottom:none;}
+    .liName{
+      font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .liAmt{
+      font-size:12px;font-weight:900;font-variant-numeric: tabular-nums;white-space:nowrap;
+    }
+    .detailBox{
+      margin-top:12px;
+      background:rgba(255,255,255,.03);
+      border:1px solid #151518;
+      border-radius:18px;
+      padding:12px;
+    }
+    .detailTitle{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      margin-bottom:10px;
+    }
+    .detailTitle .t{
+      font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .detailTitle .s{
+      font-size:11px;color:var(--muted);font-weight:900;white-space:nowrap;
+    }
+    .chipBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid #2a2a2f;
+      background:#0d0d10;
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#cbd5e1;
+      cursor:pointer;
+      user-select:none;
+    }
   </style>
 </head>
 
@@ -697,1847 +882,1684 @@
       <div class="tiny muted" style="margin-top:10px;">PIN is hashed (best-effort) — app won’t crash if crypto isn’t available.</div>
     </div>
 
-    <div class="flex gap12" style="margin-top:12px;">
-      <button class="btn" style="flex:1" id="backupBtn">Backup</button>
-      <button class="btn" style="flex:1;color:var(--emerald)" id="restoreBtn">Restore</button>
-      <input id="file" type="file" class="hidden" />
+    <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:12px;background:rgba(255,255,255,.03);">
+      <div class="tiny muted">Data</div>
+      <div class="flex gap12" style="margin-top:12px;">
+        <button class="btn" style="flex:1" id="backupBtn">Backup</button>
+        <button class="btn" style="flex:1;color:var(--emerald)" id="restoreBtn">Restore</button>
+        <input id="file" type="file" class="hidden" />
+      </div>
+      <button class="btn btnWide danger" id="wipeBtn" style="margin-top:12px;">Wipe device data</button>
     </div>
-
-    <button class="btn danger" id="resetBtn" style="margin-top:12px;width:100%;">Factory reset</button>
   </div>
 
-  <!-- FAB -->
-  <button id="fab" class="fab fabPlus">+</button>
-
   <!-- Toast -->
-  <div id="toast" class="toast hidden">
-    <div id="toastMsg" style="font-size:14px;font-weight:800;opacity:.92;">Saved</div>
-    <button id="toastAct" class="toastBtn hidden">Undo</button>
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <div id="toastText" style="font-weight:900;font-size:12px;letter-spacing:.02em;">Done</div>
+    <button id="toastBtn" class="toastBtn hidden">Undo</button>
   </div>
 
   <!-- Bottom sheet -->
-  <div id="scrim" class="sheetScrim"></div>
-  <div id="sheet" class="sheet" aria-hidden="true">
+  <div id="sheetScrim" class="sheetScrim"></div>
+  <div id="sheet" class="sheet" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="grab"></div>
-    <div class="flex between center">
-      <div class="sheetTitle" id="shTitle">Transaction</div>
-      <span class="badge" id="shBadge">—</span>
-    </div>
-    <div class="sheetAmt mask" id="shAmt">₦0</div>
-    <div id="shKv" style="margin-top:10px;"></div>
-    <div class="sheetActions" id="sheetActions">
+    <div class="sheetTitle" id="sheetTitle">Entry</div>
+    <div class="sheetAmt mask" id="sheetAmt">₦0</div>
+    <div id="sheetMeta" style="margin-top:10px;"></div>
+
+    <div class="sheetActions">
+      <button class="btn" id="editBtn">Edit</button>
       <button class="btn" id="dupBtn">Duplicate</button>
       <button class="btn danger" id="delBtn">Delete</button>
     </div>
   </div>
 
+  <!-- FAB -->
+  <button id="fab" class="fab fabPlus" aria-label="New entry">＋</button>
+
   <script>
-  (() => {
-    // Keep storage keys as V82 so you don't lose your data
-    const KEY = {
-      DB: "SOV_DB_V82",
-      CFG:"SOV_CFG_V82",
-      PIN:"SOV_PIN_V82"
-    };
+    /***********************
+     * Sovereign v86 (single file)
+     * Changes included:
+     * - Liquidity drilldown: S/B/S columns only
+     * - Per-ledger search
+     * - Fiduciary: 2-column (By Purpose / By Person) with details panel
+     * - Debts: itemised by person
+     * - Assets: initial vs current vs growth + valuation history
+     * - Edit button (immutable-ish: old entry becomes superseded; new one created)
+     * - Global search: compact one-line rows
+     ***********************/
 
-    const DEFAULT_ACCT = "Default Account";
+    const STORE_KEYS = [
+      "sovereign_v86_state",
+      "sovereign_v86",
+      "sovereign_state",
+      "vault_state",
+      "vault_v86"
+    ];
 
-    const $ = (id) => document.getElementById(id);
-    const money = (n) => "₦" + (Number(n)||0).toLocaleString();
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-    const now = () => new Date();
-    const pad2 = (x) => String(x).padStart(2,"0");
-    const isoDate = (d) => d.toISOString().slice(0,10); // YYYY-MM-DD
-    const nowISODate = () => isoDate(now());
-    const nowISOTime = () => now().toTimeString().slice(0,8); // HH:MM:SS
+    const VIEWS = ["dashboard","auth","entry","form","search","more","settings"];
 
-    const fmtDDMMYYYY = (yyyy_mm_dd) => {
-      if (!yyyy_mm_dd || typeof yyyy_mm_dd !== "string" || yyyy_mm_dd.length < 10) return "—";
-      const [y,m,d] = yyyy_mm_dd.slice(0,10).split("-");
-      if (!y || !m || !d) return "—";
-      return `${pad2(d)}-${pad2(m)}-${y}`;
-    };
-
-    const safeJSON = (s, fallback) => { try { return JSON.parse(s) ?? fallback; } catch { return fallback; } };
-
-    // ---------- Toast ----------
-    let toastTimer = null;
-    let toastUndo = null;
-    function showToast(msg, undoFn=null){
-      const t = $("toast");
-      $("toastMsg").textContent = msg || "";
-      toastUndo = undoFn;
-      const act = $("toastAct");
-      if (undoFn){
-        act.classList.remove("hidden");
-        act.onclick = () => {
-          const fn = toastUndo;
-          toastUndo = null;
-          hideToast();
-          try { fn && fn(); } catch {}
-        };
-      } else {
-        act.classList.add("hidden");
-        act.onclick = null;
-      }
-      t.classList.remove("hidden");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(hideToast, 2200);
-    }
-    function hideToast(){
-      $("toast").classList.add("hidden");
-      $("toastAct").classList.add("hidden");
-      toastUndo = null;
-    }
-
-    // ---------- Bottom sheet ----------
-    let openEntryId = null;
-    let openIouKey = null; // { side:"debtor"|"creditor", name:"" }
-
-    function badgeFor(e){
-      const t = e?.type || "";
-      if (t === "income") return { badgeText:"IN", badgeClass:"bIn" };
-      if (t === "expense") return { badgeText:"OUT", badgeClass:"bOut" };
-      if (t === "asset") return { badgeText:"ASSET", badgeClass:"bAsset" };
-      if (["debtor","debt_repayment","creditor","credit_settlement"].includes(t)) return { badgeText:"IOU", badgeClass:"bIOU" };
-      if (t === "fiduciary") return { badgeText:"FID", badgeClass:"bFid" };
-      return { badgeText:"—", badgeClass:"" };
-    }
-    function entryAmount(e){
-      if (!e) return 0;
-      if (typeof e.principal === "number") return e.principal; // IOU flows
-      return Number(e.total)||0;
-    }
-
-    function openSheetBase(){
-      $("scrim").classList.add("on");
-      $("sheet").classList.add("on");
-      $("sheet").setAttribute("aria-hidden","false");
-    }
-    function closeSheet(){
-      $("scrim").classList.remove("on");
-      $("sheet").classList.remove("on");
-      $("sheet").setAttribute("aria-hidden","true");
-      openEntryId = null;
-      openIouKey = null;
-    }
-
-    function sheetSetBadge(entryOrType){
-      const { badgeText, badgeClass } = typeof entryOrType === "string"
-        ? { badgeText: entryOrType, badgeClass: entryOrType === "IOU" ? "bIOU" : "" }
-        : badgeFor(entryOrType);
-
-      const b = $("shBadge");
-      b.className = "badge " + (badgeClass || "");
-      b.textContent = badgeText || "—";
-    }
-
-    function sheetKV(kvs){
-      const kv = $("shKv");
-      kv.innerHTML = "";
-      for (const [k,v] of kvs){
-        const d = document.createElement("div");
-        d.className = "kv";
-        const L = document.createElement("div"); L.className="kvL"; L.textContent=k;
-        const R = document.createElement("div"); R.className="kvR"; R.textContent=(v === "" || v == null) ? "—" : String(v);
-        d.appendChild(L); d.appendChild(R);
-        kv.appendChild(d);
-      }
-    }
-
-    function openEntrySheet(entry){
-      openEntryId = entry?.id ?? null;
-      openIouKey = null;
-      openSheetBase();
-
-      $("shTitle").textContent = (entry?.name || "Transaction");
-      sheetSetBadge(entry);
-      $("shAmt").textContent = money(Math.abs(entryAmount(entry)));
-
-      const dt = `${fmtDDMMYYYY(entry.date)} ${entry.time || "—"}`;
-      const kvs = [
-        ["Date", dt],
-        ["Type", entry.type || "—"],
-      ];
-
-      if (entry.acct) kvs.push(["Account", entry.acct]);
-
-      if (entry.type === "expense"){
-        kvs.push(["Category", entry.category || "Uncategorised"]);
-        kvs.push(["Bucket", entry.bucket || "spend"]);
-      }
-
-      if (entry.type === "asset"){
-        kvs.push(["Asset type", entry.cat || "Other"]);
-      }
-
-      if (entry.type === "fiduciary"){
-        kvs.push(["Goal", entry.goal || "—"]);
-        kvs.push(["Contributor", entry.user || "—"]);
-        if (entry.acct) kvs.push(["Funding acct", entry.acct]);
-      }
-
-      if (entry.type === "debtor" || entry.type === "debt_repayment"){
-        kvs.push(["Debtor", entry.debtor || entry.name || "—"]);
-        kvs.push(["Due date", entry.term ? fmtDDMMYYYY(entry.term) : "—"]);
-        kvs.push(["Rate %", entry.rate || "—"]);
-      }
-
-      if (entry.type === "creditor" || entry.type === "credit_settlement"){
-        kvs.push(["Creditor", entry.creditor || entry.name || "—"]);
-        kvs.push(["Due date", entry.term ? fmtDDMMYYYY(entry.term) : "—"]);
-        kvs.push(["Rate %", entry.rate || "—"]);
-      }
-
-      if (entry.note) kvs.push(["Note", entry.note]);
-
-      sheetKV(kvs);
-
-      $("sheetActions").classList.remove("hidden");
-      $("dupBtn").onclick = () => duplicateEntry(entry);
-      $("delBtn").onclick = () => deleteEntry(entry.id, true);
-    }
-
-    function openIouSummarySheet(side, name){
-      openEntryId = null;
-      openIouKey = { side, name };
-      openSheetBase();
-
-      const isDebtor = side === "debtor";
-      const title = name || (isDebtor ? "Debtor" : "Creditor");
-      $("shTitle").textContent = title;
-      sheetSetBadge("IOU");
-
-      const types = isDebtor ? ["debtor","debt_repayment"] : ["creditor","credit_settlement"];
-      const keyField = isDebtor ? "debtor" : "creditor";
-
-      const tx = db
-        .filter(e => types.includes(e.type) && ((e[keyField] || e.name) === name))
-        .slice()
-        .sort((a,b)=> (b.ts||0) - (a.ts||0));
-
-      const balance = tx.reduce((acc,e)=> acc + (Number(e.principal)||0), 0);
-
-      $("shAmt").textContent = money(Math.abs(balance));
-
-      let lastDue = "";
-      let lastRate = "";
-      for (const e of tx){
-        if (!lastDue && e.term) lastDue = e.term;
-        if (!lastRate && e.rate) lastRate = e.rate;
-        if (lastDue && lastRate) break;
-      }
-
-      const kvs = [
-        ["Side", isDebtor ? "Owed to you" : "You owe"],
-        ["Outstanding", money(Math.abs(balance))],
-        ["Due date", lastDue ? fmtDDMMYYYY(lastDue) : "—"],
-        ["Rate %", lastRate || "—"],
-        ["Transactions", String(tx.length)]
-      ];
-
-      const preview = tx.slice(0,6).map(e => {
-        const sign = (Number(e.principal)||0) >= 0 ? "+" : "−";
-        const amt = money(Math.abs(Number(e.principal)||0));
-        const dt = `${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim();
-        return `${dt}  ${sign}${amt}`;
-      }).join(" | ");
-
-      kvs.push(["Recent", preview || "—"]);
-
-      const note = tx.find(e => e.note)?.note || "";
-      if (note) kvs.push(["Note", note]);
-
-      sheetKV(kvs);
-      $("sheetActions").classList.add("hidden");
-    }
-
-    // ---------- Crypto (best effort, never crash app) ----------
-    const cryptoUtil = {
-      async sha256(str){
-        try{
-          if (!crypto?.subtle) return null;
-          const data = new TextEncoder().encode(str);
-          const buf = await crypto.subtle.digest("SHA-256", data);
-          return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
-        }catch{ return null; }
-      },
-      salt(){
-        try{
-          const a = new Uint8Array(16);
-          crypto.getRandomValues(a);
-          return [...a].map(b=>b.toString(16).padStart(2,"0")).join("");
-        }catch{ return String(Date.now()); }
-      }
-    };
-
-    // ---------- State ----------
-    let db = safeJSON(localStorage.getItem(KEY.DB), []);
-    let cfg = safeJSON(localStorage.getItem(KEY.CFG), { reqPin:false, qtype:"all", stealth:false });
-    let pinObj = safeJSON(localStorage.getItem(KEY.PIN), null);
-
+    const state = loadState();
     let currentView = "dashboard";
-    let formType = null;
-    let settlementMode = false;
-    let lastDeleted = null;
+    let currentForm = null;                // 'income' | 'expense' | 'asset' | 'borrow' | 'lend' | 'fid'
+    let currentEditId = null;              // when editing, points to entry being superseded
+    let currentSheetId = null;
+    let openLedger = null;
 
-    // ✅ Fiduciary drill-down state
-    let openFidDrill = null; // { mode:"goal"|"user", key:string } | null
+    const ledgerFilters = {
+      expenses: "",
+      assets: "",
+      debtors: "",
+      creditors: "",
+      fiduciary: ""
+    };
 
-    // ---------- Utilities ----------
-    function save(){
-      localStorage.setItem(KEY.DB, JSON.stringify(db));
-      localStorage.setItem(KEY.CFG, JSON.stringify(cfg));
-      localStorage.setItem(KEY.PIN, JSON.stringify(pinObj));
-    }
-    function uuid(){
-      return (crypto?.randomUUID) ? crypto.randomUUID() : (Date.now()+"-"+Math.random().toString(16).slice(2));
-    }
+    const fidDetail = { mode: null, key: null }; // {mode:'goal'|'person', key:string}
 
-    function viewEl(name){ return $(name); }
-    function showView(name){
-      closeSheet();
-      // Close inline ledger dropdowns when leaving dashboard
-      if (name !== "dashboard") closeAllInlineLedgers();
+    // ---------- DOM refs ----------
+    const el = {
+      dashboard: $("#dashboard"),
+      auth: $("#auth"),
+      entry: $("#entry"),
+      form: $("#form"),
+      search: $("#search"),
+      more: $("#more"),
+      settings: $("#settings"),
 
-      const views = ["dashboard","entry","form","search","settings","more","auth"];
-      for (const v of views){
-        const el = viewEl(v);
-        if (el) el.classList.toggle("hidden", v !== name);
-      }
-      currentView = name;
+      nw: $("#nw"),
+      cash: $("#cash"),
+      assets: $("#assets"),
+      debt: $("#debt"),
+      liq: $("#liq"),
+      exTotal: $("#exTotal"),
+      asTotal: $("#asTotal"),
+      dbTotal: $("#dbTotal"),
+      crTotal: $("#crTotal"),
+      fidTotal: $("#fidTotal"),
 
-      const fab = $("fab");
-      if (name === "dashboard"){
-        fab.className = "fab fabPlus";
-        fab.textContent = "+";
+      ledger: $("#ledger"),
+
+      auditWrap: $("#cAudit"),
+      auditFilter: $("#auditFilter"),
+      auditList: $("#auditList"),
+
+      heroCard: $("#heroCard"),
+
+      fab: $("#fab"),
+
+      // form
+      formTitle: $("#formTitle"),
+      amount: $("#amount"),
+      segWrap: $("#segWrap"),
+      dyn: $("#dyn"),
+      desc: $("#desc"),
+      note: $("#note"),
+      execBtn: $("#execBtn"),
+      nameList: $("#nameList"),
+
+      // search
+      q: $("#q"),
+      qRes: $("#qRes"),
+      qStart: $("#qStart"),
+      qEnd: $("#qEnd"),
+      clearQ: $("#clearQ"),
+
+      // auth
+      authPin: $("#authPin"),
+      unlockBtn: $("#unlockBtn"),
+
+      // stealth
+      stealthSwitch: $("#stealthSwitch"),
+
+      // settings
+      reqPin: $("#reqPin"),
+      setPin: $("#setPin"),
+      savePinBtn: $("#savePinBtn"),
+      backupBtn: $("#backupBtn"),
+      restoreBtn: $("#restoreBtn"),
+      file: $("#file"),
+      wipeBtn: $("#wipeBtn"),
+
+      backupBtn2: $("#backupBtn2"),
+      restoreBtn2: $("#restoreBtn2"),
+      file2: $("#file2"),
+
+      // sheet
+      sheetScrim: $("#sheetScrim"),
+      sheet: $("#sheet"),
+      sheetTitle: $("#sheetTitle"),
+      sheetAmt: $("#sheetAmt"),
+      sheetMeta: $("#sheetMeta"),
+      editBtn: $("#editBtn"),
+      dupBtn: $("#dupBtn"),
+      delBtn: $("#delBtn"),
+
+      // toast
+      toast: $("#toast"),
+      toastText: $("#toastText"),
+      toastBtn: $("#toastBtn")
+    };
+
+    // ---------- Init ----------
+    boot();
+
+    function boot(){
+      hydrateSettingsUI();
+      applyStealth(state.settings.stealth);
+
+      // navigation buttons
+      document.body.addEventListener("click", (e) => {
+        const v = e.target.closest("[data-view]")?.getAttribute("data-view");
+        if(v) {
+          if(v === "dashboard") showView("dashboard");
+          else showView(v);
+        }
+        const t = e.target.closest("[data-toggle]")?.getAttribute("data-toggle");
+        if(t) toggleAudit(t);
+      });
+
+      // fab
+      el.fab.addEventListener("click", () => {
+        if(currentView === "dashboard") showView("entry");
+        else if(currentView === "entry") showView("dashboard");
+        else showView("dashboard");
+      });
+
+      // hero long-press stealth toggle
+      setupLongPress(el.heroCard, () => {
+        state.settings.stealth = !state.settings.stealth;
+        saveState();
+        applyStealth(state.settings.stealth);
+        syncStealthSwitch();
+        toast(state.settings.stealth ? "Stealth ON" : "Stealth OFF");
+      });
+
+      // ledger open/close
+      el.ledger.addEventListener("click", (e) => {
+        const row = e.target.closest("[data-open-ledger]");
+        if(!row) return;
+        const key = row.getAttribute("data-open-ledger");
+        toggleLedger(key);
+      });
+
+      // ledger body interactions (details + entry taps)
+      el.ledger.addEventListener("click", (e) => {
+        const entryId = e.target.closest("[data-entry-id]")?.getAttribute("data-entry-id");
+        if(entryId) return openSheet(entryId);
+
+        const deb = e.target.closest("[data-debtor]");
+        if(deb) {
+          const who = deb.getAttribute("data-debtor");
+          showDebtDetails("debtors", who);
+          return;
+        }
+
+        const cre = e.target.closest("[data-creditor]");
+        if(cre) {
+          const who = cre.getAttribute("data-creditor");
+          showDebtDetails("creditors", who);
+          return;
+        }
+
+        const asset = e.target.closest("[data-asset]");
+        if(asset) {
+          const name = asset.getAttribute("data-asset");
+          showAssetDetails(name);
+          return;
+        }
+
+        const upd = e.target.closest("[data-asset-update]");
+        if(upd) {
+          const name = upd.getAttribute("data-asset-update");
+          openForm("asset", { assetMode:"update", assetName:name });
+          return;
+        }
+
+        const fidGoal = e.target.closest("[data-fid-goal]");
+        if(fidGoal) {
+          fidDetail.mode = "goal";
+          fidDetail.key = fidGoal.getAttribute("data-fid-goal");
+          renderLedgerBody("fiduciary");
+          return;
+        }
+
+        const fidPerson = e.target.closest("[data-fid-person]");
+        if(fidPerson) {
+          fidDetail.mode = "person";
+          fidDetail.key = fidPerson.getAttribute("data-fid-person");
+          renderLedgerBody("fiduciary");
+          return;
+        }
+
+        const fidClear = e.target.closest("[data-fid-clear]");
+        if(fidClear){
+          fidDetail.mode = null; fidDetail.key = null;
+          renderLedgerBody("fiduciary");
+        }
+      });
+
+      // audit filter & clicks
+      el.auditFilter.addEventListener("input", () => renderAudit());
+      el.auditList.addEventListener("click", (e) => {
+        const id = e.target.closest("[data-entry-id]")?.getAttribute("data-entry-id");
+        if(id) openSheet(id);
+      });
+
+      // entry tiles -> open form
+      $$(".tile", el.entry).forEach(tile => {
+        tile.addEventListener("click", () => openForm(tile.getAttribute("data-form")));
+      });
+
+      // execute
+      el.execBtn.addEventListener("click", executeForm);
+
+      // search overlay
+      el.clearQ.addEventListener("click", () => {
+        el.q.value = "";
+        renderSearch();
+      });
+      el.q.addEventListener("input", renderSearch);
+      el.qStart.addEventListener("change", renderSearch);
+      el.qEnd.addEventListener("change", renderSearch);
+      $$(".badge[data-qtype]", el.search).forEach(b => {
+        b.addEventListener("click", () => {
+          $$(".badge[data-qtype]", el.search).forEach(x => x.style.opacity = ".55");
+          b.style.opacity = "1";
+          state.ui.searchType = b.getAttribute("data-qtype");
+          saveState();
+          renderSearch();
+        });
+      });
+      el.qRes.addEventListener("click", (e) => {
+        const id = e.target.closest("[data-entry-id]")?.getAttribute("data-entry-id");
+        if(id) openSheet(id);
+      });
+
+      // stealth switch
+      el.stealthSwitch.addEventListener("click", () => {
+        state.settings.stealth = !state.settings.stealth;
+        saveState();
+        applyStealth(state.settings.stealth);
+        syncStealthSwitch();
+        toast(state.settings.stealth ? "Stealth ON" : "Stealth OFF");
+      });
+
+      // settings: pin
+      el.reqPin.addEventListener("change", async () => {
+        state.settings.requirePin = !!el.reqPin.checked;
+        saveState();
+        toast(state.settings.requirePin ? "PIN startup enabled" : "PIN startup disabled");
+      });
+
+      el.savePinBtn.addEventListener("click", async () => {
+        const pin = (el.setPin.value || "").trim();
+        if(pin.length !== 4) return toast("Enter a 4-digit PIN");
+        state.settings.pinHash = await hashPin(pin);
+        el.setPin.value = "";
+        saveState();
+        toast("PIN updated");
+      });
+
+      // auth unlock
+      el.unlockBtn.addEventListener("click", unlock);
+      el.authPin.addEventListener("keydown", (e) => {
+        if(e.key === "Enter") unlock();
+      });
+
+      // backup/restore (both places)
+      el.backupBtn.addEventListener("click", backup);
+      el.backupBtn2.addEventListener("click", backup);
+
+      el.restoreBtn.addEventListener("click", () => el.file.click());
+      el.restoreBtn2.addEventListener("click", () => el.file2.click());
+
+      el.file.addEventListener("change", (e) => restoreFile(e.target.files?.[0]));
+      el.file2.addEventListener("change", (e) => restoreFile(e.target.files?.[0]));
+
+      el.wipeBtn.addEventListener("click", () => {
+        if(!confirm("Wipe all device data for this app?")) return;
+        wipeState();
+        location.reload();
+      });
+
+      // sheet
+      el.sheetScrim.addEventListener("click", closeSheet);
+      el.editBtn.addEventListener("click", () => {
+        if(!currentSheetId) return;
+        const entry = getEntryById(currentSheetId);
+        if(!entry || entry.status === "deleted") return;
+        closeSheet();
+        openForm(entry.kind, { fromEntry: entry });
+      });
+      el.dupBtn.addEventListener("click", () => {
+        if(!currentSheetId) return;
+        const entry = getEntryById(currentSheetId);
+        if(!entry) return;
+        closeSheet();
+        openForm(entry.kind, { fromEntry: entry, duplicate:true });
+      });
+      el.delBtn.addEventListener("click", () => {
+        if(!currentSheetId) return;
+        deleteEntry(currentSheetId);
+        closeSheet();
+        renderAll();
+        toast("Deleted");
+      });
+
+      // first render
+      renderAll();
+
+      // initial view gating
+      syncStealthSwitch();
+      hydrateSearchTypeUI();
+      if(state.settings.requirePin && state.settings.pinHash){
+        showView("auth");
       } else {
-        fab.className = "fab fabBack";
-        fab.textContent = "↩";
-      }
-    }
-
-    // ---------- Accounting / Liquidity ----------
-    function legacyCashDelta(e){
-      // Old versions used b/s/l cash buckets; treat their sum as a cash delta to DEFAULT_ACCT.
-      const b = Number(e?.b)||0;
-      const s = Number(e?.s)||0;
-      const l = Number(e?.l)||0;
-      return b + s + l;
-    }
-
-    function isCashFlowType(t){
-      return (t === "income" || t === "expense");
-    }
-
-    function getAccounts(list){
-      const bal = Object.create(null);
-
-      for (const e of list){
-        const t = e.type;
-
-        // IOU never affects cash
-        if (["debtor","debt_repayment","creditor","credit_settlement"].includes(t)) continue;
-
-        // New model: income/expense affects acct (if present), else fallback
-        if (t === "income"){
-          const acct = (e.acct || "").trim() || DEFAULT_ACCT;
-          bal[acct] = (bal[acct] || 0) + (Number(e.total)||0);
-          continue;
-        }
-
-        if (t === "expense"){
-          const acct = (e.acct || "").trim() || DEFAULT_ACCT;
-          // expense total is negative
-          bal[acct] = (bal[acct] || 0) + (Number(e.total)||0);
-          continue;
-        }
-
-        // Fiduciary: only affects cash IF an acct was selected (funding from cash)
-        if (t === "fiduciary"){
-          if (e.acct){
-            const acct = (e.acct || "").trim() || DEFAULT_ACCT;
-            bal[acct] = (bal[acct] || 0) - Math.abs(Number(e.total)||0);
-          }
-          continue;
-        }
-
-        // Legacy fallback (only if no acct + has bucket deltas)
-        const d = legacyCashDelta(e);
-        if (d){
-          bal[DEFAULT_ACCT] = (bal[DEFAULT_ACCT] || 0) + d;
-        }
+        showView("dashboard");
       }
 
-      // Remove zero-ish accounts
-      const rows = Object.entries(bal)
-        .filter(([_,v]) => Math.round(Number(v)||0) !== 0)
-        .sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]));
-
-      return rows.map(([name, balance]) => ({ name, balance }));
+      // service worker best-effort
+      registerSW();
     }
 
-    function accountsTotal(accts){
-      return accts.reduce((acc,a)=> acc + (Number(a.balance)||0), 0);
-    }
+    // ---------- Views ----------
+    function showView(view){
+      currentView = view;
+      // overlays
+      VIEWS.forEach(v => {
+        if(v === "dashboard") return;
+        const node = el[v];
+        if(!node) return;
+        node.classList.toggle("hidden", v !== view);
+        node.setAttribute("aria-hidden", v !== view ? "true" : "false");
+      });
 
-    function getKnownAccounts(){
-      // Pull known accounts from existing data (acct fields) + ensure default exists
-      const set = new Set([DEFAULT_ACCT, "Cash", "Main Bank"]);
-      for (const e of db){
-        if (e?.acct && String(e.acct).trim()) set.add(String(e.acct).trim());
+      el.dashboard.style.display = (view === "dashboard") ? "block" : "block"; // dashboard stays under overlays
+
+      // fab mode
+      if(view === "dashboard"){
+        el.fab.classList.remove("fabBack");
+        el.fab.classList.add("fabPlus");
+        el.fab.textContent = "＋";
+        el.fab.setAttribute("aria-label", "New entry");
+      } else if(view === "entry"){
+        el.fab.classList.remove("fabPlus");
+        el.fab.classList.add("fabBack");
+        el.fab.textContent = "←";
+        el.fab.setAttribute("aria-label", "Back");
+      } else {
+        el.fab.classList.remove("fabPlus");
+        el.fab.classList.add("fabBack");
+        el.fab.textContent = "⌂";
+        el.fab.setAttribute("aria-label", "Home");
       }
-      return Array.from(set).sort((a,b)=> a.localeCompare(b));
+
+      if(view === "search") renderSearch();
+      if(view === "dashboard") renderAll();
+      if(view === "more") syncStealthSwitch();
+      if(view === "settings") hydrateSettingsUI();
+    }
+
+    function toggleAudit(id){
+      const wrap = $("#"+id);
+      if(!wrap) return;
+      wrap.classList.toggle("open");
+    }
+
+    // ---------- Ledger open/close ----------
+    function toggleLedger(key){
+      // close if already open
+      if(openLedger === key){
+        const body = $(`[data-ledger-body="${key}"]`);
+        body?.classList.remove("open");
+        openLedger = null;
+        return;
+      }
+      // close others
+      $$(`.ledgerBody.open`).forEach(b => b.classList.remove("open"));
+      openLedger = key;
+      const body = $(`[data-ledger-body="${key}"]`);
+      body?.classList.add("open");
+      renderLedgerBody(key);
     }
 
     // ---------- Rendering ----------
-    function clear(el){ if (!el) return; el.innerHTML = ""; }
+    function renderAll(){
+      const d = derive();
 
-    function auditKey(dateStr){
-      return fmtDDMMYYYY(dateStr || nowISODate());
+      // hero
+      el.nw.textContent = money(d.netWorth);
+      el.cash.textContent = money(d.liquidityTotal);
+      el.assets.textContent = money(d.assetsTotal);
+      el.debt.textContent = money(d.debtTotal);
+
+      // ledger totals
+      el.liq.textContent = money(d.liquidityTotal);
+      el.exTotal.textContent = money(d.expensesTotal);
+      el.asTotal.textContent = money(d.assetsTotal);
+      el.dbTotal.textContent = money(d.debtorsOutstanding);
+      el.crTotal.textContent = money(d.creditorsOutstanding);
+      el.fidTotal.textContent = money(d.fidTotal);
+
+      // open ledger body refresh
+      if(openLedger) renderLedgerBody(openLedger);
+
+      // audit
+      renderAudit();
+
+      // datalist suggestions
+      renderDatalist();
     }
 
-    function render(){
-      let netWorth = 0;
+    function renderLedgerBody(key){
+      const body = $(`[data-ledger-body="${key}"]`);
+      if(!body) return;
 
-      let assetsTotal = 0;
-      let expensesTotal = 0;
-      let fiduciaryTotal = 0;
+      const d = derive();
+      const filter = (ledgerFilters[key] || "").trim().toLowerCase();
 
-      const debtorBal = Object.create(null);
-      const creditorBal = Object.create(null);
-
-      clear($("auditList"));
-
-      const auditFilter = ($("auditFilter").value || "").toLowerCase().trim();
-      const list = db.slice().sort((a,b) => (b.ts||0) - (a.ts||0));
-
-      // Group audit by DD-MM-YYYY
-      const groups = new Map(); // dd-mm-yyyy -> entries[]
-      for (const e of list){
-        const label = auditKey(e.date);
-        if (!groups.has(label)) groups.set(label, []);
-        groups.get(label).push(e);
-      }
-
-      // Totals
-      for (const e of list){
-        const t = e.type;
-
-        netWorth += Number(e.total)||0;
-
-        if (t === "asset"){
-          assetsTotal += Number(e.total)||0;
-        }
-        if (t === "expense"){
-          expensesTotal += Math.abs(Number(e.total)||0);
-        }
-        if (t === "fiduciary"){
-          fiduciaryTotal += Number(e.total)||0;
-        }
-
-        if (t === "debtor" || t === "debt_repayment"){
-          const who = e.debtor || e.name || "Unknown";
-          debtorBal[who] = (debtorBal[who] || 0) + (Number(e.principal)||0);
-        }
-        if (t === "creditor" || t === "credit_settlement"){
-          const who = e.creditor || e.name || "Unknown";
-          creditorBal[who] = (creditorBal[who] || 0) + (Number(e.principal)||0);
-        }
-      }
-
-      let debtorsTotal = 0;
-      for (const bal of Object.values(debtorBal)) debtorsTotal += (bal||0);
-
-      let creditorsTotal = 0;
-      for (const bal of Object.values(creditorBal)) creditorsTotal += (bal||0);
-
-      // Liquidity = SUM(accounts), not buckets
-      const accts = getAccounts(list);
-      const cashTotal = accountsTotal(accts);
-
-      $("nw").textContent = money(netWorth);
-      $("cash").textContent = money(cashTotal);
-      $("assets").textContent = money(assetsTotal);
-      $("debt").textContent = money(debtorsTotal - creditorsTotal);
-
-      $("liq").textContent = money(cashTotal);
-      $("exTotal").textContent = money(expensesTotal);
-      $("asTotal").textContent = money(assetsTotal);
-      $("dbTotal").textContent = money(debtorsTotal);
-      $("crTotal").textContent = money(creditorsTotal);
-      $("fidTotal").textContent = money(fiduciaryTotal);
-
-      // Audit render
-      const dateSortKey = (ddmmyyyy) => {
-        const [d,m,y] = (ddmmyyyy||"").split("-");
-        return (y||"0000") + (m||"00") + (d||"00");
-      };
-      const groupEntries = Array.from(groups.entries())
-        .sort((a,b)=> dateSortKey(b[0]).localeCompare(dateSortKey(a[0])));
-
-      for (const [label, entries] of groupEntries){
-        const head = document.createElement("div");
-        head.style.marginTop = "14px";
-        head.style.marginBottom = "8px";
-        head.className = "flex between center";
-
-        const left = document.createElement("div");
-        left.className = "tiny muted";
-        left.textContent = label;
-
-        const right = document.createElement("div");
-        right.className = "tiny muted";
-
-        let secExp = 0;
-        for (const e of entries){
-          if (e.type === "expense") secExp += Math.abs(Number(e.total)||0);
-        }
-        right.textContent = secExp ? ("Expenses " + money(secExp)) : "";
-
-        head.appendChild(left);
-        head.appendChild(right);
-        $("auditList").appendChild(head);
-
-        for (const e of entries){
-          const name = e.name || "Transaction";
-          if (auditFilter && !name.toLowerCase().includes(auditFilter)) continue;
-
-          const meta = `${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim();
-          $("auditList").appendChild(renderTapRow({
-            kind:"entry",
-            entryId:e.id,
-            title:name,
-            meta,
-            amt: money(Math.abs(entryAmount(e)))
-          }));
-        }
-      }
-
-      // If any inline ledger is open, re-render it so totals stay correct
-      refreshOpenInlineLedger();
-    }
-
-    function renderTapRow({kind, entryId, side, person, title, meta, amt, accent}){
-      const row = document.createElement("div");
-      row.className = "row tap";
-      if (kind === "entry"){
-        row.dataset.open = "sheet";
-        row.dataset.id = entryId;
-      } else if (kind === "iou"){
-        row.dataset.open = "iou";
-        row.dataset.side = side;
-        row.dataset.person = person;
-      }
-
-      const left = document.createElement("div");
-      left.className = "rowLeft";
-      const nm = document.createElement("div");
-      nm.className = "rowName";
-      nm.textContent = title || "";
-      const mt = document.createElement("div");
-      mt.className = "rowMeta";
-      mt.textContent = meta || "";
-      left.appendChild(nm);
-      left.appendChild(mt);
-
-      const right = document.createElement("div");
-      right.className = "rowAmt mask";
-      right.textContent = amt || "";
-      if (accent) right.style.color = accent;
-
-      row.appendChild(left);
-      row.appendChild(right);
-      return row;
-    }
-
-    // ---------- Inline ledger dropdown (deep-dive without full screen) ----------
-    let openInline = null; // { kind, bodyEl }
-    function closeAllInlineLedgers(){
-      document.querySelectorAll("[data-ledger-body]").forEach(b => {
-        b.classList.remove("open");
-        b.innerHTML = "";
-      });
-      openInline = null;
-    }
-
-    function refreshOpenInlineLedger(){
-      if (!openInline) return;
-      renderInlineLedger(openInline.kind, openInline.bodyEl);
-    }
-
-    function toggleLedgerInline(kind, rowEl){
-      const body = rowEl?.nextElementSibling;
-      if (!body || !body.matches("[data-ledger-body]")) return;
-
-      // If tapping same open ledger -> close
-      if (body.classList.contains("open")){
-        body.classList.remove("open");
-        body.innerHTML = "";
-        openInline = null;
-        return;
-      }
-
-      // Close others, open this
-      closeAllInlineLedgers();
-      body.classList.add("open");
-      openInline = { kind, bodyEl: body };
-
-      // Reset fiduciary drill when opening a different ledger
-      if (kind !== "fiduciary") openFidDrill = null;
-
-      renderInlineLedger(kind, body);
-
-      // Small scroll assist: keep the opened body in view
-      try{
-        const y = rowEl.getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top:y, behavior:"smooth" });
-      }catch{}
-    }
-
-    function renderInlineLedger(kind, body){
-      body.innerHTML = "";
-
-      const list = db.slice().sort((a,b)=> (b.ts||0) - (a.ts||0));
-
-      const sub = document.createElement("div");
-      sub.className = "ledgerSubline";
-      body.appendChild(sub);
-
-      if (kind === "liquidity"){
-        const accts = getAccounts(list);
-        const total = accountsTotal(accts);
-
-        // Summary line
-        const acctCount = accts.length || 0;
-        sub.textContent = `Accounts ${acctCount} • Total ${money(total)}`;
-
-        // Pills
-        const pills = document.createElement("div");
-        pills.style.marginTop = "8px";
-        pills.innerHTML = `
-          <span class="pill">Liquidity = accounts only</span>
-          <span class="pill">Old bucket entries map to "${DEFAULT_ACCT}"</span>
+      if(key === "liquidity"){
+        body.innerHTML = `
+          <div class="ledgerSubline">Accounts</div>
+          <div class="cols3">
+            <div class="colCard">
+              <div class="lbl">Spend</div>
+              <div class="amt mask" style="color:var(--emerald)">${money(d.accounts.spend)}</div>
+            </div>
+            <div class="colCard">
+              <div class="lbl">Bills</div>
+              <div class="amt mask" style="color:var(--emerald)">${money(d.accounts.bills)}</div>
+            </div>
+            <div class="colCard">
+              <div class="lbl">Savings</div>
+              <div class="amt mask" style="color:var(--emerald)">${money(d.accounts.savings)}</div>
+            </div>
+          </div>
         `;
-        body.appendChild(pills);
-
-        // Account balances
-        const sec1 = document.createElement("div");
-        sec1.className = "tiny muted";
-        sec1.style.marginTop = "10px";
-        sec1.textContent = "Accounts";
-        body.appendChild(sec1);
-
-        if (!accts.length){
-          const empty = document.createElement("div");
-          empty.className = "tiny muted";
-          empty.style.marginTop = "10px";
-          empty.textContent = "No account movements yet";
-          body.appendChild(empty);
-        } else {
-          for (const a of accts.slice(0, 18)){
-            const r = renderTapRow({
-              kind:"entry",
-              entryId:"",
-              title: a.name,
-              meta: "Balance",
-              amt: money(a.balance),
-              accent:"var(--emerald)"
-            });
-            r.dataset.open = ""; // disable sheet open
-            body.appendChild(r);
-          }
-        }
-
-        // Recent cash moves
-        const sec2 = document.createElement("div");
-        sec2.className = "tiny muted";
-        sec2.style.marginTop = "14px";
-        sec2.textContent = "Recent cash moves";
-        body.appendChild(sec2);
-
-        const tx = list.filter(e => {
-          if (isCashFlowType(e.type)) return true;
-          // legacy bucket entries
-          return !!legacyCashDelta(e);
-        }).slice(0, 18);
-
-        if (!tx.length){
-          const empty = document.createElement("div");
-          empty.className = "tiny muted";
-          empty.style.marginTop = "10px";
-          empty.textContent = "No cash moves yet";
-          body.appendChild(empty);
-        } else {
-          for (const e of tx){
-            const metaParts = [];
-            const acct = (e.acct || "").trim();
-            if (acct) metaParts.push(acct);
-            else if (legacyCashDelta(e)) metaParts.push(DEFAULT_ACCT);
-
-            metaParts.push(`${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim());
-            const meta = metaParts.join(" • ");
-
-            let amt = 0;
-            if (isCashFlowType(e.type)) amt = Number(e.total)||0;
-            else amt = legacyCashDelta(e);
-
-            body.appendChild(renderTapRow({
-              kind:"entry",
-              entryId:e.id,
-              title:(e.name || "Transaction"),
-              meta,
-              amt: money(Math.abs(amt))
-            }));
-          }
-        }
         return;
       }
 
-      if (kind === "expenses"){
-        sub.textContent = "Latest expenses";
-        const tx = list.filter(e => e.type === "expense").slice(0, 18);
-        if (!tx.length){
-          const empty = document.createElement("div");
-          empty.className = "tiny muted";
-          empty.style.marginTop = "10px";
-          empty.textContent = "No expenses yet";
-          body.appendChild(empty);
-          return;
-        }
-        for (const e of tx){
-          const meta = [
-            (e.acct ? e.acct : ""),
-            (e.category ? e.category : ""),
-            (e.bucket ? e.bucket : "")
-          ].filter(Boolean).join(" • ") || `${fmtDDMMYYYY(e.date)}`;
-          body.appendChild(renderTapRow({
-            kind:"entry",
-            entryId:e.id,
-            title:(e.name || "Expense"),
-            meta,
-            amt: money(Math.abs(Number(e.total)||0))
-          }));
-        }
+      if(key === "expenses"){
+        const items = d.entriesActive
+          .filter(e => e.kind === "expense")
+          .filter(e => searchHit(e, filter))
+          .sort((a,b) => b.ts - a.ts);
+
+        body.innerHTML = `
+          ${ledgerSearchBox("expenses", "Search expenses…")}
+          <div class="ledgerSubline">Latest</div>
+          <div>
+            ${items.length ? items.map(e => tightRow(e)).join("") : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`}
+          </div>
+        `;
+        wireLedgerSearch(body, "expenses");
         return;
       }
 
-      if (kind === "assets"){
-        sub.textContent = "Latest assets";
-        const tx = list.filter(e => e.type === "asset").slice(0, 18);
-        if (!tx.length){
-          const empty = document.createElement("div");
-          empty.className = "tiny muted";
-          empty.style.marginTop = "10px";
-          empty.textContent = "No assets yet";
-          body.appendChild(empty);
-          return;
-        }
-        for (const e of tx){
-          const meta = e.cat ? e.cat : fmtDDMMYYYY(e.date);
-          body.appendChild(renderTapRow({
-            kind:"entry",
-            entryId:e.id,
-            title:(e.name || "Asset"),
-            meta,
-            amt: money(Math.abs(Number(e.total)||0)),
-            accent:"var(--blue)"
-          }));
-        }
-        return;
-      }
+      if(key === "assets"){
+        const assets = d.assetsList
+          .filter(a => (a.name || "").toLowerCase().includes(filter))
+          .sort((a,b) => Math.abs(b.current||0) - Math.abs(a.current||0));
 
-      if (kind === "debtors"){
-        sub.textContent = "Outstanding debtors";
-        const bal = Object.create(null);
-        for (const e of list){
-          if (e.type === "debtor" || e.type === "debt_repayment"){
-            const who = e.debtor || e.name || "Unknown";
-            bal[who] = (bal[who] || 0) + (Number(e.principal)||0);
-          }
-        }
-        const rows = Object.entries(bal).filter(([_,v]) => v).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]));
-        if (!rows.length){
-          const empty = document.createElement("div");
-          empty.className = "tiny muted";
-          empty.style.marginTop = "10px";
-          empty.textContent = "No debtors yet";
-          body.appendChild(empty);
-          return;
-        }
-        for (const [name,amt] of rows.slice(0, 18)){
-          const r = renderTapRow({
-            kind:"iou",
-            side:"debtor",
-            person:name,
-            title:name,
-            meta:"Outstanding",
-            amt: money(Math.abs(amt)),
-            accent:"var(--emerald)"
-          });
-          body.appendChild(r);
-        }
-        return;
-      }
-
-      if (kind === "creditors"){
-        sub.textContent = "Outstanding creditors";
-        const bal = Object.create(null);
-        for (const e of list){
-          if (e.type === "creditor" || e.type === "credit_settlement"){
-            const who = e.creditor || e.name || "Unknown";
-            bal[who] = (bal[who] || 0) + (Number(e.principal)||0);
-          }
-        }
-        const rows = Object.entries(bal).filter(([_,v]) => v).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]));
-        if (!rows.length){
-          const empty = document.createElement("div");
-          empty.className = "tiny muted";
-          empty.style.marginTop = "10px";
-          empty.textContent = "No creditors yet";
-          body.appendChild(empty);
-          return;
-        }
-        for (const [name,amt] of rows.slice(0, 18)){
-          const r = renderTapRow({
-            kind:"iou",
-            side:"creditor",
-            person:name,
-            title:name,
-            meta:"Outstanding",
-            amt: money(Math.abs(amt)),
-            accent:"var(--red)"
-          });
-          body.appendChild(r);
-        }
-        return;
-      }
-
-      // ✅ Fiduciary deep dive: By purpose + By person + drilldowns
-      if (kind === "fiduciary"){
-        const fidAll = list.filter(e => e.type === "fiduciary");
-        const total = fidAll.reduce((acc,e)=> acc + (Number(e.total)||0), 0);
-
-        sub.textContent = `Total ${money(total)} • Entries ${fidAll.length}`;
-
-        if (!fidAll.length){
-          const empty = document.createElement("div");
-          empty.className = "tiny muted";
-          empty.style.marginTop = "10px";
-          empty.textContent = "No fiduciary entries yet";
-          body.appendChild(empty);
-          return;
-        }
-
-        // Build nested aggregates:
-        // goalAgg[goal] = { total, byUser: {user: total} }
-        // userAgg[user] = { total, byGoal: {goal: total} }
-        const goalAgg = Object.create(null);
-        const userAgg = Object.create(null);
-
-        for (const e of fidAll){
-          const g = (e.goal || "").trim() || "—";
-          const u = (e.user || "").trim() || "—";
-          const amt = Number(e.total)||0;
-
-          if (!goalAgg[g]) goalAgg[g] = { total:0, byUser:Object.create(null) };
-          goalAgg[g].total += amt;
-          goalAgg[g].byUser[u] = (goalAgg[g].byUser[u] || 0) + amt;
-
-          if (!userAgg[u]) userAgg[u] = { total:0, byGoal:Object.create(null) };
-          userAgg[u].total += amt;
-          userAgg[u].byGoal[g] = (userAgg[u].byGoal[g] || 0) + amt;
-        }
-
-        const goals = Object.entries(goalAgg).sort((a,b)=> Math.abs(b[1].total) - Math.abs(a[1].total));
-        const users = Object.entries(userAgg).sort((a,b)=> Math.abs(b[1].total) - Math.abs(a[1].total));
-
-        // helper: small section header
-        const sectionTitle = (txt) => {
-          const s = document.createElement("div");
-          s.className = "tiny muted";
-          s.style.marginTop = "14px";
-          s.textContent = txt;
-          body.appendChild(s);
-        };
-
-        // helper: compact title for opened drill blocks
-        const miniTitle = (txt) => {
-          const s = document.createElement("div");
-          s.className = "ledgerSubline";
-          s.style.marginTop = "10px";
-          s.textContent = txt;
-          body.appendChild(s);
-        };
-
-        // helper: expand panel rows under a drill
-        const renderDrillRows = (rows, labelLeft, accent) => {
-          for (const [name,amt] of rows){
-            const r = document.createElement("div");
-            r.className = "row";
-            r.style.padding = "8px 0";
-            r.style.borderBottom = "1px solid #101014";
-
-            const L = document.createElement("div");
-            L.className = "rowLeft";
-            const nm = document.createElement("div");
-            nm.className = "rowName";
-            nm.style.fontSize = "11px";
-            nm.textContent = name;
-            const mt = document.createElement("div");
-            mt.className = "rowMeta";
-            mt.textContent = labelLeft;
-            L.appendChild(nm); L.appendChild(mt);
-
-            const R = document.createElement("div");
-            R.className = "rowAmt mask";
-            R.style.color = accent || "";
-            R.textContent = money(Math.abs(amt));
-
-            r.appendChild(L); r.appendChild(R);
-            body.appendChild(r);
-          }
-        };
-
-        // ---- BY PURPOSE ----
-        sectionTitle("By purpose");
-
-        for (const [g, obj] of goals.slice(0, 10)){
-          const isOpen = openFidDrill && openFidDrill.mode === "goal" && openFidDrill.key === g;
-
-          const top = renderTapRow({
-            kind:"entry",
-            entryId:"",
-            title: (isOpen ? "▼ " : "► ") + g,
-            meta: "Tap to drill down",
-            amt: money(Math.abs(obj.total)),
-            accent:"var(--yellow)"
-          });
-
-          top.dataset.open = "fiddrill";
-          top.dataset.mode = "goal";
-          top.dataset.key = g;
-
-          // IMPORTANT: prevent it from trying to open sheet
-          top.dataset.id = "";
-
-          body.appendChild(top);
-
-          if (isOpen){
-            const byU = Object.entries(obj.byUser).sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]));
-            miniTitle("Contributors");
-            renderDrillRows(byU.slice(0, 12), "Total contributed", "var(--yellow)");
-
-            miniTitle("Recent entries");
-            const recent = fidAll
-              .filter(e => ((e.goal||"").trim()||"—") === g)
-              .slice(0, 8);
-
-            for (const e of recent){
-              const meta = `${e.user ? e.user : "—"}${e.acct ? (" • " + e.acct) : ""} • ${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim();
-              body.appendChild(renderTapRow({
-                kind:"entry",
-                entryId:e.id,
-                title:(e.name || "Fiduciary"),
-                meta,
-                amt: money(Math.abs(Number(e.total)||0)),
-                accent:"var(--yellow)"
-              }));
+        body.innerHTML = `
+          ${ledgerSearchBox("assets", "Search assets…")}
+          <div class="ledgerSubline">Initial • Current • Growth</div>
+          <div>
+            ${
+              assets.length
+                ? assets.map(a => `
+                    <div class="row tap" data-asset="${esc(a.name)}">
+                      <div class="rowLeft">
+                        <div class="rowName">${esc(a.name)}</div>
+                        <div class="rowMeta">
+                          Init ${money(a.initial)} • Now ${money(a.current)} • Growth ${money(a.growth)}${a.initial>0 ? ` (${pct(a.growth/a.initial)})` : ""}
+                        </div>
+                      </div>
+                      <div class="rowAmt mask" style="color:var(--blue);display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+                        <div>${money(a.current)}</div>
+                        <span class="chipBtn" data-asset-update="${esc(a.name)}">Update</span>
+                      </div>
+                    </div>
+                  `).join("")
+                : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`
             }
-          }
-        }
+            ${d.assetDetail ? renderAssetDetail(d.assetDetail) : ""}
+          </div>
+        `;
+        wireLedgerSearch(body, "assets");
+        return;
+      }
 
-        // ---- BY PERSON ----
-        sectionTitle("By person");
+      if(key === "debtors"){
+        const list = d.debtorsList
+          .filter(p => (p.name||"").toLowerCase().includes(filter))
+          .sort((a,b) => b.outstanding - a.outstanding);
 
-        for (const [u, obj] of users.slice(0, 10)){
-          const isOpen = openFidDrill && openFidDrill.mode === "user" && openFidDrill.key === u;
-
-          const top = renderTapRow({
-            kind:"entry",
-            entryId:"",
-            title: (isOpen ? "▼ " : "► ") + u,
-            meta: "Tap to drill down",
-            amt: money(Math.abs(obj.total)),
-            accent:"var(--yellow)"
-          });
-
-          top.dataset.open = "fiddrill";
-          top.dataset.mode = "user";
-          top.dataset.key = u;
-          top.dataset.id = "";
-
-          body.appendChild(top);
-
-          if (isOpen){
-            const byG = Object.entries(obj.byGoal).sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]));
-            miniTitle("Purposes");
-            renderDrillRows(byG.slice(0, 12), "Total contributed", "var(--yellow)");
-
-            miniTitle("Recent entries");
-            const recent = fidAll
-              .filter(e => ((e.user||"").trim()||"—") === u)
-              .slice(0, 8);
-
-            for (const e of recent){
-              const meta = `${e.goal ? e.goal : "—"}${e.acct ? (" • " + e.acct) : ""} • ${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim();
-              body.appendChild(renderTapRow({
-                kind:"entry",
-                entryId:e.id,
-                title:(e.name || "Fiduciary"),
-                meta,
-                amt: money(Math.abs(Number(e.total)||0)),
-                accent:"var(--yellow)"
-              }));
+        body.innerHTML = `
+          ${ledgerSearchBox("debtors", "Search debtors…")}
+          <div class="ledgerSubline">Tap a name to see itemised entries</div>
+          <div>
+            ${
+              list.length
+                ? list.map(p => `
+                  <div class="listItem" data-debtor="${esc(p.name)}">
+                    <div class="liName">${esc(p.name)}</div>
+                    <div class="liAmt mask" style="color:var(--emerald)">${money(p.outstanding)}</div>
+                  </div>
+                `).join("")
+                : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`
             }
-          }
-        }
+          </div>
+          ${d.debtDetail?.mode === "debtors" ? renderDebtDetail(d.debtDetail) : ""}
+        `;
+        wireLedgerSearch(body, "debtors");
+        return;
+      }
 
+      if(key === "creditors"){
+        const list = d.creditorsList
+          .filter(p => (p.name||"").toLowerCase().includes(filter))
+          .sort((a,b) => b.outstanding - a.outstanding);
+
+        body.innerHTML = `
+          ${ledgerSearchBox("creditors", "Search creditors…")}
+          <div class="ledgerSubline">Tap a name to see itemised entries</div>
+          <div>
+            ${
+              list.length
+                ? list.map(p => `
+                  <div class="listItem" data-creditor="${esc(p.name)}">
+                    <div class="liName">${esc(p.name)}</div>
+                    <div class="liAmt mask" style="color:var(--red)">${money(p.outstanding)}</div>
+                  </div>
+                `).join("")
+                : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`
+            }
+          </div>
+          ${d.debtDetail?.mode === "creditors" ? renderDebtDetail(d.debtDetail) : ""}
+        `;
+        wireLedgerSearch(body, "creditors");
+        return;
+      }
+
+      if(key === "fiduciary"){
+        const goals = d.fidGoals
+          .filter(g => (g.key||"").toLowerCase().includes(filter))
+          .sort((a,b) => Math.abs(b.balance) - Math.abs(a.balance));
+        const persons = d.fidPersons
+          .filter(p => (p.key||"").toLowerCase().includes(filter))
+          .sort((a,b) => Math.abs(b.balance) - Math.abs(a.balance));
+
+        const detail = (fidDetail.mode && fidDetail.key) ? buildFidDetail(d.entriesActive, fidDetail.mode, fidDetail.key) : null;
+
+        body.innerHTML = `
+          ${ledgerSearchBox("fiduciary", "Search goals or people…")}
+          <div class="ledgerSubline">Two views: By Purpose • By Person</div>
+
+          <div class="twoCol">
+            <div class="panel">
+              <div class="panelHead">
+                <div class="panelTitle">By Purpose</div>
+                <div class="badge bFid">Goals</div>
+              </div>
+              <div>
+                ${goals.length ? goals.map(g => `
+                  <div class="listItem" data-fid-goal="${esc(g.key)}">
+                    <div class="liName">${esc(g.key)}</div>
+                    <div class="liAmt mask" style="color:var(--yellow)">${money(g.balance)}</div>
+                  </div>
+                `).join("") : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`}
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panelHead">
+                <div class="panelTitle">By Person</div>
+                <div class="badge bFid">People</div>
+              </div>
+              <div>
+                ${persons.length ? persons.map(p => `
+                  <div class="listItem" data-fid-person="${esc(p.key)}">
+                    <div class="liName">${esc(p.key)}</div>
+                    <div class="liAmt mask" style="color:var(--yellow)">${money(p.balance)}</div>
+                  </div>
+                `).join("") : `<div class="rowMeta" style="padding:10px 0;">No matches</div>`}
+              </div>
+            </div>
+          </div>
+
+          ${detail ? renderFidDetail(detail) : ""}
+        `;
+        wireLedgerSearch(body, "fiduciary");
         return;
       }
     }
 
-    // ---------- Search ----------
-    let qType = "all";
-    function setQType(t){
-      qType = t;
-      document.querySelectorAll('[data-qtype]').forEach(b => {
-        const is = (b.getAttribute("data-qtype") === t);
-        b.style.boxShadow = is ? "0 0 0 2px rgba(16,185,129,.18) inset" : "none";
-      });
-      runSearch();
-    }
-    function runSearch(){
-      const s = ($("q").value || "").toLowerCase().trim();
-      const qs = $("qStart").value || "";
-      const qe = $("qEnd").value || "";
+    function renderAudit(){
+      const q = (el.auditFilter.value || "").trim().toLowerCase();
+      const entries = state.entries
+        .slice()
+        .sort((a,b) => b.ts - a.ts)
+        .filter(e => {
+          if(!q) return true;
+          const blob = [
+            e.kind, e.desc, e.note,
+            e.meta?.account, e.meta?.person, e.meta?.goal,
+            e.meta?.assetName, e.meta?.action,
+            e.status, e.supersedesId
+          ].join(" ").toLowerCase();
+          return blob.includes(q);
+        })
+        .slice(0, 120);
 
-      const out = $("qRes");
-      out.innerHTML = "";
-
-      const list = db.slice().sort((a,b) => (b.ts||0) - (a.ts||0)).filter(e => {
-        const hay = [
-          e.name, e.category, e.bucket, e.debtor, e.creditor, e.goal, e.user, e.note, e.term, e.rate, e.acct
-        ].filter(Boolean).join(" ").toLowerCase();
-
-        if (s && !hay.includes(s)) return false;
-        if (qs && (e.date || "") < qs) return false;
-        if (qe && (e.date || "") > qe) return false;
-
-        if (qType === "all") return true;
-        if (qType === "income") return e.type === "income";
-        if (qType === "expense") return e.type === "expense";
-        if (qType === "asset") return e.type === "asset";
-        if (qType === "fid") return e.type === "fiduciary";
-        if (qType === "iou"){
-          return ["debtor","debt_repayment","creditor","credit_settlement"].includes(e.type);
-        }
-        return true;
-      });
-
-      if (!list.length){
-        const empty = document.createElement("div");
-        empty.className = "tiny muted";
-        empty.style.marginTop = "12px";
-        empty.textContent = "No results";
-        out.appendChild(empty);
-        return;
-      }
-
-      for (const e of list){
-        const { badgeText, badgeClass } = badgeFor(e);
-
-        const card = document.createElement("div");
-        card.style.border = "1px solid #151518";
-        card.style.borderRadius = "18px";
-        card.style.padding = "14px 14px";
-        card.style.margin = "0 0 10px 0";
-        card.style.background = "rgba(255,255,255,.03)";
-        card.dataset.open = "sheet";
-        card.dataset.id = e.id;
-
-        const head = document.createElement("div");
-        head.className = "flex between center";
-
-        const L = document.createElement("div");
-        L.style.minWidth = "0";
-
-        const t = document.createElement("div");
-        t.className = "rowName";
-        t.textContent = e.name || "Transaction";
-
-        const m = document.createElement("div");
-        m.className = "rowMeta";
-        const acct = e.acct ? (e.acct + " • ") : "";
-        m.textContent = acct + `${fmtDDMMYYYY(e.date)} ${e.time || ""}`.trim();
-
-        L.appendChild(t);
-        L.appendChild(m);
-
-        const R = document.createElement("div");
-        R.className = "col";
-        R.style.alignItems = "flex-end";
-        const b = document.createElement("span");
-        b.className = "badge " + badgeClass;
-        b.textContent = badgeText;
-        const a = document.createElement("div");
-        a.className = "rowAmt mask";
-        a.textContent = money(Math.abs(entryAmount(e)));
-        R.appendChild(b);
-        R.appendChild(a);
-
-        head.appendChild(L);
-        head.appendChild(R);
-        card.appendChild(head);
-        out.appendChild(card);
-      }
+      el.auditList.innerHTML = entries.length
+        ? entries.map(e => tightRow(e, { audit:true })).join("")
+        : `<div class="rowMeta" style="padding:10px 0;">No audit entries</div>`;
     }
 
-    // ---------- CRUD ----------
-    function deleteEntry(id, allowUndo){
-      const idx = db.findIndex(x => x.id === id);
-      if (idx < 0) return;
+    function renderSearch(){
+      const q = (el.q.value || "").trim().toLowerCase();
+      const type = state.ui.searchType || "all";
+      const start = el.qStart.value ? new Date(el.qStart.value).getTime() : null;
+      const end = el.qEnd.value ? (new Date(el.qEnd.value).getTime() + 24*3600*1000 - 1) : null;
 
-      const removed = db.splice(idx,1)[0];
-      save();
-      render();
+      const entries = state.entries
+        .filter(e => e.status !== "deleted") // keep search clean
+        .filter(e => {
+          if(type === "all") return true;
+          if(type === "income") return e.kind === "income";
+          if(type === "expense") return e.kind === "expense";
+          if(type === "asset") return e.kind === "asset";
+          if(type === "iou") return e.kind === "iou";
+          if(type === "fid") return e.kind === "fid";
+          return true;
+        })
+        .filter(e => {
+          if(start && e.ts < start) return false;
+          if(end && e.ts > end) return false;
+          return true;
+        })
+        .filter(e => {
+          if(!q) return true;
+          return searchHit(e, q);
+        })
+        .sort((a,b) => b.ts - a.ts)
+        .slice(0, 200);
 
-      if (allowUndo){
-        lastDeleted = removed;
-        showToast("Deleted", () => {
-          if (!lastDeleted) return;
-          db.push(lastDeleted);
-          lastDeleted = null;
-          save();
-          render();
-          showToast("Restored");
+      el.qRes.innerHTML = entries.length
+        ? entries.map(e => tightRow(e, { compact:true })).join("")
+        : `<div class="rowMeta" style="padding:10px 0;">No results</div>`;
+    }
+
+    // ---------- Detail Panels ----------
+    function showDebtDetails(mode, who){
+      state.ui.debtDetail = { mode, who };
+      renderLedgerBody(mode);
+    }
+
+    function showAssetDetails(name){
+      state.ui.assetDetailName = name;
+      renderLedgerBody("assets");
+    }
+
+    function renderDebtDetail(detail){
+      // detail: {mode:'debtors'|'creditors', who:string, outstanding, given, recovered, entries:[]}
+      const title = detail.mode === "debtors" ? "Debtor details" : "Creditor details";
+      const color = detail.mode === "debtors" ? "var(--emerald)" : "var(--red)";
+
+      return `
+        <div class="detailBox">
+          <div class="detailTitle">
+            <div class="t">${esc(title)} • ${esc(detail.who)}</div>
+            <div class="s mask" style="color:${color}">${money(detail.outstanding)}</div>
+          </div>
+
+          <div class="kv"><div class="kvL">Outstanding</div><div class="kvR mask">${money(detail.outstanding)}</div></div>
+          <div class="kv"><div class="kvL">${detail.mode==="debtors"?"Total given":"Total received"}</div><div class="kvR mask">${money(detail.given)}</div></div>
+          <div class="kv"><div class="kvL">${detail.mode==="debtors"?"Total recovered":"Total repaid"}</div><div class="kvR mask">${money(detail.recovered)}</div></div>
+
+          <div class="ledgerSubline" style="margin-top:12px;">Itemised entries</div>
+          <div>
+            ${detail.entries.length ? detail.entries.map(e => tightRow(e, {compact:true})).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAssetDetail(a){
+      return `
+        <div class="detailBox">
+          <div class="detailTitle">
+            <div class="t">${esc(a.name)}</div>
+            <div class="s mask" style="color:var(--blue)">${money(a.current)}</div>
+          </div>
+
+          <div class="kv"><div class="kvL">Initial</div><div class="kvR mask">${money(a.initial)}</div></div>
+          <div class="kv"><div class="kvL">Current</div><div class="kvR mask">${money(a.current)}</div></div>
+          <div class="kv"><div class="kvL">Growth</div><div class="kvR mask">${money(a.growth)}${a.initial>0 ? ` (${pct(a.growth/a.initial)})` : ""}</div></div>
+
+          <div class="ledgerSubline" style="margin-top:12px;">Valuation history</div>
+          <div>
+            ${a.history.length ? a.history.map(e => tightRow(e, {compact:true})).join("") : `<div class="rowMeta" style="padding:10px 0;">No history</div>`}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFidDetail(detail){
+      // detail: {mode:'goal'|'person', key, balance, totals:{in,out}, entries:[]}
+      const label = detail.mode === "goal" ? "Purpose" : "Person";
+      return `
+        <div class="detailBox">
+          <div class="detailTitle">
+            <div class="t">${label}: ${esc(detail.key)}</div>
+            <div class="s mask" style="color:var(--yellow)">${money(detail.balance)}</div>
+          </div>
+
+          <div class="kv"><div class="kvL">Total in</div><div class="kvR mask">${money(detail.totals.in)}</div></div>
+          <div class="kv"><div class="kvL">Total out</div><div class="kvR mask">${money(detail.totals.out)}</div></div>
+
+          <div class="ledgerSubline" style="margin-top:12px;">Itemised entries</div>
+          <div>
+            ${detail.entries.length ? detail.entries.map(e => tightRow(e, {compact:true})).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
+          </div>
+
+          <div style="margin-top:10px;">
+            <span class="chipBtn" data-fid-clear="1">Clear selection</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // ---------- Ledger Search box ----------
+    function ledgerSearchBox(key, placeholder){
+      return `
+        <div class="miniSearch">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex:0 0 auto;">
+            <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#9ca3af" stroke-width="2"/>
+            <path d="M16.5 16.5 21 21" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input class="input" data-ledger-filter="${key}" placeholder="${escAttr(placeholder)}" value="${escAttr(ledgerFilters[key]||"")}" />
+        </div>
+      `;
+    }
+
+    function wireLedgerSearch(body, key){
+      const inp = body.querySelector(`[data-ledger-filter="${key}"]`);
+      if(!inp) return;
+      inp.addEventListener("input", () => {
+        ledgerFilters[key] = inp.value || "";
+        renderLedgerBody(key);
+      }, { once:true });
+      // caret to end on rerender is fine.
+    }
+
+    // ---------- Form ----------
+    function openForm(kind, opts={}){
+      currentForm = kind;
+      currentEditId = null;
+
+      // If opening from entry (edit or duplicate)
+      if(opts.fromEntry){
+        const e = opts.fromEntry;
+        if(!opts.duplicate) currentEditId = e.id; // edit mode: supersede old
+        currentForm = e.kind;
+      }
+
+      // title
+      const title = (kind === "income") ? "Inflow"
+                  : (kind === "expense") ? "Expense"
+                  : (kind === "asset") ? "Asset"
+                  : (kind === "borrow") ? "Borrow"
+                  : (kind === "lend") ? "Lend"
+                  : (kind === "fid") ? "Fiduciary"
+                  : "Entry";
+      el.formTitle.textContent = currentEditId ? (title + " (Edit)") : title;
+
+      // reset
+      el.amount.value = "";
+      el.desc.value = "";
+      el.note.value = "";
+      el.dyn.innerHTML = "";
+      el.segWrap.classList.add("hidden");
+      el.segWrap.innerHTML = "";
+      el.desc.placeholder = "Description";
+      el.amount.placeholder = "0";
+
+      // build segments + dynamic fields
+      const pre = opts.fromEntry ? opts.fromEntry : null;
+
+      if(kind === "income" || kind === "expense"){
+        // account segment
+        const acct = (opts.fromEntry?.meta?.account) || state.ui.lastAccount || "spend";
+        buildSegment("Account", ["Spend","Bills","Savings"], acct, (val) => {
+          state.ui.lastAccount = val;
+          saveState();
         });
-      } else {
-        showToast("Deleted");
+        el.desc.placeholder = "Description";
       }
 
-      closeSheet();
-    }
-
-    function duplicateEntry(entry){
-      if (!entry) return;
-      const copy = JSON.parse(JSON.stringify(entry));
-      copy.id = uuid();
-      copy.ts = Date.now();
-      copy.date = nowISODate();
-      copy.time = nowISOTime();
-      db.push(copy);
-      save();
-      render();
-      showToast("Duplicated");
-      closeSheet();
-    }
-
-    // ---------- Forms ----------
-    function openForm(type){
-      formType = type;
-      settlementMode = false;
-      $("amount").value = "";
-      $("desc").value = "";
-      $("note").value = "";
-      $("nameList").innerHTML = "";
-      $("dyn").innerHTML = "";
-      $("segWrap").innerHTML = "";
-      $("segWrap").classList.add("hidden");
-
-      const titleMap = { income:"Inflow", expense:"Expense", asset:"Asset", borrow:"Borrow", lend:"Lend", fid:"Fiduciary" };
-      $("formTitle").textContent = titleMap[type] || "Entry";
-
-      if (type === "income") buildSettlementSeg("INFLOW", "RECOVER DEBT");
-      if (type === "expense"){
-        buildSettlementSeg("EXPENSE", "PAY DEBT");
-        buildExpenseFields();
+      if(kind === "asset"){
+        const assetMode = opts.assetMode || pre?.meta?.action || "new"; // 'new'|'update'
+        buildSegment("Mode", ["New","Update"], assetMode === "update" ? "update":"new", () => {});
+        const assetName = opts.assetName || pre?.meta?.assetName || "";
+        el.dyn.innerHTML = `
+          <input id="assetName" class="input" placeholder="Asset name" value="${escAttr(assetName)}" list="assetList" />
+          <datalist id="assetList"></datalist>
+        `;
+        el.desc.placeholder = "Description (optional)";
       }
-      if (type === "asset") buildAssetFields();
-      if (type === "borrow" || type === "lend") buildLoanFields(type);
-      if (type === "fid") buildFidFields();
+
+      if(kind === "borrow" || kind === "lend"){
+        // mode segment: new vs settle
+        const action = pre?.meta?.action || "new"; // 'new'|'settle'
+        buildSegment("Mode", ["New","Settle"], action === "settle" ? "settle":"new", () => {});
+        const who = pre?.meta?.person || "";
+        el.dyn.innerHTML = `
+          <input id="person" class="input" placeholder="Person" value="${escAttr(who)}" list="personList" />
+          <datalist id="personList"></datalist>
+        `;
+        el.desc.placeholder = "Description (optional)";
+      }
+
+      if(kind === "fid"){
+        const action = pre?.meta?.action || "in"; // 'in'|'out'
+        buildSegment("Direction", ["In","Out"], action, () => {});
+        const goal = pre?.meta?.goal || "";
+        const person = pre?.meta?.person || "";
+        el.dyn.innerHTML = `
+          <input id="goal" class="input" placeholder="Purpose / Goal" value="${escAttr(goal)}" list="goalList" />
+          <datalist id="goalList"></datalist>
+          <input id="person" class="input" placeholder="Person" value="${escAttr(person)}" list="personList2" />
+          <datalist id="personList2"></datalist>
+        `;
+        el.desc.placeholder = "Description (optional)";
+      }
+
+      // prefill common fields
+      if(pre){
+        el.amount.value = pre.amount ?? "";
+        el.desc.value = pre.desc ?? "";
+        el.note.value = pre.note ?? "";
+      }
+
+      // fill datalists inside dyn
+      fillDynamicDatalists();
 
       showView("form");
+      el.amount.focus();
     }
 
-    function buildSettlementSeg(left, right){
-      $("segWrap").classList.remove("hidden");
-      const wrap = document.createElement("div");
-      wrap.className = "flex gap8";
-      const a = document.createElement("button");
-      a.className = "btn";
-      a.style.flex = "1";
-      a.textContent = left;
-      const b = document.createElement("button");
-      b.className = "btn";
-      b.style.flex = "1";
-      b.textContent = right;
-
-      const apply = () => {
-        a.style.borderColor = settlementMode ? "#2a2a2f" : "rgba(16,185,129,.5)";
-        a.style.color = settlementMode ? "#fff" : "var(--emerald)";
-        b.style.borderColor = settlementMode ? "rgba(234,179,8,.5)" : "#2a2a2f";
-        b.style.color = settlementMode ? "var(--yellow)" : "#fff";
+    function buildSegment(label, labels, initialValue, onChange){
+      el.segWrap.classList.remove("hidden");
+      const map = {
+        "Spend":"spend","Bills":"bills","Savings":"savings",
+        "New":"new","Update":"update",
+        "Settle":"settle",
+        "In":"in","Out":"out"
       };
+      const init = map[initialValue] ? map[initialValue] : initialValue;
 
-      a.onclick = () => { settlementMode = false; rebuildDynamic(); apply(); };
-      b.onclick = () => { settlementMode = true; rebuildDynamic(); apply(); };
+      const buttons = labels.map(l => {
+        const val = map[l] || l.toLowerCase();
+        return `<button type="button" data-seg="${val}" class="${val===init ? "on":""}">${l}</button>`;
+      }).join("");
 
-      wrap.appendChild(a); wrap.appendChild(b);
-      $("segWrap").appendChild(wrap);
-      apply();
-    }
-
-    function rebuildDynamic(){
-      $("dyn").innerHTML = "";
-      $("nameList").innerHTML = "";
-
-      if (formType === "income"){
-        if (settlementMode){
-          const names = getDebtorNamesWithBalances();
-          fillNameList(names.map(x=>x.name));
-          buildPicker(names, "Pick debtor (tap)", (n)=>{ $("desc").value=n; showToast("Selected"); });
-        } else {
-          buildAccountSelector("acct", "Account (where money lands)");
-        }
-      }
-
-      if (formType === "expense"){
-        if (settlementMode){
-          const names = getCreditorNamesWithBalances();
-          fillNameList(names.map(x=>x.name));
-          buildPicker(names, "Pick creditor (tap)", (n)=>{ $("desc").value=n; showToast("Selected"); });
-        } else {
-          buildAccountSelector("acct", "Account (money leaves)");
-          buildExpenseFields();
-        }
-      }
-
-      if (formType === "borrow" || formType === "lend"){
-        buildLoanFields(formType);
-      }
-
-      if (formType === "fid"){
-        buildFidFields();
-      }
-    }
-
-    function fillNameList(names){
-      const dl = $("nameList");
-      for (const n of names){
-        const o = document.createElement("option");
-        o.value = n;
-        dl.appendChild(o);
-      }
-    }
-
-    function buildPicker(items, label, onPick){
-      const wrap = document.createElement("div");
-      wrap.style.border = "1px solid #151518";
-      wrap.style.borderRadius = "18px";
-      wrap.style.padding = "14px 14px";
-      wrap.style.background = "rgba(255,255,255,.03)";
-      wrap.style.marginTop = "10px";
-
-      const tt = document.createElement("div");
-      tt.className = "tiny muted";
-      tt.textContent = label;
-      wrap.appendChild(tt);
-
-      const body = document.createElement("div");
-      body.style.marginTop = "10px";
-
-      if (!items.length){
-        const empty = document.createElement("div");
-        empty.className = "tiny muted";
-        empty.textContent = "No saved names yet";
-        body.appendChild(empty);
-      } else {
-        for (const it of items.slice(0, 12)){
-          const r = document.createElement("div");
-          r.className = "row tap";
-          r.style.padding = "10px 0";
-          r.onclick = () => onPick(it.name);
-
-          const L = document.createElement("div");
-          L.className = "rowLeft";
-          const n = document.createElement("div");
-          n.className = "rowName";
-          n.textContent = it.name;
-
-          const m = document.createElement("div");
-          m.className = "rowMeta";
-          m.textContent = "Outstanding " + money(it.balance);
-
-          L.appendChild(n); L.appendChild(m);
-
-          const R = document.createElement("div");
-          R.className = "rowAmt";
-          R.textContent = "Tap";
-
-          r.appendChild(L); r.appendChild(R);
-          body.appendChild(r);
-        }
-      }
-
-      wrap.appendChild(body);
-      $("dyn").appendChild(wrap);
-    }
-
-    function buildAccountSelector(id, label){
-      const wrap = document.createElement("div");
-      wrap.style.border = "1px solid #151518";
-      wrap.style.borderRadius = "18px";
-      wrap.style.padding = "12px 14px";
-      wrap.style.background = "rgba(255,255,255,.03)";
-      wrap.style.marginTop = "10px";
-
-      const tt = document.createElement("div");
-      tt.className = "tiny muted";
-      tt.textContent = label;
-      wrap.appendChild(tt);
-
-      const sel = document.createElement("select");
-      sel.id = id;
-      sel.className = "input";
-      sel.style.marginTop = "6px";
-
-      const accts = getKnownAccounts();
-      sel.innerHTML = accts.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
-
-      // Prefer "Main Bank" if user has it, else Default
-      if (accts.includes("Main Bank")) sel.value = "Main Bank";
-      else sel.value = DEFAULT_ACCT;
-
-      wrap.appendChild(sel);
-
-      const hint = document.createElement("div");
-      hint.className = "tiny muted";
-      hint.style.marginTop = "10px";
-      hint.textContent = "Liquidity reads accounts only (bank/cash).";
-      wrap.appendChild(hint);
-
-      $("dyn").appendChild(wrap);
-
-      // Quick add account
-      const add = document.createElement("button");
-      add.className = "btn";
-      add.style.marginTop = "10px";
-      add.style.width = "100%";
-      add.textContent = "Add new account";
-      add.onclick = () => {
-        const name = prompt("New account name (e.g., GTBank, Cash, Wallet):");
-        if (!name) return;
-        const n = String(name).trim();
-        if (!n) return;
-        sel.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`);
-        sel.value = n;
-        showToast("Account added");
-      };
-      $("dyn").appendChild(add);
-    }
-
-    function buildExpenseFields(){
-      const bucket = document.createElement("select");
-      bucket.id = "bucket";
-      bucket.className = "input";
-      bucket.innerHTML = `
-        <option value="spend">Spend bucket</option>
-        <option value="bills">Bills bucket</option>
-        <option value="savings">Savings bucket</option>
+      el.segWrap.innerHTML = `
+        <div class="tiny muted" style="margin-bottom:8px;">${label}</div>
+        <div class="seg" id="seg">${buttons}</div>
       `;
 
-      const category = document.createElement("select");
-      category.id = "category";
-      category.className = "input";
-      category.innerHTML = `
-        <option value="Food">Food</option>
-        <option value="Transport">Transport</option>
-        <option value="Fuel">Fuel</option>
-        <option value="Bills">Bills</option>
-        <option value="Health">Health</option>
-        <option value="Shopping">Shopping</option>
-        <option value="Other">Other</option>
-      `;
-
-      $("dyn").appendChild(bucket);
-      $("dyn").appendChild(category);
+      const seg = $("#seg", el.segWrap);
+      seg.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-seg]");
+        if(!b) return;
+        $$("button", seg).forEach(x => x.classList.remove("on"));
+        b.classList.add("on");
+        onChange(b.getAttribute("data-seg"));
+      });
     }
 
-    function buildAssetFields(){
-      const cat = document.createElement("select");
-      cat.id = "assetCat";
-      cat.className = "input";
-      cat.innerHTML = `
-        <option value="Property">Property</option>
-        <option value="Vehicle">Vehicle</option>
-        <option value="Stock">Stock</option>
-        <option value="Other">Other</option>
-      `;
-      $("dyn").appendChild(cat);
+    function getSegmentValue(){
+      const btn = $("#seg button.on", el.segWrap);
+      return btn ? btn.getAttribute("data-seg") : null;
     }
 
-    function buildLoanFields(type){
-      const names = (type === "lend") ? getDebtorNamesWithBalances() : getCreditorNamesWithBalances();
-      fillNameList(names.map(x=>x.name));
-      buildPicker(names, (type==="lend" ? "Pick borrower (tap)" : "Pick lender (tap)"), (n)=>{ $("desc").value=n; showToast("Selected"); });
-
-      const rate = document.createElement("input");
-      rate.id = "rate";
-      rate.className = "input";
-      rate.type = "number";
-      rate.placeholder = "Rate % (optional)";
-
-      const due = document.createElement("input");
-      due.id = "term";
-      due.className = "input";
-      due.type = "date";
-      due.placeholder = "Due date";
-
-      $("dyn").appendChild(rate);
-      $("dyn").appendChild(due);
-
-      $("desc").placeholder = (type === "lend") ? "Borrower name" : "Lender name";
-    }
-
-    function buildFidFields(){
-      // Optional: allow selecting a funding account; if selected, it reduces liquidity.
-      buildAccountSelector("acct", "Funding account (optional)");
-
-      const goal = document.createElement("input");
-      goal.id = "goal";
-      goal.className = "input";
-      goal.placeholder = "Project / Goal";
-
-      const user = document.createElement("input");
-      user.id = "user";
-      user.className = "input";
-      user.placeholder = "Contributor";
-
-      $("dyn").appendChild(goal);
-      $("dyn").appendChild(user);
-    }
-
-    function getDebtorNamesWithBalances(){
-      const bal = Object.create(null);
-      for (const e of db){
-        if (e.type === "debtor" || e.type === "debt_repayment"){
-          const who = e.debtor || e.name || "Unknown";
-          bal[who] = (bal[who] || 0) + (Number(e.principal)||0);
-        }
+    async function executeForm(){
+      const amt = Number(el.amount.value);
+      if(!isFinite(amt) || amt <= 0){
+        return toast("Enter an amount");
       }
-      return Object.entries(bal)
-        .filter(([_,v]) => v)
-        .sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]))
-        .map(([name,balance]) => ({ name, balance }));
-    }
 
-    function getCreditorNamesWithBalances(){
-      const bal = Object.create(null);
-      for (const e of db){
-        if (e.type === "creditor" || e.type === "credit_settlement"){
-          const who = e.creditor || e.name || "Unknown";
-          bal[who] = (bal[who] || 0) + (Number(e.principal)||0);
-        }
+      const desc = (el.desc.value || "").trim();
+      const note = (el.note.value || "").trim();
+
+      // when editing, we create new entry and supersede old
+      const editOf = currentEditId ? getEntryById(currentEditId) : null;
+
+      if(currentForm === "income" || currentForm === "expense"){
+        const account = getSegmentValue() || state.ui.lastAccount || "spend";
+        const entry = makeEntry(currentForm, amt, desc, note, { account });
+        commitEntry(entry, editOf);
+        showView("dashboard");
+        renderAll();
+        toast(currentEditId ? "Edited" : "Saved");
+        return;
       }
-      return Object.entries(bal)
-        .filter(([_,v]) => v)
-        .sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]))
-        .map(([name,balance]) => ({ name, balance }));
+
+      if(currentForm === "asset"){
+        const mode = getSegmentValue() || "new"; // 'new'|'update'
+        const assetName = ($("#assetName")?.value || "").trim();
+        if(!assetName) return toast("Enter asset name");
+        const entry = makeEntry("asset", amt, desc, note, { action: mode, assetName });
+        commitEntry(entry, editOf);
+        showView("dashboard");
+        renderAll();
+        toast(currentEditId ? "Edited" : "Saved");
+        return;
+      }
+
+      if(currentForm === "borrow" || currentForm === "lend"){
+        const mode = getSegmentValue() || "new"; // 'new'|'settle'
+        const who = ($("#person")?.value || "").trim();
+        if(!who) return toast("Enter person");
+        const entry = makeEntry("iou", amt, desc, note, {
+          direction: currentForm === "lend" ? "debtors" : "creditors",
+          action: mode,
+          person: who
+        });
+        commitEntry(entry, editOf);
+        showView("dashboard");
+        renderAll();
+        toast(currentEditId ? "Edited" : "Saved");
+        return;
+      }
+
+      if(currentForm === "fid"){
+        const dir = getSegmentValue() || "in";
+        const goal = ($("#goal")?.value || "").trim();
+        const who = ($("#person")?.value || "").trim();
+        if(!goal) return toast("Enter purpose / goal");
+        if(!who) return toast("Enter person");
+        const entry = makeEntry("fid", amt, desc, note, { action: dir, goal, person: who });
+        commitEntry(entry, editOf);
+        showView("dashboard");
+        renderAll();
+        toast(currentEditId ? "Edited" : "Saved");
+        return;
+      }
+
+      toast("Unknown form");
     }
 
-    function execute(){
-      const amt = Math.abs(Number($("amount").value)||0);
-      const desc = ($("desc").value || "").trim();
-      const note = ($("note").value || "").trim();
-
-      if (!amt || !desc){ showToast("Enter amount + description"); return; }
-
-      const base = {
-        id: uuid(),
-        name: desc,
-        date: nowISODate(),
-        time: nowISOTime(),
+    function makeEntry(kind, amount, desc, note, meta={}){
+      return {
+        id: uid(),
         ts: Date.now(),
-        total: 0
+        kind,
+        amount: Number(amount),
+        desc: desc || "",
+        note: note || "",
+        meta,
+        status: "active",
+        supersedesId: null
       };
-      if (note) base.note = note;
+    }
 
-      if (formType === "income"){
-        if (settlementMode){
-          base.type = "debt_repayment";
-          base.debtor = desc;
-          base.principal = -amt;
-          base.total = 0;
-        } else {
-          base.type = "income";
-          base.total = amt;
-          base.acct = ($("acct")?.value || DEFAULT_ACCT).trim() || DEFAULT_ACCT;
+    function commitEntry(newEntry, oldEntry){
+      // immutable-ish: do not overwrite old; mark old as superseded and add new referencing it
+      if(oldEntry){
+        const idx = state.entries.findIndex(x => x.id === oldEntry.id);
+        if(idx !== -1){
+          state.entries[idx] = { ...state.entries[idx], status:"superseded" };
+        }
+        newEntry.supersedesId = oldEntry.id;
+        newEntry.meta = { ...newEntry.meta, editedFrom: oldEntry.id };
+      }
+      state.entries.push(newEntry);
+
+      // remember last used values
+      if(newEntry.kind === "asset") state.ui.lastAsset = newEntry.meta.assetName || state.ui.lastAsset;
+      if(newEntry.kind === "iou") state.ui.lastPerson = newEntry.meta.person || state.ui.lastPerson;
+      if(newEntry.kind === "fid") {
+        state.ui.lastGoal = newEntry.meta.goal || state.ui.lastGoal;
+        state.ui.lastPerson2 = newEntry.meta.person || state.ui.lastPerson2;
+      }
+      saveState();
+    }
+
+    function deleteEntry(id){
+      const idx = state.entries.findIndex(e => e.id === id);
+      if(idx === -1) return;
+      state.entries[idx] = { ...state.entries[idx], status:"deleted" };
+      saveState();
+    }
+
+    // ---------- Derivations ----------
+    function derive(){
+      const entriesAll = state.entries.slice().sort((a,b) => a.ts - b.ts);
+      const entriesActive = entriesAll.filter(e => e.status === "active");
+
+      // Accounts from income/expense only (S/B/S)
+      const accounts = { spend:0, bills:0, savings:0 };
+      let expensesTotal = 0;
+
+      for(const e of entriesActive){
+        if(e.kind === "income"){
+          const acct = e.meta?.account || "spend";
+          accounts[acct] = (accounts[acct] || 0) + e.amount;
+        }
+        if(e.kind === "expense"){
+          const acct = e.meta?.account || "spend";
+          accounts[acct] = (accounts[acct] || 0) - e.amount;
+          expensesTotal += e.amount;
         }
       }
-      else if (formType === "expense"){
-        if (settlementMode){
-          base.type = "credit_settlement";
-          base.creditor = desc;
-          base.principal = -amt;
-          base.total = 0;
-        } else {
-          base.type = "expense";
-          base.total = -amt;
 
-          base.acct = ($("acct")?.value || DEFAULT_ACCT).trim() || DEFAULT_ACCT;
+      const liquidityTotal = accounts.spend + accounts.bills + accounts.savings;
 
-          const bucket = $("bucket")?.value || "spend";
-          const category = $("category")?.value || "Other";
-          base.bucket = bucket;
-          base.category = category;
+      // Assets (initial vs current)
+      const assetEntries = entriesActive.filter(e => e.kind === "asset" && e.meta?.assetName);
+      const assetsMap = new Map();
+      for(const e of assetEntries){
+        const name = e.meta.assetName;
+        if(!assetsMap.has(name)) assetsMap.set(name, []);
+        assetsMap.get(name).push(e);
+      }
+
+      const assetsList = [];
+      for(const [name, list] of assetsMap.entries()){
+        list.sort((a,b) => a.ts - b.ts);
+        const initial = list[0]?.amount || 0;
+        const current = list[list.length-1]?.amount || 0;
+        const growth = current - initial;
+        const history = list.slice().sort((a,b)=> b.ts - a.ts);
+        assetsList.push({ name, initial, current, growth, history });
+      }
+
+      const assetsTotal = assetsList.reduce((s,a)=> s + (a.current||0), 0);
+
+      // Debt (IOU) grouping + itemised
+      const iouEntries = entriesActive.filter(e => e.kind === "iou");
+      const debtorsMap = new Map();   // person -> {given, recovered, entries}
+      const creditorsMap = new Map();
+
+      for(const e of iouEntries){
+        const dir = e.meta?.direction; // 'debtors'|'creditors'
+        const who = (e.meta?.person || "").trim();
+        if(!who) continue;
+        const target = (dir === "creditors") ? creditorsMap : debtorsMap;
+        if(!target.has(who)) target.set(who, { name: who, given:0, recovered:0, entries:[] });
+        const box = target.get(who);
+        const action = e.meta?.action || "new"; // 'new' increases outstanding, 'settle' reduces
+        if(action === "settle") box.recovered += e.amount;
+        else box.given += e.amount;
+        box.entries.push(e);
+      }
+
+      const debtorsList = Array.from(debtorsMap.values()).map(p => ({
+        ...p,
+        outstanding: Math.max(0, p.given - p.recovered)
+      }));
+      const creditorsList = Array.from(creditorsMap.values()).map(p => ({
+        ...p,
+        outstanding: Math.max(0, p.given - p.recovered)
+      }));
+
+      const debtorsOutstanding = debtorsList.reduce((s,p)=> s + p.outstanding, 0);
+      const creditorsOutstanding = creditorsList.reduce((s,p)=> s + p.outstanding, 0);
+      const debtTotal = debtorsOutstanding + creditorsOutstanding;
+
+      // Fiduciary 2-column grouping
+      const fidEntries = entriesActive.filter(e => e.kind === "fid");
+      const fidGoalMap = new Map();   // goal -> balance
+      const fidPersonMap = new Map(); // person -> balance
+
+      let fidTotal = 0;
+      for(const e of fidEntries){
+        const goal = (e.meta?.goal || "").trim();
+        const person = (e.meta?.person || "").trim();
+        const dir = e.meta?.action || "in"; // 'in' adds, 'out' subtracts
+        const signed = (dir === "out") ? -e.amount : e.amount;
+
+        fidTotal += signed;
+
+        if(goal){
+          fidGoalMap.set(goal, (fidGoalMap.get(goal) || 0) + signed);
+        }
+        if(person){
+          fidPersonMap.set(person, (fidPersonMap.get(person) || 0) + signed);
         }
       }
-      else if (formType === "asset"){
-        base.type = "asset";
-        base.total = amt;
-        base.cat = $("assetCat")?.value || "Other";
-      }
-      else if (formType === "borrow"){
-        base.type = "creditor";
-        base.total = 0;
-        base.creditor = desc;
-        base.principal = amt;
-        base.rate = $("rate")?.value || "";
-        base.term = $("term")?.value || "";
-      }
-      else if (formType === "lend"){
-        base.type = "debtor";
-        base.total = 0;
-        base.debtor = desc;
-        base.principal = amt;
-        base.rate = $("rate")?.value || "";
-        base.term = $("term")?.value || "";
-      }
-      else if (formType === "fid"){
-        base.type = "fiduciary";
-        base.total = amt;
-        base.goal = $("goal")?.value || "";
-        base.user = $("user")?.value || "";
-        const acct = ($("acct")?.value || "").trim();
-        if (acct && acct !== DEFAULT_ACCT) base.acct = acct; // keep your current behavior
+
+      const fidGoals = Array.from(fidGoalMap.entries()).map(([key,balance]) => ({ key, balance }));
+      const fidPersons = Array.from(fidPersonMap.entries()).map(([key,balance]) => ({ key, balance }));
+
+      // detail panels requested in UI state
+      let debtDetail = null;
+      if(state.ui.debtDetail?.mode && state.ui.debtDetail?.who){
+        const mode = state.ui.debtDetail.mode;
+        const who = state.ui.debtDetail.who;
+        const map = (mode === "creditors") ? creditorsMap : debtorsMap;
+        const p = map.get(who);
+        if(p){
+          const outstanding = Math.max(0, p.given - p.recovered);
+          debtDetail = {
+            mode,
+            who,
+            outstanding,
+            given: p.given,
+            recovered: p.recovered,
+            entries: p.entries.slice().sort((a,b)=> b.ts - a.ts)
+          };
+        }
       }
 
-      db.push(base);
-      save();
-      render();
+      let assetDetail = null;
+      if(state.ui.assetDetailName){
+        const name = state.ui.assetDetailName;
+        const a = assetsList.find(x => x.name === name);
+        if(a) assetDetail = a;
+      }
 
-      $("amount").value = "";
-      $("desc").value = "";
-      $("note").value = "";
+      // net worth (cash + assets only; IOU + fiduciary excluded by design)
+      const netWorth = liquidityTotal + assetsTotal;
 
-      showToast("Saved");
+      return {
+        entriesAll,
+        entriesActive,
+        accounts,
+        liquidityTotal,
+        assetsList,
+        assetsTotal,
+        expensesTotal,
+        debtorsList,
+        creditorsList,
+        debtorsOutstanding,
+        creditorsOutstanding,
+        debtTotal,
+        fidTotal,
+        fidGoals,
+        fidPersons,
+        debtDetail,
+        assetDetail
+      };
+    }
+
+    function buildFidDetail(entriesActive, mode, key){
+      const isGoal = mode === "goal";
+      const hits = entriesActive
+        .filter(e => e.kind === "fid")
+        .filter(e => {
+          const g = (e.meta?.goal || "").trim();
+          const p = (e.meta?.person || "").trim();
+          return isGoal ? g === key : p === key;
+        })
+        .sort((a,b)=> b.ts - a.ts);
+
+      let tin = 0, tout = 0;
+      for(const e of hits){
+        const dir = e.meta?.action || "in";
+        if(dir === "out") tout += e.amount;
+        else tin += e.amount;
+      }
+      const balance = tin - tout;
+
+      return { mode, key, balance, totals:{in:tin, out:tout}, entries: hits };
+    }
+
+    // ---------- Sheet ----------
+    function openSheet(id){
+      const e = getEntryById(id);
+      if(!e) return;
+
+      currentSheetId = id;
+      el.sheetTitle.textContent = sheetTitle(e);
+      el.sheetAmt.textContent = sheetAmountText(e);
+
+      el.sheetMeta.innerHTML = `
+        <div class="kv"><div class="kvL">Date</div><div class="kvR">${fmtDateTime(e.ts)}</div></div>
+        <div class="kv"><div class="kvL">Status</div><div class="kvR">${esc(e.status || "active")}${e.supersedesId ? " • revision" : ""}</div></div>
+        ${e.meta?.account ? `<div class="kv"><div class="kvL">Account</div><div class="kvR">${esc(e.meta.account)}</div></div>` : ""}
+        ${e.meta?.assetName ? `<div class="kv"><div class="kvL">Asset</div><div class="kvR">${esc(e.meta.assetName)}</div></div>` : ""}
+        ${e.meta?.person ? `<div class="kv"><div class="kvL">Person</div><div class="kvR">${esc(e.meta.person)}</div></div>` : ""}
+        ${e.meta?.goal ? `<div class="kv"><div class="kvL">Purpose</div><div class="kvR">${esc(e.meta.goal)}</div></div>` : ""}
+        ${e.desc ? `<div class="kv"><div class="kvL">Desc</div><div class="kvR">${esc(e.desc)}</div></div>` : ""}
+        ${e.note ? `<div class="kv"><div class="kvL">Note</div><div class="kvR">${esc(e.note)}</div></div>` : ""}
+        ${e.supersedesId ? `<div class="kv"><div class="kvL">Edits</div><div class="kvR">${esc(e.supersedesId)}</div></div>` : ""}
+      `;
+
+      // actions availability
+      const canEdit = e.status === "active";
+      el.editBtn.disabled = !canEdit;
+      el.delBtn.disabled = (e.status === "deleted");
+
+      el.sheetScrim.classList.add("on");
+      el.sheet.classList.add("on");
+      el.sheet.setAttribute("aria-hidden","false");
+    }
+
+    function closeSheet(){
+      currentSheetId = null;
+      el.sheetScrim.classList.remove("on");
+      el.sheet.classList.remove("on");
+      el.sheet.setAttribute("aria-hidden","true");
+    }
+
+    // ---------- UI helpers ----------
+    function tightRow(e, opts={}){
+      const badge = kindBadge(e);
+      const amtColor = amountColor(e);
+      const statusBadge = (e.status === "superseded") ? `<span class="badge bRev">REV</span>` :
+                          (e.status === "deleted") ? `<span class="badge bRev">DEL</span>` : "";
+
+      // One-line-ish: Date • Name • Amount (compact)
+      const metaLine = compactMeta(e);
+
+      return `
+        <div class="tightRow" data-entry-id="${escAttr(e.id)}" title="${escAttr(metaLine)}">
+          <div class="tightLeft">
+            <div class="tightTop">
+              ${badge}
+              ${statusBadge}
+              <div class="tightText">${esc(compactTitle(e))}</div>
+            </div>
+            <div class="tightMeta">${esc(metaLine)}</div>
+          </div>
+          <div class="tightAmt mask" style="color:${amtColor}">${sheetAmountText(e)}</div>
+        </div>
+      `;
+    }
+
+    function kindBadge(e){
+      if(e.kind === "income") return `<span class="badge bIn">IN</span>`;
+      if(e.kind === "expense") return `<span class="badge bOut">OUT</span>`;
+      if(e.kind === "asset") return `<span class="badge bAsset">ASSET</span>`;
+      if(e.kind === "iou") return `<span class="badge bIOU">IOU</span>`;
+      if(e.kind === "fid") return `<span class="badge bFid">FID</span>`;
+      return `<span class="badge">LOG</span>`;
+    }
+
+    function amountColor(e){
+      if(e.kind === "expense") return "var(--red)";
+      if(e.kind === "income") return "var(--emerald)";
+      if(e.kind === "asset") return "var(--blue)";
+      if(e.kind === "fid") return "var(--yellow)";
+      if(e.kind === "iou") return (e.meta?.direction === "creditors") ? "var(--red)" : "var(--emerald)";
+      return "#fff";
+    }
+
+    function sheetTitle(e){
+      if(e.kind === "income") return "Inflow";
+      if(e.kind === "expense") return "Expense";
+      if(e.kind === "asset") return (e.meta?.action === "update") ? "Asset update" : "Asset";
+      if(e.kind === "fid") return (e.meta?.action === "out") ? "Fiduciary out" : "Fiduciary in";
+      if(e.kind === "iou"){
+        const dir = e.meta?.direction === "creditors" ? "Borrow" : "Lend";
+        const act = e.meta?.action === "settle" ? "settlement" : "entry";
+        return `${dir} (${act})`;
+      }
+      return "Entry";
+    }
+
+    function sheetAmountText(e){
+      const sign = (e.kind === "expense") ? "-" :
+                   (e.kind === "income") ? "+" :
+                   (e.kind === "fid") ? ((e.meta?.action==="out") ? "-" : "+") :
+                   "";
+      return sign + money(e.amount);
+    }
+
+    function compactTitle(e){
+      if(e.kind === "asset") return e.meta?.assetName || e.desc || "Asset";
+      if(e.kind === "iou") return e.meta?.person || e.desc || "IOU";
+      if(e.kind === "fid") return e.meta?.goal || e.desc || "Fiduciary";
+      return e.desc || sheetTitle(e);
+    }
+
+    function compactMeta(e){
+      const d = fmtDate(e.ts);
+      const parts = [d];
+
+      if(e.kind === "income" || e.kind === "expense"){
+        if(e.meta?.account) parts.push(e.meta.account);
+      }
+      if(e.kind === "asset"){
+        parts.push(e.meta?.action === "update" ? "update" : "new");
+      }
+      if(e.kind === "iou"){
+        const who = e.meta?.person ? `• ${e.meta.person}` : "";
+        const act = e.meta?.action === "settle" ? "settle" : "new";
+        const dir = e.meta?.direction === "creditors" ? "you owe" : "owed to you";
+        parts.push(`${dir} • ${act}${who}`);
+      }
+      if(e.kind === "fid"){
+        const g = e.meta?.goal || "";
+        const p = e.meta?.person || "";
+        parts.push(`${e.meta?.action==="out"?"out":"in"} • ${g} • ${p}`);
+      }
+      if(e.note) parts.push("• " + e.note);
+
+      return parts.join(" • ").replace(/\s+/g," ").trim();
+    }
+
+    function searchHit(e, q){
+      if(!q) return true;
+      const blob = [
+        e.kind, e.desc, e.note,
+        e.meta?.account, e.meta?.person, e.meta?.goal,
+        e.meta?.assetName, e.meta?.action, e.status
+      ].join(" ").toLowerCase();
+      return blob.includes(q);
+    }
+
+    function renderDatalist(){
+      const d = derive();
+      const names = new Set();
+
+      // descriptions
+      d.entriesActive.forEach(e => {
+        if(e.desc) names.add(e.desc);
+        if(e.meta?.person) names.add(e.meta.person);
+        if(e.meta?.goal) names.add(e.meta.goal);
+        if(e.meta?.assetName) names.add(e.meta.assetName);
+      });
+
+      const items = Array.from(names).filter(Boolean).slice(0, 200);
+      el.nameList.innerHTML = items.map(n => `<option value="${escAttr(n)}"></option>`).join("");
+    }
+
+    function fillDynamicDatalists(){
+      // assetList, personList, goalList, etc if present
+      const d = derive();
+
+      const assetNames = Array.from(new Set(d.assetsList.map(a => a.name))).sort();
+      const persons = Array.from(new Set(
+        d.entriesActive
+          .filter(e => e.kind==="iou" || e.kind==="fid")
+          .map(e => e.meta?.person)
+          .filter(Boolean)
+      )).sort();
+      const goals = Array.from(new Set(
+        d.entriesActive
+          .filter(e => e.kind==="fid")
+          .map(e => e.meta?.goal)
+          .filter(Boolean)
+      )).sort();
+
+      const assetList = $("#assetList");
+      if(assetList) assetList.innerHTML = assetNames.map(x => `<option value="${escAttr(x)}"></option>`).join("");
+
+      const personList = $("#personList");
+      if(personList) personList.innerHTML = persons.map(x => `<option value="${escAttr(x)}"></option>`).join("");
+
+      const personList2 = $("#personList2");
+      if(personList2) personList2.innerHTML = persons.map(x => `<option value="${escAttr(x)}"></option>`).join("");
+
+      const goalList = $("#goalList");
+      if(goalList) goalList.innerHTML = goals.map(x => `<option value="${escAttr(x)}"></option>`).join("");
+    }
+
+    function hydrateSearchTypeUI(){
+      const t = state.ui.searchType || "all";
+      $$(".badge[data-qtype]", el.search).forEach(x => x.style.opacity = ".55");
+      const b = $(`.badge[data-qtype="${t}"]`, el.search);
+      if(b) b.style.opacity = "1";
+    }
+
+    function hydrateSettingsUI(){
+      el.reqPin.checked = !!state.settings.requirePin;
+      // no pin shown
+    }
+
+    function applyStealth(on){
+      document.body.classList.toggle("stealth", !!on);
+    }
+
+    function syncStealthSwitch(){
+      const on = !!state.settings.stealth;
+      el.stealthSwitch.classList.toggle("on", on);
+      el.stealthSwitch.setAttribute("aria-checked", on ? "true" : "false");
+    }
+
+    // ---------- Auth ----------
+    async function unlock(){
+      const pin = (el.authPin.value || "").trim();
+      if(pin.length !== 4) return toast("Enter 4 digits");
+      const h = await hashPin(pin);
+      if(!state.settings.pinHash){
+        // no stored pin: treat as unlocked
+        toast("No PIN set");
+        showView("dashboard");
+        el.authPin.value = "";
+        return;
+      }
+      if(h !== state.settings.pinHash) return toast("Wrong PIN");
+      el.authPin.value = "";
       showView("dashboard");
+      toast("Unlocked");
     }
 
-    // ---------- PIN ----------
-    async function setPin(){
-      const p = ($("setPin").value || "").trim();
-      if (p.length !== 4){ showToast("PIN must be 4 digits"); return; }
-
-      const salt = cryptoUtil.salt();
-      const hash = await cryptoUtil.sha256(`${salt}:${p}`);
-      if (!hash){
-        pinObj = { salt:"plain", hash:String(p), algo:"fallback" };
-      } else {
-        pinObj = { salt, hash, algo:"sha256(salt:pin)" };
+    async function hashPin(pin){
+      try{
+        const enc = new TextEncoder().encode(pin);
+        const buf = await crypto.subtle.digest("SHA-256", enc);
+        const arr = Array.from(new Uint8Array(buf));
+        return arr.map(b => b.toString(16).padStart(2,"0")).join("");
+      } catch {
+        // fallback best-effort
+        return btoa(pin.split("").reverse().join(""));
       }
-      $("setPin").value = "";
-      save();
-      showToast("PIN updated");
-    }
-
-    async function verifyPin(){
-      const input = ($("authPin").value || "").trim();
-      if (!pinObj) return true;
-
-      if (pinObj.algo === "fallback"){
-        return input === pinObj.hash;
-      }
-      const hash = await cryptoUtil.sha256(`${pinObj.salt}:${input}`);
-      return !!hash && hash === pinObj.hash;
     }
 
     // ---------- Backup / Restore ----------
     function backup(){
-      const payload = { version:86, exportedAt:new Date().toISOString(), db, cfg };
-      const blob = new Blob([JSON.stringify(payload,null,2)], { type:"application/json" });
+      const payload = JSON.stringify(state, null, 2);
+      const blob = new Blob([payload], { type:"application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "Vault_v86.json";
+      a.download = `sovereign_v86_backup_${new Date().toISOString().slice(0,10)}.json`;
       a.click();
-      showToast("Backup exported");
-    }
-    function restore(file){
-      const r = new FileReader();
-      r.onload = (ev) => {
-        try{
-          const parsed = JSON.parse(ev.target.result);
-          if (Array.isArray(parsed)) db = parsed;
-          else if (parsed && Array.isArray(parsed.db)) { db = parsed.db; cfg = { ...cfg, ...(parsed.cfg||parsed.config||{}) }; }
-          else throw new Error("bad");
-
-          // Normalize IOU types
-          const loanTypes = ["debtor","debt_repayment","creditor","credit_settlement"];
-          db = db.map(e => {
-            if (!e) return e;
-            if (loanTypes.includes(e.type)){
-              if (typeof e.principal !== "number"){
-                const t = Number(e.total)||0;
-                e.principal = Math.abs(t);
-              }
-              e.total = 0;
-              delete e.b; delete e.s; delete e.l;
-            }
-            if (!e.ts) e.ts = Date.now();
-            if (!e.time) e.time = "00:00:00";
-            return e;
-          });
-
-          save();
-          render();
-          syncStealthUI();
-          showToast("Restored");
-          showView("dashboard");
-        }catch{
-          showToast("Invalid backup file");
-        }
-      };
-      r.readAsText(file);
+      URL.revokeObjectURL(a.href);
+      toast("Backup downloaded");
     }
 
-    // ---------- Stealth ----------
-    function setStealth(on){
-      const enabled = !!on;
-      document.body.classList.toggle("stealth", enabled);
-      cfg.stealth = enabled;
-      save();
-      syncStealthUI();
-    }
-    function toggleStealth(){
-      setStealth(!document.body.classList.contains("stealth"));
-      showToast("Stealth " + (document.body.classList.contains("stealth") ? "On" : "Off"));
-    }
-    function syncStealthUI(){
-      const sw = $("stealthSwitch");
-      if (!sw) return;
-      const on = document.body.classList.contains("stealth");
-      sw.classList.toggle("on", on);
-      sw.setAttribute("aria-checked", on ? "true" : "false");
-    }
-
-    function attachHeroLongPress(){
-      const hero = $("heroCard");
-      if (!hero) return;
-
-      let pressTimer = null;
-      const start = () => {
-        clearTimeout(pressTimer);
-        pressTimer = setTimeout(() => toggleStealth(), 420);
-      };
-      const end = () => clearTimeout(pressTimer);
-
-      hero.addEventListener("touchstart", start, { passive:true });
-      hero.addEventListener("touchend", end, { passive:true });
-      hero.addEventListener("touchmove", end, { passive:true });
-
-      hero.addEventListener("mousedown", start);
-      hero.addEventListener("mouseup", end);
-      hero.addEventListener("mouseleave", end);
-    }
-
-    // ---------- HTML escape ----------
-    function escapeHtml(s){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    // ---------- Global click delegation ----------
-    function handleClick(e){
-      const t = e.target;
-
-      if (t === $("scrim")) { closeSheet(); return; }
-
-      const toggle = t.closest("[data-toggle]");
-      if (toggle){
-        const id = toggle.getAttribute("data-toggle");
-        const elById = id ? $(id) : null;
-        const wrap = elById || toggle.closest("#cAudit");
-        if (wrap) wrap.classList.toggle("open");
-        return;
-      }
-
-      const viewBtn = t.closest("[data-view]");
-      if (viewBtn){
-        const v = viewBtn.getAttribute("data-view");
-        if (v === "dashboard") showView("dashboard");
-        else if (v === "entry") showView("entry");
-        else if (v === "search") { showView("search"); runSearch(); }
-        else if (v === "settings") showView("settings");
-        else if (v === "more") { showView("more"); syncStealthUI(); }
-        return;
-      }
-
-      const tile = t.closest("[data-form]");
-      if (tile){
-        const ft = tile.getAttribute("data-form");
-        openForm(ft);
-        rebuildDynamic();
-        return;
-      }
-
-      // ✅ Fiduciary drill toggle (must be before sheet open)
-      const fd = t.closest("[data-open='fiddrill']");
-      if (fd){
-        const mode = fd.getAttribute("data-mode");
-        const key = fd.getAttribute("data-key");
-        if (!mode || !key) return;
-
-        if (openFidDrill && openFidDrill.mode === mode && openFidDrill.key === key){
-          openFidDrill = null;
-        } else {
-          openFidDrill = { mode, key };
-        }
-
-        refreshOpenInlineLedger();
-        return;
-      }
-
-      const open = t.closest("[data-open='sheet']");
-      if (open){
-        const id = open.getAttribute("data-id");
-        if (!id) return; // prevent drill rows from trying to open sheet
-        const entry = db.find(x => x.id === id);
-        if (entry) openEntrySheet(entry);
-        return;
-      }
-
-      const iou = t.closest("[data-open='iou']");
-      if (iou){
-        const side = iou.getAttribute("data-side");
-        const person = iou.getAttribute("data-person");
-        if (side && person) openIouSummarySheet(side, person);
-        return;
-      }
-
-      const qt = t.closest("[data-qtype]");
-      if (qt){
-        setQType(qt.getAttribute("data-qtype"));
-        return;
-      }
-
-      const sw = t.closest("#stealthSwitch");
-      if (sw){
-        toggleStealth();
-        return;
-      }
-
-      // ✅ Ledger deep-dive now inline dropdown (no full screen)
-      const led = t.closest("[data-open-ledger]");
-      if (led){
-        toggleLedgerInline(led.getAttribute("data-open-ledger"), led);
-        return;
-      }
-    }
-
-    // ---------- Init ----------
-    function init(){
+    async function restoreFile(file){
+      if(!file) return;
       try{
-        showView("dashboard");
-
-        if (cfg.stealth) document.body.classList.add("stealth");
-        syncStealthUI();
-        attachHeroLongPress();
-
-        $("fab").onclick = () => {
-          if (currentView === "dashboard") showView("entry");
-          else showView("dashboard");
-        };
-
-        $("q").addEventListener("input", runSearch);
-        $("qStart").addEventListener("change", runSearch);
-        $("qEnd").addEventListener("change", runSearch);
-        $("clearQ").onclick = () => { $("q").value=""; runSearch(); };
-
-        $("auditFilter").addEventListener("input", render);
-
-        $("execBtn").onclick = execute;
-
-        $("reqPin").checked = !!cfg.reqPin;
-        $("reqPin").onchange = () => { cfg.reqPin = !!$("reqPin").checked; save(); showToast("Updated"); };
-        $("savePinBtn").onclick = setPin;
-
-        $("backupBtn").onclick = backup;
-        $("restoreBtn").onclick = () => $("file").click();
-        $("file").onchange = (ev) => {
-          const f = ev.target.files && ev.target.files[0];
-          if (f) restore(f);
-          ev.target.value = "";
-        };
-
-        $("backupBtn2").onclick = backup;
-        $("restoreBtn2").onclick = () => $("file2").click();
-        $("file2").onchange = (ev) => {
-          const f = ev.target.files && ev.target.files[0];
-          if (f) restore(f);
-          ev.target.value = "";
-        };
-
-        $("resetBtn").onclick = () => {
-          if (!confirm("Reset app data?")) return;
-          localStorage.removeItem(KEY.DB);
-          localStorage.removeItem(KEY.CFG);
-          localStorage.removeItem(KEY.PIN);
-          db = [];
-          cfg = { reqPin:false, qtype:"all", stealth:false };
-          pinObj = null;
-          openFidDrill = null;
-          document.body.classList.remove("stealth");
-          closeAllInlineLedgers();
-          showToast("Reset");
-          render();
-          syncStealthUI();
-          showView("dashboard");
-        };
-
-        $("unlockBtn").onclick = async () => {
-          const ok = await verifyPin();
-          if (!ok){ showToast("Wrong PIN"); return; }
-          $("authPin").value = "";
-          showView("dashboard");
-          render();
-        };
-
-        document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") closeSheet(); });
-
-        document.body.addEventListener("click", handleClick, { passive:true });
-        $("scrim").addEventListener("click", closeSheet);
-
-        render();
-
-        if (cfg.reqPin && pinObj){
-          showView("auth");
+        const text = await file.text();
+        const obj = JSON.parse(text);
+        if(!obj || typeof obj !== "object" || !Array.isArray(obj.entries)){
+          return toast("Invalid backup file");
         }
-
-        setQType("all");
-
-      }catch(err){
-        console.error(err);
-        showView("dashboard");
+        persistState(obj);
+        toast("Restored");
+        location.reload();
+      } catch {
+        toast("Restore failed");
       }
     }
 
-    init();
-  })();
+    function wipeState(){
+      STORE_KEYS.forEach(k => localStorage.removeItem(k));
+    }
+
+    // ---------- Storage ----------
+    function loadState(){
+      for(const k of STORE_KEYS){
+        const raw = localStorage.getItem(k);
+        if(!raw) continue;
+        try{
+          const obj = JSON.parse(raw);
+          if(obj && typeof obj === "object" && Array.isArray(obj.entries)){
+            return normalizeState(obj);
+          }
+        }catch{}
+      }
+      return normalizeState({
+        entries: [],
+        settings: { stealth:false, requirePin:false, pinHash:null },
+        ui: { searchType:"all", lastAccount:"spend" }
+      });
+    }
+
+    function normalizeState(s){
+      const out = {
+        entries: Array.isArray(s.entries) ? s.entries.map(normalizeEntry) : [],
+        settings: {
+          stealth: !!(s.settings?.stealth),
+          requirePin: !!(s.settings?.requirePin),
+          pinHash: s.settings?.pinHash || null
+        },
+        ui: {
+          searchType: s.ui?.searchType || "all",
+          lastAccount: s.ui?.lastAccount || "spend",
+          lastAsset: s.ui?.lastAsset || "",
+          lastPerson: s.ui?.lastPerson || "",
+          lastGoal: s.ui?.lastGoal || "",
+          lastPerson2: s.ui?.lastPerson2 || "",
+          debtDetail: s.ui?.debtDetail || null,
+          assetDetailName: s.ui?.assetDetailName || null
+        }
+      };
+      return out;
+    }
+
+    function normalizeEntry(e){
+      return {
+        id: e.id || uid(),
+        ts: typeof e.ts === "number" ? e.ts : Date.now(),
+        kind: e.kind || "log",
+        amount: Number(e.amount || 0),
+        desc: e.desc || "",
+        note: e.note || "",
+        meta: e.meta || {},
+        status: e.status || "active",
+        supersedesId: e.supersedesId || null
+      };
+    }
+
+    function saveState(){
+      persistState(state);
+    }
+
+    function persistState(s){
+      localStorage.setItem(STORE_KEYS[0], JSON.stringify(s));
+    }
+
+    function getEntryById(id){
+      return state.entries.find(e => e.id === id) || null;
+    }
+
+    // ---------- Formatting ----------
+    function money(n){
+      const x = Number(n||0);
+      const abs = Math.abs(x);
+      // compact-ish, but keep readable
+      return "₦" + abs.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    }
+
+    function pct(x){
+      if(!isFinite(x)) return "0%";
+      return (x*100).toFixed(1).replace(/\.0$/,"") + "%";
+    }
+
+    function fmtDate(ts){
+      const d = new Date(ts);
+      const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const yy = d.getFullYear();
+      return `${dd}-${mm}-${yy}`;
+    }
+
+    function fmtDateTime(ts){
+      const d = new Date(ts);
+      const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const yy = d.getFullYear();
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mi = String(d.getMinutes()).padStart(2,"0");
+      return `${dd}-${mm}-${yy} ${hh}:${mi}`;
+    }
+
+    function uid(){
+      return "e_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+    }
+
+    function esc(s){
+      return String(s ?? "").replace(/[&<>"']/g, (m) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+    function escAttr(s){
+      return esc(s).replace(/"/g,"&quot;");
+    }
+
+    // ---------- Toast ----------
+    let toastTimer = null;
+    function toast(msg){
+      el.toastText.textContent = msg;
+      el.toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.toast.classList.remove("show"), 1600);
+    }
+
+    // ---------- Long press ----------
+    function setupLongPress(node, fn){
+      let t = null;
+      let moved = false;
+
+      const start = () => {
+        moved = false;
+        clearTimeout(t);
+        t = setTimeout(() => { if(!moved) fn(); }, 520);
+      };
+      const end = () => clearTimeout(t);
+
+      node.addEventListener("touchstart", start, {passive:true});
+      node.addEventListener("touchmove", () => { moved = true; }, {passive:true});
+      node.addEventListener("touchend", end, {passive:true});
+      node.addEventListener("touchcancel", end, {passive:true});
+
+      // mouse fallback
+      node.addEventListener("mousedown", start);
+      node.addEventListener("mousemove", () => { moved = true; });
+      node.addEventListener("mouseup", end);
+      node.addEventListener("mouseleave", end);
+    }
+
+    // ---------- Service worker (best effort) ----------
+    async function registerSW(){
+      if(!("serviceWorker" in navigator)) return;
+      try{
+        const code = `
+          const CACHE = "sovereign-v86-cache";
+          self.addEventListener("install", (e) => {
+            self.skipWaiting();
+            e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./"])).catch(()=>{}));
+          });
+          self.addEventListener("activate", (e) => {
+            e.waitUntil(self.clients.claim());
+          });
+          self.addEventListener("fetch", (e) => {
+            e.respondWith(
+              caches.match(e.request).then(r => r || fetch(e.request).then(resp => {
+                const copy = resp.clone();
+                caches.open(CACHE).then(c => c.put(e.request, copy)).catch(()=>{});
+                return resp;
+              }).catch(()=>r))
+            );
+          });
+        `;
+        const blob = new Blob([code], {type:"text/javascript"});
+        const url = URL.createObjectURL(blob);
+        await navigator.serviceWorker.register(url);
+      } catch {}
+    }
   </script>
 </body>
 </html>
