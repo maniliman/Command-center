@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
-  <title>Sovereign v88</title>
+  <title>Sovereign v87</title>
 
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -627,70 +627,6 @@
     }
     .chipDanger{border-color:rgba(239,68,68,.35);color:var(--red);}
     .chipGood{border-color:rgba(16,185,129,.35);color:var(--emerald);}
-
-    /* Reports */
-    .barRow{
-      display:flex; align-items:center; gap:10px;
-      padding:10px 0;
-      border-bottom:1px solid #121216;
-    }
-    .barRow:last-child{border-bottom:none;}
-    .barName{
-      min-width:0;
-      flex:1;
-      font-size:12px;
-      font-weight:900;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      letter-spacing:.02em;
-      text-transform:uppercase;
-    }
-    .barWrap{
-      flex:2;
-      height:10px;
-      border-radius:999px;
-      background:#0d0d10;
-      border:1px solid #1f1f24;
-      overflow:hidden;
-    }
-    .barFill{
-      height:100%;
-      border-radius:999px;
-      background:rgba(239,68,68,.85);
-      width:0%;
-    }
-    .barAmt{
-      width:120px;
-      text-align:right;
-      font-size:12px;
-      font-weight:900;
-      font-variant-numeric: tabular-nums;
-      white-space:nowrap;
-    }
-
-    /* PIN reveal micro button */
-    .pinRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .pinEye{
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.04);
-      color:#fff;
-      border-radius:14px;
-      padding:12px 12px;
-      font-weight:900;
-      font-size:11px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      cursor:pointer;
-      user-select:none;
-      min-width:96px;
-      text-align:center;
-    }
-    .pinEye:active{opacity:.8;}
   </style>
 </head>
 
@@ -705,22 +641,17 @@
     </div>
     <div class="col" style="min-height: calc(100vh - 200px);justify-content:center;align-items:center;">
       <div style="font-size:44px;margin-bottom:10px;">🔒</div>
-
-      <div class="pinRow" style="width:320px;max-width:92vw;">
-        <input id="authPin" class="input" inputmode="numeric" maxlength="4"
-               style="text-align:center;font-size:40px;letter-spacing:10px;width:220px;"
-               placeholder="••••" />
-        <button id="authHoldBtn" class="pinEye hidden" type="button">Hold</button>
-      </div>
-
-      <button class="btn btnWide" id="unlockBtn" style="margin-top:26px;max-width:320px;">Unlock</button>
+      <input id="authPin" class="input" inputmode="numeric" maxlength="4"
+             style="text-align:center;font-size:40px;letter-spacing:10px;width:220px;"
+             placeholder="••••" />
+      <button class="btn btnWide" id="unlockBtn" style="margin-top:26px;">Unlock</button>
       <div class="tiny muted" style="margin-top:14px;">PIN required</div>
     </div>
   </div>
 
   <!-- TOP BAR -->
   <div class="topbar flex between center">
-    <div class="tiny muted">SOVEREIGN V88</div>
+    <div class="tiny muted">SOVEREIGN V87</div>
     <div class="flex gap8">
       <button class="iconbtn" title="Search" data-view="search" aria-label="Search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -960,64 +891,12 @@
     </div>
 
     <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:12px;background:rgba(255,255,255,.03);">
-      <button class="btn btnWide" data-view="reports">Reports</button>
-      <button class="btn btnWide" data-view="settings" style="margin-top:10px;">Settings</button>
-
+      <button class="btn btnWide" data-view="settings">Settings</button>
       <div class="flex gap12" style="margin-top:12px;">
         <button class="btn" style="flex:1" id="backupBtn2">Backup</button>
         <button class="btn" style="flex:1;color:var(--emerald)" id="restoreBtn2">Restore</button>
         <input id="file2" type="file" class="hidden" />
       </div>
-    </div>
-  </div>
-
-  <!-- REPORTS -->
-  <div id="reports" class="overlay hidden" aria-hidden="true">
-    <div class="overlayTop">
-      <div class="overlayBar">
-        <div class="tiny muted">Reports</div>
-        <button class="xbtn" data-view="dashboard">✕</button>
-      </div>
-    </div>
-
-    <div class="hintBox" style="margin-top:10px;">
-      <div class="hintTitle">Filter</div>
-      <div class="grid2" style="gap:12px;margin-top:10px;">
-        <input id="rStart" class="input" style="font-size:12px" type="date" />
-        <input id="rEnd" class="input" style="font-size:12px" type="date" />
-      </div>
-      <div class="flex gap12" style="margin-top:12px;">
-        <button class="btn" style="flex:1" id="rApply">Apply</button>
-        <button class="btn" style="flex:1" id="rReset">Reset</button>
-      </div>
-    </div>
-
-    <div class="hintBox" style="margin-top:12px;">
-      <div class="hintTitle">Summary</div>
-      <div class="hintRow">
-        <div class="muted">Total spend</div>
-        <div id="rTotalSpend" class="mask">₦0</div>
-      </div>
-      <div class="hintRow">
-        <div class="muted">Transactions</div>
-        <div id="rCount" class="mask">0</div>
-      </div>
-    </div>
-
-    <div class="hintBox" style="margin-top:12px;">
-      <div class="hintTitle">Spend by category</div>
-      <div id="rByCat" style="margin-top:10px;"></div>
-      <div class="tiny muted" style="margin-top:10px;">Uncategorised expenses are grouped under “Uncategorised”.</div>
-    </div>
-
-    <div class="hintBox" style="margin-top:12px;">
-      <div class="hintTitle">Top expenses</div>
-      <div id="rTop" style="margin-top:10px;"></div>
-    </div>
-
-    <div class="flex gap12" style="margin-top:12px;">
-      <button class="btn" style="flex:1" id="rCsv">Export CSV</button>
-      <button class="btn" style="flex:1;color:var(--emerald)" id="rJson">Export JSON</button>
     </div>
   </div>
 
@@ -1035,30 +914,9 @@
         <div class="tiny muted">PIN startup</div>
         <input id="reqPin" type="checkbox" />
       </div>
-
-      <div class="flex between center" style="margin-bottom:12px;">
-        <div>
-          <div class="tiny muted">Blur PIN entry</div>
-          <div style="margin-top:4px;opacity:.9;font-size:14px;">Hide PIN from prying eyes</div>
-        </div>
-        <div id="pinBlurSwitch" class="switch on" role="switch" aria-checked="true"></div>
-      </div>
-
-      <div class="flex between center" style="margin-bottom:12px;">
-        <div>
-          <div class="tiny muted">Hold-to-reveal</div>
-          <div style="margin-top:4px;opacity:.9;font-size:14px;">Hold button to show PIN</div>
-        </div>
-        <div id="pinHoldSwitch" class="switch on" role="switch" aria-checked="true"></div>
-      </div>
-
-      <div class="pinRow">
-        <input id="setPin" class="input" inputmode="numeric" maxlength="4"
-               style="text-align:center;letter-spacing:10px;font-size:22px;"
-               placeholder="••••" />
-        <button id="setHoldBtn" class="pinEye hidden" type="button">Hold</button>
-      </div>
-
+      <input id="setPin" class="input" inputmode="numeric" maxlength="4"
+             style="text-align:center;letter-spacing:10px;font-size:22px;"
+             placeholder="••••" />
       <button class="btn btnWide" id="savePinBtn" style="margin-top:14px;">Update PIN</button>
       <div class="tiny muted" style="margin-top:10px;">PIN is hashed (best-effort) — app won’t crash if crypto isn’t available.</div>
     </div>
@@ -1079,7 +937,6 @@
       </div>
     </div>
 
-    <!-- Backup/restore block intentionally left as-is conceptually -->
     <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:12px;background:rgba(255,255,255,.03);">
       <div class="tiny muted">Backup & safety</div>
 
@@ -1150,19 +1007,16 @@
 
   <script>
     /***********************
-     * Sovereign v88
-     * Adds:
-     * - Expense category (meta.category)
-     * - Reports: spend by category + exports
-     * - PIN blur + hold-to-reveal toggles (settings.pinBlur, settings.pinHoldReveal)
-     *
-     * NOTE: Backup/restore assumed already fixed in your base. Kept aligned to prior v87 structure.
+     * Sovereign v87 (patched)
+     * New patches included:
+     * - Inflow split (fluid): allocate by % or by amount; any 2 fields auto-complete the 3rd
+     * - Ledger search keyboard fix: no full re-render on every keystroke; filter rows in-place
+     * - Restore/backup hardening: autoSnapshot snapshots the state being saved, sanitize amounts, better restore errors, reset file inputs
      ***********************/
 
     const SCHEMA_VERSION = 1;
 
     const STORE_KEYS = [
-      "sovereign_v88_state",
       "sovereign_v87_state",
       "sovereign_v86_state",
       "sovereign_v86",
@@ -1179,18 +1033,18 @@
     };
 
     const AUTO_RING_SIZE = 10;
-    const PERIODIC_SNAPSHOT_MS = 15 * 60 * 1000;
-    const REMINDER_CHECK_MS = 60 * 1000;
+    const PERIODIC_SNAPSHOT_MS = 15 * 60 * 1000; // 15 minutes
+    const REMINDER_CHECK_MS = 60 * 1000;         // every 1 minute
 
     const $ = (sel, root=document) => root.querySelector(sel);
     const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-    const VIEWS = ["dashboard","auth","entry","form","search","more","reports","settings"];
+    const VIEWS = ["dashboard","auth","entry","form","search","more","settings"];
 
     const state = loadState();
     let currentView = "dashboard";
-    let currentForm = null;
-    let currentEditId = null;
+    let currentForm = null;                // 'income' | 'expense' | 'asset' | 'borrow' | 'lend' | 'fid'
+    let currentEditId = null;              // when editing, points to entry being superseded
     let currentSheetId = null;
     let openLedger = null;
 
@@ -1202,8 +1056,9 @@
       fiduciary: ""
     };
 
-    const fidDetail = { mode: null, key: null };
+    const fidDetail = { mode: null, key: null }; // {mode:'goal'|'person', key:string}
 
+    // ---------- DOM refs ----------
     const el = {
       dashboard: $("#dashboard"),
       auth: $("#auth"),
@@ -1211,7 +1066,6 @@
       form: $("#form"),
       search: $("#search"),
       more: $("#more"),
-      reports: $("#reports"),
       settings: $("#settings"),
 
       nw: $("#nw"),
@@ -1259,7 +1113,6 @@
       // auth
       authPin: $("#authPin"),
       unlockBtn: $("#unlockBtn"),
-      authHoldBtn: $("#authHoldBtn"),
 
       // stealth
       stealthSwitch: $("#stealthSwitch"),
@@ -1268,10 +1121,6 @@
       reqPin: $("#reqPin"),
       setPin: $("#setPin"),
       savePinBtn: $("#savePinBtn"),
-      pinBlurSwitch: $("#pinBlurSwitch"),
-      pinHoldSwitch: $("#pinHoldSwitch"),
-      setHoldBtn: $("#setHoldBtn"),
-
       backupBtn: $("#backupBtn"),
       restoreBtn: $("#restoreBtn"),
       file: $("#file"),
@@ -1287,18 +1136,6 @@
 
       diagBtn: $("#diagBtn"),
       diagOut: $("#diagOut"),
-
-      // reports
-      rStart: $("#rStart"),
-      rEnd: $("#rEnd"),
-      rApply: $("#rApply"),
-      rReset: $("#rReset"),
-      rTotalSpend: $("#rTotalSpend"),
-      rCount: $("#rCount"),
-      rByCat: $("#rByCat"),
-      rTop: $("#rTop"),
-      rCsv: $("#rCsv"),
-      rJson: $("#rJson"),
 
       // sheet
       sheetScrim: $("#sheetScrim"),
@@ -1316,26 +1153,32 @@
       toastBtn: $("#toastBtn")
     };
 
+    // ---------- Init ----------
     boot();
 
     function boot(){
       hydrateSettingsUI();
       applyStealth(state.settings.stealth);
-      applyPinPrivacyUI();
 
+      // navigation buttons
       document.body.addEventListener("click", (e) => {
         const v = e.target.closest("[data-view]")?.getAttribute("data-view");
-        if(v) showView(v);
+        if(v) {
+          if(v === "dashboard") showView("dashboard");
+          else showView(v);
+        }
         const t = e.target.closest("[data-toggle]")?.getAttribute("data-toggle");
         if(t) toggleAudit(t);
       });
 
+      // fab
       el.fab.addEventListener("click", () => {
         if(currentView === "dashboard") showView("entry");
         else if(currentView === "entry") showView("dashboard");
         else showView("dashboard");
       });
 
+      // hero long-press stealth toggle
       setupLongPress(el.heroCard, () => {
         state.settings.stealth = !state.settings.stealth;
         saveState("stealth_toggle");
@@ -1344,6 +1187,7 @@
         toast(state.settings.stealth ? "Stealth ON" : "Stealth OFF");
       });
 
+      // ledger open/close
       el.ledger.addEventListener("click", (e) => {
         const row = e.target.closest("[data-open-ledger]");
         if(!row) return;
@@ -1351,6 +1195,7 @@
         toggleLedger(key);
       });
 
+      // ledger body interactions
       el.ledger.addEventListener("click", (e) => {
         const entryId = e.target.closest("[data-entry-id]")?.getAttribute("data-entry-id");
         if(entryId) return openSheet(entryId);
@@ -1402,18 +1247,22 @@
         }
       });
 
+      // audit filter & clicks
       el.auditFilter.addEventListener("input", () => renderAudit());
       el.auditList.addEventListener("click", (e) => {
         const id = e.target.closest("[data-entry-id]")?.getAttribute("data-entry-id");
         if(id) openSheet(id);
       });
 
+      // entry tiles -> open form
       $$(".tile", el.entry).forEach(tile => {
         tile.addEventListener("click", () => openForm(tile.getAttribute("data-form")));
       });
 
+      // execute
       el.execBtn.addEventListener("click", executeForm);
 
+      // search overlay
       el.clearQ.addEventListener("click", () => { el.q.value = ""; renderSearch(); });
       el.q.addEventListener("input", renderSearch);
       el.qStart.addEventListener("change", renderSearch);
@@ -1432,6 +1281,7 @@
         if(id) openSheet(id);
       });
 
+      // stealth switch
       el.stealthSwitch.addEventListener("click", () => {
         state.settings.stealth = !state.settings.stealth;
         saveState("stealth_switch");
@@ -1440,6 +1290,7 @@
         toast(state.settings.stealth ? "Stealth ON" : "Stealth OFF");
       });
 
+      // settings: overdraft
       el.odSwitch.addEventListener("click", () => {
         state.settings.allowOverdraft = !state.settings.allowOverdraft;
         saveState("overdraft_toggle");
@@ -1448,32 +1299,18 @@
         renderAll();
       });
 
+      // settings: cadence
       el.backupCadence.addEventListener("change", () => {
         state.settings.backupCadence = el.backupCadence.value;
         saveState("cadence_change");
         toast("Reminder cadence updated");
       });
 
+      // settings: pin
       el.reqPin.addEventListener("change", async () => {
         state.settings.requirePin = !!el.reqPin.checked;
         saveState("pin_toggle");
         toast(state.settings.requirePin ? "PIN startup enabled" : "PIN startup disabled");
-      });
-
-      el.pinBlurSwitch.addEventListener("click", () => {
-        state.settings.pinBlur = !state.settings.pinBlur;
-        saveState("pin_blur_toggle");
-        syncPinSwitches();
-        applyPinPrivacyUI();
-        toast(state.settings.pinBlur ? "PIN blur ON" : "PIN blur OFF");
-      });
-
-      el.pinHoldSwitch.addEventListener("click", () => {
-        state.settings.pinHoldReveal = !state.settings.pinHoldReveal;
-        saveState("pin_hold_toggle");
-        syncPinSwitches();
-        applyPinPrivacyUI();
-        toast(state.settings.pinHoldReveal ? "Hold-to-reveal ON" : "Hold-to-reveal OFF");
       });
 
       el.savePinBtn.addEventListener("click", async () => {
@@ -1485,18 +1322,17 @@
         toast("PIN updated");
       });
 
+      // auth unlock
       el.unlockBtn.addEventListener("click", unlock);
       el.authPin.addEventListener("keydown", (e) => { if(e.key === "Enter") unlock(); });
 
-      // Hold-to-reveal wiring
-      wireHoldReveal(el.authHoldBtn, el.authPin);
-      wireHoldReveal(el.setHoldBtn, el.setPin);
-
-      // Backup/restore hooks (kept consistent)
+      // backup/restore (both places)
       el.backupBtn.addEventListener("click", () => backup(true));
       el.backupBtn2.addEventListener("click", () => backup(true));
+
       el.restoreBtn.addEventListener("click", () => el.file.click());
       el.restoreBtn2.addEventListener("click", () => el.file2.click());
+
       el.file.addEventListener("change", (e) => restoreFile(e.target.files?.[0]));
       el.file2.addEventListener("change", (e) => restoreFile(e.target.files?.[0]));
 
@@ -1506,6 +1342,7 @@
         location.reload();
       });
 
+      // diagnostics
       el.diagBtn.addEventListener("click", () => {
         const d = derive();
         el.diagOut.innerHTML = `
@@ -1517,19 +1354,9 @@
           Liquidity: <b>${money(d.liquidityTotal)}</b><br/>
           Assets: <b>${money(d.assetsTotal)}</b><br/>
           Net worth: <b>${money(d.netWorth)}</b><br/>
-          Categories: <b>${d.expenseCategories.length}</b><br/>
+          Inflow split mode: <b>${esc(state.ui.inflowSplitMode || "off")}</b><br/>
         `;
       });
-
-      // Reports
-      el.rApply.addEventListener("click", () => renderReports());
-      el.rReset.addEventListener("click", () => {
-        el.rStart.value = "";
-        el.rEnd.value = "";
-        renderReports();
-      });
-      el.rCsv.addEventListener("click", () => exportReportsCSV());
-      el.rJson.addEventListener("click", () => exportReportsJSON());
 
       // sheet
       el.sheetScrim.addEventListener("click", closeSheet);
@@ -1555,26 +1382,32 @@
         toast("Deleted");
       });
 
+      // first render
       renderAll();
+
+      // initial view gating
       syncStealthSwitch();
       syncOdSwitch();
-      syncPinSwitches();
       hydrateSearchTypeUI();
-
       if(state.settings.requirePin && state.settings.pinHash){
         showView("auth");
       } else {
         showView("dashboard");
       }
 
+      // periodic snapshots + reminder checks
       startPeriodicSafety();
+
+      // service worker best-effort
       registerSW();
+
+      // nudge on boot if needed
       setTimeout(checkBackupReminder, 1200);
     }
 
+    // ---------- Views ----------
     function showView(view){
       currentView = view;
-
       VIEWS.forEach(v => {
         if(v === "dashboard") return;
         const node = el[v];
@@ -1585,6 +1418,7 @@
 
       el.dashboard.style.display = "block";
 
+      // fab mode
       if(view === "dashboard"){
         el.fab.classList.remove("fabBack");
         el.fab.classList.add("fabPlus");
@@ -1606,8 +1440,6 @@
       if(view === "dashboard") renderAll();
       if(view === "more") syncStealthSwitch();
       if(view === "settings") hydrateSettingsUI();
-      if(view === "reports") renderReports();
-      if(view === "auth") applyPinPrivacyUI();
     }
 
     function toggleAudit(id){
@@ -1616,6 +1448,7 @@
       wrap.classList.toggle("open");
     }
 
+    // ---------- Ledger open/close ----------
     function toggleLedger(key){
       if(openLedger === key){
         const body = $(`[data-ledger-body="${key}"]`);
@@ -1631,11 +1464,13 @@
       if(ledgerFilters[key]) applyLedgerFilter(key, ledgerFilters[key]);
     }
 
+    // ---------- Rendering ----------
     function renderAll(){
       const d = derive();
 
       el.nw.textContent = money(d.netWorth);
 
+      // cash display color reacts to negative liquidity
       el.cash.textContent = money(d.liquidityTotal);
       el.cash.style.color = (d.liquidityTotal < 0) ? "var(--red)" : "var(--emerald)";
 
@@ -1657,7 +1492,7 @@
       }
 
       renderAudit();
-      renderDatalist(); /* keep user edit */
+      renderDatalist();
     }
 
     function renderLedgerBody(key){
@@ -1694,6 +1529,9 @@
         `;
         return;
       }
+
+      // NOTE: For keyboard stability we render list once, then filter rows in-place.
+      // Every row includes data-hit for fast matching.
 
       if(key === "expenses"){
         const items = d.entriesActive
@@ -1878,7 +1716,6 @@
             e.kind, e.desc, e.note,
             e.meta?.account, e.meta?.person, e.meta?.goal,
             e.meta?.assetName, e.meta?.action,
-            e.meta?.category,
             e.meta?.rate, e.meta?.issuedTs, e.meta?.dueTs,
             e.status, e.supersedesId
           ].join(" ").toLowerCase();
@@ -1922,6 +1759,7 @@
         : `<div class="rowMeta" style="padding:10px 0;">No results</div>`;
     }
 
+    // ---------- Detail Panels ----------
     function showDebtDetails(mode, who){
       state.ui.debtDetail = { mode, who };
       saveState("debt_detail");
@@ -1979,6 +1817,7 @@
       `;
     }
 
+    // ---------- Ledger Search box ----------
     function ledgerSearchBox(key, placeholder){
       return `
         <div class="miniSearch">
@@ -1991,6 +1830,9 @@
       `;
     }
 
+    // ✅ KEYBOARD FIX:
+    // We do NOT re-render ledger on each keystroke anymore.
+    // Instead we filter visible rows in-place using data-hit attributes.
     function wireLedgerSearch(body, key){
       const inp = body.querySelector(`[data-ledger-filter="${key}"]`);
       if(!inp) return;
@@ -2007,13 +1849,12 @@
       if(!body) return;
       const q = (text || "").trim().toLowerCase();
 
+      // Filter any element that has data-hit inside the ledger body
       const nodes = $$("[data-hit]", body);
       let shown = 0;
 
       if(!q){
         nodes.forEach(n => n.classList.remove("hidden"));
-        const marker = $("#ledgerNoMatch_" + key, body);
-        if(marker) marker.remove();
         return;
       }
 
@@ -2024,6 +1865,7 @@
         if(ok) shown++;
       }
 
+      // Optional: if none match, show a small hint row (without re-render)
       const markerId = "ledgerNoMatch_" + key;
       let marker = $("#"+markerId, body);
 
@@ -2046,13 +1888,13 @@
         e.kind, e.desc, e.note,
         e.meta?.account, e.meta?.person, e.meta?.goal,
         e.meta?.assetName, e.meta?.action,
-        e.meta?.category,
         e.meta?.rate, e.meta?.issuedTs, e.meta?.dueTs,
         fmtDate(e.ts),
         e.status
       ].join(" ").toLowerCase();
     }
 
+    // ---------- Form ----------
     function openForm(kind, opts={}){
       currentForm = kind;
       currentEditId = null;
@@ -2072,6 +1914,7 @@
                   : "Entry";
       el.formTitle.textContent = currentEditId ? (title + " (Edit)") : title;
 
+      // reset
       el.amount.value = "";
       el.desc.value = "";
       el.note.value = "";
@@ -2081,6 +1924,7 @@
       el.desc.placeholder = "Description";
       el.amount.placeholder = "0";
 
+      // hint reset
       el.amountHint.classList.add("hidden");
       el.amountHintTitle.textContent = "Amount";
       el.amountHintLeft.textContent = "—";
@@ -2093,6 +1937,7 @@
         buildSegment("Account", ["Spend","Bills","Savings"], acct, (val) => {
           state.ui.lastAccount = val;
           saveState("last_account");
+          // If inflow split is on, account segment becomes irrelevant, but we keep it for quick off-mode.
         });
 
         el.amountHint.classList.remove("hidden");
@@ -2102,19 +1947,18 @@
 
         el.desc.placeholder = "Description";
 
-        // Expense category (new + editable)
-        if(kind === "expense"){
-          const cat = pre?.meta?.category || "";
-          el.dyn.innerHTML = `
-            <input id="category" class="input" placeholder="Category (e.g. Food, Fuel, Rent)" value="${escAttr(cat)}" list="catList" />
-            <datalist id="catList"></datalist>
-          `;
+        // ✅ Inflow split UI (not available when editing an old entry, to keep edits safe)
+        if(kind === "income" && !currentEditId){
+          const mode = state.ui.inflowSplitMode || "off";
+          el.dyn.innerHTML = renderInflowSplitUI(mode);
+          wireInflowSplitUI();
         }
       }
 
       if(kind === "asset"){
         const assetMode = opts.assetMode || pre?.meta?.action || "new";
         buildSegment("Mode", ["New","Update"], assetMode === "update" ? "update":"new", () => {
+          // live update of hint/placeholder
           updateAssetHintUI();
         });
         const assetName = opts.assetName || pre?.meta?.assetName || "";
@@ -2123,7 +1967,11 @@
           <datalist id="assetList"></datalist>
         `;
         el.desc.placeholder = "Description (optional)";
+
+        // Update hint based on current segment + current assetName
         setTimeout(updateAssetHintUI, 0);
+
+        // When asset name changes, refresh hint
         setTimeout(() => {
           const an = $("#assetName");
           if(an) an.addEventListener("input", () => updateAssetHintUI());
@@ -2150,6 +1998,7 @@
         `;
         el.desc.placeholder = "Description (optional)";
 
+        // Hide extra fields when settling
         setTimeout(() => {
           const segVal = getSegmentValue();
           const box = $("#iouExtra");
@@ -2183,18 +2032,154 @@
       }
 
       fillDynamicDatalists();
-      fillCategoryDatalist();
       showView("form");
       el.amount.focus();
     }
 
-    function fillCategoryDatalist(){
-      const box = $("#catList");
-      const inp = $("#category");
-      if(!box || !inp) return;
-      const d = derive();
-      const cats = d.expenseCategories;
-      box.innerHTML = cats.map(x => `<option value="${escAttr(x)}"></option>`).join("");
+    function renderInflowSplitUI(mode){
+      const m = mode || "off";
+      const onOff = (v) => (v === m ? "on" : "");
+      return `
+        <div class="tiny muted" style="margin:6px 0 8px 0;">Allocation</div>
+        <div class="seg" id="inflowSplitSeg" style="margin-bottom:10px;">
+          <button type="button" data-split="off" class="${onOff("off")}">Off</button>
+          <button type="button" data-split="pct" class="${onOff("pct")}">%</button>
+          <button type="button" data-split="amt" class="${onOff("amt")}">Amount</button>
+        </div>
+
+        <div id="inflowSplitBox" class="${m==="off" ? "hidden" : ""}">
+          <div class="ledgerSubline" style="margin-top:4px;">Fill any 2 fields — the 3rd auto-completes</div>
+
+          <div class="grid2" style="gap:12px;">
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Spend</div>
+              <input id="inSpend" class="input" type="number" inputmode="decimal" placeholder="${m==="pct" ? "Percent" : "Amount"}" />
+            </div>
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Bills</div>
+              <input id="inBills" class="input" type="number" inputmode="decimal" placeholder="${m==="pct" ? "Percent" : "Amount"}" />
+            </div>
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Savings</div>
+              <input id="inSavings" class="input" type="number" inputmode="decimal" placeholder="${m==="pct" ? "Percent" : "Amount"}" />
+            </div>
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Check</div>
+              <div id="inflowSplitCheck" class="hintBox" style="padding:12px;">
+                <div class="hintTitle">Total</div>
+                <div class="hintRow">
+                  <div class="muted">${m==="pct" ? "Must be 100%" : "Must equal amount"}</div>
+                  <div id="inflowSplitTotal" class="mask">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tiny muted" style="margin-top:10px;">
+            Tip: enter the big Amount first, then allocate.
+          </div>
+        </div>
+      `;
+    }
+
+    function wireInflowSplitUI(){
+      const seg = $("#inflowSplitSeg");
+      if(!seg) return;
+
+      const setMode = (mode) => {
+        state.ui.inflowSplitMode = mode;
+        saveState("inflow_split_mode");
+        // refresh UI without killing focus in amount input (only rebuild dyn)
+        el.dyn.innerHTML = renderInflowSplitUI(mode);
+        wireInflowSplitUI();
+        // keep amount input focused if user was typing
+      };
+
+      seg.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-split]");
+        if(!b) return;
+        $$("button", seg).forEach(x => x.classList.remove("on"));
+        b.classList.add("on");
+        setMode(b.getAttribute("data-split"));
+      });
+
+      const mode = state.ui.inflowSplitMode || "off";
+      if(mode === "off") return;
+
+      const A = $("#inSpend"), B = $("#inBills"), C = $("#inSavings");
+      const totalEl = $("#inflowSplitTotal");
+      const box = $("#inflowSplitBox");
+
+      if(!A || !B || !C || !totalEl || !box) return;
+
+      const recompute = (changed) => {
+        const total = Number(el.amount.value || 0);
+        if(!isFinite(total) || total <= 0){
+          totalEl.textContent = "Enter Amount";
+          return;
+        }
+
+        const a = parseNum(A.value);
+        const b = parseNum(B.value);
+        const c = parseNum(C.value);
+
+        if(mode === "pct"){
+          // Any two -> third = 100 - sum(two)
+          const filled = [
+            {k:"a", v:a, el:A},
+            {k:"b", v:b, el:B},
+            {k:"c", v:c, el:C},
+          ].filter(x => x.v !== null);
+
+          if(filled.length >= 2){
+            const sum = filled.reduce((s,x)=> s + x.v, 0);
+            const missing = [{k:"a", el:A, v:a},{k:"b", el:B, v:b},{k:"c", el:C, v:c}].find(x => x.v === null);
+            if(missing){
+              const val = clampNum(100 - sum, 0, 100);
+              missing.el.value = String(round2(val));
+            }
+          }
+
+          const aa = parseNum(A.value) ?? 0;
+          const bb = parseNum(B.value) ?? 0;
+          const cc = parseNum(C.value) ?? 0;
+          const sum2 = aa + bb + cc;
+          totalEl.textContent = round2(sum2) + "%";
+        }
+
+        if(mode === "amt"){
+          // Any two -> third = total - sum(two)
+          const filled = [
+            {k:"a", v:a, el:A},
+            {k:"b", v:b, el:B},
+            {k:"c", v:c, el:C},
+          ].filter(x => x.v !== null);
+
+          if(filled.length >= 2){
+            const sum = filled.reduce((s,x)=> s + x.v, 0);
+            const missing = [{k:"a", el:A, v:a},{k:"b", el:B, v:b},{k:"c", el:C, v:c}].find(x => x.v === null);
+            if(missing){
+              const val = clampNum(total - sum, 0, total);
+              missing.el.value = String(round2(val));
+            }
+          }
+
+          const aa = parseNum(A.value) ?? 0;
+          const bb = parseNum(B.value) ?? 0;
+          const cc = parseNum(C.value) ?? 0;
+          const sum2 = aa + bb + cc;
+          totalEl.textContent = money(sum2);
+        }
+      };
+
+      // Update on allocation typing (no re-render)
+      [A,B,C].forEach(inp => inp.addEventListener("input", () => recompute(inp.id)));
+
+      // Also recompute when Amount changes
+      el.amount.addEventListener("input", () => recompute("amount"), { once:true });
+
+      // initial check
+      setTimeout(() => recompute("init"), 0);
     }
 
     function buildSegment(label, labels, initialValue, onChange){
@@ -2225,6 +2210,7 @@
         b.classList.add("on");
         onChange(b.getAttribute("data-seg"));
 
+        // update hint for income/expense account view
         if(currentForm === "income" || currentForm === "expense"){
           el.amountHint.classList.remove("hidden");
           el.amountHintLeft.textContent = "Account";
@@ -2282,6 +2268,62 @@
       if(currentForm === "income" || currentForm === "expense"){
         const account = getSegmentValue() || state.ui.lastAccount || "spend";
 
+        // ✅ Inflow split execution
+        if(currentForm === "income" && !currentEditId){
+          const mode = state.ui.inflowSplitMode || "off";
+          if(mode !== "off"){
+            const A = $("#inSpend"), B = $("#inBills"), C = $("#inSavings");
+            if(!A || !B || !C) return toast("Allocation inputs missing");
+
+            if(mode === "pct"){
+              const pSpend = parseNum(A.value) ?? 0;
+              const pBills = parseNum(B.value) ?? 0;
+              const pSavings = parseNum(C.value) ?? 0;
+              const sum = round2(pSpend + pBills + pSavings);
+              if(Math.abs(sum - 100) > 0.01) return toast("Percent must total 100%");
+              const aAmt = round2((pSpend/100) * amt);
+              const bAmt = round2((pBills/100) * amt);
+              // Make last bucket absorb rounding errors
+              const cAmt = round2(amt - aAmt - bAmt);
+
+              const group = uid();
+              const entries = [
+                makeEntry("income", aAmt, desc, note, { account:"spend", splitGroupId: group, splitMode:"pct", splitValue:pSpend }),
+                makeEntry("income", bAmt, desc, note, { account:"bills", splitGroupId: group, splitMode:"pct", splitValue:pBills }),
+                makeEntry("income", cAmt, desc, note, { account:"savings", splitGroupId: group, splitMode:"pct", splitValue:pSavings }),
+              ].filter(x => x.amount > 0);
+
+              commitEntries(entries);
+              showView("dashboard");
+              renderAll();
+              toast("Saved (split)");
+              return;
+            }
+
+            if(mode === "amt"){
+              const aAmt = parseNum(A.value) ?? 0;
+              const bAmt = parseNum(B.value) ?? 0;
+              const cAmt = parseNum(C.value) ?? 0;
+              const sum = round2(aAmt + bAmt + cAmt);
+              if(Math.abs(sum - amt) > 0.01) return toast("Split amounts must equal Amount");
+
+              const group = uid();
+              const entries = [
+                makeEntry("income", aAmt, desc, note, { account:"spend", splitGroupId: group, splitMode:"amt" }),
+                makeEntry("income", bAmt, desc, note, { account:"bills", splitGroupId: group, splitMode:"amt" }),
+                makeEntry("income", cAmt, desc, note, { account:"savings", splitGroupId: group, splitMode:"amt" }),
+              ].filter(x => x.amount > 0);
+
+              commitEntries(entries);
+              showView("dashboard");
+              renderAll();
+              toast("Saved (split)");
+              return;
+            }
+          }
+        }
+
+        // Guardrail: block spending from empty account unless overdraft is allowed
         if(currentForm === "expense" && !state.settings.allowOverdraft){
           const d = derive();
           const bal = Number(d.accounts[account] || 0);
@@ -2290,14 +2332,7 @@
           }
         }
 
-        const meta = { account };
-
-        if(currentForm === "expense"){
-          const cat = ($("#category")?.value || "").trim();
-          if(cat) meta.category = cat;
-        }
-
-        const entry = makeEntry(currentForm, amt, desc, note, meta);
+        const entry = makeEntry(currentForm, amt, desc, note, { account });
         commitEntry(entry, editOf);
         showView("dashboard");
         renderAll();
@@ -2323,6 +2358,7 @@
         const who = ($("#person")?.value || "").trim();
         if(!who) return toast("Enter person");
 
+        // Optional extras (only meaningful for "new")
         let rate = null, issuedTs = null, dueTs = null;
         if(mode === "new"){
           const r = ($("#rate")?.value || "").trim();
@@ -2380,6 +2416,13 @@
       };
     }
 
+    function commitEntries(entries){
+      for(const e of entries){
+        state.entries.push(e);
+      }
+      saveState("commit_entries");
+    }
+
     function commitEntry(newEntry, oldEntry){
       if(oldEntry){
         const idx = state.entries.findIndex(x => x.id === oldEntry.id);
@@ -2408,14 +2451,13 @@
       saveState("delete_entry");
     }
 
+    // ---------- Derivations ----------
     function derive(){
       const entriesAll = state.entries.slice().sort((a,b) => a.ts - b.ts);
       const entriesActive = entriesAll.filter(e => e.status === "active");
 
       const accounts = { spend:0, bills:0, savings:0 };
       let expensesTotal = 0;
-
-      const categorySet = new Set();
 
       for(const e of entriesActive){
         if(e.kind === "income"){
@@ -2426,14 +2468,12 @@
           const acct = e.meta?.account || "spend";
           accounts[acct] = (accounts[acct] || 0) - safeNum(e.amount);
           expensesTotal += safeNum(e.amount);
-
-          const c = (e.meta?.category || "").trim();
-          if(c) categorySet.add(c);
         }
       }
 
       const liquidityTotal = accounts.spend + accounts.bills + accounts.savings;
 
+      // Assets
       const assetEntries = entriesActive.filter(e => e.kind === "asset" && e.meta?.assetName);
       const assetsMap = new Map();
       for(const e of assetEntries){
@@ -2454,6 +2494,7 @@
 
       const assetsTotal = assetsList.reduce((s,a)=> s + safeNum(a.current||0), 0);
 
+      // Debt (IOU)
       const iouEntries = entriesActive.filter(e => e.kind === "iou");
       const debtorsMap = new Map();
       const creditorsMap = new Map();
@@ -2478,6 +2519,7 @@
       const creditorsOutstanding = creditorsList.reduce((s,p)=> s + p.outstanding, 0);
       const debtTotal = debtorsOutstanding + creditorsOutstanding;
 
+      // Fiduciary
       const fidEntries = entriesActive.filter(e => e.kind === "fid");
       const fidGoalMap = new Map();
       const fidPersonMap = new Map();
@@ -2498,6 +2540,7 @@
       const fidGoals = Array.from(fidGoalMap.entries()).map(([key,balance]) => ({ key, balance }));
       const fidPersons = Array.from(fidPersonMap.entries()).map(([key,balance]) => ({ key, balance }));
 
+      // detail panels
       let debtDetail = null;
       if(state.ui.debtDetail?.mode && state.ui.debtDetail?.who){
         const mode = state.ui.debtDetail.mode;
@@ -2526,8 +2569,6 @@
 
       const netWorth = liquidityTotal + assetsTotal;
 
-      const expenseCategories = Array.from(categorySet).sort((a,b)=> a.localeCompare(b));
-
       return {
         entriesAll,
         entriesActive,
@@ -2546,8 +2587,7 @@
         fidPersons,
         debtDetail,
         assetDetail,
-        netWorth,
-        expenseCategories
+        netWorth
       };
     }
 
@@ -2579,6 +2619,7 @@
       return a ? { initial:a.initial, current:a.current, lastTs:a.lastTs } : null;
     }
 
+    // ---------- Sheet ----------
     function openSheet(id){
       const e = getEntryById(id);
       if(!e) return;
@@ -2591,7 +2632,7 @@
         <div class="kv"><div class="kvL">Date</div><div class="kvR">${fmtDateTime(e.ts)}</div></div>
         <div class="kv"><div class="kvL">Status</div><div class="kvR">${esc(e.status || "active")}${e.supersedesId ? " • revision" : ""}</div></div>
         ${e.meta?.account ? `<div class="kv"><div class="kvL">Account</div><div class="kvR">${esc(e.meta.account)}</div></div>` : ""}
-        ${e.meta?.category ? `<div class="kv"><div class="kvL">Category</div><div class="kvR">${esc(e.meta.category)}</div></div>` : ""}
+        ${e.meta?.splitGroupId ? `<div class="kv"><div class="kvL">Split</div><div class="kvR">${esc(e.meta.splitMode || "split")}</div></div>` : ""}
         ${e.meta?.assetName ? `<div class="kv"><div class="kvL">Asset</div><div class="kvR">${esc(e.meta.assetName)}</div></div>` : ""}
         ${e.meta?.person ? `<div class="kv"><div class="kvL">Person</div><div class="kvR">${esc(e.meta.person)}</div></div>` : ""}
         ${e.meta?.goal ? `<div class="kv"><div class="kvL">Purpose</div><div class="kvR">${esc(e.meta.goal)}</div></div>` : ""}
@@ -2619,6 +2660,7 @@
       el.sheet.setAttribute("aria-hidden","true");
     }
 
+    // ---------- UI helpers ----------
     function tightRow(e, opts={}){
       const badge = kindBadge(e);
       const amtColor = amountColor(e);
@@ -2685,7 +2727,6 @@
       if(e.kind === "asset") return e.meta?.assetName || e.desc || "Asset";
       if(e.kind === "iou") return e.meta?.person || e.desc || "IOU";
       if(e.kind === "fid") return e.meta?.goal || e.desc || "Fiduciary";
-      if(e.kind === "expense") return e.desc || (e.meta?.category || "Expense");
       return e.desc || sheetTitle(e);
     }
 
@@ -2695,7 +2736,7 @@
 
       if(e.kind === "income" || e.kind === "expense"){
         if(e.meta?.account) parts.push(e.meta.account);
-        if(e.kind === "expense" && e.meta?.category) parts.push(e.meta.category);
+        if(e.meta?.splitGroupId) parts.push("split");
       }
       if(e.kind === "asset"){
         parts.push(e.meta?.action === "update" ? "update" : "new");
@@ -2723,7 +2764,6 @@
         e.kind, e.desc, e.note,
         e.meta?.account, e.meta?.person, e.meta?.goal,
         e.meta?.assetName, e.meta?.action, e.status,
-        e.meta?.category,
         e.meta?.rate, e.meta?.issuedTs, e.meta?.dueTs
       ].join(" ").toLowerCase();
       return blob.includes(q);
@@ -2738,7 +2778,6 @@
         if(e.meta?.person) names.add(e.meta.person);
         if(e.meta?.goal) names.add(e.meta.goal);
         if(e.meta?.assetName) names.add(e.meta.assetName);
-        if(e.meta?.category) names.add(e.meta.category);
       });
 
       const items = Array.from(names).filter(Boolean).slice(0, 200);
@@ -2787,8 +2826,6 @@
       el.backupCadence.value = state.settings.backupCadence || "off";
       syncStealthSwitch();
       syncOdSwitch();
-      syncPinSwitches();
-      applyPinPrivacyUI();
     }
 
     function applyStealth(on){
@@ -2807,46 +2844,7 @@
       el.odSwitch.setAttribute("aria-checked", on ? "true" : "false");
     }
 
-    function syncPinSwitches(){
-      const b = !!state.settings.pinBlur;
-      const h = !!state.settings.pinHoldReveal;
-      el.pinBlurSwitch.classList.toggle("on", b);
-      el.pinBlurSwitch.setAttribute("aria-checked", b ? "true" : "false");
-      el.pinHoldSwitch.classList.toggle("on", h);
-      el.pinHoldSwitch.setAttribute("aria-checked", h ? "true" : "false");
-    }
-
-    function applyPinPrivacyUI(){
-      const blur = !!state.settings.pinBlur;
-      const hold = !!state.settings.pinHoldReveal;
-
-      // When blur ON, use password type
-      // When blur OFF, use text (still numeric inputmode)
-      try{ el.authPin.type = blur ? "password" : "text"; }catch{}
-      try{ el.setPin.type = blur ? "password" : "text"; }catch{}
-
-      // show/hide hold buttons
-      el.authHoldBtn.classList.toggle("hidden", !hold);
-      el.setHoldBtn.classList.toggle("hidden", !hold);
-
-      // keep placeholders consistent
-      el.authPin.placeholder = "••••";
-      el.setPin.placeholder = "••••";
-    }
-
-    function wireHoldReveal(btn, input){
-      const show = () => { if(!state.settings.pinHoldReveal) return; try{ input.type = "text"; }catch{} };
-      const hide = () => { if(!state.settings.pinHoldReveal) return; try{ input.type = state.settings.pinBlur ? "password" : "text"; }catch{} };
-
-      btn.addEventListener("mousedown", show);
-      btn.addEventListener("mouseup", hide);
-      btn.addEventListener("mouseleave", hide);
-
-      btn.addEventListener("touchstart", (e) => { e.preventDefault(); show(); }, {passive:false});
-      btn.addEventListener("touchend", (e) => { e.preventDefault(); hide(); }, {passive:false});
-      btn.addEventListener("touchcancel", (e) => { e.preventDefault(); hide(); }, {passive:false});
-    }
-
+    // ---------- Auth ----------
     async function unlock(){
       const pin = (el.authPin.value || "").trim();
       if(pin.length !== 4) return toast("Enter 4 digits");
@@ -2874,154 +2872,13 @@
       }
     }
 
-    // ---------- Reports ----------
-    function renderReports(){
-      const { startTs, endTs } = reportRange();
-
-      const expenses = state.entries
-        .filter(e => e.status === "active")
-        .filter(e => e.kind === "expense")
-        .filter(e => {
-          if(startTs && e.ts < startTs) return false;
-          if(endTs && e.ts > endTs) return false;
-          return true;
-        })
-        .slice()
-        .sort((a,b)=> b.ts - a.ts);
-
-      const totalSpend = expenses.reduce((s,e)=> s + safeNum(e.amount), 0);
-
-      // by category
-      const map = new Map();
-      for(const e of expenses){
-        const cat = ((e.meta?.category || "").trim() || "Uncategorised");
-        map.set(cat, (map.get(cat) || 0) + safeNum(e.amount));
-      }
-      const byCat = Array.from(map.entries())
-        .map(([cat,amt]) => ({ cat, amt }))
-        .sort((a,b)=> b.amt - a.amt);
-
-      el.rTotalSpend.textContent = money(totalSpend);
-      el.rCount.textContent = String(expenses.length);
-
-      const max = byCat[0]?.amt || 0;
-
-      el.rByCat.innerHTML = byCat.length
-        ? byCat.map(x => `
-            <div class="barRow" title="${escAttr(x.cat)}">
-              <div class="barName">${esc(x.cat)}</div>
-              <div class="barWrap">
-                <div class="barFill" style="width:${max>0 ? Math.max(2, Math.round((x.amt/max)*100)) : 0}%"></div>
-              </div>
-              <div class="barAmt mask">${money(x.amt)}</div>
-            </div>
-          `).join("")
-        : `<div class="rowMeta" style="padding:10px 0;">No expenses in range</div>`;
-
-      // top expenses
-      const top = expenses.slice().sort((a,b)=> safeNum(b.amount) - safeNum(a.amount)).slice(0, 12);
-      el.rTop.innerHTML = top.length
-        ? top.map(e => tightRow(e, { compact:true, hit: ledgerHitBlob(e) })).join("")
-        : `<div class="rowMeta" style="padding:10px 0;">No expenses</div>`;
-
-      // stash filtered expenses for export
-      state.ui.reportLast = {
-        startTs: startTs || null,
-        endTs: endTs || null,
-        at: Date.now(),
-        count: expenses.length,
-        totalSpend,
-        byCat
-      };
-      saveState("report_render");
-    }
-
-    function reportRange(){
-      const s = (el.rStart.value || "").trim();
-      const e = (el.rEnd.value || "").trim();
-      const startTs = s ? new Date(s + "T00:00:00").getTime() : null;
-      const endTs = e ? (new Date(e + "T23:59:59").getTime()) : null;
-      return { startTs, endTs };
-    }
-
-    function exportReportsCSV(){
-      const { startTs, endTs } = reportRange();
-
-      const rows = state.entries
-        .filter(e => e.status === "active")
-        .filter(e => e.kind === "expense")
-        .filter(e => {
-          if(startTs && e.ts < startTs) return false;
-          if(endTs && e.ts > endTs) return false;
-          return true;
-        })
-        .slice()
-        .sort((a,b)=> b.ts - a.ts)
-        .map(e => ({
-          date: fmtISODate(e.ts),
-          amount: safeNum(e.amount),
-          account: e.meta?.account || "",
-          category: e.meta?.category || "",
-          desc: (e.desc || "").replace(/\s+/g," ").trim(),
-          note: (e.note || "").replace(/\s+/g," ").trim(),
-          id: e.id
-        }));
-
-      const header = ["date","amount","account","category","desc","note","id"];
-      const csv = [
-        header.join(","),
-        ...rows.map(r => header.map(k => csvCell(r[k])).join(","))
-      ].join("\n");
-
-      downloadText(csv, `sovereign_reports_expenses_${new Date().toISOString().slice(0,10)}.csv`, "text/csv");
-      toast("CSV exported");
-    }
-
-    function exportReportsJSON(){
-      const { startTs, endTs } = reportRange();
-      const snap = {
-        schema: SCHEMA_VERSION,
-        generatedAt: Date.now(),
-        range: { startTs: startTs || null, endTs: endTs || null },
-        report: state.ui.reportLast || null,
-        expenses: state.entries
-          .filter(e => e.status === "active")
-          .filter(e => e.kind === "expense")
-          .filter(e => {
-            if(startTs && e.ts < startTs) return false;
-            if(endTs && e.ts > endTs) return false;
-            return true;
-          })
-          .slice()
-          .sort((a,b)=> b.ts - a.ts)
-      };
-
-      downloadText(JSON.stringify(snap, null, 2), `sovereign_reports_${new Date().toISOString().slice(0,10)}.json`, "application/json");
-      toast("JSON exported");
-    }
-
-    function csvCell(v){
-      const s = String(v ?? "");
-      if(/[",\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
-      return s;
-    }
-
-    function downloadText(text, filename, mime){
-      const blob = new Blob([text], { type: mime || "text/plain" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(a.href);
-    }
-
-    // ---------- Backup/Restore (kept aligned) ----------
+    // ---------- Backup / Restore ----------
     function backup(manual=false){
       const payload = JSON.stringify(state, null, 2);
       const blob = new Blob([payload], { type:"application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `sovereign_backup_${new Date().toISOString().slice(0,10)}.json`;
+      a.download = `sovereign_v87_backup_${new Date().toISOString().slice(0,10)}.json`;
       a.click();
       URL.revokeObjectURL(a.href);
 
@@ -3052,8 +2909,10 @@
           return;
         }
 
+        // persist + refresh
         persistState(migrated, { reason: "restore" });
         toast("Restored");
+        // reset file inputs so same file can be selected again
         try{ el.file.value = ""; }catch{}
         try{ el.file2.value = ""; }catch{}
         location.reload();
@@ -3072,6 +2931,7 @@
       }
     }
 
+    // ---------- Storage + Safety ----------
     function loadState(){
       for(const k of STORE_KEYS){
         const raw = localStorage.getItem(k);
@@ -3084,6 +2944,7 @@
         }catch{}
       }
 
+      // Try last-good snapshot
       try{
         const lg = localStorage.getItem(AUTO_KEYS.lastGood);
         if(lg){
@@ -3104,11 +2965,9 @@
           allowOverdraft:false,
           backupCadence:"off",
           lastManualBackupTs: 0,
-          lastReminderTs: 0,
-          pinBlur: true,
-          pinHoldReveal: true
+          lastReminderTs: 0
         },
-        ui: { searchType:"all", lastAccount:"spend" }
+        ui: { searchType:"all", lastAccount:"spend", inflowSplitMode:"off" }
       });
     }
 
@@ -3136,11 +2995,7 @@
           allowOverdraft: !!(s.settings?.allowOverdraft),
           backupCadence: s.settings?.backupCadence || "off",
           lastManualBackupTs: Number(s.settings?.lastManualBackupTs || 0),
-          lastReminderTs: Number(s.settings?.lastReminderTs || 0),
-
-          // user-edited defaults included
-          pinBlur: (s.settings?.pinBlur !== undefined) ? !!s.settings.pinBlur : true,
-          pinHoldReveal: (s.settings?.pinHoldReveal !== undefined) ? !!s.settings.pinHoldReveal : true
+          lastReminderTs: Number(s.settings?.lastReminderTs || 0)
         },
         ui: {
           searchType: s.ui?.searchType || "all",
@@ -3151,7 +3006,8 @@
           lastPerson2: s.ui?.lastPerson2 || "",
           debtDetail: s.ui?.debtDetail || null,
           assetDetailName: s.ui?.assetDetailName || null,
-          reportLast: s.ui?.reportLast || null
+
+          inflowSplitMode: s.ui?.inflowSplitMode || "off"
         }
       };
       return out;
@@ -3169,7 +3025,6 @@
         note: e.note || "",
         meta: {
           ...meta,
-          category: (meta.category || ""),
           rate: (meta.rate === null || meta.rate === undefined || meta.rate === "") ? null : safeNum(meta.rate),
           issuedTs: meta.issuedTs ? Number(meta.issuedTs) : null,
           dueTs: meta.dueTs ? Number(meta.dueTs) : null
@@ -3206,7 +3061,9 @@
         try{ localStorage.setItem(STORE_KEYS[i], payload); }catch{}
       }
 
+      // ✅ snapshot the state being saved (NOT the global 'state' reference)
       autoSnapshot(s, meta.reason || "change");
+
       try{ localStorage.setItem(AUTO_KEYS.lastGood, payload); }catch{}
     }
 
@@ -3264,6 +3121,7 @@
       return state.entries.find(e => e.id === id) || null;
     }
 
+    // ---------- Formatting ----------
     function money(n){
       const x = safeNum(n);
       const sign = (x < 0) ? "-" : "";
@@ -3315,6 +3173,7 @@
       return esc(s).replace(/"/g,"&quot;");
     }
 
+    // ---------- Toast ----------
     let toastTimer = null;
     function toast(msg){
       el.toastText.textContent = msg;
@@ -3323,6 +3182,7 @@
       toastTimer = setTimeout(() => el.toast.classList.remove("show"), 1800);
     }
 
+    // ---------- Long press ----------
     function setupLongPress(node, fn){
       let t = null;
       let moved = false;
@@ -3345,11 +3205,12 @@
       node.addEventListener("mouseleave", end);
     }
 
+    // ---------- Service worker (best effort) ----------
     async function registerSW(){
       if(!("serviceWorker" in navigator)) return;
       try{
         const code = `
-          const CACHE = "sovereign-v88-cache";
+          const CACHE = "sovereign-v87-cache";
           self.addEventListener("install", (e) => {
             self.skipWaiting();
             e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./"])).catch(()=>{}));
@@ -3373,11 +3234,29 @@
       } catch {}
     }
 
+    // ---------- Utils ----------
     function safeNum(x){
       if(x === null || x === undefined) return 0;
       const s = String(x).replace(/,/g,"").trim();
       const n = Number(s);
       return (isFinite(n) ? n : 0);
+    }
+
+    function parseNum(x){
+      if(x === null || x === undefined) return null;
+      const s = String(x).trim();
+      if(s === "") return null;
+      const n = Number(s);
+      return isFinite(n) ? n : null;
+    }
+
+    function clampNum(n, lo, hi){
+      if(!isFinite(n)) return lo;
+      return Math.max(lo, Math.min(hi, n));
+    }
+
+    function round2(n){
+      return Math.round((n + Number.EPSILON) * 100) / 100;
     }
   </script>
 </body>
