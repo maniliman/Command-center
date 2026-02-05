@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
+  />
   <title>Sovereign Vault v82</title>
 
   <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/512/shield.png" />
@@ -14,1333 +17,1760 @@
   />
 
   <style>
-    :root{
-      --bg:#000; --fg:#e5e5e5;
-      --emerald:#10b981; --red:#ef4444; --blue:#3b82f6; --yellow:#eab308;
-      --z900:#18181b; --z800:#27272a; --bdr:#333;
+    :root {
+      --bg: #000;
+      --fg: #e5e5e5;
+      --muted: #8a8a8a;
+
+      --emerald: #10b981;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --yellow: #eab308;
+
+      --card: #0f0f10;
+      --card2: #141416;
+      --border: rgba(255,255,255,0.08);
+
       --safe-top: env(safe-area-inset-top, 20px);
-    }
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    body{
-      margin:0; padding:0;
-      padding-top:calc(var(--safe-top) + 10px);
-      padding-bottom:110px;
-      font-family:-apple-system,system-ui,sans-serif;
-      background:var(--bg); color:var(--fg);
-      overflow-x:hidden;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    /* utils */
-    .flex{display:flex} .flex-col{display:flex;flex-direction:column}
-    .items-center{align-items:center} .justify-between{justify-content:space-between}
-    .justify-center{justify-content:center}
-    .gap-2{gap:8px} .gap-4{gap:16px}
-    .w-full{width:100%}
-    .mb-2{margin-bottom:8px} .mb-4{margin-bottom:16px} .mb-6{margin-bottom:24px}
-    .p-3{padding:12px} .p-4{padding:16px} .p-5{padding:20px} .p-6{padding:24px}
-    .text-xs{font-size:12px} .text-sm{font-size:14px}
-    .font-bold{font-weight:700} .font-black{font-weight:900}
-    .uppercase{text-transform:uppercase}
-    .text-center{text-align:center}
-    .hidden{display:none !important}
-
-    /* components */
-    .hero-card{
-      background:linear-gradient(145deg,#111 0%,#050505 100%);
-      border:1px solid rgba(16,185,129,.22);
-      border-radius:28px; padding:28px; margin-top:18px;
-    }
-    .vault-card{
-      background:#111; border:1px solid #222; border-radius:18px;
-      margin-bottom:12px; width:100%; overflow:hidden;
-    }
-    .sub-drawer{display:none; padding:18px; background:#070707; border-top:1px solid #222}
-    .drawer-open > .sub-drawer{display:block}
-
-    .glass{
-      background:rgba(20,20,20,.95);
-      backdrop-filter:blur(24px);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:18px;
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      padding: 0;
+      padding-top: calc(var(--safe-top) + 10px);
+      padding-bottom: calc(100px + var(--safe-bottom));
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, system-ui, sans-serif;
+      overflow-x: hidden;
     }
 
-    .input-ghost{
-      width:100%;
-      background:transparent;
-      border:none;
-      border-bottom:1px solid #333;
-      color:#fff;
-      outline:none;
-      font-size:16px;
-      padding:12px 0;
+    /* UTIL */
+    .flex { display: flex; }
+    .col { display: flex; flex-direction: column; }
+    .row { display: flex; align-items: center; justify-content: space-between; }
+    .center { display: flex; align-items: center; justify-content: center; }
+    .gap-8 { gap: 8px; }
+    .gap-12 { gap: 12px; }
+    .p-10 { padding: 10px; }
+    .p-16 { padding: 16px; }
+    .p-20 { padding: 20px; }
+    .mb-10 { margin-bottom: 10px; }
+    .mb-16 { margin-bottom: 16px; }
+    .mb-20 { margin-bottom: 20px; }
+    .hidden { display: none !important; }
+    .text-xs { font-size: 12px; }
+    .text-sm { font-size: 14px; }
+    .text-lg { font-size: 18px; }
+    .tiny { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
+    .caps { letter-spacing: .08em; text-transform: uppercase; font-weight: 900; }
+    .muted { color: var(--muted); }
+    .maskable { }
+    .stealth-active .maskable { filter: blur(14px); opacity: .28; }
+
+    /* CARDS */
+    .hero {
+      background: linear-gradient(145deg, #121214 0%, #070707 100%);
+      border: 1px solid rgba(16,185,129,.18);
+      border-radius: 26px;
+      padding: 26px;
+      margin: 0 10px 16px 10px;
     }
-    .input-ghost:focus{border-bottom-color:var(--emerald)}
-    .amount-hero{
-      width:100%;
-      background:transparent;
-      border:none;
-      outline:none;
-      color:#fff;
-      font-weight:900;
-      font-size:48px;
-      text-align:center;
-      padding:18px 0;
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      overflow: hidden;
+      margin: 0 10px 12px 10px;
+    }
+    .card-head {
+      padding: 18px 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .drawer { display: none; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.06); background: #09090a; }
+    .open .drawer { display: block; }
+
+    /* INPUTS */
+    .input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.18);
+      padding: 12px 0;
+      font-size: 16px;
+    }
+    .input:focus { border-bottom-color: var(--emerald); }
+    .amount {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 46px;
+      font-weight: 900;
+      text-align: center;
+      padding: 18px 0;
+    }
+    select.input {
+      border-radius: 0;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
-    .btn-dark{
-      background:var(--z900); color:#fff;
-      border:1px solid #333; border-radius:16px;
-      padding:14px 16px; font-weight:800; font-size:12px;
-      cursor:pointer;
+    /* BUTTONS */
+    .btn {
+      background: #151518;
+      border: 1px solid rgba(255,255,255,0.14);
+      color: #fff;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
     }
-    .btn-grid{
-      background:var(--z900);
-      border:1px solid #333;
-      border-radius:20px;
-      padding:20px;
-      display:flex; flex-direction:column; align-items:center; gap:10px;
-      cursor:pointer;
+    .btn:active { transform: translateY(1px); }
+    .btn-ghost { background: transparent; border-color: rgba(255,255,255,0.14); }
+    .btn-danger { border-color: rgba(239,68,68,.8); color: var(--red); }
+
+    .fab {
+      position: fixed;
+      right: 18px;
+      bottom: calc(18px + var(--safe-bottom));
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 16px 40px rgba(0,0,0,.55);
+      font-size: 28px;
+      z-index: 3000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .fab-primary { background: linear-gradient(135deg, var(--emerald), #059669); color: #04130c; font-weight: 900; }
+    .fab-back { background: #2a2a2c; color: #fff; }
+
+    /* OVERLAYS */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.92);
+      z-index: 2000;
+      padding: 20px;
+      padding-top: 80px;
+      overflow-y: auto;
     }
 
-    .fab{
-      position:fixed; right:26px; bottom:26px;
-      width:64px; height:64px; border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
-      font-size:28px;
-      z-index:9999; border:none; cursor:pointer;
-      box-shadow:0 10px 30px rgba(0,0,0,.55);
+    /* GRID */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* BANK-LIKE ROWS */
+    .tx-row {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      cursor: pointer;
+      user-select: none;
     }
-    .fab-primary{background:linear-gradient(135deg,#10b981 0%,#059669 100%); color:#000}
-    .fab-back{background:#333; color:#fff}
+    .tx-row:last-child { border-bottom: none; }
+    .tx-left { display: flex; flex-direction: column; gap: 4px; }
+    .tx-title { font-size: 12px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+    .tx-sub { font-size: 11px; color: var(--muted); letter-spacing: .04em; }
+    .tx-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .tx-amt { font-size: 12px; font-weight: 900; letter-spacing: .04em; }
+    .pill {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+    }
+    .pill-in { border-color: rgba(16,185,129,.35); color: var(--emerald); background: rgba(16,185,129,.10); }
+    .pill-out { border-color: rgba(239,68,68,.35); color: var(--red); background: rgba(239,68,68,.10); }
+    .pill-asset { border-color: rgba(59,130,246,.35); color: var(--blue); background: rgba(59,130,246,.10); }
+    .pill-iou { border-color: rgba(234,179,8,.35); color: var(--yellow); background: rgba(234,179,8,.10); }
+    .pill-fid { border-color: rgba(234,179,8,.35); color: var(--yellow); background: rgba(234,179,8,.08); }
 
-    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    /* SECTION HEADER IN AUDIT */
+    .section {
+      margin: 16px 0 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    .section-top { display:flex; justify-content:space-between; align-items:center; gap: 10px; }
+    .section-title { font-size: 11px; font-weight: 900; letter-spacing: .10em; text-transform: uppercase; }
+    .section-sub { margin-top: 8px; font-size: 11px; color: var(--muted); display:flex; flex-wrap: wrap; gap: 8px; }
+    .dot { opacity: .6; }
+    .mini-pill {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
 
-    .row{
+    /* TOP BAR */
+    .topbar {
       display:flex; justify-content:space-between; align-items:center;
-      padding:10px 0; border-bottom:1px solid #222;
-      font-size:12px; text-transform:uppercase;
+      padding: 0 10px;
+      margin-bottom: 14px;
     }
-    .row:last-child{border-bottom:none}
-    .tiny{font-size:10px; font-weight:800; text-transform:uppercase; color:#666}
-
-    .pill-scroll{display:flex; gap:10px; overflow-x:auto; padding-bottom:10px}
-    .q-pill{
-      padding:8px 16px; border-radius:20px;
-      border:1px solid #333;
-      font-size:10px; font-weight:800;
-      color:#666; background:transparent;
-      white-space:nowrap; cursor:pointer;
+    .icon-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: #151518;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
+      cursor: pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-    .q-pill.active{border-color:var(--emerald); color:var(--emerald); background:rgba(16,185,129,.1)}
-
-    .seg-control{display:flex; background:#000; padding:4px; border-radius:14px; border:1px solid #222; margin-bottom:14px}
-    .seg-btn{flex:1; text-align:center; padding:10px; font-size:10px; font-weight:800; color:#555; border-radius:10px; cursor:pointer}
-    .seg-btn.active.emerald{background:#064E3B; color:var(--emerald)}
-    .seg-btn.active.yellow{background:#78350f; color:#fcd34d}
-
-    .fluid-bar{display:flex; border-radius:12px; overflow:hidden; margin:18px 0; border:1px solid #333}
-    .fluid-seg{padding:12px 0; text-align:center; font-size:10px; font-weight:800; background:#111; border-right:1px solid #222; color:#777; width:33.33%}
-    .fluid-input{background:transparent; width:100%; text-align:center; color:var(--emerald); outline:none; font-size:14px; font-weight:900; border:none}
-
-    .view-hidden{display:none !important}
-    .full-overlay{
-      position:fixed; inset:0; background:#000;
-      z-index:2000;
-      padding:20px; padding-top:78px;
-      overflow-y:auto;
+    .icon {
+      width: 18px; height: 18px;
+      display:block;
+      opacity: .95;
     }
-    .stealth-active .maskable{filter:blur(15px); opacity:.3}
 
-    .text-emerald{color:var(--emerald)}
-    .text-red{color:var(--red)}
-    .text-blue{color:var(--blue)}
-    .text-yellow{color:var(--yellow)}
-    .text-zinc{color:#71717a}
+    /* BOTTOM SHEET */
+    .sheet-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.58);
+      z-index: 5000;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px;
+      padding-bottom: calc(16px + var(--safe-bottom));
+    }
+    .sheet-backdrop.show { display: flex; }
+    .sheet {
+      width: min(560px, 100%);
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(16,16,18,.96);
+      backdrop-filter: blur(22px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.60);
+      overflow: hidden;
+    }
+    .sheet-handle {
+      width: 44px; height: 5px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      margin: 10px auto 0;
+    }
+    .sheet-body { padding: 16px 18px 18px; }
+    .sheet-title { font-weight: 900; letter-spacing: .08em; text-transform: uppercase; font-size: 12px; }
+    .sheet-amt { font-size: 26px; font-weight: 900; margin-top: 6px; }
+    .kv { margin-top: 14px; display:flex; flex-direction:column; gap: 10px; }
+    .kv-row { display:flex; justify-content:space-between; gap: 12px; font-size: 12px; }
+    .kv-row span:first-child { color: var(--muted); }
+    .sheet-actions { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
 
-    /* "banky" badges */
-    .badge{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px; border-radius:999px;
-      border:1px solid #2a2a2a;
-      font-size:10px; font-weight:900; text-transform:uppercase;
-      color:#aaa;
-      background:rgba(255,255,255,.03);
+    /* TOAST */
+    .toast-wrap {
+      position: fixed;
+      left: 0; right: 0;
+      bottom: calc(90px + var(--safe-bottom));
+      z-index: 6000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events: none;
+      padding: 0 12px;
     }
-    .badge.in{border-color:rgba(16,185,129,.35); color:var(--emerald)}
-    .badge.out{border-color:rgba(239,68,68,.35); color:var(--red)}
-    .badge.asset{border-color:rgba(59,130,246,.35); color:var(--blue)}
-    .badge.iou{border-color:rgba(234,179,8,.35); color:var(--yellow)}
-    .section-head{
-      display:flex; justify-content:space-between; align-items:baseline;
-      padding:10px 0; margin-top:8px;
-      border-bottom:1px solid #222;
+    .toast {
+      pointer-events: none;
+      max-width: 560px;
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(18,18,20,.96);
+      backdrop-filter: blur(18px);
+      padding: 12px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 10px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.55);
+      transform: translateY(18px);
+      opacity: 0;
+      transition: .25s ease;
     }
-    .section-title{font-size:10px; font-weight:900; letter-spacing:.12em; color:#888; text-transform:uppercase}
-    .section-sub{font-size:10px; font-weight:900; color:#aaa; text-transform:uppercase}
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast strong { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .toast .msg { font-size: 12px; color: var(--fg); opacity: .95; }
+    .toast.success { border-color: rgba(16,185,129,.22); }
+    .toast.error { border-color: rgba(239,68,68,.22); }
+    .toast.warn { border-color: rgba(234,179,8,.22); }
+
+    /* AUTH */
+    .auth { z-index: 7000; display:none; }
+    .auth.show { display:flex; }
+
+    /* SWITCH */
+    .switch { position: relative; display: inline-block; width: 54px; height: 30px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; inset: 0; background-color: #222; transition: .25s; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); }
+    .slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 3px; bottom: 2px; background-color: #666; transition: .25s; border-radius: 50%; }
+    input:checked + .slider { background-color: rgba(16,185,129,.75); }
+    input:checked + .slider:before { transform: translateX(22px); background-color: white; }
+
+    /* ACCESSIBILITY */
+    button:focus-visible, .icon-btn:focus-visible, .tx-row:focus-visible, .card-head:focus-visible {
+      outline: 2px solid rgba(16,185,129,.55);
+      outline-offset: 3px;
+    }
   </style>
 </head>
 
 <body>
-  <!-- AUTH -->
-  <div id="auth-screen" class="full-overlay view-hidden" style="z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-    <div style="font-size:40px; margin-bottom:20px;">🔒</div>
-    <input id="auth-pin" type="password" class="input-ghost" style="text-align:center; font-size:40px; letter-spacing:10px; width:220px;" placeholder="••••" maxlength="4" inputmode="numeric"/>
-    <button id="btn-unlock" class="btn-dark" style="margin-top:40px;">UNLOCK VAULT</button>
-    <div id="auth-hint" class="tiny" style="margin-top:18px;"></div>
+  <!-- AUTH OVERLAY -->
+  <div id="auth" class="overlay auth center col">
+    <div style="font-size: 40px; margin-bottom: 16px;">🔒</div>
+    <input id="authPin" type="password" class="input" style="text-align:center; font-size: 40px; letter-spacing: 12px; width: 220px;" placeholder="••••" maxlength="4" inputmode="numeric">
+    <button id="authBtn" class="btn" style="margin-top: 28px; width: 220px;">Unlock</button>
+    <div class="tiny" style="margin-top: 14px;" id="authHint"></div>
   </div>
 
-  <!-- TOP BAR -->
-  <div style="display:flex; justify-content:space-between; align-items:center; padding:0 10px; margin-bottom:20px;">
-    <span class="text-xs font-black uppercase text-zinc">Sovereign v82</span>
-    <div class="flex gap-2">
-      <button id="btn-query" class="btn-dark" style="width:40px; height:40px; border-radius:50%; padding:0;">🔍</button>
-      <button id="btn-stealth" class="btn-dark" style="width:40px; height:40px; border-radius:50%; padding:0;">👁️</button>
-      <button id="btn-settings" class="btn-dark" style="width:40px; height:40px; border-radius:50%; padding:0;">⚙️</button>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <span class="tiny">Sovereign v82</span>
+    <div class="flex gap-8">
+      <button class="icon-btn" id="btnQuery" aria-label="Query">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="M21 21l-4.3-4.3"></path>
+        </svg>
+      </button>
+      <button class="icon-btn" id="btnStealth" aria-label="Stealth">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+      <button class="icon-btn" id="btnSettings" aria-label="Settings">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z"></path>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06-1.8 3.12-.09-.03a2 2 0 0 0-2.22.57l-.05.05-3.6-2.07a1.7 1.7 0 0 0-1.42 0L7 20.64l-.05-.05a2 2 0 0 0-2.22-.57l-.09.03-1.8-3.12.06-.06A1.7 1.7 0 0 0 3.24 15l-4.15-2.4.03-.09a2 2 0 0 0 0-2.3l-.03-.09L3.24 7.7a1.7 1.7 0 0 0-.34-1.87l-.06-.06 1.8-3.12.09.03a2 2 0 0 0 2.22-.57l.05-.05 3.6 2.07a1.7 1.7 0 0 0 1.42 0L16.64 2.02l.05.05a2 2 0 0 0 2.22.57l.09-.03 1.8 3.12-.06.06a1.7 1.7 0 0 0-.34 1.87l2.4 4.15.09-.03a2 2 0 0 0 2.3 0l.09.03-2.4 4.15z"></path>
+        </svg>
+      </button>
     </div>
   </div>
 
   <!-- DASHBOARD -->
-  <div id="dashboard-view">
-    <div class="hero-card text-center">
-      <h1 id="nw-display" class="amount-hero maskable">₦0.00</h1>
-      <div class="flex justify-center gap-4" style="opacity:.85;">
-        <div class="text-center">
-          <p id="split-cash" class="text-xs font-bold maskable text-emerald">₦0</p>
-          <p class="text-xs font-bold text-zinc uppercase" style="font-size:9px;">Cash</p>
-        </div>
-        <div class="text-center">
-          <p id="split-as" class="text-xs font-bold maskable text-blue">₦0</p>
-          <p class="text-xs font-bold text-zinc uppercase" style="font-size:9px;">Assets</p>
-        </div>
-        <div class="text-center">
-          <p id="split-db" class="text-xs font-bold maskable text-yellow">₦0</p>
-          <p class="text-xs font-bold text-zinc uppercase" style="font-size:9px;">Debt</p>
+  <div id="viewDash">
+    <div class="hero">
+      <div class="center col">
+        <div id="nw" class="amount maskable">₦0.00</div>
+        <div class="flex gap-12" style="opacity:.9;">
+          <div class="center col">
+            <div id="cashSplit" class="text-xs maskable" style="font-weight:900; color:var(--emerald);">₦0</div>
+            <div class="tiny">Cash</div>
+          </div>
+          <div class="center col">
+            <div id="assetSplit" class="text-xs maskable" style="font-weight:900; color:var(--blue);">₦0</div>
+            <div class="tiny">Assets</div>
+          </div>
+          <div class="center col">
+            <div id="debtSplit" class="text-xs maskable" style="font-weight:900; color:var(--yellow);">₦0</div>
+            <div class="tiny">Debt</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div id="cards-container" style="margin-top:20px;">
-      <div id="feat-tactical" class="vault-card">
-        <div class="p-5 flex justify-between items-center" data-toggle="feat-tactical">
-          <span class="text-xs font-bold uppercase">Liquidity</span>
-          <b id="tc-display" class="maskable text-sm text-emerald">₦0</b>
+    <!-- CARDS -->
+    <div class="card" data-drawer="liq">
+      <div class="card-head row" tabindex="0">
+        <span class="tiny">Liquidity</span>
+        <b id="liq" class="text-sm maskable" style="color:var(--emerald);">₦0</b>
+      </div>
+      <div class="drawer">
+        <div class="row tx-row" style="cursor:default;">
+          <span class="tiny">Bills</span><b id="bills" class="maskable">₦0</b>
         </div>
-        <div class="sub-drawer">
-          <div class="row"><span>Bills</span><span id="b-total" class="maskable font-bold">₦0</span></div>
-          <div class="row"><span>Savings</span><span id="s-total" class="maskable font-bold">₦0</span></div>
-          <div class="row"><span>Spend</span><span id="l-total" class="maskable font-bold">₦0</span></div>
+        <div class="row tx-row" style="cursor:default;">
+          <span class="tiny">Savings</span><b id="save" class="maskable">₦0</b>
+        </div>
+        <div class="row tx-row" style="cursor:default;">
+          <span class="tiny">Spend</span><b id="spend" class="maskable">₦0</b>
         </div>
       </div>
+    </div>
 
-      <div id="feat-expenses" class="vault-card">
-        <div class="p-5 flex justify-between items-center" data-toggle="feat-expenses">
-          <span class="text-xs font-bold uppercase text-red">Expenses</span>
-          <b id="ex-display" class="maskable text-sm text-red">₦0</b>
-        </div>
-        <div id="ex-list" class="sub-drawer"></div>
+    <div class="card" data-drawer="exp">
+      <div class="card-head row" tabindex="0">
+        <span class="tiny" style="color:var(--red);">Expenses</span>
+        <b id="expT" class="text-sm maskable" style="color:var(--red);">₦0</b>
       </div>
+      <div class="drawer" id="expList"></div>
+    </div>
 
-      <div id="feat-assets" class="vault-card">
-        <div class="p-5 flex justify-between items-center" data-toggle="feat-assets">
-          <span class="text-xs font-bold uppercase text-blue">Assets</span>
-          <b id="as-display" class="maskable text-sm text-blue">₦0</b>
-        </div>
-        <div id="as-list" class="sub-drawer"></div>
+    <div class="card" data-drawer="ast">
+      <div class="card-head row" tabindex="0">
+        <span class="tiny" style="color:var(--blue);">Assets</span>
+        <b id="astT" class="text-sm maskable" style="color:var(--blue);">₦0</b>
       </div>
+      <div class="drawer" id="astList"></div>
+    </div>
 
-      <div id="feat-debtors" class="vault-card">
-        <div class="p-5 flex justify-between items-center" data-toggle="feat-debtors">
-          <span class="text-xs font-bold uppercase">Debtors</span>
-          <b id="db-display" class="maskable text-sm text-emerald">₦0</b>
-        </div>
-        <div id="db-list" class="sub-drawer"></div>
+    <div class="card" data-drawer="deb">
+      <div class="card-head row" tabindex="0">
+        <span class="tiny">Debtors</span>
+        <b id="debT" class="text-sm maskable" style="color:var(--emerald);">₦0</b>
       </div>
+      <div class="drawer" id="debList"></div>
+    </div>
 
-      <div id="feat-creditors" class="vault-card">
-        <div class="p-5 flex justify-between items-center" data-toggle="feat-creditors">
-          <span class="text-xs font-bold uppercase text-zinc">Creditors</span>
-          <b id="cr-display" class="maskable text-sm text-red">₦0</b>
-        </div>
-        <div id="cr-list" class="sub-drawer"></div>
+    <div class="card" data-drawer="cred">
+      <div class="card-head row" tabindex="0">
+        <span class="tiny">Creditors</span>
+        <b id="credT" class="text-sm maskable" style="color:var(--red);">₦0</b>
       </div>
+      <div class="drawer" id="credList"></div>
+    </div>
 
-      <div id="feat-fiduciary" class="vault-card">
-        <div class="p-5 flex justify-between items-center" data-toggle="feat-fiduciary">
-          <span class="text-xs font-bold uppercase text-yellow">Fiduciary</span>
-          <b id="fd-display" class="maskable text-sm text-yellow">₦0</b>
-        </div>
-        <div class="sub-drawer">
-          <div class="seg-control">
-            <div class="seg-btn" id="fd-v-goal">GOAL</div>
-            <div class="seg-btn" id="fd-v-user">USER</div>
-          </div>
-          <div id="fd-pivot-list"></div>
-        </div>
+    <div class="card" data-drawer="audit" style="opacity:.92;">
+      <div class="card-head row" tabindex="0">
+        <span class="tiny">Audit Trail</span>
+        <span class="tiny">▼</span>
       </div>
-
-      <div id="feat-history" class="vault-card" style="opacity:.78;">
-        <div class="p-5 flex justify-between items-center" data-toggle="feat-history">
-          <span class="text-xs font-bold uppercase text-zinc">Audit Trail</span><span>▼</span>
-        </div>
-        <div class="sub-drawer">
-          <input id="hi-search" type="text" class="input-ghost text-xs mb-4" placeholder="Filter... (desc/merchant/category)" />
-          <div id="hi-list" style="max-height:340px; overflow-y:auto;"></div>
-        </div>
+      <div class="drawer">
+        <input id="auditFilter" class="input text-xs mb-16" placeholder="Filter..." />
+        <div id="auditList" class="col"></div>
       </div>
     </div>
   </div>
 
   <!-- ENTRY GRID -->
-  <div id="entry-grid" class="full-overlay view-hidden">
-    <div class="flex justify-between mb-6">
-      <h2 class="text-sm font-black uppercase">New Entry</h2>
-      <button id="btn-close-grid" style="background:none; border:none; color:#fff; font-size:20px;">✕</button>
+  <div id="viewGrid" class="overlay hidden">
+    <div class="row mb-20">
+      <div class="caps text-sm">New Entry</div>
+      <button class="btn btn-ghost" id="closeGrid">✕</button>
     </div>
 
-    <div class="grid-2">
-      <button data-open-form="income" class="btn-grid" style="border-color:#064E3B;">📥<span class="text-xs font-bold uppercase text-emerald">Inflow</span></button>
-      <button data-open-form="expense" class="btn-grid" style="border-color:#7F1D1D;">📤<span class="text-xs font-bold uppercase text-red">Expense</span></button>
-      <button data-open-form="asset" class="btn-grid">💎<span class="text-xs font-bold uppercase text-blue">Asset</span></button>
-      <button data-open-form="creditor" class="btn-grid">🔴<span class="text-xs font-bold uppercase text-red">Borrow</span></button>
-      <button data-open-form="debtor" class="btn-grid">🟢<span class="text-xs font-bold uppercase text-emerald">Lend</span></button>
-      <button data-open-form="fiduciary" class="btn-grid">💼<span class="text-xs font-bold uppercase text-yellow">Fiduciary</span></button>
+    <div class="grid2">
+      <button class="btn" data-open="income" style="border-color: rgba(16,185,129,.35);">Inflow</button>
+      <button class="btn" data-open="expense" style="border-color: rgba(239,68,68,.35);">Expense</button>
+      <button class="btn" data-open="asset" style="border-color: rgba(59,130,246,.35);">Asset</button>
+      <button class="btn" data-open="creditor" style="border-color: rgba(239,68,68,.25);">Borrow (IOU)</button>
+      <button class="btn" data-open="debtor" style="border-color: rgba(16,185,129,.25);">Lend (IOU)</button>
+      <button class="btn" data-open="fiduciary" style="border-color: rgba(234,179,8,.25);">Fiduciary</button>
     </div>
   </div>
 
   <!-- ENTRY FORM -->
-  <div id="entry-form" class="full-overlay view-hidden">
-    <div class="flex justify-between mb-6">
-      <div id="settle-toggle-container" class="w-full" style="margin-right:20px;"></div>
-      <button id="btn-close-form" style="background:none; border:none; color:#fff; font-size:20px;">✕</button>
+  <div id="viewForm" class="overlay hidden">
+    <div class="row mb-20">
+      <div id="formTitle" class="caps text-sm">Entry</div>
+      <button class="btn btn-ghost" id="closeForm">✕</button>
     </div>
 
-    <input id="e-amount" type="number" class="amount-hero" placeholder="0" inputmode="numeric"/>
+    <div id="settleWrap" class="mb-16"></div>
 
-    <div id="fluid-container" class="hidden">
-      <div class="fluid-bar">
-        <div class="fluid-seg">BILLS<input id="fluid-bills" type="number" class="fluid-input" value="40"/></div>
-        <div class="fluid-seg">SAVE<input id="fluid-save" type="number" class="fluid-input" value="40"/></div>
-        <div class="fluid-seg" style="border-right:none;">SPEND<input id="fluid-spend" type="number" class="fluid-input" value="20"/></div>
+    <input id="amt" type="number" class="amount" placeholder="0" inputmode="numeric" />
+
+    <!-- Income split -->
+    <div id="fluidWrap" class="hidden mb-16">
+      <div class="card" style="margin: 0; border-radius: 16px;">
+        <div class="p-16">
+          <div class="row mb-10"><span class="tiny">Bills %</span><input id="pBills" class="input" style="text-align:right; width: 90px; border-bottom:none;" type="number" value="40"></div>
+          <div class="row mb-10"><span class="tiny">Save %</span><input id="pSave" class="input" style="text-align:right; width: 90px; border-bottom:none;" type="number" value="40"></div>
+          <div class="row"><span class="tiny">Spend %</span><input id="pSpend" class="input" style="text-align:right; width: 90px; border-bottom:none;" type="number" value="20"></div>
+          <div class="tiny" style="margin-top: 10px;">Auto-normalized to 100%</div>
+        </div>
       </div>
     </div>
 
-    <div id="dynamic-inputs" class="mb-4" style="margin-top:18px;"></div>
+    <div id="dyn" class="mb-16"></div>
 
-    <!-- description + autocompletes -->
-    <input id="e-name" class="input-ghost" placeholder="Description" list="dl-desc"/>
-    <datalist id="dl-desc"></datalist>
+    <input id="desc" class="input" placeholder="Description" />
 
-    <input id="e-merchant" class="input-ghost" placeholder="Merchant (optional)" list="dl-merchant"/>
-    <datalist id="dl-merchant"></datalist>
+    <button id="exec" class="btn" style="margin-top: 26px; padding: 18px 18px; font-size: 13px;">Execute</button>
 
-    <input id="e-category" class="input-ghost" placeholder="Category (optional)" list="dl-category"/>
-    <datalist id="dl-category"></datalist>
-
-    <button id="btn-exec" class="btn-dark" style="margin-top:26px; padding:20px; font-size:14px;">EXECUTE TRANSACTION</button>
-
-    <div class="tiny" style="margin-top:14px;">
-      Loans (Borrow/Lend/Settlements) are tracked as IOUs only: they never change Net Worth or Liquidity.
+    <div class="tiny" style="margin-top: 12px;">
+      Loans (Borrow/Lend/Settlements) are IOU-only: they never change Net Worth or Liquidity.
     </div>
   </div>
 
-  <!-- QUERY LAB -->
-  <div id="query-lab" class="full-overlay view-hidden">
-    <div class="flex justify-between mb-6">
-      <h2 class="text-sm font-black uppercase">Query Lab</h2>
-      <button id="btn-close-query" style="background:none; border:none; color:#fff; font-size:20px;">✕</button>
+  <!-- QUERY -->
+  <div id="viewQuery" class="overlay hidden">
+    <div class="row mb-20">
+      <div class="caps text-sm">Query Lab</div>
+      <button class="btn btn-ghost" id="closeQuery">✕</button>
     </div>
 
-    <input id="q-search" type="text" class="input-ghost" placeholder="Search (desc / merchant / category / people)..." style="font-size:18px; margin-bottom:18px;"/>
+    <input id="qSearch" class="input" placeholder="Search..." style="font-size: 18px; margin-bottom: 16px;" />
 
-    <div class="pill-scroll" id="q-type-filters">
-      <button class="q-pill active" data-qtype="all">ALL</button>
-      <button class="q-pill" data-qtype="income">INFLOW</button>
-      <button class="q-pill" data-qtype="expense">EXPENSE</button>
-      <button class="q-pill" data-qtype="asset">ASSET</button>
-      <button class="q-pill" data-qtype="debtor">LEND</button>
-      <button class="q-pill" data-qtype="creditor">BORROW</button>
-      <button class="q-pill" data-qtype="fiduciary">FIDUCIARY</button>
+    <div class="flex gap-8" style="overflow:auto; padding-bottom: 8px;">
+      <button class="mini-pill" data-q="all">All</button>
+      <button class="mini-pill" data-q="income">In</button>
+      <button class="mini-pill" data-q="expense">Out</button>
+      <button class="mini-pill" data-q="asset">Asset</button>
+      <button class="mini-pill" data-q="iou">IOU</button>
+      <button class="mini-pill" data-q="fiduciary">Fid</button>
     </div>
 
-    <div class="grid-2" style="margin-top:18px; margin-bottom:18px;">
-      <input type="date" id="q-start" class="input-ghost text-xs"/>
-      <input type="date" id="q-end" class="input-ghost text-xs"/>
+    <div class="grid2" style="margin: 14px 0 14px;">
+      <input id="qStart" class="input text-xs" type="date" />
+      <input id="qEnd" class="input text-xs" type="date" />
     </div>
 
-    <div id="q-results" class="flex-col gap-2"></div>
+    <div id="qRes" class="col"></div>
   </div>
 
   <!-- SETTINGS -->
-  <div id="settings-view" class="full-overlay view-hidden">
-    <div class="flex justify-between mb-6">
-      <h2 class="text-sm font-black uppercase">Settings</h2>
-      <button id="btn-close-settings" style="background:none; border:none; color:#fff; font-size:20px;">✕</button>
+  <div id="viewSettings" class="overlay hidden">
+    <div class="row mb-20">
+      <div class="caps text-sm">Settings</div>
+      <button class="btn btn-ghost" id="closeSettings">✕</button>
     </div>
 
-    <div class="vault-card p-6 mb-4">
-      <div class="flex justify-between items-center mb-4">
-        <p class="text-xs font-bold uppercase">PIN Startup</p>
-        <label class="switch">
-          <input type="checkbox" id="tog-pin" />
-          <span class="slider"></span>
-        </label>
+    <div class="card" style="margin:0 0 12px 0;">
+      <div class="p-20">
+        <div class="row mb-16">
+          <div class="tiny">PIN Startup</div>
+          <label class="switch">
+            <input type="checkbox" id="pinToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <input id="pinSet" type="password" maxlength="4" class="input" style="text-align:center; letter-spacing: 10px;" placeholder="••••" inputmode="numeric" />
+        <button id="savePin" class="btn" style="width:100%; margin-top: 14px;">Update PIN</button>
+        <div class="tiny" style="margin-top: 10px;">PIN stored hashed (not plaintext).</div>
       </div>
-
-      <input id="set-pin" type="password" maxlength="4" class="input-ghost text-center" style="letter-spacing:5px; margin-bottom:20px;" placeholder="••••" inputmode="numeric" />
-      <button id="btn-save-pin" class="btn-dark">Update PIN</button>
-      <div class="tiny" style="margin-top:10px;">PIN is stored as a hash (not plaintext).</div>
     </div>
 
-    <div class="flex gap-2 mb-4">
-      <button id="btn-backup" class="btn-dark" style="flex:1;">BACKUP</button>
-      <button id="btn-restore" class="btn-dark" style="flex:1; color:var(--emerald);">RESTORE</button>
-      <input type="file" id="file-input" class="hidden" />
+    <div class="card" style="margin:0 0 12px 0;">
+      <div class="p-20">
+        <div class="row mb-16">
+          <div class="tiny">Haptics</div>
+          <label class="switch">
+            <input type="checkbox" id="hapToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="tiny">Uses vibration where supported (mostly Android/PWA).</div>
+      </div>
     </div>
 
-    <button id="btn-reset" class="btn-dark" style="color:var(--red); border-color:var(--red);">FACTORY RESET</button>
+    <div class="grid2 mb-16">
+      <button id="backup" class="btn">Backup</button>
+      <button id="restore" class="btn" style="border-color: rgba(16,185,129,.28); color: var(--emerald);">Restore</button>
+      <input id="file" type="file" class="hidden" />
+    </div>
+
+    <button id="reset" class="btn btn-danger" style="width: 100%;">Factory Reset</button>
   </div>
 
-  <button id="nav-fab" class="fab fab-primary">+</button>
+  <!-- FAB -->
+  <button id="fab" class="fab fab-primary">+</button>
+
+  <!-- BOTTOM SHEET: TX DETAILS -->
+  <div id="sheetBack" class="sheet-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="sheet" role="document">
+      <div class="sheet-handle"></div>
+      <div class="sheet-body">
+        <div class="row">
+          <div>
+            <div id="sheetTitle" class="sheet-title">Transaction</div>
+            <div id="sheetAmt" class="sheet-amt maskable">₦0</div>
+          </div>
+          <div id="sheetBadge" class="pill">TYPE</div>
+        </div>
+
+        <div class="kv" id="sheetKV"></div>
+
+        <div class="sheet-actions">
+          <button id="dupBtn" class="btn">Duplicate</button>
+          <button id="delBtn" class="btn btn-danger">Delete</button>
+        </div>
+
+        <button id="closeSheet" class="btn btn-ghost" style="width:100%; margin-top: 10px;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-wrap">
+    <div id="toast" class="toast">
+      <div>
+        <strong id="toastT">Notice</strong>
+        <div id="toastM" class="msg">Hello</div>
+      </div>
+      <div class="tiny muted">OK</div>
+    </div>
+  </div>
 
   <script>
-    (() => {
-      const APP_VER = 82;
+    (function () {
+      const APP = 82;
+
       const KEYS = {
         DB:  "SOV_DB_V82",
         CFG: "SOV_CFG_V82",
         PIN: "SOV_PIN_V82"
       };
 
+      const CATEGORIES = [
+        "Food", "Transport", "Bills", "Data/Airtime", "Fuel",
+        "Family", "Health", "Shopping", "Rent", "Work",
+        "Entertainment", "Charity", "Other"
+      ];
+
+      const $ = (id) => document.getElementById(id);
+
       const money = {
-        fmt: (n) => "₦" + (Number(n) || 0).toLocaleString(),
-        num: (v) => {
-          const x = Number(v);
-          return Number.isFinite(x) ? x : 0;
+        n(v) { const x = Number(v); return Number.isFinite(x) ? x : 0; },
+        fmt(n) { return "₦" + (Number(n) || 0).toLocaleString(); }
+      };
+
+      const time = {
+        pad2(x){ return String(x).padStart(2,"0"); },
+        ymd(d){
+          const dt = new Date(d);
+          return dt.getFullYear()+"-"+this.pad2(dt.getMonth()+1)+"-"+this.pad2(dt.getDate());
+        },
+        hm(ts){
+          const dt = new Date(ts);
+          return this.pad2(dt.getHours())+":"+this.pad2(dt.getMinutes());
+        },
+        ymdhm(ts){
+          const dt = new Date(ts);
+          return this.ymd(dt)+" "+this.hm(ts);
+        },
+        startOfDay(ts){
+          const d = new Date(ts);
+          d.setHours(0,0,0,0);
+          return d.getTime();
+        },
+        weekStart(ts){
+          const d = new Date(ts);
+          const day = d.getDay(); // 0 Sun .. 6 Sat
+          const diff = (day === 0 ? 6 : day - 1); // Monday start
+          d.setDate(d.getDate() - diff);
+          d.setHours(0,0,0,0);
+          return d.getTime();
+        },
+        monthKey(ts){
+          const d = new Date(ts);
+          return d.getFullYear()+"-"+this.pad2(d.getMonth()+1);
         }
       };
 
-      const dom = {
-        byId: (id) => document.getElementById(id),
-        clear: (el) => { if (!el) return; el.innerHTML = ""; },
-        el: (tag, cls, text) => {
-          const n = document.createElement(tag);
-          if (cls) n.className = cls;
-          if (text !== undefined) n.textContent = text;
-          return n;
+      const ui = {
+        toastTimer: null,
+        toast(type, title, msg){
+          const t = $("toast");
+          t.classList.remove("success","error","warn","show");
+          t.classList.add(type);
+          $("toastT").textContent = title;
+          $("toastM").textContent = msg;
+          clearTimeout(this.toastTimer);
+          requestAnimationFrame(() => t.classList.add("show"));
+          this.toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+        },
+        vibrate(ms){
+          if (!core.cfg.haptics) return;
+          if (navigator.vibrate) navigator.vibrate(ms);
         }
       };
 
-      // --- PIN hashing ---
       const cryptoUtil = {
-        randSalt: () => {
+        randSalt(){
           const a = new Uint8Array(16);
           crypto.getRandomValues(a);
           return Array.from(a).map(b => b.toString(16).padStart(2,"0")).join("");
         },
-        toHex: (buf) => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join(""),
+        toHex(buf){
+          return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+        },
         async sha256(str){
           const data = new TextEncoder().encode(str);
           const buf = await crypto.subtle.digest("SHA-256", data);
-          return cryptoUtil.toHex(buf);
+          return this.toHex(buf);
         },
-        async hashPin(pin, salt){ return cryptoUtil.sha256(`${salt}:${pin}`); }
+        async hashPin(pin, salt){
+          return this.sha256(`${salt}:${pin}`);
+        }
       };
 
-      const timeUtil = (() => {
-        const pad = (n) => String(n).padStart(2, "0");
-        const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-        const hm  = (d) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-        const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      const core = {
+        db: [],
+        cfg: { reqPin: false, qType: "all", fdView: "goal", haptics: false },
+        pinObj: null,
+        activeType: "income",
+        settlement: false,
+        selectedTxId: null,
 
-        // Monday as week start
-        const startOfWeek = (d) => {
-          const t = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-          const day = (t.getDay() + 6) % 7; // Mon=0
-          t.setDate(t.getDate() - day);
-          t.setHours(0,0,0,0);
-          return t.getTime();
-        };
+        load(){
+          // load best-effort from older versions if v82 empty
+          const loadJson = (k, fallback) => {
+            try { return JSON.parse(localStorage.getItem(k)) ?? fallback; }
+            catch { return fallback; }
+          };
 
-        const periodLabel = (ts) => {
-          const now = new Date();
-          const d = new Date(ts);
-          const today0 = startOfDay(now);
-          const that0  = startOfDay(d);
-          const diffDays = Math.round((today0 - that0) / 86400000);
+          this.db = loadJson(KEYS.DB, []);
+          this.cfg = { ...this.cfg, ...loadJson(KEYS.CFG, this.cfg) };
+          this.pinObj = loadJson(KEYS.PIN, null);
 
-          if (diffDays === 0) return "Today";
-          if (diffDays === 1) return "Yesterday";
-
-          const thisW = startOfWeek(now);
-          const thatW = startOfWeek(d);
-          if (thatW === thisW) return "This Week";
-          if (thatW === thisW - 7*86400000) return "Last Week";
-
-          // Month bucket
-          return `${d.getFullYear()}-${pad(d.getMonth()+1)}`;
-        };
-
-        return { ymd, hm, periodLabel };
-      })();
-
-      const VaultCore = (() => {
-        let db = [];
-        let config = { reqPin:false, activeQType:"all", fdView:"goal" };
-        let pinObj = null;
-
-        const save = () => {
-          localStorage.setItem(KEYS.DB, JSON.stringify(db));
-          localStorage.setItem(KEYS.CFG, JSON.stringify(config));
-          localStorage.setItem(KEYS.PIN, JSON.stringify(pinObj));
-        };
-
-        const makeId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(16).slice(2));
-
-        const migrateEnsureTs = (e) => {
-          if (!e) return e;
-          if (typeof e.ts === "number") return e;
-          // best effort: use date at 12:00 local to preserve ordering within day
-          if (e.date) {
-            const t = new Date(e.date + "T12:00:00");
-            e.ts = t.getTime();
-          } else {
-            e.ts = Date.now();
+          // migrate old db keys if needed
+          if (!this.db.length) {
+            const older = localStorage.getItem("SOV_DB_V81") || localStorage.getItem("SOV_DB_V80");
+            if (older) {
+              try { this.db = JSON.parse(older) || []; } catch { this.db = []; }
+            }
           }
+
+          // migrate entries: ensure ts exists + enforce IOU-only totals
+          this.db = this.db.map(e => this.migrateEntry(e)).filter(Boolean);
+
+          this.save();
+        },
+
+        save(){
+          localStorage.setItem(KEYS.DB, JSON.stringify(this.db));
+          localStorage.setItem(KEYS.CFG, JSON.stringify(this.cfg));
+          localStorage.setItem(KEYS.PIN, JSON.stringify(this.pinObj));
+        },
+
+        migrateEntry(e){
+          if (!e || typeof e !== "object") return null;
+          // ensure ts
+          if (!e.ts) {
+            // best effort: if date exists, set midday; else now
+            if (e.date) {
+              const d = new Date(e.date + "T12:00:00");
+              e.ts = d.getTime();
+            } else {
+              e.ts = Date.now();
+              e.date = time.ymd(e.ts);
+            }
+          }
+          if (!e.date) e.date = time.ymd(e.ts);
+
+          // enforce IOU-only loan types
+          const loanTypes = new Set(["creditor","credit_settlement","debtor","debt_repayment"]);
+          if (loanTypes.has(e.type)) {
+            e.total = 0;
+            delete e.b; delete e.s; delete e.l;
+            if (typeof e.principal !== "number") e.principal = 0;
+          }
+
+          // normalize expense fields
+          if (e.type === "expense") {
+            if (!e.category) e.category = "Other";
+            if (!CATEGORIES.includes(e.category)) e.category = "Other";
+            if (!e.merchant) e.merchant = "";
+            if (!e.bucket) e.bucket = "spend";
+          }
+
           return e;
-        };
+        },
 
-        const enforceLoanPolicy = (e) => {
-          if (!e) return e;
-          const loanTypes = ["creditor","credit_settlement","debtor","debt_repayment"];
-          if (!loanTypes.includes(e.type)) return e;
+        makeId(){
+          return (crypto.randomUUID ? crypto.randomUUID() : (String(Date.now()) + "-" + Math.random().toString(16).slice(2)));
+        },
 
-          // loans must be IOU-only: total=0, only principal changes
-          if (typeof e.principal !== "number") {
-            const t = money.num(e.total);
-            if (e.type === "creditor") e.principal = Math.abs(t);
-            if (e.type === "credit_settlement") e.principal = -Math.abs(t);
-            if (e.type === "debtor") e.principal = Math.abs(t);
-            if (e.type === "debt_repayment") e.principal = -Math.abs(t);
+        entryAmt(e){
+          if (typeof e.principal === "number" && (e.type === "creditor" || e.type === "credit_settlement" || e.type === "debtor" || e.type === "debt_repayment")) {
+            return Math.abs(e.principal);
           }
-          e.total = 0;
-          delete e.b; delete e.s; delete e.l;
-          return e;
-        };
+          return Math.abs(money.n(e.total));
+        },
 
-        const load = () => {
-          try { db = JSON.parse(localStorage.getItem(KEYS.DB)) || []; } catch { db = []; }
-          try { config = JSON.parse(localStorage.getItem(KEYS.CFG)) || config; } catch {}
-          try { pinObj = JSON.parse(localStorage.getItem(KEYS.PIN)) || null; } catch { pinObj = null; }
+        badgeFor(e){
+          if (!e) return { text:"TX", cls:"pill" };
+          if (e.type === "income") return { text:"IN", cls:"pill pill-in" };
+          if (e.type === "expense") return { text:"OUT", cls:"pill pill-out" };
+          if (e.type === "asset") return { text:"ASSET", cls:"pill pill-asset" };
+          if (e.type === "fiduciary") return { text:"FID", cls:"pill pill-fid" };
+          if (e.type === "creditor" || e.type === "debtor" || e.type === "credit_settlement" || e.type === "debt_repayment") return { text:"IOU", cls:"pill pill-iou" };
+          return { text:"TX", cls:"pill" };
+        },
 
-          // optional migration from v81 if v82 empty
-          if (!db.length) {
-            const old = localStorage.getItem("SOV_DB_V81");
-            if (old) {
-              try { db = JSON.parse(old) || []; } catch { db = []; }
+        // --- PIN ---
+        hasPin(){ return !!(this.pinObj && this.pinObj.hash && this.pinObj.salt); },
+
+        async savePin(){
+          const p = ($("pinSet").value || "").trim();
+          if (p.length !== 4) { ui.toast("warn","PIN","4 digits required"); ui.vibrate(20); return; }
+          if (!crypto?.subtle) { ui.toast("error","PIN","Browser can't store securely"); return; }
+          const salt = cryptoUtil.randSalt();
+          const hash = await cryptoUtil.hashPin(p, salt);
+          this.pinObj = { salt, hash, algo: "sha256(salt:pin)" };
+          this.save();
+          $("pinSet").value = "";
+          ui.toast("success","PIN","Saved");
+          ui.vibrate(12);
+        },
+
+        async verifyPin(input){
+          if (!this.hasPin()) return true;
+          const hash = await cryptoUtil.hashPin(input, this.pinObj.salt);
+          return hash === this.pinObj.hash;
+        },
+
+        exportAll(){
+          const payload = { version: APP, exportedAt: new Date().toISOString(), db: this.db, cfg: this.cfg };
+          const b = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(b);
+          a.download = `Vault_v${APP}.json`;
+          a.click();
+          ui.toast("success","Backup","Saved file");
+          ui.vibrate(10);
+        },
+
+        importAll(file){
+          const r = new FileReader();
+          r.onload = (ev) => {
+            try{
+              const parsed = JSON.parse(ev.target.result);
+              if (Array.isArray(parsed)) this.db = parsed;
+              else if (parsed && Array.isArray(parsed.db)) {
+                this.db = parsed.db;
+                if (parsed.cfg) this.cfg = { ...this.cfg, ...parsed.cfg };
+              } else throw new Error("Invalid format");
+
+              this.db = this.db.map(e => this.migrateEntry(e)).filter(Boolean);
+              this.save();
+              ui.toast("success","Restore","Loaded");
+              ui.vibrate(12);
+              views.show("dash");
+              render.all();
+            }catch{
+              ui.toast("error","Restore","Invalid file");
+              ui.vibrate(30);
+            }
+          };
+          r.readAsText(file);
+        },
+
+        wipe(){
+          if (!confirm("Reset Vault? This clears only this app's data.")) return;
+          localStorage.removeItem(KEYS.DB);
+          localStorage.removeItem(KEYS.CFG);
+          localStorage.removeItem(KEYS.PIN);
+          location.reload();
+        },
+
+        deleteById(id){
+          const idx = this.db.findIndex(x => x.id === id);
+          if (idx < 0) return;
+          this.db.splice(idx,1);
+          this.save();
+          ui.toast("success","Deleted","Transaction removed");
+          ui.vibrate(18);
+        },
+
+        // Duplicate: clears amount, keeps fields
+        duplicateToForm(e){
+          if (!e) return;
+          // open correct base type (for IOU, keep IOU type)
+          this.activeType = (e.type === "credit_settlement") ? "expense" :
+                            (e.type === "debt_repayment") ? "income" :
+                            e.type;
+
+          // settlement flag if needed
+          this.settlement = (e.type === "credit_settlement" || e.type === "debt_repayment");
+
+          // open form
+          views.show("form");
+          form.build();
+
+          // clear amount by requirement
+          $("amt").value = "";
+
+          // prefill fields (desc, merchant, category, bucket, etc.)
+          $("desc").value = (this.settlement ? (e.creditor || e.debtor || e.name || "") : (e.name || ""));
+
+          if (this.activeType === "expense" && !this.settlement) {
+            const m = $("expMerchant"); if (m) m.value = e.merchant || "";
+            const c = $("expCat"); if (c) c.value = e.category || "Other";
+            const b = $("expBucket"); if (b) b.value = e.bucket || "spend";
+            const n = $("expNote"); if (n) n.value = e.note || "";
+          }
+
+          if (this.activeType === "asset") {
+            const cat = $("asCat"); if (cat) cat.value = e.cat || "Other";
+          }
+
+          if (this.activeType === "fiduciary") {
+            const g = $("fdGoal"); if (g) g.value = e.goal || "";
+            const u = $("fdUser"); if (u) u.value = e.user || "";
+          }
+
+          if (this.activeType === "creditor" || this.activeType === "debtor") {
+            const rate = $("iouRate"); if (rate) rate.value = e.rate || "";
+            const term = $("iouTerm"); if (term) term.value = e.term || "";
+          }
+
+          ui.toast("success","Duplicate","Prefilled (amount cleared)");
+          ui.vibrate(10);
+        },
+
+        execute(){
+          const amt = Math.abs(money.n($("amt").value));
+          const desc = ($("desc").value || "").trim();
+
+          if (!desc) { ui.toast("warn","Entry","Description required"); ui.vibrate(18); return; }
+          if (!amt) { ui.toast("warn","Entry","Amount required"); ui.vibrate(18); return; }
+
+          const now = Date.now();
+          const base = {
+            id: this.makeId(),
+            ts: now,
+            date: time.ymd(now),
+            type: this.activeType,
+            name: desc,
+            total: 0
+          };
+
+          // Income
+          if (this.activeType === "income") {
+            if (this.settlement) {
+              base.type = "debt_repayment";
+              base.debtor = desc;
+              base.principal = -amt; // reduce owed to you
+              base.total = 0;
+            } else {
+              // normalize split to 100
+              const pb = clamp100(money.n($("pBills").value));
+              const ps = clamp100(money.n($("pSave").value));
+              const pl = clamp100(money.n($("pSpend").value));
+              const fixed = normalize3(pb, ps, pl);
+              $("pBills").value = fixed.a;
+              $("pSave").value = fixed.b;
+              $("pSpend").value = fixed.c;
+
+              base.total = amt;
+              base.b = amt * (fixed.a / 100);
+              base.s = amt * (fixed.b / 100);
+              base.l = amt * (fixed.c / 100);
             }
           }
 
-          db = db.map(migrateEnsureTs).map(enforceLoanPolicy);
-          save();
-        };
+          // Expense
+          else if (this.activeType === "expense") {
+            if (this.settlement) {
+              base.type = "credit_settlement";
+              base.creditor = desc;
+              base.principal = -amt; // reduce you owe
+              base.total = 0;
+            } else {
+              const bucket = $("expBucket")?.value || "spend";
+              const merchant = ($("expMerchant")?.value || "").trim();
+              const category = $("expCat")?.value || "Other";
+              const note = ($("expNote")?.value || "").trim();
 
-        const entryAmount = (e) => (typeof e.principal === "number" ? e.principal : money.num(e.total));
+              base.type = "expense";
+              base.total = -amt;
+              base.bucket = bucket;
+              base.merchant = merchant;
+              base.category = CATEGORIES.includes(category) ? category : "Other";
+              base.note = note;
 
-        const collectUniques = (field, predicate = () => true) => {
-          const set = new Set();
-          for (const e of db) {
-            if (!e || !predicate(e)) continue;
-            const v = (e[field] || "").trim();
-            if (v) set.add(v);
+              // cash bucket movement
+              if (bucket === "bills") base.b = -amt;
+              if (bucket === "save") base.s = -amt;
+              if (bucket === "spend") base.l = -amt;
+            }
           }
-          return [...set].slice(0, 200).sort((a,b) => a.localeCompare(b));
-        };
 
-        return {
-          load,
-          db: () => db,
-          config: () => config,
-          hasPin: () => !!(pinObj && pinObj.hash && pinObj.salt),
-          setFdView: (v) => { config.fdView = v; save(); VaultUI.render(); },
-          setQType: (t) => { config.activeQType = t; save(); },
-          toggleSetting: (k) => { config[k] = !config[k]; save(); },
+          // Asset
+          else if (this.activeType === "asset") {
+            base.total = amt;
+            base.cat = $("asCat")?.value || "Other";
+          }
 
-          // suggestions
-          getDescSuggestions: () => collectUniques("name"),
-          getMerchantSuggestions: () => collectUniques("merchant", (e) => e.type === "expense"),
-          getCategorySuggestions: () => collectUniques("category", (e) => e.type === "expense"),
+          // IOU Borrow/Lend
+          else if (this.activeType === "creditor") {
+            base.total = 0;
+            base.principal = amt; // you owe increases
+            base.creditor = desc;
+            base.rate = $("iouRate")?.value || "";
+            base.term = $("iouTerm")?.value || "";
+          }
+          else if (this.activeType === "debtor") {
+            base.total = 0;
+            base.principal = amt; // owed to you increases
+            base.debtor = desc;
+            base.rate = $("iouRate")?.value || "";
+            base.term = $("iouTerm")?.value || "";
+          }
 
-          async savePin(){
-            const p = dom.byId("set-pin").value || "";
-            if (p.length !== 4) return alert("4 Digits Required");
-            if (!crypto?.subtle) return alert("This browser can't store PIN securely.");
-            const salt = cryptoUtil.randSalt();
-            const hash = await cryptoUtil.hashPin(p, salt);
-            pinObj = { salt, hash, algo:"sha256(salt:pin)" };
-            save();
-            dom.byId("set-pin").value = "";
-            alert("PIN Saved");
-          },
-          async verifyPin(pin){
-            if (!pinObj?.hash || !pinObj?.salt) return true;
-            const hash = await cryptoUtil.hashPin(pin, pinObj.salt);
-            return hash === pinObj.hash;
-          },
+          // Fiduciary
+          else if (this.activeType === "fiduciary") {
+            base.total = amt;
+            base.goal = ($("fdGoal")?.value || "").trim();
+            base.user = ($("fdUser")?.value || "").trim();
+          }
 
-          exportAll(){
-            const payload = { version: APP_VER, exportedAt: new Date().toISOString(), db, config };
-            const b = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(b);
-            a.download = `Vault_v${APP_VER}.json`;
-            a.click();
-          },
-          importAll(file){
-            const r = new FileReader();
-            r.onload = (ev) => {
-              try{
-                const parsed = JSON.parse(ev.target.result);
-                if (Array.isArray(parsed)) db = parsed;
-                else if (parsed && Array.isArray(parsed.db)) {
-                  db = parsed.db;
-                  if (parsed.config && typeof parsed.config === "object") config = { ...config, ...parsed.config };
-                } else throw new Error("Invalid");
+          this.db.push(this.migrateEntry(base));
+          this.save();
 
-                db = db.map(migrateEnsureTs).map(enforceLoanPolicy);
-                save(); location.reload();
-              } catch { alert("Invalid backup file"); }
-            };
-            r.readAsText(file);
-          },
+          ui.toast("success","Saved","Transaction recorded");
+          ui.vibrate(12);
 
-          deleteById(id){
-            if (!confirm("Delete?")) return;
-            db = db.filter(x => x.id !== id);
-            save(); VaultUI.render();
-          },
-          wipe(){
-            if (!confirm("RESET?")) return;
-            localStorage.removeItem(KEYS.DB);
-            localStorage.removeItem(KEYS.CFG);
-            localStorage.removeItem(KEYS.PIN);
-            location.reload();
-          },
+          views.show("dash");
+          render.all();
+        }
+      };
 
-          // form state
-          settlementFlag:false,
-          activeType:"income",
-          setSettlement(b){ this.settlementFlag = b; VaultUI.updateFormUI(); },
+      function clamp100(x){ return Math.max(0, Math.min(100, Math.round(x))); }
 
-          execute(){
-            const aRaw = dom.byId("e-amount").value;
-            const a = Math.abs(money.num(aRaw));
-            const desc = (dom.byId("e-name").value || "").trim();
-            const merchant = (dom.byId("e-merchant").value || "").trim();
-            const category = (dom.byId("e-category").value || "").trim();
-            if (!desc || !a) return;
+      function normalize3(a,b,c){
+        let sum = a+b+c;
+        if (sum === 100) return {a,b,c};
+        if (sum === 0) return {a:40,b:40,c:20};
+        const scale = 100 / sum;
+        a = Math.round(a * scale);
+        b = Math.round(b * scale);
+        c = 100 - a - b;
+        return {a,b,c};
+      }
 
-            const type = this.activeType;
-            const settlement = this.settlementFlag;
+      const views = {
+        ids: { dash:"viewDash", grid:"viewGrid", form:"viewForm", query:"viewQuery", settings:"viewSettings" },
+        show(which){
+          Object.values(this.ids).forEach(id => $(id).classList.add("hidden"));
+          $(this.ids[which]).classList.remove("hidden");
+          fab.update(which);
+          if (which === "query") query.run();
+        }
+      };
 
-            const now = new Date();
-            const e = {
-              id: makeId(),
-              ts: now.getTime(),
-              date: timeUtil.ymd(now),
-              name: desc,
-              merchant: merchant || undefined,
-              category: category || undefined,
-              type,
-              total: 0
-            };
-
-            // INCOME
-            if (type === "income") {
-              if (settlement) {
-                e.type = "debt_repayment";
-                e.debtor = desc;
-                e.principal = -a;
-                e.total = 0;
-              } else {
-                const bP = money.num(dom.byId("fluid-bills").value) / 100;
-                const sP = money.num(dom.byId("fluid-save").value) / 100;
-                const lP = money.num(dom.byId("fluid-spend").value) / 100;
-                e.total = a;
-                e.b = a*bP; e.s = a*sP; e.l = a*lP;
-              }
-            }
-            // EXPENSE
-            else if (type === "expense") {
-              if (settlement) {
-                e.type = "credit_settlement";
-                e.creditor = desc;
-                e.principal = -a;
-                e.total = 0;
-              } else {
-                const bucket = dom.byId("e-exp-bucket")?.value || "spend";
-                e.total = -a;
-                e.bucket = bucket;
-                if (bucket === "bills") e.b = -a;
-                if (bucket === "save")  e.s = -a;
-                if (bucket === "spend") e.l = -a;
-              }
-            }
-            // ASSET
-            else if (type === "asset") {
-              e.total = a;
-              e.cat = dom.byId("e-as-cat").value;
-            }
-            // IOU borrow/lend
-            else if (type === "creditor") {
-              e.total = 0;
-              e.principal = a;
-              e.creditor = desc;
-              e.rate = dom.byId("e-rate").value;
-              e.term = dom.byId("e-term").value;
-            }
-            else if (type === "debtor") {
-              e.total = 0;
-              e.principal = a;
-              e.debtor = desc;
-              e.rate = dom.byId("e-rate").value;
-              e.term = dom.byId("e-term").value;
-            }
-            // FIDUCIARY
-            else if (type === "fiduciary") {
-              e.total = a;
-              e.goal = dom.byId("e-fd-goal").value;
-              e.user = dom.byId("e-fd-user").value;
-            }
-
-            db.push(e);
-            save();
-            VaultUI.changeView("dashboard-view");
-          },
-
-          entryAmount
-        };
-      })();
-
-      const VaultUI = (() => {
-        const views = ["dashboard-view","entry-grid","entry-form","settings-view","query-lab"];
-
-        const setMoney = (id, v) => {
-          const el = dom.byId(id);
-          if (el) el.textContent = money.fmt(v);
-        };
-
-        const updateFab = (viewId) => {
-          const f = dom.byId("nav-fab");
-          if (viewId === "dashboard-view") {
-            f.textContent = "+";
-            f.className = "fab fab-primary";
-            f.onclick = () => VaultUI.changeView("entry-grid");
+      const fab = {
+        update(which){
+          const b = $("fab");
+          if (which === "dash") {
+            b.textContent = "+";
+            b.className = "fab fab-primary";
+            b.onclick = () => { ui.vibrate(8); views.show("grid"); };
           } else {
-            f.textContent = "↩";
-            f.className = "fab fab-back";
-            f.onclick = () => VaultUI.changeView("dashboard-view");
+            b.textContent = "↩";
+            b.className = "fab fab-back";
+            b.onclick = () => { ui.vibrate(8); views.show("dash"); render.all(); };
           }
-        };
+        }
+      };
 
-        const normalizeFluid = () => {
-          let b = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-bills").value))));
-          let s = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-save").value))));
-          let l = Math.max(0, Math.min(100, Math.round(money.num(dom.byId("fluid-spend").value))));
-          const sum = b+s+l;
-          if (sum === 100) return {b,s,l};
-          const scale = sum ? 100/sum : 1;
-          b = Math.round(b*scale);
-          s = Math.round(s*scale);
-          l = 100 - b - s;
-          dom.byId("fluid-bills").value = b;
-          dom.byId("fluid-save").value = s;
-          dom.byId("fluid-spend").value = l;
-          return {b,s,l};
-        };
+      const form = {
+        build(){
+          const t = core.activeType;
+          const settle = core.settlement;
 
-        const fillDatalist = (dlId, values) => {
-          const dl = dom.byId(dlId);
-          if (!dl) return;
-          dl.innerHTML = "";
-          values.forEach(v => {
-            const opt = document.createElement("option");
-            opt.value = v;
-            dl.appendChild(opt);
-          });
-        };
+          // title
+          const mapTitle = {
+            income: settle ? "Recover Debt (IOU)" : "Inflow",
+            expense: settle ? "Pay Debt (IOU)" : "Expense",
+            asset: "Asset",
+            creditor: "Borrow (IOU)",
+            debtor: "Lend (IOU)",
+            fiduciary: "Fiduciary"
+          };
+          $("formTitle").textContent = mapTitle[t] || "Entry";
 
-        const badgeFor = (e) => {
-          const t = e.type;
-          if (t === "income") return {cls:"badge in", txt:"IN"};
-          if (t === "expense") return {cls:"badge out", txt:"OUT"};
-          if (t === "asset") return {cls:"badge asset", txt:"ASSET"};
-          if (t === "fiduciary") return {cls:"badge asset", txt:"FUND"};
-          if (["debtor","creditor","debt_repayment","credit_settlement"].includes(t)) return {cls:"badge iou", txt:"IOU"};
-          return {cls:"badge", txt:t};
-        };
+          // settlement toggle (only for income/expense)
+          $("settleWrap").innerHTML = "";
+          if (t === "income" || t === "expense") {
+            const wrap = document.createElement("div");
+            wrap.className = "card";
+            wrap.style.margin = "0 0 12px 0";
+            wrap.style.borderRadius = "16px";
 
-        const makeHistoryLine = (e) => {
-          const wrap = dom.el("div", "glass p-4 mb-2");
-          const top = dom.el("div", "flex justify-between items-center");
-          const left = dom.el("div", "flex-col");
-          const dt = new Date(e.ts || Date.now());
-          const line1 = dom.el("div", "tiny", `${e.date || timeUtil.ymd(dt)} ${timeUtil.hm(dt)}`);
-          const line2 = dom.el("div", "text-sm font-black uppercase", e.name || "");
-          left.appendChild(line1);
-          left.appendChild(line2);
+            const inner = document.createElement("div");
+            inner.className = "p-16 grid2";
 
-          const right = dom.el("div", "flex-col items-center");
-          const b = badgeFor(e);
-          const badge = dom.el("div", b.cls, b.txt);
-          const amt = dom.el("div", "text-sm font-black", money.fmt(Math.abs(VaultCore.entryAmount(e))));
-          right.appendChild(badge);
+            const left = document.createElement("button");
+            left.className = "btn";
+            left.textContent = (t === "income") ? "INFLOW" : "EXPENSE";
+            left.style.borderColor = (!core.settlement) ? "rgba(16,185,129,.35)" : "rgba(255,255,255,0.14)";
+            left.onclick = () => { core.settlement = false; ui.vibrate(6); this.build(); };
+
+            const right = document.createElement("button");
+            right.className = "btn";
+            right.textContent = (t === "income") ? "RECOVER DEBT" : "PAY DEBT";
+            right.style.borderColor = (core.settlement) ? "rgba(234,179,8,.35)" : "rgba(255,255,255,0.14)";
+            right.onclick = () => { core.settlement = true; ui.vibrate(6); this.build(); };
+
+            inner.appendChild(left);
+            inner.appendChild(right);
+            wrap.appendChild(inner);
+            $("settleWrap").appendChild(wrap);
+          }
+
+          // fluid only for income non-settlement
+          if (t === "income" && !core.settlement) $("fluidWrap").classList.remove("hidden");
+          else $("fluidWrap").classList.add("hidden");
+
+          // dynamic fields
+          const dyn = $("dyn");
+          dyn.innerHTML = "";
+
+          // description placeholder
+          $("desc").placeholder = core.settlement
+            ? (t === "income" ? "Payer name" : "Creditor name")
+            : (t === "creditor" ? "Lender name" : t === "debtor" ? "Borrower name" : t === "asset" ? "Asset name" : "Description");
+
+          // Expense extra fields (merchant free, category fixed)
+          if (t === "expense" && !core.settlement) {
+            dyn.appendChild(fieldSelect("expBucket", "Cash Bucket", [
+              {v:"spend", label:"Spend"},
+              {v:"bills", label:"Bills"},
+              {v:"save", label:"Savings"}
+            ]));
+
+            dyn.appendChild(fieldInput("expMerchant", "Merchant (optional)", "text"));
+            dyn.appendChild(fieldSelect("expCat", "Category", CATEGORIES.map(x => ({v:x, label:x}))));
+
+            dyn.appendChild(fieldInput("expNote", "Notes (optional)", "text"));
+          }
+
+          // Asset category
+          if (t === "asset") {
+            dyn.appendChild(fieldSelect("asCat", "Asset Category", [
+              {v:"Property", label:"Property"},
+              {v:"Vehicle", label:"Vehicle"},
+              {v:"Stock", label:"Stock"},
+              {v:"Business", label:"Business"},
+              {v:"Other", label:"Other"}
+            ]));
+          }
+
+          // IOU rate/term
+          if (t === "creditor" || t === "debtor") {
+            const grid = document.createElement("div");
+            grid.className = "grid2";
+            grid.appendChild(fieldInput("iouRate", "Rate % (optional)", "number", true));
+            grid.appendChild(fieldInput("iouTerm", "Due date (optional)", "date", true));
+            dyn.appendChild(grid);
+          }
+
+          // Fiduciary fields
+          if (t === "fiduciary") {
+            dyn.appendChild(fieldInput("fdGoal", "Project/Goal", "text"));
+            dyn.appendChild(fieldInput("fdUser", "Contributor", "text"));
+          }
+        }
+      };
+
+      function fieldInput(id, placeholder, type="text", noMargin=false){
+        const wrap = document.createElement("div");
+        if (!noMargin) wrap.className = "mb-16";
+        const inp = document.createElement("input");
+        inp.id = id;
+        inp.type = type;
+        inp.className = "input";
+        inp.placeholder = placeholder;
+        wrap.appendChild(inp);
+        return wrap;
+      }
+
+      function fieldSelect(id, label, options){
+        const wrap = document.createElement("div");
+        wrap.className = "mb-16";
+        const sel = document.createElement("select");
+        sel.id = id;
+        sel.className = "input";
+        const top = document.createElement("option");
+        top.value = "";
+        top.textContent = label;
+        top.disabled = true;
+        top.selected = true;
+        sel.appendChild(top);
+
+        options.forEach(o => {
+          const opt = document.createElement("option");
+          if (typeof o === "string") { opt.value = o; opt.textContent = o; }
+          else { opt.value = o.v; opt.textContent = o.label; }
+          sel.appendChild(opt);
+        });
+
+        // set a sane default for select fields
+        setTimeout(() => {
+          if (id === "expBucket") sel.value = "spend";
+          if (id === "expCat") sel.value = "Other";
+        }, 0);
+
+        wrap.appendChild(sel);
+        return wrap;
+      }
+
+      const sheet = {
+        open(e){
+          if (!e) return;
+          core.selectedTxId = e.id;
+
+          const badge = core.badgeFor(e);
+          $("sheetTitle").textContent = (e.name || "Transaction").toUpperCase();
+          $("sheetAmt").textContent = money.fmt(core.entryAmt(e));
+          $("sheetBadge").className = badge.cls;
+          $("sheetBadge").textContent = badge.text;
+
+          const kv = $("sheetKV");
+          kv.innerHTML = "";
+
+          const add = (k,v) => {
+            const r = document.createElement("div");
+            r.className = "kv-row";
+            const a = document.createElement("span"); a.textContent = k;
+            const b = document.createElement("span"); b.textContent = v;
+            r.appendChild(a); r.appendChild(b);
+            kv.appendChild(r);
+          };
+
+          add("Date/Time", time.ymdhm(e.ts));
+          add("Type", e.type);
+
+          if (e.type === "expense") {
+            add("Category", e.category || "Other");
+            add("Merchant", e.merchant ? e.merchant : "—");
+            add("Bucket", e.bucket || "spend");
+            add("Notes", e.note ? e.note : "—");
+          }
+
+          if (e.type === "income") {
+            add("Split", `Bills ${pct(e.b, e.total)} • Save ${pct(e.s, e.total)} • Spend ${pct(e.l, e.total)}`);
+          }
+
+          if (e.type === "asset") {
+            add("Asset Category", e.cat || "Other");
+          }
+
+          if (e.type === "debtor" || e.type === "debt_repayment") {
+            add("Debtor", e.debtor || "—");
+            add("IOU Delta", (e.principal ? money.fmt(e.principal) : "₦0"));
+            if (e.rate) add("Rate", e.rate + "%");
+            if (e.term) add("Due", e.term);
+          }
+
+          if (e.type === "creditor" || e.type === "credit_settlement") {
+            add("Creditor", e.creditor || "—");
+            add("IOU Delta", (e.principal ? money.fmt(e.principal) : "₦0"));
+            if (e.rate) add("Rate", e.rate + "%");
+            if (e.term) add("Due", e.term);
+          }
+
+          if (e.type === "fiduciary") {
+            add("Goal", e.goal || "—");
+            add("Contributor", e.user || "—");
+          }
+
+          // actions
+          $("dupBtn").onclick = () => {
+            ui.vibrate(10);
+            this.close();
+            core.duplicateToForm(e);
+          };
+
+          $("delBtn").onclick = () => {
+            ui.vibrate(18);
+            if (!confirm("Delete this transaction?")) return;
+            core.deleteById(e.id);
+            this.close();
+            render.all();
+          };
+
+          $("sheetBack").classList.add("show");
+          $("sheetBack").setAttribute("aria-hidden","false");
+        },
+        close(){
+          $("sheetBack").classList.remove("show");
+          $("sheetBack").setAttribute("aria-hidden","true");
+          core.selectedTxId = null;
+        }
+      };
+
+      function pct(part, total){
+        const p = money.n(part), t = money.n(total);
+        if (!t) return "0%";
+        return Math.round((p / t) * 100) + "%";
+      }
+
+      const query = {
+        type: "all",
+        run(){
+          const q = ($("qSearch").value || "").toLowerCase();
+          const qs = $("qStart").value || "";
+          const qe = $("qEnd").value || "";
+
+          const out = $("qRes");
+          out.innerHTML = "";
+
+          const list = core.db
+            .slice()
+            .sort((a,b) => (b.ts || 0) - (a.ts || 0))
+            .filter(e => {
+              const hay = [
+                e.name, e.merchant, e.category, e.note,
+                e.debtor, e.creditor, e.goal, e.user
+              ].filter(Boolean).join(" ").toLowerCase();
+
+              const matchText = hay.includes(q);
+
+              const matchType =
+                (this.type === "all") ||
+                (this.type === "income" && e.type === "income") ||
+                (this.type === "expense" && e.type === "expense") ||
+                (this.type === "asset" && e.type === "asset") ||
+                (this.type === "fiduciary" && e.type === "fiduciary") ||
+                (this.type === "iou" && (e.type === "creditor" || e.type === "debtor" || e.type === "credit_settlement" || e.type === "debt_repayment"));
+
+              const matchDate = (!qs || e.date >= qs) && (!qe || e.date <= qe);
+
+              return matchText && matchType && matchDate;
+            });
+
+          list.forEach(e => out.appendChild(render.txLine(e, true)));
+        }
+      };
+
+      const render = {
+        set(id, v){ $(id).textContent = money.fmt(v); },
+
+        txLine(e, withTime=false){
+          const wrap = document.createElement("div");
+          wrap.className = "tx-row row";
+          wrap.tabIndex = 0;
+          wrap.dataset.tx = e.id;
+
+          const left = document.createElement("div");
+          left.className = "tx-left";
+
+          const title = document.createElement("div");
+          title.className = "tx-title";
+          title.textContent = (e.name || "").toUpperCase();
+
+          const sub = document.createElement("div");
+          sub.className = "tx-sub";
+
+          const parts = [];
+          if (withTime) parts.push(time.ymdhm(e.ts));
+          else parts.push(e.date || time.ymd(e.ts));
+
+          // extra hints for expense
+          if (e.type === "expense") {
+            if (e.category) parts.push(e.category);
+            if (e.merchant) parts.push(e.merchant);
+            if (e.bucket) parts.push("• " + e.bucket.toUpperCase());
+          }
+
+          // IOU label
+          if (e.type === "creditor") parts.push("Borrowed");
+          if (e.type === "debtor") parts.push("Lent");
+          if (e.type === "credit_settlement") parts.push("Paid IOU");
+          if (e.type === "debt_repayment") parts.push("Recovered IOU");
+
+          sub.textContent = parts.join(" • ");
+
+          left.appendChild(title);
+          left.appendChild(sub);
+
+          const right = document.createElement("div");
+          right.className = "tx-right";
+
+          const amt = document.createElement("div");
+          amt.className = "tx-amt maskable";
+
+          // sign vibe
+          const a = core.entryAmt(e);
+          if (e.type === "expense") amt.textContent = "− " + money.fmt(a);
+          else if (e.type === "income") amt.textContent = "+ " + money.fmt(a);
+          else amt.textContent = money.fmt(a);
+
+          const badge = core.badgeFor(e);
+          const pill = document.createElement("div");
+          pill.className = badge.cls;
+          pill.textContent = badge.text;
+
           right.appendChild(amt);
+          right.appendChild(pill);
 
-          top.appendChild(left); top.appendChild(right);
-
-          const meta = dom.el("div", "tiny", "");
-          const metaParts = [];
-          if (e.type === "expense" && e.category) metaParts.push(`Category: ${e.category}`);
-          if (e.type === "expense" && e.merchant) metaParts.push(`Merchant: ${e.merchant}`);
-          if (e.type === "expense" && e.bucket) metaParts.push(`Bucket: ${e.bucket}`);
-          if (e.type === "asset" && e.cat) metaParts.push(`Asset: ${e.cat}`);
-          if (e.type === "fiduciary" && (e.goal || e.user)) metaParts.push(`${e.goal || ""}${e.goal && e.user ? " • " : ""}${e.user || ""}`);
-          if (e.type === "debtor" && e.term) metaParts.push(`Due: ${e.term}`);
-          if (e.type === "creditor" && e.term) metaParts.push(`Due: ${e.term}`);
-          meta.textContent = metaParts.join("  |  ");
-
-          const actions = dom.el("div", "flex justify-between items-center", "");
-          actions.style.marginTop = "10px";
-          const del = dom.el("button", "btn-dark", "DELETE");
-          del.style.padding = "10px 12px";
-          del.onclick = () => VaultCore.deleteById(e.id);
-
-          actions.appendChild(dom.el("div","tiny",""));
-          actions.appendChild(del);
-
-          wrap.appendChild(top);
-          if (metaParts.length) { wrap.appendChild(dom.el("div","", "")); wrap.appendChild(meta); }
-          wrap.appendChild(actions);
+          wrap.appendChild(left);
+          wrap.appendChild(right);
 
           return wrap;
-        };
+        },
 
-        const buildSectionHead = (label, subtotal) => {
-          const head = dom.el("div", "section-head");
-          const l = dom.el("div","section-title", label);
-          const r = dom.el("div","section-sub", `Today total expenses: ${money.fmt(subtotal)}`); // you asked for this style
-          head.appendChild(l); head.appendChild(r);
-          return head;
-        };
+        // Group audit entries into Today/Yesterday/This Week/Last Week/Month buckets
+        groupAudit(list){
+          const now = Date.now();
+          const today0 = time.startOfDay(now);
+          const yest0 = today0 - 86400000;
+          const week0 = time.weekStart(now);
+          const lastWeek0 = week0 - 7*86400000;
 
-        // For section header text, make it smarter:
-        const sectionRightText = (label, subtotal) => {
-          if (label === "Today") return `Today total expenses: ${money.fmt(subtotal)}`;
-          if (label === "Yesterday") return `Yesterday total expenses: ${money.fmt(subtotal)}`;
-          if (label === "This Week") return `This week expenses: ${money.fmt(subtotal)}`;
-          if (label === "Last Week") return `Last week expenses: ${money.fmt(subtotal)}`;
-          return `${label} expenses: ${money.fmt(subtotal)}`;
-        };
+          const buckets = new Map();
 
-        const buildSectionHeadSmart = (label, subtotal) => {
-          const head = dom.el("div", "section-head");
-          head.appendChild(dom.el("div","section-title", label));
-          head.appendChild(dom.el("div","section-sub", sectionRightText(label, subtotal)));
-          return head;
-        };
+          const put = (key, label, e) => {
+            if (!buckets.has(key)) buckets.set(key, { key, label, items: [], expTotal: 0, catTotals: {} });
+            const b = buckets.get(key);
+            b.items.push(e);
 
-        const buildLoanDetails = (title, peopleMap, kind) => {
-          // kind: "debtor" or "creditor"
-          const frag = document.createDocumentFragment();
-          const names = Object.keys(peopleMap).sort((a,b)=>a.localeCompare(b));
-          for (const name of names) {
-            const info = peopleMap[name];
-            if (!info || !info.balance) continue;
+            if (e.type === "expense") {
+              const out = Math.abs(money.n(e.total));
+              b.expTotal += out;
+              const cat = e.category || "Other";
+              b.catTotals[cat] = (b.catTotals[cat] || 0) + out;
+            }
+          };
 
-            const det = document.createElement("details");
-            det.className = "glass p-4 mb-2";
-            const sum = document.createElement("summary");
-            sum.style.listStyle = "none";
-            sum.style.cursor = "pointer";
-            sum.style.display = "flex";
-            sum.style.justifyContent = "space-between";
-            sum.style.alignItems = "center";
-            sum.style.gap = "10px";
+          list.forEach(e => {
+            const ts = e.ts || Date.now();
+            if (ts >= today0) put("A_TODAY", "Today", e);
+            else if (ts >= yest0) put("B_YEST", "Yesterday", e);
+            else if (ts >= week0) put("C_WEEK", "This Week", e);
+            else if (ts >= lastWeek0) put("D_LWEEK", "Last Week", e);
+            else {
+              const mk = time.monthKey(ts);
+              put("M_" + mk, mk, e);
+            }
+          });
 
-            const left = dom.el("div","flex-col");
-            left.appendChild(dom.el("div","text-sm font-black uppercase", name));
-            const sub = dom.el("div","tiny", `${info.count} entries${info.lastTs ? " • last: " + timeUtil.ymd(new Date(info.lastTs)) : ""}`);
-            left.appendChild(sub);
+          // sort bucket keys: fixed order first, then months desc
+          const keys = Array.from(buckets.keys());
+          const fixed = ["A_TODAY","B_YEST","C_WEEK","D_LWEEK"];
+          const fixedPresent = fixed.filter(k => buckets.has(k));
+          const months = keys.filter(k => k.startsWith("M_")).sort((a,b) => b.localeCompare(a));
+          return fixedPresent.concat(months).map(k => buckets.get(k));
+        },
 
-            const right = dom.el("div","flex-col items-center");
-            right.appendChild(dom.el("div", kind === "creditor" ? "badge out" : "badge in", kind === "creditor" ? "OWE" : "OWED"));
-            right.appendChild(dom.el("div","text-sm font-black", money.fmt(info.balance)));
+        sectionHeader(bucket){
+          const wrap = document.createElement("div");
+          wrap.className = "section";
 
-            sum.appendChild(left);
-            sum.appendChild(right);
+          const top = document.createElement("div");
+          top.className = "section-top";
 
-            det.appendChild(sum);
+          const title = document.createElement("div");
+          title.className = "section-title";
+          title.textContent = bucket.label;
 
-            const body = dom.el("div","", "");
-            body.style.marginTop = "12px";
-            if (info.rate) body.appendChild(dom.el("div","tiny", `Rate: ${info.rate}%`));
-            if (info.term) body.appendChild(dom.el("div","tiny", `Due: ${info.term}`));
-            if (info.lastType) body.appendChild(dom.el("div","tiny", `Last activity: ${info.lastType}`));
-            if (info.lastTs) body.appendChild(dom.el("div","tiny", `Last time: ${timeUtil.ymd(new Date(info.lastTs))} ${timeUtil.hm(new Date(info.lastTs))}`));
+          const total = document.createElement("div");
+          total.className = "tiny";
+          total.style.color = "rgba(239,68,68,.9)";
+          total.textContent = "Today total expenses: " + money.fmt(bucket.expTotal);
 
-            det.appendChild(body);
-            frag.appendChild(det);
+          // for month/week labels, keep same pattern but remove "Today" word
+          if (bucket.label !== "Today") total.textContent = bucket.label + " total expenses: " + money.fmt(bucket.expTotal);
+
+          top.appendChild(title);
+          top.appendChild(total);
+
+          const sub = document.createElement("div");
+          sub.className = "section-sub";
+
+          // Top 3 categories + "+N more"
+          const entries = Object.entries(bucket.catTotals).sort((a,b) => b[1]-a[1]);
+          if (entries.length === 0) {
+            sub.innerHTML = `<span class="muted">No expenses in this period</span>`;
+          } else {
+            const top3 = entries.slice(0,3);
+            top3.forEach(([cat, val], idx) => {
+              const chip = document.createElement("span");
+              chip.className = "mini-pill";
+              chip.textContent = `${cat} ${money.fmt(val)}`;
+              sub.appendChild(chip);
+              if (idx < top3.length - 1) {
+                const dot = document.createElement("span");
+                dot.className = "dot";
+                dot.textContent = "";
+              }
+            });
+            if (entries.length > 3) {
+              const more = document.createElement("span");
+              more.className = "muted";
+              more.textContent = `+${entries.length - 3} more`;
+              sub.appendChild(more);
+            }
           }
-          return frag;
-        };
 
-        return {
-          async init(){
-            VaultCore.load();
+          wrap.appendChild(top);
+          wrap.appendChild(sub);
+          return wrap;
+        },
 
-            // top bar
-            dom.byId("btn-query").onclick = () => VaultUI.changeView("query-lab");
-            dom.byId("btn-stealth").onclick = () => document.body.classList.toggle("stealth-active");
-            dom.byId("btn-settings").onclick = () => VaultUI.changeView("settings-view");
+        all(){
+          // totals
+          let nw=0, b=0, s=0, l=0, assets=0, exp=0;
+          let debtorsTotal=0, creditorsTotal=0;
 
-            // drawers
-            document.querySelectorAll("[data-toggle]").forEach(el => {
-              el.addEventListener("click", () => {
-                const id = el.getAttribute("data-toggle");
-                const card = dom.byId(id);
-                if (card) card.classList.toggle("drawer-open");
-              });
-            });
+          const debtorBal = Object.create(null);
+          const creditorBal = Object.create(null);
 
-            // entry grid
-            dom.byId("btn-close-grid").onclick = () => VaultUI.changeView("dashboard-view");
-            document.querySelectorAll("[data-open-form]").forEach(btn => {
-              btn.onclick = () => VaultUI.openForm(btn.getAttribute("data-open-form"));
-            });
+          // sort newest first
+          const list = core.db.slice().sort((a,b) => (b.ts||0)-(a.ts||0));
 
-            // close overlays
-            dom.byId("btn-close-form").onclick = () => VaultUI.changeView("entry-grid");
-            dom.byId("btn-close-query").onclick = () => VaultUI.changeView("dashboard-view");
-            dom.byId("btn-close-settings").onclick = () => VaultUI.changeView("dashboard-view");
+          // clear lists
+          $("expList").innerHTML = "";
+          $("astList").innerHTML = "";
+          $("debList").innerHTML = "";
+          $("credList").innerHTML = "";
+          $("auditList").innerHTML = "";
 
-            // fluid keep sane
-            ["fluid-bills","fluid-save","fluid-spend"].forEach(id => dom.byId(id).oninput = normalizeFluid);
-
-            // execute
-            dom.byId("btn-exec").onclick = () => VaultCore.execute();
-
-            // history filter
-            dom.byId("hi-search").oninput = () => VaultUI.render();
-
-            // query
-            dom.byId("q-search").oninput = () => VaultUI.runQuery();
-            dom.byId("q-start").onchange = () => VaultUI.runQuery();
-            dom.byId("q-end").onchange = () => VaultUI.runQuery();
-            document.querySelectorAll("[data-qtype]").forEach(pill => {
-              pill.onclick = () => {
-                document.querySelectorAll("[data-qtype]").forEach(x => x.classList.remove("active"));
-                pill.classList.add("active");
-                VaultCore.setQType(pill.getAttribute("data-qtype"));
-                VaultUI.runQuery();
-              };
-            });
-
-            // fiduciary seg
-            dom.byId("fd-v-goal").onclick = () => VaultCore.setFdView("goal");
-            dom.byId("fd-v-user").onclick = () => VaultCore.setFdView("user");
-
-            // settings
-            dom.byId("tog-pin").checked = !!VaultCore.config().reqPin;
-            dom.byId("tog-pin").onchange = () => VaultCore.toggleSetting("reqPin");
-            dom.byId("btn-save-pin").onclick = () => VaultCore.savePin();
-            dom.byId("btn-backup").onclick = () => VaultCore.exportAll();
-            dom.byId("btn-restore").onclick = () => dom.byId("file-input").click();
-            dom.byId("file-input").onchange = (ev) => {
-              const file = ev.target.files?.[0];
-              if (file) VaultCore.importAll(file);
-              ev.target.value = "";
-            };
-            dom.byId("btn-reset").onclick = () => VaultCore.wipe();
-
-            // unlock
-            dom.byId("btn-unlock").onclick = () => VaultUI.authenticate();
-
-            // auth gate
-            const cfg = VaultCore.config();
-            if (cfg.reqPin && VaultCore.hasPin()) {
-              dom.byId("auth-hint").textContent = "PIN required";
-              dom.byId("auth-screen").classList.remove("view-hidden");
-              updateFab("dashboard-view");
-              return;
+          // compute & render drawers
+          list.forEach(e => {
+            // IOU books
+            if (e.type === "debtor" || e.type === "debt_repayment") {
+              const who = e.debtor || e.name || "(unknown)";
+              debtorBal[who] = (debtorBal[who] || 0) + money.n(e.principal);
+            }
+            if (e.type === "creditor" || e.type === "credit_settlement") {
+              const who = e.creditor || e.name || "(unknown)";
+              creditorBal[who] = (creditorBal[who] || 0) + money.n(e.principal);
             }
 
-            VaultUI.render();
-          },
+            // Net worth / cash (loan totals are always 0)
+            nw += money.n(e.total);
+            b += money.n(e.b);
+            s += money.n(e.s);
+            l += money.n(e.l);
 
-          async authenticate(){
-            const pin = dom.byId("auth-pin").value || "";
-            const ok = await VaultCore.verifyPin(pin);
-            if (!ok) return alert("Wrong PIN");
-            dom.byId("auth-pin").value = "";
-            dom.byId("auth-screen").classList.add("view-hidden");
-            VaultUI.render();
-          },
-
-          changeView(id){
-            views.forEach(v => dom.byId(v)?.classList.add("view-hidden"));
-            dom.byId(id)?.classList.remove("view-hidden");
-            updateFab(id);
-
-            if (id === "query-lab") VaultUI.runQuery();
-            else VaultUI.render();
-          },
-
-          openForm(t){
-            VaultCore.activeType = t;
-            VaultCore.settlementFlag = false;
-            VaultUI.changeView("entry-form");
-            VaultUI.updateFormUI();
-          },
-
-          updateFormUI(){
-            const dyn = dom.byId("dynamic-inputs");
-            const fluid = dom.byId("fluid-container");
-            const tog = dom.byId("settle-toggle-container");
-
-            // reset
-            dom.byId("e-amount").value = "";
-            dom.byId("e-name").value = "";
-            dom.byId("e-merchant").value = "";
-            dom.byId("e-category").value = "";
-
-            dyn.innerHTML = "";
-            tog.innerHTML = "";
-            fluid.classList.add("hidden");
-
-            // refresh autocompletes
-            fillDatalist("dl-desc", VaultCore.getDescSuggestions());
-            fillDatalist("dl-merchant", VaultCore.getMerchantSuggestions());
-            fillDatalist("dl-category", VaultCore.getCategorySuggestions());
-
-            const type = VaultCore.activeType;
-            const settlement = VaultCore.settlementFlag;
-
-            // merchant/category only meaningful for expenses; hide for other types
-            dom.byId("e-merchant").classList.toggle("hidden", type !== "expense" || settlement);
-            dom.byId("e-category").classList.toggle("hidden", type !== "expense" || settlement);
-
-            const buildSeg = (leftLabel, rightLabel) => {
-              const wrap = dom.el("div","seg-control");
-              const left = dom.el("div","seg-btn " + (!settlement ? "active emerald" : ""), leftLabel);
-              const right = dom.el("div","seg-btn " + (settlement ? "active yellow" : ""), rightLabel);
-              left.onclick = () => VaultCore.setSettlement(false);
-              right.onclick = () => VaultCore.setSettlement(true);
-              wrap.appendChild(left); wrap.appendChild(right);
-              tog.appendChild(wrap);
-            };
-
-            if (type === "income") {
-              fluid.classList.remove("hidden");
-              buildSeg("INFLOW", "RECOVER DEBT");
-              dom.byId("e-name").placeholder = settlement ? "Payer Name" : "Description";
+            if (e.type === "expense") {
+              exp += Math.abs(money.n(e.total));
+              $("expList").appendChild(this.txLine(e));
             }
-            else if (type === "expense") {
-              buildSeg("EXPENSE", "PAY DEBT");
-              dom.byId("e-name").placeholder = settlement ? "Creditor Name" : "Description";
-
-              if (!settlement) {
-                const sel = dom.el("select","input-ghost");
-                sel.id = "e-exp-bucket";
-                sel.innerHTML = `
-                  <option value="spend">Spend Bucket</option>
-                  <option value="bills">Bills Bucket</option>
-                  <option value="save">Savings Bucket</option>
-                `;
-                dyn.appendChild(sel);
-              }
+            if (e.type === "asset") {
+              assets += money.n(e.total);
+              $("astList").appendChild(this.txLine(e));
             }
-            else if (type === "debtor" || type === "creditor") {
-              const grid = dom.el("div","grid-2");
-              const rate = dom.el("input","input-ghost");
-              rate.id="e-rate"; rate.type="number"; rate.placeholder="Rate %";
-              const term = dom.el("input","input-ghost");
-              term.id="e-term"; term.type="date";
-              grid.appendChild(rate); grid.appendChild(term);
-              dyn.appendChild(grid);
-              dom.byId("e-name").placeholder = type === "creditor" ? "Lender Name" : "Borrower Name";
-            }
-            else if (type === "fiduciary") {
-              const goal = dom.el("input","input-ghost mb-4");
-              goal.id="e-fd-goal"; goal.placeholder="Project/Goal";
-              const user = dom.el("input","input-ghost");
-              user.id="e-fd-user"; user.placeholder="Contributor";
-              dyn.appendChild(goal); dyn.appendChild(user);
-              dom.byId("e-name").placeholder = "Description";
-            }
-            else if (type === "asset") {
-              const sel = dom.el("select","input-ghost");
-              sel.id="e-as-cat";
-              sel.innerHTML = `
-                <option value="Property">Property</option>
-                <option value="Vehicle">Vehicle</option>
-                <option value="Stock">Stock</option>
-                <option value="Other">Other</option>
-              `;
-              dyn.appendChild(sel);
-              dom.byId("e-name").placeholder = "Asset Name";
-            }
-          },
+          });
 
-          runQuery(){
-            const s = (dom.byId("q-search").value || "").toLowerCase();
-            const type = VaultCore.config().activeQType;
-            const qs = dom.byId("q-start").value || "";
-            const qe = dom.byId("q-end").value || "";
-            const res = dom.byId("q-results");
-            dom.clear(res);
+          // debtors/creditors summaries
+          Object.entries(debtorBal).forEach(([name, bal]) => {
+            if (!bal) return;
+            debtorsTotal += bal;
+            const e = { id: "DB_"+name, ts: Date.now(), date: time.ymd(Date.now()), type:"debtor", name, principal: bal };
+            const row = this.txLine(e);
+            row.dataset.tx = ""; // not a real transaction; no details
+            row.style.cursor = "default";
+            row.tabIndex = -1;
+            $("debList").appendChild(row);
+          });
 
-            const list = VaultCore.db().filter(e => {
-              const hay = [
-                e.name||"",
-                e.merchant||"",
-                e.category||"",
-                e.debtor||"",
-                e.creditor||"",
-                e.goal||"",
-                e.user||""
-              ].join(" ").toLowerCase();
+          Object.entries(creditorBal).forEach(([name, bal]) => {
+            if (!bal) return;
+            creditorsTotal += bal;
+            const e = { id: "CR_"+name, ts: Date.now(), date: time.ymd(Date.now()), type:"creditor", name, principal: bal };
+            const row = this.txLine(e);
+            row.dataset.tx = "";
+            row.style.cursor = "default";
+            row.tabIndex = -1;
+            $("credList").appendChild(row);
+          });
 
-              const tM = hay.includes(s);
+          const cash = b+s+l;
 
-              const cM =
-                type === "all" ||
-                e.type === type ||
-                (type === "debtor" && e.type === "debt_repayment") ||
-                (type === "creditor" && e.type === "credit_settlement");
+          this.set("nw", nw);
+          this.set("cashSplit", cash);
+          this.set("assetSplit", assets);
+          this.set("debtSplit", (debtorsTotal - creditorsTotal));
 
-              const d = e.date || "";
-              const dOK = (!qs || d >= qs) && (!qe || d <= qe);
-              return tM && cM && dOK;
-            }).slice().sort((a,b)=> (b.ts||0) - (a.ts||0));
+          this.set("liq", cash);
+          this.set("bills", b);
+          this.set("save", s);
+          this.set("spend", l);
 
-            for (const e of list) {
-              const dt = new Date(e.ts || Date.now());
-              const left = `${e.date || timeUtil.ymd(dt)} ${timeUtil.hm(dt)} | ${e.name || ""}`;
-              const amt = Math.abs(VaultCore.entryAmount(e));
-              const line = dom.el("div","glass p-4 mb-2 flex justify-between uppercase text-xs");
-              const l = dom.el("span","", left);
-              const r = dom.el("b","", money.fmt(amt));
-              line.appendChild(l); line.appendChild(r);
-              res.appendChild(line);
-            }
-          },
+          this.set("expT", exp);
+          this.set("astT", assets);
+          this.set("debT", debtorsTotal);
+          this.set("credT", creditorsTotal);
 
-          render(){
-            const db = VaultCore.db();
+          // audit trail grouped + subtotals
+          const filter = ($("auditFilter").value || "").toLowerCase();
+          const auditItems = list.filter(e => {
+            const hay = [
+              e.name, e.merchant, e.category, e.note,
+              e.debtor, e.creditor, e.goal, e.user,
+              e.type
+            ].filter(Boolean).join(" ").toLowerCase();
+            return !filter || hay.includes(filter);
+          });
 
-            // totals
-            let nw=0, b=0, s=0, l=0, as=0, fd=0, ex=0;
-            let debtorsTotal=0, creditorsTotal=0;
+          const buckets = this.groupAudit(auditItems);
+          buckets.forEach(bucket => {
+            $("auditList").appendChild(this.sectionHeader(bucket));
+            bucket.items.forEach(e => $("auditList").appendChild(this.txLine(e, true)));
+          });
+        }
+      };
 
-            // loan maps
-            const debtor = Object.create(null);
-            const creditor = Object.create(null);
+      // --- EVENTS (delegation = no frozen click issues) ---
+      function bindEvents(){
+        // topbar
+        $("btnQuery").addEventListener("click", () => { ui.vibrate(8); views.show("query"); });
+        $("btnStealth").addEventListener("click", () => { ui.vibrate(6); document.body.classList.toggle("stealth-active"); });
+        $("btnSettings").addEventListener("click", () => { ui.vibrate(8); views.show("settings"); });
 
-            // clear lists
-            ["as-list","ex-list","db-list","cr-list","fd-pivot-list","hi-list"].forEach(id => dom.clear(dom.byId(id)));
-
-            // fiduciary pivot
-            const piv = {};
-            const fView = VaultCore.config().fdView;
-            dom.byId("fd-v-goal").className = "seg-btn " + (fView==="goal" ? "active emerald" : "");
-            dom.byId("fd-v-user").className = "seg-btn " + (fView==="user" ? "active emerald" : "");
-
-            const hiS = (dom.byId("hi-search").value || "").toLowerCase();
-
-            // sort newest-first by ts
-            const sorted = db.slice().sort((a,b)=> (b.ts||0) - (a.ts||0));
-
-            // ---- audit trail grouped by period with section expense subtotals ----
-            const hi = dom.byId("hi-list");
-            let currentSection = null;
-            let sectionExpenseTotal = 0;
-            let sectionBuffer = []; // store entries for a section so we can compute subtotal then render
-
-            const flushSection = () => {
-              if (!currentSection) return;
-              // header (smart)
-              hi.appendChild(buildSectionHeadSmart(currentSection, sectionExpenseTotal));
-              // rows
-              for (const e of sectionBuffer) {
-                // search across desc/merchant/category
-                const hay = [
-                  e.name||"",
-                  e.merchant||"",
-                  e.category||""
-                ].join(" ").toLowerCase();
-                if (hiS && !hay.includes(hiS)) continue;
-                hi.appendChild(makeHistoryLine(e));
-              }
-              // reset
-              sectionExpenseTotal = 0;
-              sectionBuffer = [];
-            };
-
-            for (const e0 of sorted) {
-              const e = e0 || {};
-              const ts = e.ts || Date.now();
-              const label = timeUtil.periodLabel(ts);
-
-              if (label !== currentSection) {
-                flushSection();
-                currentSection = label;
-              }
-
-              // compute section subtotal: expenses only (real money)
-              if (e.type === "expense") sectionExpenseTotal += Math.abs(money.num(e.total));
-
-              sectionBuffer.push(e);
-
-              // fiduciary pivot
-              if (e.type === "fiduciary") {
-                fd += money.num(e.total);
-                const main = fView === "goal" ? (e.goal || "(no goal)") : (e.user || "(no user)");
-                const sub  = fView === "goal" ? (e.user || "(no user)") : (e.goal || "(no goal)");
-                if (!piv[main]) piv[main] = { t:0, subs:[] };
-                piv[main].t += money.num(e.total);
-                piv[main].subs.push({ n:sub, a: money.num(e.total) });
-              }
-
-              // loan book aggregation (IOU only)
-              if (e.type === "debtor" || e.type === "debt_repayment") {
-                const who = e.debtor || e.name || "(unknown)";
-                const delta = (typeof e.principal === "number") ? e.principal : 0;
-                if (!debtor[who]) debtor[who] = { balance:0, count:0, lastTs:0, rate:"", term:"", lastType:"" };
-                debtor[who].balance += delta;
-                debtor[who].count += 1;
-                if (ts > (debtor[who].lastTs||0)) {
-                  debtor[who].lastTs = ts;
-                  debtor[who].lastType = e.type;
-                  debtor[who].rate = e.rate || debtor[who].rate;
-                  debtor[who].term = e.term || debtor[who].term;
-                }
-              }
-              if (e.type === "creditor" || e.type === "credit_settlement") {
-                const who = e.creditor || e.name || "(unknown)";
-                const delta = (typeof e.principal === "number") ? e.principal : 0;
-                if (!creditor[who]) creditor[who] = { balance:0, count:0, lastTs:0, rate:"", term:"", lastType:"" };
-                creditor[who].balance += delta;
-                creditor[who].count += 1;
-                if (ts > (creditor[who].lastTs||0)) {
-                  creditor[who].lastTs = ts;
-                  creditor[who].lastType = e.type;
-                  creditor[who].rate = e.rate || creditor[who].rate;
-                  creditor[who].term = e.term || creditor[who].term;
-                }
-              }
-
-              // net worth & liquidity (loan entries have total=0 by policy)
-              nw += money.num(e.total);
-              b += money.num(e.b);
-              s += money.num(e.s);
-              l += money.num(e.l);
-
-              // expense list: show category/merchant line
-              if (e.type === "expense") {
-                ex += Math.abs(money.num(e.total));
-                const meta = [e.category, e.merchant].filter(Boolean).join(" • ");
-                const left = meta ? `${e.name} (${meta})` : e.name;
-                const row = dom.el("div","row");
-                row.appendChild(dom.el("span","", left || ""));
-                row.appendChild(dom.el("span","", money.fmt(Math.abs(money.num(e.total)))));
-                dom.byId("ex-list").appendChild(row);
-              }
-
-              // asset list
-              if (e.type === "asset") {
-                as += money.num(e.total);
-                const row = dom.el("div","row");
-                row.appendChild(dom.el("span","", e.name || ""));
-                row.appendChild(dom.el("span","", money.fmt(money.num(e.total))));
-                dom.byId("as-list").appendChild(row);
-              }
-            }
-            flushSection();
-
-            // loan totals + render expanded loan lists
-            const dbList = dom.byId("db-list");
-            const crList = dom.byId("cr-list");
-            if (dbList) dbList.appendChild(buildLoanDetails("Debtors", debtor, "debtor"));
-            if (crList) crList.appendChild(buildLoanDetails("Creditors", creditor, "creditor"));
-
-            for (const k in debtor) debtorsTotal += debtor[k].balance;
-            for (const k in creditor) creditorsTotal += creditor[k].balance;
-
-            // fiduciary render
-            const pivotEl = dom.byId("fd-pivot-list");
-            dom.clear(pivotEl);
-            Object.keys(piv).sort((a,b)=>a.localeCompare(b)).forEach(k => {
-              const card = dom.el("div","p-3 mb-2");
-              card.style.background = "var(--z900)";
-              card.style.borderRadius = "10px";
-
-              const head = dom.el("div","flex justify-between font-black text-xs text-yellow uppercase");
-              head.appendChild(dom.el("span","", k));
-              head.appendChild(dom.el("span","", money.fmt(piv[k].t)));
-
-              const sub = dom.el("div","text-xs");
-              sub.style.marginTop = "10px";
-              sub.style.opacity = "0.75";
-              for (const sb of piv[k].subs) {
-                const ln = dom.el("div","flex justify-between");
-                ln.style.padding = "6px 0";
-                ln.appendChild(dom.el("span","", sb.n));
-                ln.appendChild(dom.el("span","", money.fmt(sb.a)));
-                sub.appendChild(ln);
-              }
-              card.appendChild(head);
-              card.appendChild(sub);
-              pivotEl.appendChild(card);
-            });
-
-            const cashTotal = b+s+l;
-            setMoney("nw-display", nw);
-            setMoney("split-cash", cashTotal);
-            setMoney("split-as", as);
-            setMoney("split-db", (debtorsTotal - creditorsTotal)); // net position
-
-            setMoney("tc-display", cashTotal);
-            setMoney("b-total", b);
-            setMoney("s-total", s);
-            setMoney("l-total", l);
-
-            setMoney("ex-display", ex);
-            setMoney("as-display", as);
-            setMoney("db-display", debtorsTotal);
-            setMoney("cr-display", creditorsTotal);
-            setMoney("fd-display", fd);
+        // open drawers by clicking card head (delegated)
+        document.addEventListener("click", (ev) => {
+          const head = ev.target.closest(".card-head");
+          if (head && head.parentElement?.classList.contains("card") && head.parentElement?.dataset.drawer) {
+            ui.vibrate(6);
+            head.parentElement.classList.toggle("open");
           }
-        };
-      })();
+        });
 
-      // Start
-      window.addEventListener("load", () => VaultUI.init());
+        // keyboard open drawers
+        document.addEventListener("keydown", (ev) => {
+          if (ev.key !== "Enter" && ev.key !== " ") return;
+          const head = ev.target.closest(".card-head");
+          if (head && head.parentElement?.dataset.drawer) {
+            ev.preventDefault();
+            ui.vibrate(6);
+            head.parentElement.classList.toggle("open");
+          }
+        });
 
-      // Debug help (prevents "silent freeze")
-      window.addEventListener("error", (e) => {
-        console.error("Vault error:", e.message, e.filename, e.lineno, e.colno);
-      });
+        // audit row click -> sheet
+        document.addEventListener("click", (ev) => {
+          const row = ev.target.closest(".tx-row");
+          if (!row) return;
+          const id = row.dataset.tx;
+          if (!id) return; // non-clickable summary rows
+          const e = core.db.find(x => x.id === id);
+          if (!e) return;
+          ui.vibrate(8);
+          sheet.open(e);
+        });
+
+        // sheet close
+        $("closeSheet").addEventListener("click", () => sheet.close());
+        $("sheetBack").addEventListener("click", (ev) => {
+          if (ev.target === $("sheetBack")) sheet.close();
+        });
+
+        // grid
+        $("closeGrid").addEventListener("click", () => { ui.vibrate(6); views.show("dash"); render.all(); });
+        document.querySelectorAll("[data-open]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const t = btn.getAttribute("data-open");
+            ui.vibrate(8);
+            core.activeType = t;
+            core.settlement = false;
+            views.show("form");
+            form.build();
+          });
+        });
+
+        // form close
+        $("closeForm").addEventListener("click", () => { ui.vibrate(6); views.show("grid"); });
+        $("exec").addEventListener("click", () => { ui.vibrate(10); core.execute(); });
+
+        // query close
+        $("closeQuery").addEventListener("click", () => { ui.vibrate(6); views.show("dash"); render.all(); });
+
+        // query filters
+        $("qSearch").addEventListener("input", () => query.run());
+        $("qStart").addEventListener("change", () => query.run());
+        $("qEnd").addEventListener("change", () => query.run());
+
+        document.querySelectorAll("[data-q]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            ui.vibrate(6);
+            query.type = btn.getAttribute("data-q");
+            query.run();
+          });
+        });
+
+        // settings close
+        $("closeSettings").addEventListener("click", () => { ui.vibrate(6); views.show("dash"); render.all(); });
+
+        // settings toggles
+        $("pinToggle").addEventListener("change", () => {
+          core.cfg.reqPin = $("pinToggle").checked;
+          core.save();
+          ui.toast("success","Settings","Updated");
+          ui.vibrate(8);
+        });
+
+        $("hapToggle").addEventListener("change", () => {
+          core.cfg.haptics = $("hapToggle").checked;
+          core.save();
+          ui.toast("success","Settings","Updated");
+          ui.vibrate(10);
+        });
+
+        $("savePin").addEventListener("click", async () => {
+          ui.vibrate(10);
+          await core.savePin();
+        });
+
+        $("backup").addEventListener("click", () => core.exportAll());
+        $("restore").addEventListener("click", () => $("file").click());
+        $("file").addEventListener("change", (ev) => {
+          const f = ev.target.files?.[0];
+          if (f) core.importAll(f);
+          ev.target.value = "";
+        });
+
+        $("reset").addEventListener("click", () => core.wipe());
+
+        // audit filter
+        $("auditFilter").addEventListener("input", () => render.all());
+
+        // auth
+        $("authBtn").addEventListener("click", async () => {
+          const pin = ($("authPin").value || "").trim();
+          const ok = await core.verifyPin(pin);
+          if (!ok) { ui.toast("error","PIN","Wrong PIN"); ui.vibrate(30); return; }
+          $("authPin").value = "";
+          $("auth").classList.remove("show");
+          ui.toast("success","Welcome","Vault unlocked");
+          ui.vibrate(12);
+          render.all();
+        });
+      }
+
+      // --- INIT ---
+      function init(){
+        core.load();
+        bindEvents();
+
+        // apply settings UI
+        $("pinToggle").checked = !!core.cfg.reqPin;
+        $("hapToggle").checked = !!core.cfg.haptics;
+
+        // auth gate
+        if (core.cfg.reqPin && core.hasPin()) {
+          $("auth").classList.add("show");
+          $("authHint").textContent = "PIN required";
+          fab.update("dash");
+          return;
+        }
+
+        // initial view
+        views.show("dash");
+        render.all();
+
+        // prevent silent "freeze": surface errors
+        window.addEventListener("error", (e) => {
+          console.error(e.error || e.message);
+          ui.toast("error","Error","Open console for details");
+        });
+      }
+
+      window.addEventListener("load", init);
     })();
   </script>
-
-  <!-- switch css (kept minimal & local) -->
-  <style>
-    .switch{position:relative;display:inline-block;width:50px;height:28px}
-    .switch input{opacity:0;width:0;height:0}
-    .slider{position:absolute;cursor:pointer;inset:0;background-color:#222;transition:.4s;border-radius:34px}
-    .slider:before{position:absolute;content:"";height:24px;width:24px;left:2px;bottom:2px;background-color:#666;transition:.4s;border-radius:50%}
-    input:checked + .slider{background-color:var(--emerald)}
-    input:checked + .slider:before{transform:translateX(22px);background-color:#fff}
-  </style>
 </body>
 </html>
