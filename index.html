@@ -3211,13 +3211,7 @@
   try{
     await navigator.serviceWorker.register("./sw.js");
   } catch {}
-}});
-        `;
-        const blob = new Blob([code], {type:"text/javascript"});
-        const url = URL.createObjectURL(blob);
-        await navigator.serviceWorker.register(url);
-      } catch {}
-    }
+}
 
     // ---------- Utils ----------
     function safeNum(x){
