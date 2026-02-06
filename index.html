@@ -3207,26 +3207,11 @@
 
     // ---------- Service worker (best effort) ----------
     async function registerSW(){
-      if(!("serviceWorker" in navigator)) return;
-      try{
-        const code = `
-          const CACHE = "sovereign-v87-cache";
-          self.addEventListener("install", (e) => {
-            self.skipWaiting();
-            e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./"])).catch(()=>{}));
-          });
-          self.addEventListener("activate", (e) => {
-            e.waitUntil(self.clients.claim());
-          });
-          self.addEventListener("fetch", (e) => {
-            e.respondWith(
-              caches.match(e.request).then(r => r || fetch(e.request).then(resp => {
-                const copy = resp.clone();
-                caches.open(CACHE).then(c => c.put(e.request, copy)).catch(()=>{});
-                return resp;
-              }).catch(()=>r))
-            );
-          });
+  if(!("serviceWorker" in navigator)) return;
+  try{
+    await navigator.serviceWorker.register("./sw.js");
+  } catch {}
+}});
         `;
         const blob = new Blob([code], {type:"text/javascript"});
         const url = URL.createObjectURL(blob);
