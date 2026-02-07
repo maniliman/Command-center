@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
-  <title>Sovereign v88</title>
+  <title>Sovereign v87</title>
 
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/512/shield.png" />
   <link
     rel="manifest"
-    href='data:application/manifest+json,{"name":"Vault","short_name":"Vault","start_url":".","display":"standalone","background_color":"#000000","theme_color":"#10B981","icons":[{"src":"https://img.icons8.com/fluency/512/shield.png","sizes":"512x512","type":"image/png"}]}'
+    href="data:application/manifest+json,{%22name%22:%22Vault%22,%22short_name%22:%22Vault%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#000000%22,%22theme_color%22:%22#10B981%22,%22icons%22:[{%22src%22:%22https://img.icons8.com/fluency/512/shield.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}"
   />
 
   <style>
@@ -75,13 +75,6 @@
       cursor:pointer;
     }
     .kebab{font-size:22px;letter-spacing:2px;line-height:0;transform:translateY(-1px)}
-    .brand{
-      font-size:11px;
-      font-weight:900;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      opacity:.85;
-    }
 
     /* Hero */
     .hero{
@@ -144,8 +137,6 @@
       gap:12px;
       padding:10px 0;
       border-bottom:1px solid var(--line2);
-      cursor:pointer;
-      user-select:none;
     }
     .ledgerName{
       font-size:12px;
@@ -207,6 +198,35 @@
     }
     .open .auditBody{display:block;}
 
+    /* Row style */
+    .row{
+      display:grid;
+      grid-template-columns: 1fr minmax(140px, 180px);
+      gap:12px;
+      padding:10px 0;
+      border-bottom:1px solid #121216;
+      align-items:start;
+    }
+    .row:last-child{border-bottom:none;}
+    .rowLeft{min-width:0;}
+    .rowName{
+      font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      max-width:100%;
+    }
+    .rowMeta{
+      font-size:11px;color:var(--muted);margin-top:3px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+    }
+    .rowAmt{
+      justify-self:end;
+      text-align:right;
+      white-space:nowrap;
+      font-size:12px;
+      font-weight:900;
+      font-variant-numeric: tabular-nums;
+    }
+
     /* Compact list row */
     .tightRow{
       display:flex;
@@ -218,7 +238,6 @@
       cursor:pointer;
       user-select:none;
     }
-    .tightRow:last-child{border-bottom:none;}
     .tightLeft{min-width:0;display:flex;flex-direction:column;gap:4px;}
     .tightTop{display:flex;align-items:center;gap:8px;min-width:0;}
     .tightText{
@@ -258,6 +277,7 @@
       border-bottom:1px solid #2a2a2f;
     }
     .input:focus{border-bottom-color:var(--emerald);}
+
     .bigAmount{
       width:100%;
       background:transparent;border:none;outline:none;
@@ -374,7 +394,7 @@
     .bOut{border-color:rgba(239,68,68,.35);color:var(--red);}
     .bAsset{border-color:rgba(59,130,246,.35);color:var(--blue);}
     .bIOU{border-color:rgba(234,179,8,.35);color:var(--yellow);}
-    .bGoal{border-color:rgba(234,179,8,.35);color:var(--yellow);}
+    .bFid{border-color:rgba(234,179,8,.35);color:var(--yellow);}
     .bRev{border-color:rgba(255,255,255,.18);color:rgba(255,255,255,.65);}
 
     /* Toast */
@@ -525,19 +545,14 @@
       background:#0a0a0c;
       margin:6px 0 10px 0;
     }
-    .miniSearch .sicon{opacity:.7;font-weight:900}
     .miniSearch input{
-      width:100%;
-      background:transparent;
       border:none !important;
       padding:0 !important;
       margin:0 !important;
       font-size:12px !important;
-      color:#fff;
-      outline:none;
     }
 
-    /* Two column goals */
+    /* Two column fiduciary */
     .twoCol{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -554,7 +569,6 @@
     .panelHead{
       display:flex;justify-content:space-between;align-items:center;
       margin-bottom:8px;
-      gap:10px;
     }
     .panelTitle{
       font-size:10px;
@@ -562,27 +576,6 @@
       letter-spacing:.12em;
       text-transform:uppercase;
       color:var(--muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .chipBtn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid #2a2a2f;
-      background:#0d0d10;
-      color:#fff;
-      font-size:10px;
-      font-weight:900;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      cursor:pointer;
-      white-space:nowrap;
-      flex:0 0 auto;
     }
     .listItem{
       display:flex;justify-content:space-between;align-items:center;gap:10px;
@@ -594,7 +587,6 @@
     .listItem:last-child{border-bottom:none;}
     .liName{
       font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      max-width:72%;
     }
     .liAmt{
       font-size:12px;font-weight:900;font-variant-numeric: tabular-nums;white-space:nowrap;
@@ -613,1660 +605,2638 @@
     .detailTitle .t{
       font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;
       white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      max-width:72%;
     }
     .detailTitle .s{
       font-size:11px;color:var(--muted);font-weight:900;white-space:nowrap;
     }
-
-    /* Divider label */
-    .sectionLabel{
-      margin:18px 12px 8px 12px;
+    .chipBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid #2a2a2f;
+      background:#0d0d10;
       font-size:10px;
       font-weight:900;
-      letter-spacing:.18em;
+      letter-spacing:.08em;
       text-transform:uppercase;
-      color:rgba(255,255,255,.55);
-      opacity:.9;
+      color:#cbd5e1;
+      cursor:pointer;
+      user-select:none;
     }
-
-    /* Small helper text */
-    .help{
-      font-size:11px;
-      color:var(--muted);
-      font-weight:800;
-      letter-spacing:.02em;
-      line-height:1.45;
-    }
+    .chipDanger{border-color:rgba(239,68,68,.35);color:var(--red);}
+    .chipGood{border-color:rgba(16,185,129,.35);color:var(--emerald);}
   </style>
 </head>
 
 <body>
-  <div class="topbar flex between center">
-    <button class="iconbtn tap" id="btnStealth" title="Stealth">
-      <span style="font-weight:900">⦿</span>
-    </button>
-
-    <div class="brand">SOVEREIGN</div>
-
-    <button class="iconbtn tap" id="btnMenu" title="Menu">
-      <span class="kebab">⋯</span>
-    </button>
+  <!-- AUTH -->
+  <div id="auth" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted">Security</div>
+        <button class="xbtn" data-view="dashboard">✕</button>
+      </div>
+    </div>
+    <div class="col" style="min-height: calc(100vh - 200px);justify-content:center;align-items:center;">
+      <div style="font-size:44px;margin-bottom:10px;">🔒</div>
+      <input id="authPin" class="input" inputmode="numeric" maxlength="4"
+             style="text-align:center;font-size:40px;letter-spacing:10px;width:220px;"
+             placeholder="••••" />
+      <button class="btn btnWide" id="unlockBtn" style="margin-top:26px;">Unlock</button>
+      <div class="tiny muted" style="margin-top:14px;">PIN required</div>
+    </div>
   </div>
 
-  <div class="hero">
-    <div class="tiny muted" style="text-align:center; font-weight:900; letter-spacing:.18em;">NET WORTH</div>
-    <div class="networth mask" id="nw">$0</div>
+  <!-- TOP BAR -->
+  <div class="topbar flex between center">
+    <div class="tiny muted">SOVEREIGN V87</div>
+    <div class="flex gap8">
+      <button class="iconbtn" title="Search" data-view="search" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#fff" stroke-width="2" opacity=".9"/>
+          <path d="M16.5 16.5 21 21" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+        </svg>
+      </button>
+      <button class="iconbtn" title="More" data-view="more" aria-label="More">
+        <span class="kebab">⋯</span>
+      </button>
+    </div>
+  </div>
 
-    <div class="heroMini">
-      <div class="mini tap" id="tapMiniCash">
-        <div class="miniAmt cCash mask" id="miniCash">$0</div>
-        <div class="miniLbl">Cash</div>
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <div class="hero" id="heroCard" title="Long-press to toggle Stealth">
+      <div class="networth mask" id="nw">₦0</div>
+
+      <div class="heroMini">
+        <div class="mini">
+          <div class="miniAmt cCash mask" id="cash">₦0</div>
+          <div class="miniLbl">Cash</div>
+        </div>
+        <div class="mini">
+          <div class="miniAmt cAssets mask" id="assets">₦0</div>
+          <div class="miniLbl">Assets</div>
+        </div>
+        <div class="mini">
+          <div class="miniAmt cDebt mask" id="debt">₦0</div>
+          <div class="miniLbl">Debt</div>
+        </div>
       </div>
-      <div class="mini tap" id="tapMiniAssets">
-        <div class="miniAmt cAssets mask" id="miniAssets">$0</div>
-        <div class="miniLbl">Assets</div>
+    </div>
+
+    <!-- Ledger list -->
+    <div class="ledger" id="ledger">
+      <div class="ledgerRow tap" data-open-ledger="liquidity">
+        <div class="ledgerName" style="color:var(--emerald)">Liquidity</div>
+        <div class="ledgerVal mask" style="color:var(--emerald)" id="liq">₦0</div>
       </div>
-      <div class="mini tap" id="tapMiniDebt">
-        <div class="miniAmt cDebt mask" id="miniDebt">$0</div>
-        <div class="miniLbl">Debt</div>
+      <div class="ledgerBody" data-ledger-body="liquidity"></div>
+
+      <div class="ledgerRow tap" data-open-ledger="expenses">
+        <div class="ledgerName" style="color:var(--red)">Expenses</div>
+        <div class="ledgerVal mask" style="color:var(--red)" id="exTotal">₦0</div>
+      </div>
+      <div class="ledgerBody" data-ledger-body="expenses"></div>
+
+      <div class="ledgerRow tap" data-open-ledger="assets">
+        <div class="ledgerName" style="color:var(--blue)">Assets</div>
+        <div class="ledgerVal mask" style="color:var(--blue)" id="asTotal">₦0</div>
+      </div>
+      <div class="ledgerBody" data-ledger-body="assets"></div>
+
+      <div class="ledgerRow tap" data-open-ledger="debtors">
+        <div class="ledgerName" style="color:var(--emerald)">Debtors</div>
+        <div class="ledgerVal mask" style="color:var(--emerald)" id="dbTotal">₦0</div>
+      </div>
+      <div class="ledgerBody" data-ledger-body="debtors"></div>
+
+      <div class="ledgerRow tap" data-open-ledger="creditors">
+        <div class="ledgerName" style="color:rgba(255,255,255,.35)">Creditors</div>
+        <div class="ledgerVal mask" style="color:var(--red)" id="crTotal">₦0</div>
+      </div>
+      <div class="ledgerBody" data-ledger-body="creditors"></div>
+
+      <div class="ledgerRow tap" data-open-ledger="fiduciary">
+        <div class="ledgerName" style="color:var(--yellow)">Fiduciary</div>
+        <div class="ledgerVal mask" style="color:var(--yellow)" id="fidTotal">₦0</div>
+      </div>
+      <div class="ledgerBody" data-ledger-body="fiduciary"></div>
+    </div>
+
+    <!-- AUDIT TRAIL -->
+    <div class="auditWrap" id="cAudit" style="opacity:.92;">
+      <div class="auditHead" data-toggle="cAudit">
+        <div class="ledgerName muted">Audit trail</div>
+        <div class="auditChevron muted">▼</div>
+      </div>
+      <div class="auditBody">
+        <input id="auditFilter" class="input" style="font-size:12px" placeholder="Filter..." />
+        <div id="auditList"></div>
       </div>
     </div>
   </div>
 
-  <div class="sectionLabel">Ledger</div>
-  <div class="ledger" id="ledger"></div>
+  <!-- ENTRY GRID -->
+  <div id="entry" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted">New entry</div>
+        <button class="xbtn" data-view="dashboard">✕</button>
+      </div>
+    </div>
 
-  <div class="sectionLabel">Audit</div>
-  <div class="auditWrap" id="audit"></div>
+    <div class="grid2" style="margin-top:10px;">
+      <div class="tile" data-form="income" style="border-color:rgba(16,185,129,.35)">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v18" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+          <path d="M7 8l5-5 5 5" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--emerald)">Inflow</div>
+      </div>
+
+      <div class="tile" data-form="expense" style="border-color:rgba(239,68,68,.35)">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 21V3" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+          <path d="M17 16l-5 5-5-5" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--red)">Expense</div>
+      </div>
+
+      <div class="tile" data-form="asset">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Z" stroke="#3b82f6" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--blue)">Asset</div>
+      </div>
+
+      <div class="tile" data-form="borrow">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M7 7h10v10H7z" stroke="#ef4444" stroke-width="2" opacity=".9"/>
+          <path d="M12 7v10" stroke="#ef4444" stroke-width="2" opacity=".6"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--red)">Borrow</div>
+      </div>
+
+      <div class="tile" data-form="lend">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M7 7h10v10H7z" stroke="#10b981" stroke-width="2" opacity=".9"/>
+          <path d="M7 12h10" stroke="#10b981" stroke-width="2" opacity=".6"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--emerald)">Lend</div>
+      </div>
+
+      <div class="tile" data-form="fid">
+        <svg class="tileIcon" viewBox="0 0 24 24" fill="none">
+          <path d="M7 7h10v14H7z" stroke="#eab308" stroke-width="2"/>
+          <path d="M9 3h6v4H9z" stroke="#eab308" stroke-width="2"/>
+        </svg>
+        <div class="tileLabel" style="color:var(--yellow)">Fiduciary</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div id="form" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted" id="formTitle">Entry</div>
+        <button class="xbtn" data-view="entry">✕</button>
+      </div>
+    </div>
+
+    <div class="hintBox hidden" id="amountHint">
+      <div class="hintTitle" id="amountHintTitle">Amount</div>
+      <div class="hintRow">
+        <div id="amountHintLeft" class="muted">—</div>
+        <div id="amountHintRight" class="mask">—</div>
+      </div>
+    </div>
+
+    <input id="amount" class="bigAmount" type="number" inputmode="numeric" placeholder="0" />
+    <div id="segWrap" style="margin:0 0 16px 0" class="hidden"></div>
+    <div id="dyn" style="margin:0 0 16px 0"></div>
+
+    <input id="desc" class="input" placeholder="Description" list="nameList" />
+    <datalist id="nameList"></datalist>
+
+    <input id="note" class="input" placeholder="Note (optional)" />
+
+    <button class="btn btnWide" id="execBtn" style="margin-top:22px;">Execute</button>
+
+    <div class="tiny muted" style="margin-top:14px;">
+      Loans (Borrow/Lend/Settlements) are IOU-only: they do not change Net Worth or Liquidity.
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div id="search" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted">Search</div>
+        <button class="xbtn" data-view="dashboard">✕</button>
+      </div>
+    </div>
+
+    <div class="flex gap12" style="align-items:center;margin-top:10px;">
+      <div class="flex gap8" style="flex:1;align-items:center;border:1px solid #1f1f24;border-radius:16px;padding:10px 12px;background:#0a0a0c;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#9ca3af" stroke-width="2"/>
+          <path d="M16.5 16.5 21 21" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input id="q" class="input" style="border:none;padding:0;margin:0;" placeholder="Search anything…" />
+      </div>
+      <button class="iconbtn" id="clearQ" title="Clear">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex gap8" style="flex-wrap:wrap;margin-top:14px;">
+      <span class="badge" data-qtype="all">All</span>
+      <span class="badge bIn" data-qtype="income">IN</span>
+      <span class="badge bOut" data-qtype="expense">OUT</span>
+      <span class="badge bAsset" data-qtype="asset">ASSET</span>
+      <span class="badge bIOU" data-qtype="iou">IOU</span>
+      <span class="badge bFid" data-qtype="fid">FID</span>
+    </div>
+
+    <div class="grid2" style="margin-top:14px;">
+      <input id="qStart" class="input" style="font-size:12px" type="date" />
+      <input id="qEnd" class="input" style="font-size:12px" type="date" />
+    </div>
+
+    <div id="qRes" class="col" style="margin-top:14px;"></div>
+  </div>
+
+  <!-- MORE -->
+  <div id="more" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted">More</div>
+        <button class="xbtn" data-view="dashboard">✕</button>
+      </div>
+    </div>
+
+    <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:10px;background:rgba(255,255,255,.03);">
+      <div class="flex between center" style="padding:6px 0;">
+        <div>
+          <div class="tiny muted">Stealth</div>
+          <div style="margin-top:4px;opacity:.9;font-size:14px;">Mask all money</div>
+        </div>
+        <div id="stealthSwitch" class="switch" role="switch" aria-checked="false"></div>
+      </div>
+    </div>
+
+    <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:12px;background:rgba(255,255,255,.03);">
+      <button class="btn btnWide" data-view="settings">Settings</button>
+      <div class="flex gap12" style="margin-top:12px;">
+        <button class="btn" style="flex:1" id="backupBtn2">Backup</button>
+        <button class="btn" style="flex:1;color:var(--emerald)" id="restoreBtn2">Restore</button>
+        <input id="file2" type="file" class="hidden" />
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settings" class="overlay hidden" aria-hidden="true">
+    <div class="overlayTop">
+      <div class="overlayBar">
+        <div class="tiny muted">Settings</div>
+        <button class="xbtn" data-view="dashboard">✕</button>
+      </div>
+    </div>
+
+    <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:10px;background:rgba(255,255,255,.03);">
+      <div class="flex between center" style="margin-bottom:12px;">
+        <div class="tiny muted">PIN startup</div>
+        <input id="reqPin" type="checkbox" />
+      </div>
+      <input id="setPin" class="input" inputmode="numeric" maxlength="4"
+             style="text-align:center;letter-spacing:10px;font-size:22px;"
+             placeholder="••••" />
+      <button class="btn btnWide" id="savePinBtn" style="margin-top:14px;">Update PIN</button>
+      <div class="tiny muted" style="margin-top:10px;">PIN is hashed (best-effort) — app won’t crash if crypto isn’t available.</div>
+    </div>
+
+    <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:12px;background:rgba(255,255,255,.03);">
+      <div class="tiny muted">Money rules</div>
+
+      <div class="flex between center" style="margin-top:12px;">
+        <div>
+          <div class="tiny muted">Allow overdraft</div>
+          <div style="margin-top:4px;opacity:.9;font-size:14px;">Let accounts go negative</div>
+        </div>
+        <div id="odSwitch" class="switch" role="switch" aria-checked="false"></div>
+      </div>
+
+      <div class="tiny muted" style="margin-top:10px;">
+        Default is OFF. With overdraft OFF, an expense is blocked if the account has insufficient funds.
+      </div>
+    </div>
+
+    <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:12px;background:rgba(255,255,255,.03);">
+      <div class="tiny muted">Backup & safety</div>
+
+      <div class="flex between center" style="margin-top:12px;">
+        <div>
+          <div class="tiny muted">Auto-backup</div>
+          <div style="margin-top:4px;opacity:.9;font-size:14px;">Local snapshots on every change</div>
+        </div>
+        <div id="abSwitch" class="switch on" role="switch" aria-checked="true" title="Always on"></div>
+      </div>
+
+      <div class="flex between center" style="margin-top:14px;">
+        <div>
+          <div class="tiny muted">Backup reminder cadence</div>
+          <div style="margin-top:4px;opacity:.9;font-size:14px;">Nudge me to export a backup</div>
+        </div>
+      </div>
+      <select id="backupCadence" class="input" style="font-size:12px;">
+        <option value="off">Off</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+      </select>
+
+      <div class="flex gap12" style="margin-top:12px;">
+        <button class="btn" style="flex:1" id="backupBtn">Backup</button>
+        <button class="btn" style="flex:1;color:var(--emerald)" id="restoreBtn">Restore</button>
+        <input id="file" type="file" class="hidden" />
+      </div>
+
+      <button class="btn btnWide danger" id="wipeBtn" style="margin-top:12px;">Wipe device data</button>
+
+      <div class="tiny muted" style="margin-top:10px;">
+        Restore is migration-safe and will snapshot your current state before applying.
+      </div>
+    </div>
+
+    <div style="border:1px solid #151518;border-radius:18px;padding:16px;margin-top:12px;background:rgba(255,255,255,.03);">
+      <div class="tiny muted">Diagnostics</div>
+      <button class="btn btnWide" id="diagBtn" style="margin-top:12px;">Show quick diagnostics</button>
+      <div id="diagOut" class="tiny muted" style="margin-top:10px;line-height:1.5;"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <div id="toastText" style="font-weight:900;font-size:12px;letter-spacing:.02em;">Done</div>
+    <button id="toastBtn" class="toastBtn hidden">Undo</button>
+  </div>
+
+  <!-- Bottom sheet -->
+  <div id="sheetScrim" class="sheetScrim"></div>
+  <div id="sheet" class="sheet" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="grab"></div>
+    <div class="sheetTitle" id="sheetTitle">Entry</div>
+    <div class="sheetAmt mask" id="sheetAmt">₦0</div>
+    <div id="sheetMeta" style="margin-top:10px;"></div>
+
+    <div class="sheetActions">
+      <button class="btn" id="editBtn">Edit</button>
+      <button class="btn" id="dupBtn">Duplicate</button>
+      <button class="btn danger" id="delBtn">Delete</button>
+    </div>
+  </div>
 
   <!-- FAB -->
-  <button class="fab fabPlus tap" id="fab" title="Add">+</button>
-
-  <!-- TOAST -->
-  <div class="toast" id="toast">
-    <div id="toastTxt" class="black" style="font-size:12px; letter-spacing:.02em;"></div>
-    <button class="toastBtn tap" id="toastBtn">Undo</button>
-  </div>
-
-  <!-- SHEET -->
-  <div class="sheetScrim" id="sheetScrim"></div>
-  <div class="sheet" id="sheet">
-    <div class="grab"></div>
-    <div class="sheetTitle muted" id="sheetTitle">DETAIL</div>
-    <div class="sheetAmt mask" id="sheetAmt">$0</div>
-    <div id="sheetKV"></div>
-    <div class="sheetActions">
-      <button class="btn danger tap" id="sheetDelete">Delete</button>
-      <button class="btn tap" id="sheetClose">Close</button>
-    </div>
-  </div>
-
-  <!-- OVERLAY: MENU -->
-  <div class="overlay hidden" id="ovMenu">
-    <div class="overlayTop">
-      <div class="overlayBar">
-        <div class="tiny muted" style="font-weight:900; letter-spacing:.18em;">MENU</div>
-        <button class="xbtn tap" data-close="#ovMenu">✕</button>
-      </div>
-    </div>
-
-    <div class="help">
-      Deep-dive everything. One truth source: your ledger.<br/>
-      Goals live here now. Restore uses snapshots you already store.
-    </div>
-
-    <div style="height:14px"></div>
-
-    <div class="grid2">
-      <div class="tile tap" id="btnOpenGoals">
-        <div class="tileIcon">🎯</div>
-        <div class="tileLabel">Goals</div>
-      </div>
-      <div class="tile tap" id="btnOpenRestore">
-        <div class="tileIcon">⟲</div>
-        <div class="tileLabel">Restore</div>
-      </div>
-      <div class="tile tap" id="btnExport">
-        <div class="tileIcon">⬇</div>
-        <div class="tileLabel">Export</div>
-      </div>
-      <div class="tile tap" id="btnImport">
-        <div class="tileIcon">⬆</div>
-        <div class="tileLabel">Import</div>
-      </div>
-      <div class="tile tap" id="btnReset">
-        <div class="tileIcon">☠</div>
-        <div class="tileLabel">Reset</div>
-      </div>
-      <div class="tile tap" id="btnCloseMenu2">
-        <div class="tileIcon">⟡</div>
-        <div class="tileLabel">Close</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- OVERLAY: ADD ENTRY -->
-  <div class="overlay hidden" id="ovAdd">
-    <div class="overlayTop">
-      <div class="overlayBar">
-        <div class="tiny muted" id="addTitle" style="font-weight:900; letter-spacing:.18em;">NEW ENTRY</div>
-        <button class="xbtn tap" data-close="#ovAdd">✕</button>
-      </div>
-    </div>
-
-    <div class="seg" id="addSeg" style="margin-top:10px;">
-      <button class="on" data-kind="in">Inflow</button>
-      <button data-kind="out">Outflow</button>
-      <button data-kind="asset">Asset</button>
-      <button data-kind="iou">IOU</button>
-      <button data-kind="goal">Goal</button>
-    </div>
-
-    <input class="bigAmount mask" id="addAmt" inputmode="decimal" placeholder="0" />
-
-    <input class="input" id="addLabel" placeholder="Label (short)" />
-    <input class="input" id="addBucket" placeholder="Bucket / Account (optional)" />
-    <input class="input" id="addWho" placeholder="Person / Counterparty (optional)" />
-    <input class="input" id="addRef" placeholder="Reference / Note (optional)" />
-
-    <div class="hintBox">
-      <div class="hintTitle">How this posts</div>
-      <div class="hintRow"><span class="muted">Category</span><span id="hintKind">INFLOW</span></div>
-      <div class="hintRow"><span class="muted">Impact</span><span id="hintImpact">+</span></div>
-    </div>
-
-    <div style="height:12px"></div>
-    <button class="btn btnWide tap" id="addSave">Commit</button>
-  </div>
-
-  <!-- OVERLAY: GOALS -->
-  <div class="overlay hidden" id="ovGoals">
-    <div class="overlayTop">
-      <div class="overlayBar">
-        <div class="tiny muted" style="font-weight:900; letter-spacing:.18em;">GOALS</div>
-        <button class="xbtn tap" data-close="#ovGoals">✕</button>
-      </div>
-    </div>
-
-    <div class="help">
-      Goals are ledger-driven. Targets & due dates are metadata (editable).<br/>
-      Tap a goal for deep dive. Tap a posting to see its entry.
-    </div>
-
-    <div style="height:10px"></div>
-
-    <div class="hintBox">
-      <div class="hintTitle">Create / edit goal metadata</div>
-      <input class="input" id="gmName" placeholder="Goal name (exact)" />
-      <input class="input" id="gmTarget" inputmode="decimal" placeholder="Target amount (optional)" />
-      <input class="input" id="gmDue" placeholder="Due date (YYYY-MM-DD, optional)" />
-      <input class="input" id="gmNote" placeholder="Note (optional)" />
-      <div style="height:10px"></div>
-      <button class="btn btnWide tap" id="gmSave">Save goal</button>
-    </div>
-
-    <div style="height:12px"></div>
-
-    <div class="twoCol">
-      <div class="panel">
-        <div class="panelHead">
-          <div class="panelTitle">By Goal</div>
-          <button class="chipBtn tap" id="goalsPostBtn">Post</button>
-        </div>
-        <div id="goalsByGoal"></div>
-      </div>
-
-      <div class="panel">
-        <div class="panelHead">
-          <div class="panelTitle">By Person</div>
-          <button class="chipBtn tap" id="goalsMetaBtn">Meta</button>
-        </div>
-        <div id="goalsByPerson"></div>
-      </div>
-    </div>
-
-    <div class="detailBox hidden" id="goalDetail">
-      <div class="detailTitle">
-        <div class="t" id="gdTitle">Goal</div>
-        <div class="s" id="gdSub">—</div>
-      </div>
-      <div id="gdProgress" class="help" style="margin-bottom:8px;"></div>
-      <div class="miniSearch">
-        <div class="sicon">⌕</div>
-        <input id="gdSearch" placeholder="Search postings..." />
-      </div>
-      <div id="gdList"></div>
-    </div>
-  </div>
-
-  <!-- OVERLAY: RESTORE -->
-  <div class="overlay hidden" id="ovRestore">
-    <div class="overlayTop">
-      <div class="overlayBar">
-        <div class="tiny muted" style="font-weight:900; letter-spacing:.18em;">RESTORE</div>
-        <button class="xbtn tap" data-close="#ovRestore">✕</button>
-      </div>
-    </div>
-
-    <div class="help">
-      Snapshots are automatic (state-change + periodic).<br/>
-      Tap a snapshot for preview. Restore creates a safety snapshot first.
-    </div>
-
-    <div style="height:10px"></div>
-
-    <div class="hintBox">
-      <div class="hintTitle">Snapshot controls</div>
-      <div class="hintRow">
-        <span class="muted">Auto snapshots</span>
-        <div class="switch" id="swAuto"></div>
-      </div>
-      <div class="hintRow">
-        <span class="muted">Cadence</span>
-        <select id="cadence" style="background:#0a0a0c;border:1px solid #1f1f24;color:#fff;border-radius:12px;padding:10px;font-weight:900;">
-          <option value="off">Off</option>
-          <option value="15">Every 15 min</option>
-          <option value="60">Every 60 min</option>
-          <option value="240">Every 4 hrs</option>
-          <option value="1440">Daily</option>
-        </select>
-      </div>
-      <div style="height:10px"></div>
-      <button class="btn btnWide tap" id="btnMakeSnap">Make snapshot now</button>
-    </div>
-
-    <div style="height:12px"></div>
-
-    <div class="panel">
-      <div class="panelHead">
-        <div class="panelTitle">Snapshots</div>
-        <button class="chipBtn tap" id="btnClearSnaps">Clear</button>
-      </div>
-      <div id="snapList"></div>
-    </div>
-
-    <div class="detailBox hidden" id="snapDetail">
-      <div class="detailTitle">
-        <div class="t" id="sdTitle">Snapshot</div>
-        <div class="s" id="sdSub">—</div>
-      </div>
-      <div id="sdBody" class="help"></div>
-      <div style="height:12px"></div>
-      <button class="btn btnWide tap" id="btnRestoreNow">Restore this snapshot</button>
-    </div>
-  </div>
+  <button id="fab" class="fab fabPlus" aria-label="New entry">＋</button>
 
   <script>
     /***********************
-     * Storage & Schema
+     * Sovereign v87 (patched)
+     * New patches included:
+     * - Inflow split (fluid): allocate by % or by amount; any 2 fields auto-complete the 3rd
+     * - Ledger search keyboard fix: no full re-render on every keystroke; filter rows in-place
+     * - Restore/backup hardening: autoSnapshot snapshots the state being saved, sanitize amounts, better restore errors, reset file inputs
      ***********************/
-    const KEY_STATE = "sv88_state";
-    const KEY_SNAPS = "sv88_snaps";
-    const SCHEMA = 2;
 
-    const moneyFmt = (n)=> {
-      const sign = n < 0 ? "-" : "";
-      const x = Math.abs(n);
-      return sign + x.toLocaleString(undefined,{maximumFractionDigits:2});
+    const SCHEMA_VERSION = 1;
+
+    const STORE_KEYS = [
+      "sovereign_v87_state",
+      "sovereign_v86_state",
+      "sovereign_v86",
+      "sovereign_state",
+      "vault_state",
+      "vault_v86"
+    ];
+
+    const AUTO_KEYS = {
+      lastGood: "sovereign_last_good",
+      preRestore: "sovereign_pre_restore",
+      ringPrefix: "sovereign_auto_",
+      ringIndex: "sovereign_auto_index"
     };
 
-    const nowTs = ()=> Date.now();
+    const AUTO_RING_SIZE = 10;
+    const PERIODIC_SNAPSHOT_MS = 15 * 60 * 1000; // 15 minutes
+    const REMINDER_CHECK_MS = 60 * 1000;         // every 1 minute
 
-    const yyyyMmDd = (ts)=>{
-      const d = new Date(ts);
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
-      return `${y}-${m}-${dd}`;
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    const VIEWS = ["dashboard","auth","entry","form","search","more","settings"];
+
+    const state = loadState();
+    let currentView = "dashboard";
+    let currentForm = null;                // 'income' | 'expense' | 'asset' | 'borrow' | 'lend' | 'fid'
+    let currentEditId = null;              // when editing, points to entry being superseded
+    let currentSheetId = null;
+    let openLedger = null;
+
+    const ledgerFilters = {
+      expenses: "",
+      assets: "",
+      debtors: "",
+      creditors: "",
+      fiduciary: ""
     };
 
-    const prettyTs = (ts)=>{
-      const d = new Date(ts);
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
-      const hh = String(d.getHours()).padStart(2,"0");
-      const mi = String(d.getMinutes()).padStart(2,"0");
-      return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+    const fidDetail = { mode: null, key: null }; // {mode:'goal'|'person', key:string}
+
+    // ---------- DOM refs ----------
+    const el = {
+      dashboard: $("#dashboard"),
+      auth: $("#auth"),
+      entry: $("#entry"),
+      form: $("#form"),
+      search: $("#search"),
+      more: $("#more"),
+      settings: $("#settings"),
+
+      nw: $("#nw"),
+      cash: $("#cash"),
+      assets: $("#assets"),
+      debt: $("#debt"),
+      liq: $("#liq"),
+      exTotal: $("#exTotal"),
+      asTotal: $("#asTotal"),
+      dbTotal: $("#dbTotal"),
+      crTotal: $("#crTotal"),
+      fidTotal: $("#fidTotal"),
+
+      ledger: $("#ledger"),
+
+      auditWrap: $("#cAudit"),
+      auditFilter: $("#auditFilter"),
+      auditList: $("#auditList"),
+
+      heroCard: $("#heroCard"),
+
+      fab: $("#fab"),
+
+      // form
+      formTitle: $("#formTitle"),
+      amountHint: $("#amountHint"),
+      amountHintTitle: $("#amountHintTitle"),
+      amountHintLeft: $("#amountHintLeft"),
+      amountHintRight: $("#amountHintRight"),
+      amount: $("#amount"),
+      segWrap: $("#segWrap"),
+      dyn: $("#dyn"),
+      desc: $("#desc"),
+      note: $("#note"),
+      execBtn: $("#execBtn"),
+      nameList: $("#nameList"),
+
+      // search
+      q: $("#q"),
+      qRes: $("#qRes"),
+      qStart: $("#qStart"),
+      qEnd: $("#qEnd"),
+      clearQ: $("#clearQ"),
+
+      // auth
+      authPin: $("#authPin"),
+      unlockBtn: $("#unlockBtn"),
+
+      // stealth
+      stealthSwitch: $("#stealthSwitch"),
+
+      // settings
+      reqPin: $("#reqPin"),
+      setPin: $("#setPin"),
+      savePinBtn: $("#savePinBtn"),
+      backupBtn: $("#backupBtn"),
+      restoreBtn: $("#restoreBtn"),
+      file: $("#file"),
+      wipeBtn: $("#wipeBtn"),
+
+      backupBtn2: $("#backupBtn2"),
+      restoreBtn2: $("#restoreBtn2"),
+      file2: $("#file2"),
+
+      odSwitch: $("#odSwitch"),
+      abSwitch: $("#abSwitch"),
+      backupCadence: $("#backupCadence"),
+
+      diagBtn: $("#diagBtn"),
+      diagOut: $("#diagOut"),
+
+      // sheet
+      sheetScrim: $("#sheetScrim"),
+      sheet: $("#sheet"),
+      sheetTitle: $("#sheetTitle"),
+      sheetAmt: $("#sheetAmt"),
+      sheetMeta: $("#sheetMeta"),
+      editBtn: $("#editBtn"),
+      dupBtn: $("#dupBtn"),
+      delBtn: $("#delBtn"),
+
+      // toast
+      toast: $("#toast"),
+      toastText: $("#toastText"),
+      toastBtn: $("#toastBtn")
     };
 
-    function uid(){
-      return Math.random().toString(36).slice(2,10) + "-" + Math.random().toString(36).slice(2,8);
-    }
+    // ---------- Init ----------
+    boot();
 
-    function safeParse(json, fallback){
-      try { return JSON.parse(json); } catch { return fallback; }
-    }
+    function boot(){
+      hydrateSettingsUI();
+      applyStealth(state.settings.stealth);
 
-    function loadState(){
-      const raw = localStorage.getItem(KEY_STATE);
-      const s = safeParse(raw, null);
-      if(!s || typeof s !== "object") return freshState();
-      // migrate
-      if(!s.schema) s.schema = SCHEMA;
-      if(!Array.isArray(s.entries)) s.entries = [];
-      if(!s.goalsMeta || typeof s.goalsMeta !== "object") s.goalsMeta = {};
-      if(!s.settings || typeof s.settings !== "object") s.settings = {};
-      if(!s.ui || typeof s.ui !== "object") s.ui = {};
-      if(typeof s.schema !== "number") s.schema = SCHEMA;
-      // v88: enforce
-      s.schema = SCHEMA;
-      if(typeof s.settings.stealth !== "boolean") s.settings.stealth = false;
-      if(typeof s.settings.autoSnapshots !== "boolean") s.settings.autoSnapshots = true;
-      if(!s.settings.cadenceMin) s.settings.cadenceMin = "60";
-      return s;
-    }
-
-    function freshState(){
-      return {
-        schema: SCHEMA,
-        entries: [],
-        goalsMeta: {},
-        settings: { stealth:false, autoSnapshots:true, cadenceMin:"60" },
-        ui: {}
-      };
-    }
-
-    function saveState(){
-      localStorage.setItem(KEY_STATE, JSON.stringify(state));
-    }
-
-    function loadSnaps(){
-      const raw = localStorage.getItem(KEY_SNAPS);
-      const arr = safeParse(raw, []);
-      return Array.isArray(arr) ? arr : [];
-    }
-
-    function saveSnaps(){
-      localStorage.setItem(KEY_SNAPS, JSON.stringify(snaps));
-    }
-
-    /***********************
-     * Snapshots (uses what you already store)
-     ***********************/
-    const SNAP_LIMIT = 40;
-
-    function snapshotPayload(){
-      // store only what we already store (state), plus derived preview fields
-      const d = derive(state);
-      return {
-        id: uid(),
-        ts: nowTs(),
-        state: JSON.parse(JSON.stringify(state)),
-        preview: {
-          entries: state.entries.length,
-          nw: d.netWorth,
-          cash: d.cashTotal,
-          assets: d.assetsTotal,
-          debt: d.debtTotal,
+      // navigation buttons
+      document.body.addEventListener("click", (e) => {
+        const v = e.target.closest("[data-view]")?.getAttribute("data-view");
+        if(v) {
+          if(v === "dashboard") showView("dashboard");
+          else showView(v);
         }
-      };
-    }
+        const t = e.target.closest("[data-toggle]")?.getAttribute("data-toggle");
+        if(t) toggleAudit(t);
+      });
 
-    function pushSnapshot(reason="auto"){
-      if(!state.settings.autoSnapshots) return;
-      const snap = snapshotPayload();
-      snap.reason = reason;
-      snaps.unshift(snap);
-      if(snaps.length > SNAP_LIMIT) snaps.length = SNAP_LIMIT;
-      saveSnaps();
-    }
+      // fab
+      el.fab.addEventListener("click", () => {
+        if(currentView === "dashboard") showView("entry");
+        else if(currentView === "entry") showView("dashboard");
+        else showView("dashboard");
+      });
 
-    function forceSnapshot(reason="manual"){
-      const snap = snapshotPayload();
-      snap.reason = reason;
-      snaps.unshift(snap);
-      if(snaps.length > SNAP_LIMIT) snaps.length = SNAP_LIMIT;
-      saveSnaps();
-      toast(`Snapshot saved`);
-      renderAll();
-    }
+      // hero long-press stealth toggle
+      setupLongPress(el.heroCard, () => {
+        state.settings.stealth = !state.settings.stealth;
+        saveState("stealth_toggle");
+        applyStealth(state.settings.stealth);
+        syncStealthSwitch();
+        toast(state.settings.stealth ? "Stealth ON" : "Stealth OFF");
+      });
 
-    let cadenceTimer = null;
-    function startCadence(){
-      if(cadenceTimer) clearInterval(cadenceTimer);
-      const v = String(state.settings.cadenceMin || "off");
-      if(v === "off") return;
-      const min = parseInt(v,10);
-      if(!Number.isFinite(min) || min <= 0) return;
-      cadenceTimer = setInterval(()=>{
-        if(state.settings.autoSnapshots) pushSnapshot("cadence");
-      }, min * 60 * 1000);
-    }
+      // ledger open/close
+      el.ledger.addEventListener("click", (e) => {
+        const row = e.target.closest("[data-open-ledger]");
+        if(!row) return;
+        const key = row.getAttribute("data-open-ledger");
+        toggleLedger(key);
+      });
 
-    /***********************
-     * Ledger rules
-     ***********************/
-    function normalizeKind(kind){
-      const k = String(kind||"").toLowerCase();
-      if(["in","inflow"].includes(k)) return "in";
-      if(["out","outflow","expense"].includes(k)) return "out";
-      if(["asset","assets"].includes(k)) return "asset";
-      if(["iou","debt","loan"].includes(k)) return "iou";
-      if(["goal","goals"].includes(k)) return "goal";
-      if(["restore"].includes(k)) return "restore";
-      return "out";
-    }
+      // ledger body interactions
+      el.ledger.addEventListener("click", (e) => {
+        const entryId = e.target.closest("[data-entry-id]")?.getAttribute("data-entry-id");
+        if(entryId) return openSheet(entryId);
 
-    function signedAmount(entry){
-      const k = entry.kind;
-      const a = Number(entry.amt || 0);
-      if(!Number.isFinite(a)) return 0;
-      if(k === "in") return +a;
-      if(k === "out") return -a;
-      if(k === "asset") return +a;    // asset valuation contributions
-      if(k === "iou") return +a;      // owed to you = asset-ish, owed by you = negative (controlled by side)
-      if(k === "goal") return +a;     // posting to goal pool = asset-ish
-      if(k === "restore") return 0;
-      return 0;
-    }
+        const deb = e.target.closest("[data-debtor]");
+        if(deb) return showDebtDetails("debtors", deb.getAttribute("data-debtor"));
 
-    function derive(st){
-      const entries = st.entries || [];
+        const cre = e.target.closest("[data-creditor]");
+        if(cre) return showDebtDetails("creditors", cre.getAttribute("data-creditor"));
 
-      // Cash: inflow/outflow can optionally be bucketed (Spend/Savings/Bills etc). We still show aggregate.
-      let cash = 0;
-      let assets = 0;
-      let debt = 0; // debts you owe (liability)
-      let iouAsset = 0; // IOUs owed to you (asset)
+        const asset = e.target.closest("[data-asset]");
+        if(asset) return showAssetDetails(asset.getAttribute("data-asset"));
 
-      const buckets = new Map(); // bucket -> cash
-      const assetItems = new Map(); // name -> value (last known valuation if you do valuations)
-      const goalBal = new Map(); // goalName -> balance
-      const goalByPerson = new Map(); // person -> balance
+        const upd = e.target.closest("[data-asset-update]");
+        if(upd) return openForm("asset", { assetMode:"update", assetName: upd.getAttribute("data-asset-update") });
 
-      for(const e of entries){
-        const k = e.kind;
-        const amt = Number(e.amt || 0);
-        if(!Number.isFinite(amt) || amt === 0) continue;
-
-        if(k === "in" || k === "out"){
-          const s = (k === "in") ? +amt : -amt;
-          cash += s;
-          const b = (e.bucket && String(e.bucket).trim()) ? String(e.bucket).trim() : "General";
-          buckets.set(b, (buckets.get(b)||0) + s);
+        const fidGoal = e.target.closest("[data-fid-goal]");
+        if(fidGoal) {
+          fidDetail.mode = "goal";
+          fidDetail.key = fidGoal.getAttribute("data-fid-goal");
+          renderLedgerBody("fiduciary");
+          applyLedgerFilter("fiduciary", ledgerFilters.fiduciary || "");
+          return;
         }
 
-        if(k === "asset"){
-          // Treat as valuation change. If you post multiple times same label, we add up by default.
-          // (Can later evolve into "latest value" mode; for now additive keeps it simple.)
-          assets += amt;
-          const name = (e.label && String(e.label).trim()) ? String(e.label).trim() : "Asset";
-          assetItems.set(name, (assetItems.get(name)||0) + amt);
+        const fidPerson = e.target.closest("[data-fid-person]");
+        if(fidPerson) {
+          fidDetail.mode = "person";
+          fidDetail.key = fidPerson.getAttribute("data-fid-person");
+          renderLedgerBody("fiduciary");
+          applyLedgerFilter("fiduciary", ledgerFilters.fiduciary || "");
+          return;
         }
 
-        if(k === "iou"){
-          // side: "in" means someone owes you; "out" means you owe someone
-          const side = (e.side === "out") ? "out" : "in";
-          const who = (e.who && String(e.who).trim()) ? String(e.who).trim() : "Unknown";
-          if(side === "in"){
-            iouAsset += amt;
-          } else {
-            debt += amt;
-          }
+        const fidClear = e.target.closest("[data-fid-clear]");
+        if(fidClear){
+          fidDetail.mode = null; fidDetail.key = null;
+          renderLedgerBody("fiduciary");
+          applyLedgerFilter("fiduciary", ledgerFilters.fiduciary || "");
+          return;
         }
 
-        if(k === "goal"){
-          const goal = (e.goal && String(e.goal).trim()) ? String(e.goal).trim() : (e.label && String(e.label).trim()) ? String(e.label).trim() : "Goal";
-          const who = (e.who && String(e.who).trim()) ? String(e.who).trim() : "";
-          goalBal.set(goal, (goalBal.get(goal)||0) + amt);
-          if(who){
-            goalByPerson.set(who, (goalByPerson.get(who)||0) + amt);
-          }
+        const fidBack = e.target.closest("[data-fid-back]");
+        if(fidBack){
+          fidDetail.mode = null; fidDetail.key = null;
+          renderLedgerBody("fiduciary");
+          applyLedgerFilter("fiduciary", ledgerFilters.fiduciary || "");
+          return;
         }
-      }
+      });
 
-      // Net worth logic: cash + assets + iouAsset + goals - debt
-      const totalAssets = assets + iouAsset + sumMap(goalBal);
-      const netWorth = cash + totalAssets - debt;
+      // audit filter & clicks
+      el.auditFilter.addEventListener("input", () => renderAudit());
+      el.auditList.addEventListener("click", (e) => {
+        const id = e.target.closest("[data-entry-id]")?.getAttribute("data-entry-id");
+        if(id) openSheet(id);
+      });
 
-      const liquidityCols = classifyLiquidity(buckets);
+      // entry tiles -> open form
+      $$(".tile", el.entry).forEach(tile => {
+        tile.addEventListener("click", () => openForm(tile.getAttribute("data-form")));
+      });
 
-      return {
-        netWorth,
-        cashTotal: cash,
-        assetsTotal: assets,
-        iouAssetTotal: iouAsset,
-        goalsTotal: sumMap(goalBal),
-        debtTotal: debt,
-        buckets,
-        assetItems,
-        goalBal,
-        goalByPerson,
-        liquidityCols,
-        totalAssets
-      };
-    }
+      // execute
+      el.execBtn.addEventListener("click", executeForm);
 
-    function sumMap(m){
-      let t=0;
-      for(const v of m.values()) t += (Number(v)||0);
-      return t;
-    }
+      // search overlay
+      el.clearQ.addEventListener("click", () => { el.q.value = ""; renderSearch(); });
+      el.q.addEventListener("input", renderSearch);
+      el.qStart.addEventListener("change", renderSearch);
+      el.qEnd.addEventListener("change", renderSearch);
+      $$(".badge[data-qtype]", el.search).forEach(b => {
+        b.addEventListener("click", () => {
+          $$(".badge[data-qtype]", el.search).forEach(x => x.style.opacity = ".55");
+          b.style.opacity = "1";
+          state.ui.searchType = b.getAttribute("data-qtype");
+          saveState("search_type");
+          renderSearch();
+        });
+      });
+      el.qRes.addEventListener("click", (e) => {
+        const id = e.target.closest("[data-entry-id]")?.getAttribute("data-entry-id");
+        if(id) openSheet(id);
+      });
 
-    function classifyLiquidity(buckets){
-      // Just smart defaults; you can rename buckets freely.
-      const lower = (s)=> String(s||"").toLowerCase();
-      let savings = 0, spend = 0, bills = 0;
-      for(const [k,v] of buckets.entries()){
-        const kk = lower(k);
-        if(kk.includes("sav")) savings += v;
-        else if(kk.includes("bill")) bills += v;
-        else if(kk.includes("spend")) spend += v;
-        else spend += v; // default sink
-      }
-      return { savings, spend, bills };
-    }
+      // stealth switch
+      el.stealthSwitch.addEventListener("click", () => {
+        state.settings.stealth = !state.settings.stealth;
+        saveState("stealth_switch");
+        applyStealth(state.settings.stealth);
+        syncStealthSwitch();
+        toast(state.settings.stealth ? "Stealth ON" : "Stealth OFF");
+      });
 
-    /***********************
-     * Entries
-     ***********************/
-    function addEntry(e){
-      const entry = {
-        id: uid(),
-        ts: nowTs(),
-        kind: normalizeKind(e.kind),
-        amt: Number(e.amt||0),
-        label: (e.label||"").trim(),
-        bucket: (e.bucket||"").trim(),
-        who: (e.who||"").trim(),
-        ref: (e.ref||"").trim(),
-        // kind-specific
-        side: e.side, // for iou
-        goal: (e.goal||"").trim(), // for goal
-      };
+      // settings: overdraft
+      el.odSwitch.addEventListener("click", () => {
+        state.settings.allowOverdraft = !state.settings.allowOverdraft;
+        saveState("overdraft_toggle");
+        syncOdSwitch();
+        toast(state.settings.allowOverdraft ? "Overdraft allowed" : "Overdraft blocked");
+        renderAll();
+      });
 
-      if(!Number.isFinite(entry.amt) || entry.amt === 0) throw new Error("Amount required");
+      // settings: cadence
+      el.backupCadence.addEventListener("change", () => {
+        state.settings.backupCadence = el.backupCadence.value;
+        saveState("cadence_change");
+        toast("Reminder cadence updated");
+      });
 
-      // normalize label defaults
-      if(!entry.label){
-        if(entry.kind === "in") entry.label = "Inflow";
-        if(entry.kind === "out") entry.label = "Outflow";
-        if(entry.kind === "asset") entry.label = "Asset";
-        if(entry.kind === "iou") entry.label = "IOU";
-        if(entry.kind === "goal") entry.label = entry.goal || "Goal";
-      }
+      // settings: pin
+      el.reqPin.addEventListener("change", async () => {
+        state.settings.requirePin = !!el.reqPin.checked;
+        saveState("pin_toggle");
+        toast(state.settings.requirePin ? "PIN startup enabled" : "PIN startup disabled");
+      });
 
-      // goal kind: force goal name
-      if(entry.kind === "goal"){
-        if(!entry.goal) entry.goal = entry.label || "Goal";
-        entry.label = entry.goal;
-      }
+      el.savePinBtn.addEventListener("click", async () => {
+        const pin = (el.setPin.value || "").trim();
+        if(pin.length !== 4) return toast("Enter a 4-digit PIN");
+        state.settings.pinHash = await hashPin(pin);
+        el.setPin.value = "";
+        saveState("pin_update");
+        toast("PIN updated");
+      });
 
-      // iou kind: default side
-      if(entry.kind === "iou"){
-        entry.side = (entry.side === "out") ? "out" : "in";
-      }
+      // auth unlock
+      el.unlockBtn.addEventListener("click", unlock);
+      el.authPin.addEventListener("keydown", (e) => { if(e.key === "Enter") unlock(); });
 
-      state.entries.unshift(entry);
-      pushSnapshot("state-change");
-      saveState();
-      return entry;
-    }
+      // backup/restore (both places)
+      el.backupBtn.addEventListener("click", () => backup(true));
+      el.backupBtn2.addEventListener("click", () => backup(true));
 
-    function deleteEntry(id){
-      const idx = state.entries.findIndex(e=>e.id===id);
-      if(idx < 0) return null;
-      const removed = state.entries.splice(idx,1)[0];
-      pushSnapshot("state-change");
-      saveState();
-      return removed;
-    }
+      el.restoreBtn.addEventListener("click", () => el.file.click());
+      el.restoreBtn2.addEventListener("click", () => el.file2.click());
 
-    /***********************
-     * UI State
-     ***********************/
-    let state = loadState();
-    let snaps = loadSnaps();
-    startCadence();
+      el.file.addEventListener("change", (e) => restoreFile(e.target.files?.[0]));
+      el.file2.addEventListener("change", (e) => restoreFile(e.target.files?.[0]));
 
-    // stealth mode class
-    function applyStealth(){
-      document.body.classList.toggle("stealth", !!state.settings.stealth);
-    }
+      el.wipeBtn.addEventListener("click", () => {
+        if(!confirm("Wipe all device data for this app?")) return;
+        wipeState();
+        location.reload();
+      });
 
-    /***********************
-     * Rendering
-     ***********************/
-    const $ = (sel)=> document.querySelector(sel);
-    const $$ = (sel)=> Array.from(document.querySelectorAll(sel));
-
-    const elLedger = $("#ledger");
-    const elAudit = $("#audit");
-
-    function renderAll(){
-      applyStealth();
-      const d = derive(state);
-
-      $("#nw").textContent = "$" + moneyFmt(d.netWorth);
-      $("#miniCash").textContent = "$" + moneyFmt(d.cashTotal);
-      $("#miniAssets").textContent = "$" + moneyFmt(d.totalAssets);
-      $("#miniDebt").textContent = "$" + moneyFmt(d.debtTotal);
-
-      renderLedger(d);
-      renderAudit(d);
-      renderRestore();
-      renderGoals(d);
-      syncRestoreControls();
-    }
-
-    function renderLedger(d){
-      const openKey = state.ui.ledgerOpen || "";
-      const searchKey = state.ui.ledgerSearch || {};
-      const sectionOpen = (k)=> openKey === k;
-
-      const rows = [
-        { key:"liquidity", name:"Liquidity", val: "$"+moneyFmt(d.cashTotal), color:"var(--emerald)" },
-        { key:"assets", name:"Assets", val: "$"+moneyFmt(d.assetsTotal), color:"var(--blue)" },
-        { key:"goals", name:"Goals", val: "$"+moneyFmt(d.goalsTotal), color:"var(--yellow)" },
-        { key:"iou", name:"IOUs & Debt", val: "$"+moneyFmt(d.iouAssetTotal - d.debtTotal), color:"var(--yellow)" },
-      ];
-
-      let html = "";
-      for(const r of rows){
-        html += `
-          <div class="ledgerRow tap" data-ledger="${r.key}">
-            <div class="ledgerName">${r.name}</div>
-            <div class="ledgerVal mask" style="color:${r.color}">${r.val}</div>
-          </div>
-          <div class="ledgerBody ${sectionOpen(r.key) ? "open" : ""}" data-ledger-body="${r.key}">
-            ${renderLedgerBody(r.key, d, searchKey[r.key] || "")}
-          </div>
+      // diagnostics
+      el.diagBtn.addEventListener("click", () => {
+        const d = derive();
+        el.diagOut.innerHTML = `
+          Entries: <b>${state.entries.length}</b><br/>
+          Active: <b>${d.entriesActive.length}</b><br/>
+          Spend: <b>${money(d.accounts.spend)}</b><br/>
+          Bills: <b>${money(d.accounts.bills)}</b><br/>
+          Savings: <b>${money(d.accounts.savings)}</b><br/>
+          Liquidity: <b>${money(d.liquidityTotal)}</b><br/>
+          Assets: <b>${money(d.assetsTotal)}</b><br/>
+          Net worth: <b>${money(d.netWorth)}</b><br/>
+          Inflow split mode: <b>${esc(state.ui.inflowSplitMode || "off")}</b><br/>
         `;
+      });
+
+      // sheet
+      el.sheetScrim.addEventListener("click", closeSheet);
+      el.editBtn.addEventListener("click", () => {
+        if(!currentSheetId) return;
+        const entry = getEntryById(currentSheetId);
+        if(!entry || entry.status === "deleted") return;
+        closeSheet();
+        openForm(entry.kind, { fromEntry: entry });
+      });
+      el.dupBtn.addEventListener("click", () => {
+        if(!currentSheetId) return;
+        const entry = getEntryById(currentSheetId);
+        if(!entry) return;
+        closeSheet();
+        openForm(entry.kind, { fromEntry: entry, duplicate:true });
+      });
+      el.delBtn.addEventListener("click", () => {
+        if(!currentSheetId) return;
+        deleteEntry(currentSheetId);
+        closeSheet();
+        renderAll();
+        toast("Deleted");
+      });
+
+      // first render
+      renderAll();
+
+      // initial view gating
+      syncStealthSwitch();
+      syncOdSwitch();
+      hydrateSearchTypeUI();
+      if(state.settings.requirePin && state.settings.pinHash){
+        showView("auth");
+      } else {
+        showView("dashboard");
       }
-      elLedger.innerHTML = html;
 
-      // bind
-      $$(".ledgerRow").forEach(row=>{
-        row.addEventListener("click", ()=>{
-          const k = row.getAttribute("data-ledger");
-          state.ui.ledgerOpen = (state.ui.ledgerOpen === k) ? "" : k;
-          saveState();
-          renderAll();
-        });
-      });
+      // periodic snapshots + reminder checks
+      startPeriodicSafety();
 
-      // bind searches
-      $$(".miniSearch input").forEach(inp=>{
-        inp.addEventListener("input", ()=>{
-          const k = inp.getAttribute("data-search-key");
-          state.ui.ledgerSearch = state.ui.ledgerSearch || {};
-          state.ui.ledgerSearch[k] = inp.value;
-          saveState();
-          // lightweight rerender just ledger body
-          renderAll();
-        });
-        // stop click from collapsing
-        inp.addEventListener("click", (e)=> e.stopPropagation());
-      });
+      // service worker best-effort
+      registerSW();
 
-      // bind list item sheet open
-      $$(".tightRow").forEach(tr=>{
-        tr.addEventListener("click", (e)=>{
-          const id = tr.getAttribute("data-entry-id");
-          if(id) openSheetForEntry(id);
-          const snapid = tr.getAttribute("data-snap-id");
-          if(snapid) openSnapshotDetail(snapid);
-          const goalname = tr.getAttribute("data-goal-name");
-          if(goalname) openGoalDetail(goalname);
-          e.stopPropagation();
-        });
-      });
+      // nudge on boot if needed
+      setTimeout(checkBackupReminder, 1200);
     }
 
-    function renderLedgerBody(key, d, q){
-      const query = String(q||"").toLowerCase().trim();
+    // ---------- Views ----------
+    function showView(view){
+      currentView = view;
+      VIEWS.forEach(v => {
+        if(v === "dashboard") return;
+        const node = el[v];
+        if(!node) return;
+        node.classList.toggle("hidden", v !== view);
+        node.setAttribute("aria-hidden", v !== view ? "true" : "false");
+      });
+
+      el.dashboard.style.display = "block";
+
+      // fab mode
+      if(view === "dashboard"){
+        el.fab.classList.remove("fabBack");
+        el.fab.classList.add("fabPlus");
+        el.fab.textContent = "＋";
+        el.fab.setAttribute("aria-label", "New entry");
+      } else if(view === "entry"){
+        el.fab.classList.remove("fabPlus");
+        el.fab.classList.add("fabBack");
+        el.fab.textContent = "←";
+        el.fab.setAttribute("aria-label", "Back");
+      } else {
+        el.fab.classList.remove("fabPlus");
+        el.fab.classList.add("fabBack");
+        el.fab.textContent = "⌂";
+        el.fab.setAttribute("aria-label", "Home");
+      }
+
+      if(view === "search") renderSearch();
+      if(view === "dashboard") renderAll();
+      if(view === "more") syncStealthSwitch();
+      if(view === "settings") hydrateSettingsUI();
+    }
+
+    function toggleAudit(id){
+      const wrap = $("#"+id);
+      if(!wrap) return;
+      wrap.classList.toggle("open");
+    }
+
+    // ---------- Ledger open/close ----------
+    function toggleLedger(key){
+      if(openLedger === key){
+        const body = $(`[data-ledger-body="${key}"]`);
+        body?.classList.remove("open");
+        openLedger = null;
+        return;
+      }
+      $$(`.ledgerBody.open`).forEach(b => b.classList.remove("open"));
+      openLedger = key;
+      const body = $(`[data-ledger-body="${key}"]`);
+      body?.classList.add("open");
+      renderLedgerBody(key);
+      if(ledgerFilters[key]) applyLedgerFilter(key, ledgerFilters[key]);
+    }
+
+    // ---------- Rendering ----------
+    function renderAll(){
+      const d = derive();
+
+      el.nw.textContent = money(d.netWorth);
+
+      // cash display color reacts to negative liquidity
+      el.cash.textContent = money(d.liquidityTotal);
+      el.cash.style.color = (d.liquidityTotal < 0) ? "var(--red)" : "var(--emerald)";
+
+      el.assets.textContent = money(d.assetsTotal);
+      el.debt.textContent = money(d.debtTotal);
+
+      el.liq.textContent = money(d.liquidityTotal);
+      el.liq.style.color = (d.liquidityTotal < 0) ? "var(--red)" : "var(--emerald)";
+
+      el.exTotal.textContent = money(d.expensesTotal);
+      el.asTotal.textContent = money(d.assetsTotal);
+      el.dbTotal.textContent = money(d.debtorsOutstanding);
+      el.crTotal.textContent = money(d.creditorsOutstanding);
+      el.fidTotal.textContent = money(d.fidTotal);
+
+      if(openLedger) {
+        renderLedgerBody(openLedger);
+        if(ledgerFilters[openLedger]) applyLedgerFilter(openLedger, ledgerFilters[openLedger]);
+      }
+
+      renderAudit();
+      renderDatalist();
+    }
+
+    function renderLedgerBody(key){
+      const body = $(`[data-ledger-body="${key}"]`);
+      if(!body) return;
+
+      const d = derive();
 
       if(key === "liquidity"){
-        const { savings, spend, bills } = d.liquidityCols;
-        const b = Array.from(d.buckets.entries())
-          .sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]))
-          .filter(([k])=> !query || String(k).toLowerCase().includes(query));
-
-        return `
-          <div class="ledgerSubline">Tap accounts to deep dive entries</div>
+        const cSpend = (d.accounts.spend < 0) ? "var(--red)" : "var(--emerald)";
+        const cBills = (d.accounts.bills < 0) ? "var(--red)" : "var(--emerald)";
+        const cSav = (d.accounts.savings < 0) ? "var(--red)" : "var(--emerald)";
+        body.innerHTML = `
+          <div class="ledgerSubline">Accounts</div>
           <div class="cols3">
-            <div class="colCard"><div class="lbl">Savings</div><div class="amt mask">$${moneyFmt(savings)}</div></div>
-            <div class="colCard"><div class="lbl">Spend</div><div class="amt mask">$${moneyFmt(spend)}</div></div>
-            <div class="colCard"><div class="lbl">Bills</div><div class="amt mask">$${moneyFmt(bills)}</div></div>
-          </div>
-          <div class="miniSearch">
-            <div class="sicon">⌕</div>
-            <input data-search-key="liquidity" value="${escapeHtml(q||"")}" placeholder="Search accounts..." />
-          </div>
-          ${b.length ? b.map(([name,val])=> `
-            <div class="tightRow" data-entry-id="" data-ledger-bucket="${escapeAttr(name)}">
-              <div class="tightLeft">
-                <div class="tightTop">
-                  <span class="badge bIn">Acct</span>
-                  <div class="tightText">${escapeHtml(name)}</div>
-                </div>
-                <div class="tightMeta">Balance</div>
-              </div>
-              <div class="tightAmt mask">$${moneyFmt(val)}</div>
+            <div class="colCard">
+              <div class="lbl">Spend</div>
+              <div class="amt mask" style="color:${cSpend}">${money(d.accounts.spend)}</div>
             </div>
-          `).join("") : `<div class="help">No accounts match.</div>`}
-          <div style="height:10px"></div>
-          <button class="btn btnWide tap" onclick="window.__openLedgerDrill('liquidity')">Deep dive entries</button>
+            <div class="colCard">
+              <div class="lbl">Bills</div>
+              <div class="amt mask" style="color:${cBills}">${money(d.accounts.bills)}</div>
+            </div>
+            <div class="colCard">
+              <div class="lbl">Savings</div>
+              <div class="amt mask" style="color:${cSav}">${money(d.accounts.savings)}</div>
+            </div>
+          </div>
+          ${
+            (d.accounts.spend < 0 || d.accounts.bills < 0 || d.accounts.savings < 0)
+              ? `<div class="ledgerSubline" style="margin-top:10px;color:var(--red);">Overdrawn account detected</div>`
+              : ""
+          }
         `;
+        return;
+      }
+
+      // NOTE: For keyboard stability we render list once, then filter rows in-place.
+      // Every row includes data-hit for fast matching.
+
+      if(key === "expenses"){
+        const items = d.entriesActive
+          .filter(e => e.kind === "expense")
+          .sort((a,b) => b.ts - a.ts);
+
+        body.innerHTML = `
+          ${ledgerSearchBox("expenses", "Search expenses…")}
+          <div class="ledgerSubline">Latest</div>
+          <div data-ledger-list="expenses">
+            ${items.length ? items.map(e => tightRow(e, { hit: ledgerHitBlob(e) })).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
+          </div>
+        `;
+        wireLedgerSearch(body, "expenses");
+        return;
       }
 
       if(key === "assets"){
-        const items = Array.from(d.assetItems.entries())
-          .sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]))
-          .filter(([k])=> !query || String(k).toLowerCase().includes(query));
+        const assets = d.assetsList
+          .sort((a,b) => Math.abs(b.current||0) - Math.abs(a.current||0));
 
-        return `
-          <div class="ledgerSubline">Assets are additive valuations for now</div>
-          <div class="miniSearch">
-            <div class="sicon">⌕</div>
-            <input data-search-key="assets" value="${escapeHtml(q||"")}" placeholder="Search assets..." />
+        body.innerHTML = `
+          ${ledgerSearchBox("assets", "Search assets…")}
+          <div class="ledgerSubline">Initial • Current • Growth</div>
+          <div data-ledger-list="assets">
+            ${
+              assets.length
+                ? assets.map(a => `
+                    <div class="row tap" data-asset="${esc(a.name)}" data-hit="${escAttr((a.name+" "+money(a.current)+" "+money(a.initial)).toLowerCase())}">
+                      <div class="rowLeft">
+                        <div class="rowName">${esc(a.name)}</div>
+                        <div class="rowMeta">
+                          Init ${money(a.initial)} • Now ${money(a.current)} • Growth ${money(a.growth)}${a.initial>0 ? ` (${pct(a.growth/a.initial)})` : ""}
+                        </div>
+                      </div>
+                      <div class="rowAmt mask" style="color:var(--blue);display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+                        <div>${money(a.current)}</div>
+                        <span class="chipBtn" data-asset-update="${esc(a.name)}">Update</span>
+                      </div>
+                    </div>
+                  `).join("")
+                : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`
+            }
+            ${d.assetDetail ? renderAssetDetail(d.assetDetail) : ""}
           </div>
-          ${items.length ? items.map(([name,val])=> `
-            <div class="tightRow" data-entry-id="" data-ledger-asset="${escapeAttr(name)}">
-              <div class="tightLeft">
-                <div class="tightTop">
-                  <span class="badge bAsset">Asset</span>
-                  <div class="tightText">${escapeHtml(name)}</div>
-                </div>
-                <div class="tightMeta">Value</div>
-              </div>
-              <div class="tightAmt mask">$${moneyFmt(val)}</div>
-            </div>
-          `).join("") : `<div class="help">No assets yet.</div>`}
-          <div style="height:10px"></div>
-          <button class="btn btnWide tap" onclick="window.__openLedgerDrill('assets')">Deep dive entries</button>
         `;
+        wireLedgerSearch(body, "assets");
+        return;
       }
 
-      if(key === "goals"){
-        const goals = Array.from(d.goalBal.entries())
-          .sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]))
-          .filter(([k])=> !query || String(k).toLowerCase().includes(query));
+      if(key === "debtors"){
+        const list = d.debtorsList
+          .sort((a,b) => b.outstanding - a.outstanding);
 
-        return `
-          <div class="ledgerSubline">Goals are ledger-driven (postings)</div>
-          <div class="miniSearch">
-            <div class="sicon">⌕</div>
-            <input data-search-key="goals" value="${escapeHtml(q||"")}" placeholder="Search goals..." />
-          </div>
-          ${goals.length ? goals.map(([name,val])=> `
-            <div class="tightRow" data-goal-name="${escapeAttr(name)}">
-              <div class="tightLeft">
-                <div class="tightTop">
-                  <span class="badge bGoal">Goal</span>
-                  <div class="tightText">${escapeHtml(name)}</div>
-                </div>
-                <div class="tightMeta">${goalMetaLine(name)}</div>
-              </div>
-              <div class="tightAmt mask">$${moneyFmt(val)}</div>
-            </div>
-          `).join("") : `<div class="help">No goals yet. Post a goal entry.</div>`}
-          <div style="height:10px"></div>
-          <button class="btn btnWide tap" onclick="openOverlay('#ovGoals')">Open Goals</button>
-        `;
-      }
-
-      if(key === "iou"){
-        const items = summarizeIOU(state.entries, query);
-        return `
-          <div class="ledgerSubline">IOU: owed to you (asset) vs owed by you (debt)</div>
-          <div class="miniSearch">
-            <div class="sicon">⌕</div>
-            <input data-search-key="iou" value="${escapeHtml(q||"")}" placeholder="Search people..." />
-          </div>
-          ${items.length ? items.map(it=> `
-            <div class="tightRow" data-entry-id="" data-ledger-iou="${escapeAttr(it.who)}">
-              <div class="tightLeft">
-                <div class="tightTop">
-                  <span class="badge ${it.net>=0 ? "bIOU":"bOut"}">${it.net>=0 ? "Owed" : "Debt"}</span>
-                  <div class="tightText">${escapeHtml(it.who)}</div>
-                </div>
-                <div class="tightMeta">Owed to you: $${moneyFmt(it.owedToYou)} • You owe: $${moneyFmt(it.youOwe)}</div>
-              </div>
-              <div class="tightAmt mask">${it.net>=0 ? "$"+moneyFmt(it.net) : "-$"+moneyFmt(Math.abs(it.net))}</div>
-            </div>
-          `).join("") : `<div class="help">No IOUs yet.</div>`}
-          <div style="height:10px"></div>
-          <button class="btn btnWide tap" onclick="window.__openLedgerDrill('iou')">Deep dive entries</button>
-        `;
-      }
-
-      return "";
-    }
-
-    function summarizeIOU(entries, query){
-      const m = new Map(); // who -> {owedToYou,youOwe}
-      for(const e of entries){
-        if(e.kind !== "iou") continue;
-        const who = (e.who && String(e.who).trim()) ? String(e.who).trim() : "Unknown";
-        if(query && !who.toLowerCase().includes(query)) continue;
-        const amt = Number(e.amt||0); if(!Number.isFinite(amt) || amt===0) continue;
-        const side = (e.side === "out") ? "out" : "in";
-        const cur = m.get(who) || { owedToYou:0, youOwe:0 };
-        if(side === "in") cur.owedToYou += amt;
-        else cur.youOwe += amt;
-        m.set(who, cur);
-      }
-      return Array.from(m.entries()).map(([who,v])=> ({ who, owedToYou:v.owedToYou, youOwe:v.youOwe, net: v.owedToYou - v.youOwe }))
-        .sort((a,b)=> Math.abs(b.net) - Math.abs(a.net));
-    }
-
-    function renderAudit(d){
-      // group entries by date; each date is a dropdown with summary + list
-      const groups = new Map(); // date -> entries
-      for(const e of state.entries){
-        const day = yyyyMmDd(e.ts);
-        if(!groups.has(day)) groups.set(day, []);
-        groups.get(day).push(e);
-      }
-
-      const days = Array.from(groups.keys()).sort((a,b)=> b.localeCompare(a));
-      const openDay = state.ui.auditOpenDay || "";
-
-      let html = "";
-      if(days.length === 0){
-        html = `<div class="help" style="padding:12px 0;">No entries yet.</div>`;
-      } else {
-        for(const day of days){
-          const items = groups.get(day);
-          const sum = dailySummary(items);
-          const isOpen = (openDay === day);
-          html += `
-            <div class="${isOpen ? "open" : ""}" data-audit-day="${escapeAttr(day)}">
-              <div class="auditHead tap" data-audit-toggle="${escapeAttr(day)}">
-                <div>
-                  <div class="black" style="font-size:12px; letter-spacing:.06em; text-transform:uppercase;">${escapeHtml(day)}</div>
-                  <div class="muted" style="font-size:11px; font-weight:800; margin-top:4px;">
-                    ${sum.count} entries • ΔNW: ${sum.deltaNw>=0?"+":"-"}$${moneyFmt(Math.abs(sum.deltaNw))}
+        body.innerHTML = `
+          ${ledgerSearchBox("debtors", "Search debtors…")}
+          <div class="ledgerSubline">Tap a name to see itemised entries</div>
+          <div data-ledger-list="debtors">
+            ${
+              list.length
+                ? list.map(p => `
+                  <div class="listItem" data-debtor="${esc(p.name)}" data-hit="${escAttr((p.name+" "+money(p.outstanding)).toLowerCase())}">
+                    <div class="liName">${esc(p.name)}</div>
+                    <div class="liAmt mask" style="color:var(--emerald)">${money(p.outstanding)}</div>
                   </div>
+                `).join("")
+                : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`
+            }
+          </div>
+          ${d.debtDetail?.mode === "debtors" ? renderDebtDetail(d.debtDetail) : ""}
+        `;
+        wireLedgerSearch(body, "debtors");
+        return;
+      }
+
+      if(key === "creditors"){
+        const list = d.creditorsList
+          .sort((a,b) => b.outstanding - a.outstanding);
+
+        body.innerHTML = `
+          ${ledgerSearchBox("creditors", "Search creditors…")}
+          <div class="ledgerSubline">Tap a name to see itemised entries</div>
+          <div data-ledger-list="creditors">
+            ${
+              list.length
+                ? list.map(p => `
+                  <div class="listItem" data-creditor="${esc(p.name)}" data-hit="${escAttr((p.name+" "+money(p.outstanding)).toLowerCase())}">
+                    <div class="liName">${esc(p.name)}</div>
+                    <div class="liAmt mask" style="color:var(--red)">${money(p.outstanding)}</div>
+                  </div>
+                `).join("")
+                : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`
+            }
+          </div>
+          ${d.debtDetail?.mode === "creditors" ? renderDebtDetail(d.debtDetail) : ""}
+        `;
+        wireLedgerSearch(body, "creditors");
+        return;
+      }
+
+      if(key === "fiduciary"){
+        const goals = d.fidGoals.sort((a,b) => Math.abs(b.balance) - Math.abs(a.balance));
+        const persons = d.fidPersons.sort((a,b) => Math.abs(b.balance) - Math.abs(a.balance));
+
+        const detail = (fidDetail.mode && fidDetail.key)
+          ? buildFidDetail(d.entriesActive, fidDetail.mode, fidDetail.key)
+          : null;
+
+        body.innerHTML = `
+          ${ledgerSearchBox("fiduciary", "Search goals or people…")}
+          <div class="ledgerSubline">Tap a purpose or person to drill down</div>
+
+          ${
+            detail ? `
+              <div class="detailBox">
+                <div class="detailTitle">
+                  <div class="t">${detail.mode === "goal" ? "Purpose" : "Person"}: ${esc(detail.key)}</div>
+                  <div class="s mask" style="color:var(--yellow)">${money(detail.balance)}</div>
                 </div>
-                <div class="auditChevron">${isOpen ? "—" : "+"}</div>
+
+                <div class="kv"><div class="kvL">Total in</div><div class="kvR mask">${money(detail.totals.in)}</div></div>
+                <div class="kv"><div class="kvL">Total out</div><div class="kvR mask">${money(detail.totals.out)}</div></div>
+
+                <div class="ledgerSubline" style="margin-top:12px;">Itemised entries</div>
+                <div data-ledger-list="fidDetail">
+                  ${detail.entries.length ? detail.entries.map(e => tightRow(e, {compact:true, hit: ledgerHitBlob(e) })).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
+                </div>
+
+                <div class="flex gap8" style="margin-top:12px;flex-wrap:wrap;">
+                  <span class="chipBtn chipGood" data-fid-back="1">Back</span>
+                  <span class="chipBtn chipDanger" data-fid-clear="1">Clear</span>
+                </div>
               </div>
-              <div class="auditBody">
-                ${items.slice(0, 30).map(e=> renderEntryRow(e)).join("")}
-                ${items.length>30 ? `<div class="help" style="padding:10px 0;">Showing 30 of ${items.length}. Export for full history.</div>` : ""}
+            ` : ""
+          }
+
+          <div class="twoCol" data-ledger-list="fiduciary">
+            <div class="panel">
+              <div class="panelHead">
+                <div class="panelTitle">By Purpose</div>
+                <div class="badge bFid">Goals</div>
+              </div>
+              <div>
+                ${goals.length ? goals.map(g => `
+                  <div class="listItem" data-fid-goal="${esc(g.key)}" data-hit="${escAttr((g.key+" "+money(g.balance)).toLowerCase())}">
+                    <div class="liName">${esc(g.key)}</div>
+                    <div class="liAmt mask" style="color:var(--yellow)">${money(g.balance)}</div>
+                  </div>
+                `).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
               </div>
             </div>
-          `;
-        }
+
+            <div class="panel">
+              <div class="panelHead">
+                <div class="panelTitle">By Person</div>
+                <div class="badge bFid">People</div>
+              </div>
+              <div>
+                ${persons.length ? persons.map(p => `
+                  <div class="listItem" data-fid-person="${esc(p.key)}" data-hit="${escAttr((p.key+" "+money(p.balance)).toLowerCase())}">
+                    <div class="liName">${esc(p.key)}</div>
+                    <div class="liAmt mask" style="color:var(--yellow)">${money(p.balance)}</div>
+                  </div>
+                `).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
+              </div>
+            </div>
+          </div>
+        `;
+        wireLedgerSearch(body, "fiduciary");
+        return;
       }
-
-      elAudit.innerHTML = html;
-
-      $$("[data-audit-toggle]").forEach(h=>{
-        h.addEventListener("click", ()=>{
-          const day = h.getAttribute("data-audit-toggle");
-          state.ui.auditOpenDay = (state.ui.auditOpenDay === day) ? "" : day;
-          saveState();
-          renderAll();
-        });
-      });
-
-      // bind entry open
-      elAudit.querySelectorAll(".tightRow[data-entry-id]").forEach(row=>{
-        row.addEventListener("click", (e)=>{
-          const id = row.getAttribute("data-entry-id");
-          openSheetForEntry(id);
-          e.stopPropagation();
-        });
-      });
     }
 
-    function dailySummary(items){
-      // approximate NW delta using signed rules:
-      // in/out affect cash; asset affect assets; iou affects either debt or iouAsset; goal affects goals
-      let delta = 0;
-      for(const e of items){
-        const k = e.kind;
-        const amt = Number(e.amt||0);
-        if(!Number.isFinite(amt) || amt===0) continue;
+    function renderAudit(){
+      const q = (el.auditFilter.value || "").trim().toLowerCase();
+      const entries = state.entries
+        .slice()
+        .sort((a,b) => b.ts - a.ts)
+        .filter(e => {
+          if(!q) return true;
+          const blob = [
+            e.kind, e.desc, e.note,
+            e.meta?.account, e.meta?.person, e.meta?.goal,
+            e.meta?.assetName, e.meta?.action,
+            e.meta?.rate, e.meta?.issuedTs, e.meta?.dueTs,
+            e.status, e.supersedesId
+          ].join(" ").toLowerCase();
+          return blob.includes(q);
+        })
+        .slice(0, 120);
 
-        if(k === "in") delta += amt;
-        if(k === "out") delta -= amt;
-        if(k === "asset") delta += amt;
-        if(k === "goal") delta += amt;
-        if(k === "iou"){
-          const side = (e.side === "out") ? "out" : "in";
-          if(side === "in") delta += amt;   // owed to you
-          else delta -= amt;               // you owe
-        }
-      }
-      return { count: items.length, deltaNw: delta };
+      el.auditList.innerHTML = entries.length
+        ? entries.map(e => tightRow(e, { audit:true, hit: ledgerHitBlob(e) })).join("")
+        : `<div class="rowMeta" style="padding:10px 0;">No audit entries</div>`;
     }
 
-    function renderEntryRow(e){
-      const kind = e.kind;
-      const badge = kindBadge(e);
-      const amtTxt = entryAmtText(e);
-      const meta = entryMetaText(e);
+    function renderSearch(){
+      const q = (el.q.value || "").trim().toLowerCase();
+      const type = state.ui.searchType || "all";
+      const start = el.qStart.value ? new Date(el.qStart.value).getTime() : null;
+      const end = el.qEnd.value ? (new Date(el.qEnd.value).getTime() + 24*3600*1000 - 1) : null;
+
+      const entries = state.entries
+        .filter(e => e.status !== "deleted")
+        .filter(e => {
+          if(type === "all") return true;
+          if(type === "income") return e.kind === "income";
+          if(type === "expense") return e.kind === "expense";
+          if(type === "asset") return e.kind === "asset";
+          if(type === "iou") return e.kind === "iou";
+          if(type === "fid") return e.kind === "fid";
+          return true;
+        })
+        .filter(e => {
+          if(start && e.ts < start) return false;
+          if(end && e.ts > end) return false;
+          return true;
+        })
+        .filter(e => !q ? true : searchHit(e, q))
+        .sort((a,b) => b.ts - a.ts)
+        .slice(0, 200);
+
+      el.qRes.innerHTML = entries.length
+        ? entries.map(e => tightRow(e, { compact:true, hit: ledgerHitBlob(e) })).join("")
+        : `<div class="rowMeta" style="padding:10px 0;">No results</div>`;
+    }
+
+    // ---------- Detail Panels ----------
+    function showDebtDetails(mode, who){
+      state.ui.debtDetail = { mode, who };
+      saveState("debt_detail");
+      renderLedgerBody(mode);
+      if(ledgerFilters[mode]) applyLedgerFilter(mode, ledgerFilters[mode]);
+    }
+
+    function showAssetDetails(name){
+      state.ui.assetDetailName = name;
+      saveState("asset_detail");
+      renderLedgerBody("assets");
+      if(ledgerFilters.assets) applyLedgerFilter("assets", ledgerFilters.assets);
+    }
+
+    function renderDebtDetail(detail){
+      const title = detail.mode === "debtors" ? "Debtor details" : "Creditor details";
+      const color = detail.mode === "debtors" ? "var(--emerald)" : "var(--red)";
+
       return `
-        <div class="tightRow tap" data-entry-id="${escapeAttr(e.id)}">
+        <div class="detailBox">
+          <div class="detailTitle">
+            <div class="t">${esc(title)} • ${esc(detail.who)}</div>
+            <div class="s mask" style="color:${color}">${money(detail.outstanding)}</div>
+          </div>
+
+          <div class="kv"><div class="kvL">Outstanding</div><div class="kvR mask">${money(detail.outstanding)}</div></div>
+          <div class="kv"><div class="kvL">${detail.mode==="debtors"?"Total given":"Total received"}</div><div class="kvR mask">${money(detail.given)}</div></div>
+          <div class="kv"><div class="kvL">${detail.mode==="debtors"?"Total recovered":"Total repaid"}</div><div class="kvR mask">${money(detail.recovered)}</div></div>
+
+          <div class="ledgerSubline" style="margin-top:12px;">Itemised entries</div>
+          <div>
+            ${detail.entries.length ? detail.entries.map(e => tightRow(e, {compact:true, hit: ledgerHitBlob(e) })).join("") : `<div class="rowMeta" style="padding:10px 0;">No entries</div>`}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAssetDetail(a){
+      return `
+        <div class="detailBox">
+          <div class="detailTitle">
+            <div class="t">${esc(a.name)}</div>
+            <div class="s mask" style="color:var(--blue)">${money(a.current)}</div>
+          </div>
+
+          <div class="kv"><div class="kvL">Initial</div><div class="kvR mask">${money(a.initial)}</div></div>
+          <div class="kv"><div class="kvL">Current</div><div class="kvR mask">${money(a.current)}</div></div>
+          <div class="kv"><div class="kvL">Growth</div><div class="kvR mask">${money(a.growth)}${a.initial>0 ? ` (${pct(a.growth/a.initial)})` : ""}</div></div>
+
+          <div class="ledgerSubline" style="margin-top:12px;">Valuation history</div>
+          <div>
+            ${a.history.length ? a.history.map(e => tightRow(e, {compact:true, hit: ledgerHitBlob(e)})).join("") : `<div class="rowMeta" style="padding:10px 0;">No history</div>`}
+          </div>
+        </div>
+      `;
+    }
+
+    // ---------- Ledger Search box ----------
+    function ledgerSearchBox(key, placeholder){
+      return `
+        <div class="miniSearch">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex:0 0 auto;">
+            <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#9ca3af" stroke-width="2"/>
+            <path d="M16.5 16.5 21 21" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input class="input" data-ledger-filter="${key}" placeholder="${escAttr(placeholder)}" value="${escAttr(ledgerFilters[key]||"")}" />
+        </div>
+      `;
+    }
+
+    // ✅ KEYBOARD FIX:
+    // We do NOT re-render ledger on each keystroke anymore.
+    // Instead we filter visible rows in-place using data-hit attributes.
+    function wireLedgerSearch(body, key){
+      const inp = body.querySelector(`[data-ledger-filter="${key}"]`);
+      if(!inp) return;
+
+      inp.oninput = () => {
+        const val = inp.value || "";
+        ledgerFilters[key] = val;
+        applyLedgerFilter(key, val);
+      };
+    }
+
+    function applyLedgerFilter(key, text){
+      const body = $(`[data-ledger-body="${key}"]`);
+      if(!body) return;
+      const q = (text || "").trim().toLowerCase();
+
+      // Filter any element that has data-hit inside the ledger body
+      const nodes = $$("[data-hit]", body);
+      let shown = 0;
+
+      if(!q){
+        nodes.forEach(n => n.classList.remove("hidden"));
+        return;
+      }
+
+      for(const n of nodes){
+        const hit = (n.getAttribute("data-hit") || "").toLowerCase();
+        const ok = hit.includes(q);
+        n.classList.toggle("hidden", !ok);
+        if(ok) shown++;
+      }
+
+      // Optional: if none match, show a small hint row (without re-render)
+      const markerId = "ledgerNoMatch_" + key;
+      let marker = $("#"+markerId, body);
+
+      if(shown === 0){
+        if(!marker){
+          marker = document.createElement("div");
+          marker.id = markerId;
+          marker.className = "rowMeta";
+          marker.style.padding = "10px 0";
+          marker.textContent = "No matches";
+          body.appendChild(marker);
+        }
+      } else {
+        if(marker) marker.remove();
+      }
+    }
+
+    function ledgerHitBlob(e){
+      return [
+        e.kind, e.desc, e.note,
+        e.meta?.account, e.meta?.person, e.meta?.goal,
+        e.meta?.assetName, e.meta?.action,
+        e.meta?.rate, e.meta?.issuedTs, e.meta?.dueTs,
+        fmtDate(e.ts),
+        e.status
+      ].join(" ").toLowerCase();
+    }
+
+    // ---------- Form ----------
+    function openForm(kind, opts={}){
+      currentForm = kind;
+      currentEditId = null;
+
+      if(opts.fromEntry){
+        const e = opts.fromEntry;
+        if(!opts.duplicate) currentEditId = e.id;
+        currentForm = e.kind;
+      }
+
+      const title = (kind === "income") ? "Inflow"
+                  : (kind === "expense") ? "Expense"
+                  : (kind === "asset") ? "Asset"
+                  : (kind === "borrow") ? "Borrow"
+                  : (kind === "lend") ? "Lend"
+                  : (kind === "fid") ? "Fiduciary"
+                  : "Entry";
+      el.formTitle.textContent = currentEditId ? (title + " (Edit)") : title;
+
+      // reset
+      el.amount.value = "";
+      el.desc.value = "";
+      el.note.value = "";
+      el.dyn.innerHTML = "";
+      el.segWrap.classList.add("hidden");
+      el.segWrap.innerHTML = "";
+      el.desc.placeholder = "Description";
+      el.amount.placeholder = "0";
+
+      // hint reset
+      el.amountHint.classList.add("hidden");
+      el.amountHintTitle.textContent = "Amount";
+      el.amountHintLeft.textContent = "—";
+      el.amountHintRight.textContent = "—";
+
+      const pre = opts.fromEntry ? opts.fromEntry : null;
+
+      if(kind === "income" || kind === "expense"){
+        const acct = (opts.fromEntry?.meta?.account) || state.ui.lastAccount || "spend";
+        buildSegment("Account", ["Spend","Bills","Savings"], acct, (val) => {
+          state.ui.lastAccount = val;
+          saveState("last_account");
+          // If inflow split is on, account segment becomes irrelevant, but we keep it for quick off-mode.
+        });
+
+        el.amountHint.classList.remove("hidden");
+        el.amountHintTitle.textContent = (kind === "income") ? "Inflow" : "Expense";
+        el.amountHintLeft.textContent = "Account";
+        el.amountHintRight.textContent = acct.toUpperCase();
+
+        el.desc.placeholder = "Description";
+
+        // ✅ Inflow split UI (not available when editing an old entry, to keep edits safe)
+        if(kind === "income" && !currentEditId){
+          const mode = state.ui.inflowSplitMode || "off";
+          el.dyn.innerHTML = renderInflowSplitUI(mode);
+          wireInflowSplitUI();
+        }
+      }
+
+      if(kind === "asset"){
+        const assetMode = opts.assetMode || pre?.meta?.action || "new";
+        buildSegment("Mode", ["New","Update"], assetMode === "update" ? "update":"new", () => {
+          // live update of hint/placeholder
+          updateAssetHintUI();
+        });
+        const assetName = opts.assetName || pre?.meta?.assetName || "";
+        el.dyn.innerHTML = `
+          <input id="assetName" class="input" placeholder="Asset name" value="${escAttr(assetName)}" list="assetList" />
+          <datalist id="assetList"></datalist>
+        `;
+        el.desc.placeholder = "Description (optional)";
+
+        // Update hint based on current segment + current assetName
+        setTimeout(updateAssetHintUI, 0);
+
+        // When asset name changes, refresh hint
+        setTimeout(() => {
+          const an = $("#assetName");
+          if(an) an.addEventListener("input", () => updateAssetHintUI());
+        }, 0);
+      }
+
+      if(kind === "borrow" || kind === "lend"){
+        const action = pre?.meta?.action || "new";
+        buildSegment("Mode", ["New","Settle"], action === "settle" ? "settle":"new", () => {});
+        const who = pre?.meta?.person || "";
+        const rate = pre?.meta?.rate ?? "";
+        const issuedTs = pre?.meta?.issuedTs ? fmtISODate(pre.meta.issuedTs) : "";
+        const dueTs = pre?.meta?.dueTs ? fmtISODate(pre.meta.dueTs) : "";
+
+        el.dyn.innerHTML = `
+          <input id="person" class="input" placeholder="Person" value="${escAttr(who)}" list="personList" />
+          <datalist id="personList"></datalist>
+
+          <div id="iouExtra">
+            <input id="rate" class="input" type="number" inputmode="decimal" placeholder="Interest rate % (optional)" value="${escAttr(rate)}" />
+            <input id="issued" class="input" type="date" placeholder="Date issued (optional)" value="${escAttr(issuedTs)}" />
+            <input id="due" class="input" type="date" placeholder="Due date (optional)" value="${escAttr(dueTs)}" />
+          </div>
+        `;
+        el.desc.placeholder = "Description (optional)";
+
+        // Hide extra fields when settling
+        setTimeout(() => {
+          const segVal = getSegmentValue();
+          const box = $("#iouExtra");
+          if(box) box.style.display = (segVal === "settle") ? "none" : "block";
+          const seg = $("#seg", el.segWrap);
+          seg?.addEventListener("click", () => {
+            const v = getSegmentValue();
+            if(box) box.style.display = (v === "settle") ? "none" : "block";
+          });
+        }, 0);
+      }
+
+      if(kind === "fid"){
+        const action = pre?.meta?.action || "in";
+        buildSegment("Direction", ["In","Out"], action, () => {});
+        const goal = pre?.meta?.goal || "";
+        const person = pre?.meta?.person || "";
+        el.dyn.innerHTML = `
+          <input id="goal" class="input" placeholder="Purpose / Goal" value="${escAttr(goal)}" list="goalList" />
+          <datalist id="goalList"></datalist>
+          <input id="person" class="input" placeholder="Person" value="${escAttr(person)}" list="personList2" />
+          <datalist id="personList2"></datalist>
+        `;
+        el.desc.placeholder = "Description (optional)";
+      }
+
+      if(pre){
+        el.amount.value = pre.amount ?? "";
+        el.desc.value = pre.desc ?? "";
+        el.note.value = pre.note ?? "";
+      }
+
+      fillDynamicDatalists();
+      showView("form");
+      el.amount.focus();
+    }
+
+    function renderInflowSplitUI(mode){
+      const m = mode || "off";
+      const onOff = (v) => (v === m ? "on" : "");
+      return `
+        <div class="tiny muted" style="margin:6px 0 8px 0;">Allocation</div>
+        <div class="seg" id="inflowSplitSeg" style="margin-bottom:10px;">
+          <button type="button" data-split="off" class="${onOff("off")}">Off</button>
+          <button type="button" data-split="pct" class="${onOff("pct")}">%</button>
+          <button type="button" data-split="amt" class="${onOff("amt")}">Amount</button>
+        </div>
+
+        <div id="inflowSplitBox" class="${m==="off" ? "hidden" : ""}">
+          <div class="ledgerSubline" style="margin-top:4px;">Fill any 2 fields — the 3rd auto-completes</div>
+
+          <div class="grid2" style="gap:12px;">
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Spend</div>
+              <input id="inSpend" class="input" type="number" inputmode="decimal" placeholder="${m==="pct" ? "Percent" : "Amount"}" />
+            </div>
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Bills</div>
+              <input id="inBills" class="input" type="number" inputmode="decimal" placeholder="${m==="pct" ? "Percent" : "Amount"}" />
+            </div>
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Savings</div>
+              <input id="inSavings" class="input" type="number" inputmode="decimal" placeholder="${m==="pct" ? "Percent" : "Amount"}" />
+            </div>
+            <div>
+              <div class="tiny muted" style="margin-top:6px;">Check</div>
+              <div id="inflowSplitCheck" class="hintBox" style="padding:12px;">
+                <div class="hintTitle">Total</div>
+                <div class="hintRow">
+                  <div class="muted">${m==="pct" ? "Must be 100%" : "Must equal amount"}</div>
+                  <div id="inflowSplitTotal" class="mask">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tiny muted" style="margin-top:10px;">
+            Tip: enter the big Amount first, then allocate.
+          </div>
+        </div>
+      `;
+    }
+
+    function wireInflowSplitUI(){
+      const seg = $("#inflowSplitSeg");
+      if(!seg) return;
+
+      const setMode = (mode) => {
+        state.ui.inflowSplitMode = mode;
+        saveState("inflow_split_mode");
+        // refresh UI without killing focus in amount input (only rebuild dyn)
+        el.dyn.innerHTML = renderInflowSplitUI(mode);
+        wireInflowSplitUI();
+        // keep amount input focused if user was typing
+      };
+
+      seg.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-split]");
+        if(!b) return;
+        $$("button", seg).forEach(x => x.classList.remove("on"));
+        b.classList.add("on");
+        setMode(b.getAttribute("data-split"));
+      });
+
+      const mode = state.ui.inflowSplitMode || "off";
+      if(mode === "off") return;
+
+      const A = $("#inSpend"), B = $("#inBills"), C = $("#inSavings");
+      const totalEl = $("#inflowSplitTotal");
+      const box = $("#inflowSplitBox");
+
+      if(!A || !B || !C || !totalEl || !box) return;
+
+      const recompute = (changed) => {
+        const total = Number(el.amount.value || 0);
+        if(!isFinite(total) || total <= 0){
+          totalEl.textContent = "Enter Amount";
+          return;
+        }
+
+        const a = parseNum(A.value);
+        const b = parseNum(B.value);
+        const c = parseNum(C.value);
+
+        if(mode === "pct"){
+          // Any two -> third = 100 - sum(two)
+          const filled = [
+            {k:"a", v:a, el:A},
+            {k:"b", v:b, el:B},
+            {k:"c", v:c, el:C},
+          ].filter(x => x.v !== null);
+
+          if(filled.length >= 2){
+            const sum = filled.reduce((s,x)=> s + x.v, 0);
+            const missing = [{k:"a", el:A, v:a},{k:"b", el:B, v:b},{k:"c", el:C, v:c}].find(x => x.v === null);
+            if(missing){
+              const val = clampNum(100 - sum, 0, 100);
+              missing.el.value = String(round2(val));
+            }
+          }
+
+          const aa = parseNum(A.value) ?? 0;
+          const bb = parseNum(B.value) ?? 0;
+          const cc = parseNum(C.value) ?? 0;
+          const sum2 = aa + bb + cc;
+          totalEl.textContent = round2(sum2) + "%";
+        }
+
+        if(mode === "amt"){
+          // Any two -> third = total - sum(two)
+          const filled = [
+            {k:"a", v:a, el:A},
+            {k:"b", v:b, el:B},
+            {k:"c", v:c, el:C},
+          ].filter(x => x.v !== null);
+
+          if(filled.length >= 2){
+            const sum = filled.reduce((s,x)=> s + x.v, 0);
+            const missing = [{k:"a", el:A, v:a},{k:"b", el:B, v:b},{k:"c", el:C, v:c}].find(x => x.v === null);
+            if(missing){
+              const val = clampNum(total - sum, 0, total);
+              missing.el.value = String(round2(val));
+            }
+          }
+
+          const aa = parseNum(A.value) ?? 0;
+          const bb = parseNum(B.value) ?? 0;
+          const cc = parseNum(C.value) ?? 0;
+          const sum2 = aa + bb + cc;
+          totalEl.textContent = money(sum2);
+        }
+      };
+
+      // Update on allocation typing (no re-render)
+      [A,B,C].forEach(inp => inp.addEventListener("input", () => recompute(inp.id)));
+
+      // Also recompute when Amount changes
+      el.amount.addEventListener("input", () => recompute("amount"), { once:true });
+
+      // initial check
+      setTimeout(() => recompute("init"), 0);
+    }
+
+    function buildSegment(label, labels, initialValue, onChange){
+      el.segWrap.classList.remove("hidden");
+      const map = {
+        "Spend":"spend","Bills":"bills","Savings":"savings",
+        "New":"new","Update":"update",
+        "Settle":"settle",
+        "In":"in","Out":"out"
+      };
+      const init = map[initialValue] ? map[initialValue] : initialValue;
+
+      const buttons = labels.map(l => {
+        const val = map[l] || l.toLowerCase();
+        return `<button type="button" data-seg="${val}" class="${val===init ? "on":""}">${l}</button>`;
+      }).join("");
+
+      el.segWrap.innerHTML = `
+        <div class="tiny muted" style="margin-bottom:8px;">${label}</div>
+        <div class="seg" id="seg">${buttons}</div>
+      `;
+
+      const seg = $("#seg", el.segWrap);
+      seg.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-seg]");
+        if(!b) return;
+        $$("button", seg).forEach(x => x.classList.remove("on"));
+        b.classList.add("on");
+        onChange(b.getAttribute("data-seg"));
+
+        // update hint for income/expense account view
+        if(currentForm === "income" || currentForm === "expense"){
+          el.amountHint.classList.remove("hidden");
+          el.amountHintLeft.textContent = "Account";
+          el.amountHintRight.textContent = (b.getAttribute("data-seg") || "").toUpperCase();
+        }
+      });
+    }
+
+    function getSegmentValue(){
+      const btn = $("#seg button.on", el.segWrap);
+      return btn ? btn.getAttribute("data-seg") : null;
+    }
+
+    function updateAssetHintUI(){
+      if(currentForm !== "asset") return;
+      const mode = getSegmentValue() || "new";
+      const assetName = ($("#assetName")?.value || "").trim();
+
+      el.amountHint.classList.remove("hidden");
+      if(assetName){
+        const snap = getAssetSnapshot(assetName);
+        if(snap){
+          if(mode === "update"){
+            el.amountHintTitle.textContent = "Asset update";
+            el.amount.placeholder = "New current value";
+            el.amountHintLeft.textContent = `Current: ${money(snap.current)} • Initial: ${money(snap.initial)}`;
+            el.amountHintRight.textContent = snap.lastTs ? fmtDateTime(snap.lastTs) : "—";
+            return;
+          } else {
+            el.amountHintTitle.textContent = "Asset (new)";
+            el.amount.placeholder = "Initial value";
+            el.amountHintLeft.textContent = `Existing current: ${money(snap.current)}`;
+            el.amountHintRight.textContent = "You’re creating a new baseline";
+            return;
+          }
+        }
+      }
+
+      el.amountHintTitle.textContent = (mode === "update") ? "Asset update" : "Asset (new)";
+      el.amount.placeholder = (mode === "update") ? "New current value" : "Initial value";
+      el.amountHintLeft.textContent = "Tip";
+      el.amountHintRight.textContent = (mode === "update") ? "Pick an existing asset name" : "Set your first value";
+    }
+
+    async function executeForm(){
+      const amt = Number(el.amount.value);
+      if(!isFinite(amt) || amt <= 0){
+        return toast("Enter an amount");
+      }
+
+      const desc = (el.desc.value || "").trim();
+      const note = (el.note.value || "").trim();
+      const editOf = currentEditId ? getEntryById(currentEditId) : null;
+
+      if(currentForm === "income" || currentForm === "expense"){
+        const account = getSegmentValue() || state.ui.lastAccount || "spend";
+
+        // ✅ Inflow split execution
+        if(currentForm === "income" && !currentEditId){
+          const mode = state.ui.inflowSplitMode || "off";
+          if(mode !== "off"){
+            const A = $("#inSpend"), B = $("#inBills"), C = $("#inSavings");
+            if(!A || !B || !C) return toast("Allocation inputs missing");
+
+            if(mode === "pct"){
+              const pSpend = parseNum(A.value) ?? 0;
+              const pBills = parseNum(B.value) ?? 0;
+              const pSavings = parseNum(C.value) ?? 0;
+              const sum = round2(pSpend + pBills + pSavings);
+              if(Math.abs(sum - 100) > 0.01) return toast("Percent must total 100%");
+              const aAmt = round2((pSpend/100) * amt);
+              const bAmt = round2((pBills/100) * amt);
+              // Make last bucket absorb rounding errors
+              const cAmt = round2(amt - aAmt - bAmt);
+
+              const group = uid();
+              const entries = [
+                makeEntry("income", aAmt, desc, note, { account:"spend", splitGroupId: group, splitMode:"pct", splitValue:pSpend }),
+                makeEntry("income", bAmt, desc, note, { account:"bills", splitGroupId: group, splitMode:"pct", splitValue:pBills }),
+                makeEntry("income", cAmt, desc, note, { account:"savings", splitGroupId: group, splitMode:"pct", splitValue:pSavings }),
+              ].filter(x => x.amount > 0);
+
+              commitEntries(entries);
+              showView("dashboard");
+              renderAll();
+              toast("Saved (split)");
+              return;
+            }
+
+            if(mode === "amt"){
+              const aAmt = parseNum(A.value) ?? 0;
+              const bAmt = parseNum(B.value) ?? 0;
+              const cAmt = parseNum(C.value) ?? 0;
+              const sum = round2(aAmt + bAmt + cAmt);
+              if(Math.abs(sum - amt) > 0.01) return toast("Split amounts must equal Amount");
+
+              const group = uid();
+              const entries = [
+                makeEntry("income", aAmt, desc, note, { account:"spend", splitGroupId: group, splitMode:"amt" }),
+                makeEntry("income", bAmt, desc, note, { account:"bills", splitGroupId: group, splitMode:"amt" }),
+                makeEntry("income", cAmt, desc, note, { account:"savings", splitGroupId: group, splitMode:"amt" }),
+              ].filter(x => x.amount > 0);
+
+              commitEntries(entries);
+              showView("dashboard");
+              renderAll();
+              toast("Saved (split)");
+              return;
+            }
+          }
+        }
+
+        // Guardrail: block spending from empty account unless overdraft is allowed
+        if(currentForm === "expense" && !state.settings.allowOverdraft){
+          const d = derive();
+          const bal = Number(d.accounts[account] || 0);
+          if(amt > bal){
+            return toast(`Insufficient funds in ${account.toUpperCase()} (${money(bal)})`);
+          }
+        }
+
+        const entry = makeEntry(currentForm, amt, desc, note, { account });
+        commitEntry(entry, editOf);
+        showView("dashboard");
+        renderAll();
+        toast(currentEditId ? `Edited (${account.toUpperCase()})` : `Saved (${account.toUpperCase()})`);
+        return;
+      }
+
+      if(currentForm === "asset"){
+        const mode = getSegmentValue() || "new";
+        const assetName = ($("#assetName")?.value || "").trim();
+        if(!assetName) return toast("Enter asset name");
+
+        const entry = makeEntry("asset", amt, desc, note, { action: mode, assetName });
+        commitEntry(entry, editOf);
+        showView("dashboard");
+        renderAll();
+        toast(currentEditId ? "Edited" : "Saved");
+        return;
+      }
+
+      if(currentForm === "borrow" || currentForm === "lend"){
+        const mode = getSegmentValue() || "new";
+        const who = ($("#person")?.value || "").trim();
+        if(!who) return toast("Enter person");
+
+        // Optional extras (only meaningful for "new")
+        let rate = null, issuedTs = null, dueTs = null;
+        if(mode === "new"){
+          const r = ($("#rate")?.value || "").trim();
+          rate = r === "" ? null : Number(r);
+          const issued = ($("#issued")?.value || "").trim();
+          const due = ($("#due")?.value || "").trim();
+          issuedTs = issued ? new Date(issued + "T00:00:00").getTime() : null;
+          dueTs = due ? new Date(due + "T00:00:00").getTime() : null;
+          if(rate !== null && (!isFinite(rate) || rate < 0)) return toast("Invalid rate");
+        }
+
+        const entry = makeEntry("iou", amt, desc, note, {
+          direction: currentForm === "lend" ? "debtors" : "creditors",
+          action: mode,
+          person: who,
+          rate,
+          issuedTs,
+          dueTs
+        });
+        commitEntry(entry, editOf);
+        showView("dashboard");
+        renderAll();
+        toast(currentEditId ? "Edited" : "Saved");
+        return;
+      }
+
+      if(currentForm === "fid"){
+        const dir = getSegmentValue() || "in";
+        const goal = ($("#goal")?.value || "").trim();
+        const who = ($("#person")?.value || "").trim();
+        if(!goal) return toast("Enter purpose / goal");
+        if(!who) return toast("Enter person");
+        const entry = makeEntry("fid", amt, desc, note, { action: dir, goal, person: who });
+        commitEntry(entry, editOf);
+        showView("dashboard");
+        renderAll();
+        toast(currentEditId ? "Edited" : "Saved");
+        return;
+      }
+
+      toast("Unknown form");
+    }
+
+    function makeEntry(kind, amount, desc, note, meta={}){
+      return {
+        id: uid(),
+        ts: Date.now(),
+        kind,
+        amount: safeNum(amount),
+        desc: desc || "",
+        note: note || "",
+        meta,
+        status: "active",
+        supersedesId: null
+      };
+    }
+
+    function commitEntries(entries){
+      for(const e of entries){
+        state.entries.push(e);
+      }
+      saveState("commit_entries");
+    }
+
+    function commitEntry(newEntry, oldEntry){
+      if(oldEntry){
+        const idx = state.entries.findIndex(x => x.id === oldEntry.id);
+        if(idx !== -1){
+          state.entries[idx] = { ...state.entries[idx], status:"superseded" };
+        }
+        newEntry.supersedesId = oldEntry.id;
+        newEntry.meta = { ...newEntry.meta, editedFrom: oldEntry.id };
+      }
+      state.entries.push(newEntry);
+
+      if(newEntry.kind === "asset") state.ui.lastAsset = newEntry.meta.assetName || state.ui.lastAsset;
+      if(newEntry.kind === "iou") state.ui.lastPerson = newEntry.meta.person || state.ui.lastPerson;
+      if(newEntry.kind === "fid") {
+        state.ui.lastGoal = newEntry.meta.goal || state.ui.lastGoal;
+        state.ui.lastPerson2 = newEntry.meta.person || state.ui.lastPerson2;
+      }
+
+      saveState("commit_entry");
+    }
+
+    function deleteEntry(id){
+      const idx = state.entries.findIndex(e => e.id === id);
+      if(idx === -1) return;
+      state.entries[idx] = { ...state.entries[idx], status:"deleted" };
+      saveState("delete_entry");
+    }
+
+    // ---------- Derivations ----------
+    function derive(){
+      const entriesAll = state.entries.slice().sort((a,b) => a.ts - b.ts);
+      const entriesActive = entriesAll.filter(e => e.status === "active");
+
+      const accounts = { spend:0, bills:0, savings:0 };
+      let expensesTotal = 0;
+
+      for(const e of entriesActive){
+        if(e.kind === "income"){
+          const acct = e.meta?.account || "spend";
+          accounts[acct] = (accounts[acct] || 0) + safeNum(e.amount);
+        }
+        if(e.kind === "expense"){
+          const acct = e.meta?.account || "spend";
+          accounts[acct] = (accounts[acct] || 0) - safeNum(e.amount);
+          expensesTotal += safeNum(e.amount);
+        }
+      }
+
+      const liquidityTotal = accounts.spend + accounts.bills + accounts.savings;
+
+      // Assets
+      const assetEntries = entriesActive.filter(e => e.kind === "asset" && e.meta?.assetName);
+      const assetsMap = new Map();
+      for(const e of assetEntries){
+        const name = e.meta.assetName;
+        if(!assetsMap.has(name)) assetsMap.set(name, []);
+        assetsMap.get(name).push(e);
+      }
+
+      const assetsList = [];
+      for(const [name, list] of assetsMap.entries()){
+        list.sort((a,b) => a.ts - b.ts);
+        const initial = safeNum(list[0]?.amount || 0);
+        const current = safeNum(list[list.length-1]?.amount || 0);
+        const growth = current - initial;
+        const history = list.slice().sort((a,b)=> b.ts - a.ts);
+        assetsList.push({ name, initial, current, growth, history, lastTs: list[list.length-1]?.ts || null });
+      }
+
+      const assetsTotal = assetsList.reduce((s,a)=> s + safeNum(a.current||0), 0);
+
+      // Debt (IOU)
+      const iouEntries = entriesActive.filter(e => e.kind === "iou");
+      const debtorsMap = new Map();
+      const creditorsMap = new Map();
+
+      for(const e of iouEntries){
+        const dir = e.meta?.direction;
+        const who = (e.meta?.person || "").trim();
+        if(!who) continue;
+        const target = (dir === "creditors") ? creditorsMap : debtorsMap;
+        if(!target.has(who)) target.set(who, { name: who, given:0, recovered:0, entries:[] });
+        const box = target.get(who);
+        const action = e.meta?.action || "new";
+        if(action === "settle") box.recovered += safeNum(e.amount);
+        else box.given += safeNum(e.amount);
+        box.entries.push(e);
+      }
+
+      const debtorsList = Array.from(debtorsMap.values()).map(p => ({ ...p, outstanding: Math.max(0, p.given - p.recovered) }));
+      const creditorsList = Array.from(creditorsMap.values()).map(p => ({ ...p, outstanding: Math.max(0, p.given - p.recovered) }));
+
+      const debtorsOutstanding = debtorsList.reduce((s,p)=> s + p.outstanding, 0);
+      const creditorsOutstanding = creditorsList.reduce((s,p)=> s + p.outstanding, 0);
+      const debtTotal = debtorsOutstanding + creditorsOutstanding;
+
+      // Fiduciary
+      const fidEntries = entriesActive.filter(e => e.kind === "fid");
+      const fidGoalMap = new Map();
+      const fidPersonMap = new Map();
+
+      let fidTotal = 0;
+      for(const e of fidEntries){
+        const goal = (e.meta?.goal || "").trim();
+        const person = (e.meta?.person || "").trim();
+        const dir = e.meta?.action || "in";
+        const signed = (dir === "out") ? -safeNum(e.amount) : safeNum(e.amount);
+
+        fidTotal += signed;
+
+        if(goal) fidGoalMap.set(goal, (fidGoalMap.get(goal) || 0) + signed);
+        if(person) fidPersonMap.set(person, (fidPersonMap.get(person) || 0) + signed);
+      }
+
+      const fidGoals = Array.from(fidGoalMap.entries()).map(([key,balance]) => ({ key, balance }));
+      const fidPersons = Array.from(fidPersonMap.entries()).map(([key,balance]) => ({ key, balance }));
+
+      // detail panels
+      let debtDetail = null;
+      if(state.ui.debtDetail?.mode && state.ui.debtDetail?.who){
+        const mode = state.ui.debtDetail.mode;
+        const who = state.ui.debtDetail.who;
+        const map = (mode === "creditors") ? creditorsMap : debtorsMap;
+        const p = map.get(who);
+        if(p){
+          const outstanding = Math.max(0, p.given - p.recovered);
+          debtDetail = {
+            mode,
+            who,
+            outstanding,
+            given: p.given,
+            recovered: p.recovered,
+            entries: p.entries.slice().sort((a,b)=> b.ts - a.ts)
+          };
+        }
+      }
+
+      let assetDetail = null;
+      if(state.ui.assetDetailName){
+        const name = state.ui.assetDetailName;
+        const a = assetsList.find(x => x.name === name);
+        if(a) assetDetail = a;
+      }
+
+      const netWorth = liquidityTotal + assetsTotal;
+
+      return {
+        entriesAll,
+        entriesActive,
+        accounts,
+        liquidityTotal,
+        assetsList,
+        assetsTotal,
+        expensesTotal,
+        debtorsList,
+        creditorsList,
+        debtorsOutstanding,
+        creditorsOutstanding,
+        debtTotal,
+        fidTotal,
+        fidGoals,
+        fidPersons,
+        debtDetail,
+        assetDetail,
+        netWorth
+      };
+    }
+
+    function buildFidDetail(entriesActive, mode, key){
+      const isGoal = mode === "goal";
+      const hits = entriesActive
+        .filter(e => e.kind === "fid")
+        .filter(e => {
+          const g = (e.meta?.goal || "").trim();
+          const p = (e.meta?.person || "").trim();
+          return isGoal ? g === key : p === key;
+        })
+        .sort((a,b)=> b.ts - a.ts);
+
+      let tin = 0, tout = 0;
+      for(const e of hits){
+        const dir = e.meta?.action || "in";
+        if(dir === "out") tout += safeNum(e.amount);
+        else tin += safeNum(e.amount);
+      }
+      const balance = tin - tout;
+
+      return { mode, key, balance, totals:{in:tin, out:tout}, entries: hits };
+    }
+
+    function getAssetSnapshot(name){
+      const d = derive();
+      const a = d.assetsList.find(x => x.name === name);
+      return a ? { initial:a.initial, current:a.current, lastTs:a.lastTs } : null;
+    }
+
+    // ---------- Sheet ----------
+    function openSheet(id){
+      const e = getEntryById(id);
+      if(!e) return;
+
+      currentSheetId = id;
+      el.sheetTitle.textContent = sheetTitle(e);
+      el.sheetAmt.textContent = sheetAmountText(e);
+
+      el.sheetMeta.innerHTML = `
+        <div class="kv"><div class="kvL">Date</div><div class="kvR">${fmtDateTime(e.ts)}</div></div>
+        <div class="kv"><div class="kvL">Status</div><div class="kvR">${esc(e.status || "active")}${e.supersedesId ? " • revision" : ""}</div></div>
+        ${e.meta?.account ? `<div class="kv"><div class="kvL">Account</div><div class="kvR">${esc(e.meta.account)}</div></div>` : ""}
+        ${e.meta?.splitGroupId ? `<div class="kv"><div class="kvL">Split</div><div class="kvR">${esc(e.meta.splitMode || "split")}</div></div>` : ""}
+        ${e.meta?.assetName ? `<div class="kv"><div class="kvL">Asset</div><div class="kvR">${esc(e.meta.assetName)}</div></div>` : ""}
+        ${e.meta?.person ? `<div class="kv"><div class="kvL">Person</div><div class="kvR">${esc(e.meta.person)}</div></div>` : ""}
+        ${e.meta?.goal ? `<div class="kv"><div class="kvL">Purpose</div><div class="kvR">${esc(e.meta.goal)}</div></div>` : ""}
+        ${(e.kind==="iou" && e.meta?.rate!=null) ? `<div class="kv"><div class="kvL">Rate</div><div class="kvR">${esc(String(e.meta.rate))}%</div></div>` : ""}
+        ${(e.kind==="iou" && e.meta?.issuedTs) ? `<div class="kv"><div class="kvL">Issued</div><div class="kvR">${fmtDate(e.meta.issuedTs)}</div></div>` : ""}
+        ${(e.kind==="iou" && e.meta?.dueTs) ? `<div class="kv"><div class="kvL">Due</div><div class="kvR">${fmtDate(e.meta.dueTs)}</div></div>` : ""}
+        ${e.desc ? `<div class="kv"><div class="kvL">Desc</div><div class="kvR">${esc(e.desc)}</div></div>` : ""}
+        ${e.note ? `<div class="kv"><div class="kvL">Note</div><div class="kvR">${esc(e.note)}</div></div>` : ""}
+        ${e.supersedesId ? `<div class="kv"><div class="kvL">Edits</div><div class="kvR">${esc(e.supersedesId)}</div></div>` : ""}
+      `;
+
+      const canEdit = e.status === "active";
+      el.editBtn.disabled = !canEdit;
+      el.delBtn.disabled = (e.status === "deleted");
+
+      el.sheetScrim.classList.add("on");
+      el.sheet.classList.add("on");
+      el.sheet.setAttribute("aria-hidden","false");
+    }
+
+    function closeSheet(){
+      currentSheetId = null;
+      el.sheetScrim.classList.remove("on");
+      el.sheet.classList.remove("on");
+      el.sheet.setAttribute("aria-hidden","true");
+    }
+
+    // ---------- UI helpers ----------
+    function tightRow(e, opts={}){
+      const badge = kindBadge(e);
+      const amtColor = amountColor(e);
+      const statusBadge = (e.status === "superseded") ? `<span class="badge bRev">REV</span>` :
+                          (e.status === "deleted") ? `<span class="badge bRev">DEL</span>` : "";
+      const metaLine = compactMeta(e);
+      const hit = opts.hit || ledgerHitBlob(e);
+
+      return `
+        <div class="tightRow" data-entry-id="${escAttr(e.id)}" data-hit="${escAttr(hit)}" title="${escAttr(metaLine)}">
           <div class="tightLeft">
             <div class="tightTop">
               ${badge}
-              <div class="tightText">${escapeHtml(e.label || "Entry")}</div>
+              ${statusBadge}
+              <div class="tightText">${esc(compactTitle(e))}</div>
             </div>
-            <div class="tightMeta">${escapeHtml(meta)}</div>
+            <div class="tightMeta">${esc(metaLine)}</div>
           </div>
-          <div class="tightAmt mask" style="color:${amtColor(e)}">${escapeHtml(amtTxt)}</div>
+          <div class="tightAmt mask" style="color:${amtColor}">${sheetAmountText(e)}</div>
         </div>
       `;
     }
 
     function kindBadge(e){
-      if(e.kind === "in") return `<span class="badge bIn">IN</span>`;
-      if(e.kind === "out") return `<span class="badge bOut">OUT</span>`;
+      if(e.kind === "income") return `<span class="badge bIn">IN</span>`;
+      if(e.kind === "expense") return `<span class="badge bOut">OUT</span>`;
       if(e.kind === "asset") return `<span class="badge bAsset">ASSET</span>`;
-      if(e.kind === "goal") return `<span class="badge bGoal">GOAL</span>`;
-      if(e.kind === "iou") return `<span class="badge bIOU">${(e.side==="out")?"DEBT":"IOU"}</span>`;
-      if(e.kind === "restore") return `<span class="badge bRev">RESTORE</span>`;
-      return `<span class="badge bRev">LOG</span>`;
+      if(e.kind === "iou") return `<span class="badge bIOU">IOU</span>`;
+      if(e.kind === "fid") return `<span class="badge bFid">FID</span>`;
+      return `<span class="badge">LOG</span>`;
     }
 
-    function amtColor(e){
-      if(e.kind === "out") return "var(--red)";
-      if(e.kind === "in") return "var(--emerald)";
+    function amountColor(e){
+      if(e.kind === "expense") return "var(--red)";
+      if(e.kind === "income") return "var(--emerald)";
       if(e.kind === "asset") return "var(--blue)";
-      if(e.kind === "goal") return "var(--yellow)";
-      if(e.kind === "iou") return (e.side==="out") ? "var(--red)" : "var(--yellow)";
-      return "rgba(255,255,255,.8)";
+      if(e.kind === "fid") return "var(--yellow)";
+      if(e.kind === "iou") return (e.meta?.direction === "creditors") ? "var(--red)" : "var(--emerald)";
+      return "#fff";
     }
 
-    function entryAmtText(e){
-      const a = Number(e.amt||0);
-      const v = "$" + moneyFmt(Math.abs(a));
-      if(e.kind === "out") return "-" + v;
-      if(e.kind === "in") return "+" + v;
-      if(e.kind === "asset") return "+" + v;
-      if(e.kind === "goal") return "+" + v;
-      if(e.kind === "iou") return (e.side==="out") ? "-" + v : "+" + v;
-      return v;
+    function sheetTitle(e){
+      if(e.kind === "income") return "Inflow";
+      if(e.kind === "expense") return "Expense";
+      if(e.kind === "asset") return (e.meta?.action === "update") ? "Asset update" : "Asset";
+      if(e.kind === "fid") return (e.meta?.action === "out") ? "Fiduciary out" : "Fiduciary in";
+      if(e.kind === "iou"){
+        const dir = e.meta?.direction === "creditors" ? "Borrow" : "Lend";
+        const act = e.meta?.action === "settle" ? "settlement" : "entry";
+        return `${dir} (${act})`;
+      }
+      return "Entry";
     }
 
-    function entryMetaText(e){
-      const parts = [];
-      parts.push(prettyTs(e.ts));
-      if(e.bucket) parts.push(`• ${e.bucket}`);
-      if(e.kind === "goal" && e.goal) parts.push(`• ${e.goal}`);
-      if(e.who) parts.push(`• ${e.who}`);
-      if(e.ref) parts.push(`• ${e.ref}`);
-      return parts.join(" ");
+    function sheetAmountText(e){
+      const sign = (e.kind === "expense") ? "-" :
+                   (e.kind === "income") ? "+" :
+                   (e.kind === "fid") ? ((e.meta?.action==="out") ? "-" : "+") :
+                   "";
+      return sign + money(e.amount);
     }
 
-    /***********************
-     * Goals screen rendering
-     ***********************/
-    function goalMetaLine(name){
-      const meta = state.goalsMeta[name];
-      if(!meta) return "No target / due";
-      const bits = [];
-      if(meta.target) bits.push(`Target $${moneyFmt(Number(meta.target)||0)}`);
-      if(meta.due) bits.push(`Due ${meta.due}`);
-      return bits.length ? bits.join(" • ") : "No target / due";
+    function compactTitle(e){
+      if(e.kind === "asset") return e.meta?.assetName || e.desc || "Asset";
+      if(e.kind === "iou") return e.meta?.person || e.desc || "IOU";
+      if(e.kind === "fid") return e.meta?.goal || e.desc || "Fiduciary";
+      return e.desc || sheetTitle(e);
     }
 
-    function renderGoals(d){
-      // panels lists
-      const byGoal = Array.from(d.goalBal.entries()).sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]));
-      const byPerson = Array.from(d.goalByPerson.entries()).sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]));
+    function compactMeta(e){
+      const d = fmtDate(e.ts);
+      const parts = [d];
 
-      $("#goalsByGoal").innerHTML = byGoal.length ? byGoal.map(([name,val])=> `
-        <div class="listItem tap" data-goal-name="${escapeAttr(name)}">
-          <div class="liName">${escapeHtml(name)}</div>
-          <div class="liAmt mask">$${moneyFmt(val)}</div>
-        </div>
-      `).join("") : `<div class="help">No goals yet.</div>`;
+      if(e.kind === "income" || e.kind === "expense"){
+        if(e.meta?.account) parts.push(e.meta.account);
+        if(e.meta?.splitGroupId) parts.push("split");
+      }
+      if(e.kind === "asset"){
+        parts.push(e.meta?.action === "update" ? "update" : "new");
+      }
+      if(e.kind === "iou"){
+        const act = e.meta?.action === "settle" ? "settle" : "new";
+        const dir = e.meta?.direction === "creditors" ? "you owe" : "owed to you";
+        const r = (e.meta?.rate!=null && isFinite(e.meta.rate)) ? ` • ${e.meta.rate}%` : "";
+        const due = e.meta?.dueTs ? ` • due ${fmtDate(e.meta.dueTs)}` : "";
+        parts.push(`${dir} • ${act}${r}${due}`);
+      }
+      if(e.kind === "fid"){
+        const g = e.meta?.goal || "";
+        const p = e.meta?.person || "";
+        parts.push(`${e.meta?.action==="out"?"out":"in"} • ${g} • ${p}`);
+      }
+      if(e.note) parts.push("• " + e.note);
 
-      $("#goalsByPerson").innerHTML = byPerson.length ? byPerson.map(([who,val])=> `
-        <div class="listItem tap" data-goal-person="${escapeAttr(who)}">
-          <div class="liName">${escapeHtml(who)}</div>
-          <div class="liAmt mask">$${moneyFmt(val)}</div>
-        </div>
-      `).join("") : `<div class="help">No goal postings with people yet.</div>`;
+      return parts.join(" • ").replace(/\s+/g," ").trim();
+    }
 
-      // bind list clicks
-      $$("#ovGoals [data-goal-name]").forEach(el=>{
-        el.addEventListener("click", (e)=>{
-          openGoalDetail(el.getAttribute("data-goal-name"));
-          e.stopPropagation();
-        });
+    function searchHit(e, q){
+      if(!q) return true;
+      const blob = [
+        e.kind, e.desc, e.note,
+        e.meta?.account, e.meta?.person, e.meta?.goal,
+        e.meta?.assetName, e.meta?.action, e.status,
+        e.meta?.rate, e.meta?.issuedTs, e.meta?.dueTs
+      ].join(" ").toLowerCase();
+      return blob.includes(q);
+    }
+
+    function renderDatalist(){
+      const d = derive();
+      const names = new Set();
+
+      d.entriesActive.forEach(e => {
+        if(e.desc) names.add(e.desc);
+        if(e.meta?.person) names.add(e.meta.person);
+        if(e.meta?.goal) names.add(e.meta.goal);
+        if(e.meta?.assetName) names.add(e.meta.assetName);
       });
 
-      $$("#ovGoals [data-goal-person]").forEach(el=>{
-        el.addEventListener("click", (e)=>{
-          const who = el.getAttribute("data-goal-person");
-          openGoalDetailByPerson(who);
-          e.stopPropagation();
-        });
-      });
+      const items = Array.from(names).filter(Boolean).slice(0, 200);
+      el.nameList.innerHTML = items.map(n => `<option value="${escAttr(n)}"></option>`).join("");
     }
 
-    function openGoalDetail(goalName){
-      const d = derive(state);
-      const name = String(goalName||"").trim();
-      const bal = d.goalBal.get(name) || 0;
-      const meta = state.goalsMeta[name] || {};
-      $("#goalDetail").classList.remove("hidden");
-      $("#gdTitle").textContent = name;
-      $("#gdSub").textContent = "$" + moneyFmt(bal);
+    function fillDynamicDatalists(){
+      const d = derive();
 
-      const target = meta.target ? Number(meta.target) : null;
-      const due = meta.due || "";
-      const note = meta.note || "";
+      const assetNames = Array.from(new Set(d.assetsList.map(a => a.name))).sort();
+      const persons = Array.from(new Set(
+        d.entriesActive
+          .filter(e => e.kind==="iou" || e.kind==="fid")
+          .map(e => e.meta?.person)
+          .filter(Boolean)
+      )).sort();
+      const goals = Array.from(new Set(
+        d.entriesActive
+          .filter(e => e.kind==="fid")
+          .map(e => e.meta?.goal)
+          .filter(Boolean)
+      )).sort();
 
-      let prog = `Balance: $${moneyFmt(bal)}`;
-      if(target && Number.isFinite(target) && target>0){
-        const pct = Math.max(0, Math.min(100, (bal/target)*100));
-        prog += ` • Target: $${moneyFmt(target)} • ${pct.toFixed(1)}%`;
-      }
-      if(due) prog += ` • Due: ${due}`;
-      if(note) prog += `<br/>Note: ${escapeHtml(note)}`;
-      $("#gdProgress").innerHTML = prog;
+      const assetList = $("#assetList");
+      if(assetList) assetList.innerHTML = assetNames.map(x => `<option value="${escAttr(x)}"></option>`).join("");
 
-      // preload metadata editor with this goal
-      $("#gmName").value = name;
-      $("#gmTarget").value = meta.target ? String(meta.target) : "";
-      $("#gmDue").value = meta.due || "";
-      $("#gmNote").value = meta.note || "";
+      const personList = $("#personList");
+      if(personList) personList.innerHTML = persons.map(x => `<option value="${escAttr(x)}"></option>`).join("");
 
-      // list postings
-      $("#gdSearch").value = state.ui.goalSearch || "";
-      renderGoalPostingList(name);
+      const personList2 = $("#personList2");
+      if(personList2) personList2.innerHTML = persons.map(x => `<option value="${escAttr(x)}"></option>`).join("");
+
+      const goalList = $("#goalList");
+      if(goalList) goalList.innerHTML = goals.map(x => `<option value="${escAttr(x)}"></option>`).join("");
     }
 
-    function openGoalDetailByPerson(who){
-      const name = String(who||"").trim();
-      $("#goalDetail").classList.remove("hidden");
-      $("#gdTitle").textContent = name;
-      $("#gdSub").textContent = "PERSON";
-
-      $("#gdProgress").innerHTML = `Goal postings tagged with <b>${escapeHtml(name)}</b>.`;
-
-      $("#gmName").value = "";
-      $("#gmTarget").value = "";
-      $("#gmDue").value = "";
-      $("#gmNote").value = "";
-
-      $("#gdSearch").value = state.ui.goalSearch || "";
-      renderGoalPostingList(null, name);
+    function hydrateSearchTypeUI(){
+      const t = state.ui.searchType || "all";
+      $$(".badge[data-qtype]", el.search).forEach(x => x.style.opacity = ".55");
+      const b = $(`.badge[data-qtype="${t}"]`, el.search);
+      if(b) b.style.opacity = "1";
     }
 
-    function renderGoalPostingList(goalName, whoName){
-      const q = String($("#gdSearch").value||"").toLowerCase().trim();
-      state.ui.goalSearch = $("#gdSearch").value || "";
-      saveState();
-
-      let list = state.entries.filter(e=> e.kind === "goal");
-      if(goalName){
-        list = list.filter(e=> (e.goal || e.label) === goalName);
-      }
-      if(whoName){
-        list = list.filter(e=> (e.who || "") === whoName);
-      }
-      if(q){
-        list = list.filter(e=>{
-          const hay = `${e.label||""} ${e.who||""} ${e.ref||""} ${prettyTs(e.ts)}`.toLowerCase();
-          return hay.includes(q);
-        });
-      }
-
-      $("#gdList").innerHTML = list.length ? list.map(e=> renderEntryRow(e)).join("") : `<div class="help">No postings.</div>`;
-
-      // bind rows inside
-      $("#gdList").querySelectorAll(".tightRow[data-entry-id]").forEach(row=>{
-        row.addEventListener("click", (ev)=>{
-          openSheetForEntry(row.getAttribute("data-entry-id"));
-          ev.stopPropagation();
-        });
-      });
+    function hydrateSettingsUI(){
+      el.reqPin.checked = !!state.settings.requirePin;
+      el.backupCadence.value = state.settings.backupCadence || "off";
+      syncStealthSwitch();
+      syncOdSwitch();
     }
 
-    $("#gdSearch").addEventListener("input", ()=>{
-      const t = $("#gdTitle").textContent;
-      const sub = $("#gdSub").textContent;
-      if(sub === "PERSON"){
-        renderGoalPostingList(null, t);
-      } else {
-        renderGoalPostingList(t);
-      }
-    });
+    function applyStealth(on){
+      document.body.classList.toggle("stealth", !!on);
+    }
 
-    /***********************
-     * Restore rendering
-     ***********************/
-    let selectedSnapId = null;
+    function syncStealthSwitch(){
+      const on = !!state.settings.stealth;
+      el.stealthSwitch.classList.toggle("on", on);
+      el.stealthSwitch.setAttribute("aria-checked", on ? "true" : "false");
+    }
 
-    function renderRestore(){
-      const list = $("#snapList");
-      if(!list) return;
-      if(!snaps.length){
-        list.innerHTML = `<div class="help">No snapshots yet.</div>`;
-        $("#snapDetail").classList.add("hidden");
+    function syncOdSwitch(){
+      const on = !!state.settings.allowOverdraft;
+      el.odSwitch.classList.toggle("on", on);
+      el.odSwitch.setAttribute("aria-checked", on ? "true" : "false");
+    }
+
+    // ---------- Auth ----------
+    async function unlock(){
+      const pin = (el.authPin.value || "").trim();
+      if(pin.length !== 4) return toast("Enter 4 digits");
+      const h = await hashPin(pin);
+      if(!state.settings.pinHash){
+        toast("No PIN set");
+        showView("dashboard");
+        el.authPin.value = "";
         return;
       }
-      list.innerHTML = snaps.map(s=> `
-        <div class="tightRow tap" data-snap-id="${escapeAttr(s.id)}">
-          <div class="tightLeft">
-            <div class="tightTop">
-              <span class="badge bRev">${escapeHtml((s.reason||"snap").toUpperCase())}</span>
-              <div class="tightText">${escapeHtml(prettyTs(s.ts))}</div>
-            </div>
-            <div class="tightMeta">${s.preview ? `NW $${moneyFmt(s.preview.nw)} • ${s.preview.entries} entries` : ""}</div>
-          </div>
-          <div class="tightAmt mask">⟶</div>
-        </div>
-      `).join("");
-
-      // bind
-      $$("#snapList [data-snap-id]").forEach(row=>{
-        row.addEventListener("click", ()=>{
-          openSnapshotDetail(row.getAttribute("data-snap-id"));
-        });
-      });
-
-      // keep selection visible
-      if(selectedSnapId) openSnapshotDetail(selectedSnapId, true);
+      if(h !== state.settings.pinHash) return toast("Wrong PIN");
+      el.authPin.value = "";
+      showView("dashboard");
+      toast("Unlocked");
     }
 
-    function openSnapshotDetail(id, silent=false){
-      selectedSnapId = id;
-      const snap = snaps.find(s=>s.id===id);
-      if(!snap){
-        $("#snapDetail").classList.add("hidden");
-        return;
-      }
-      const dNow = derive(state);
-      const dSnap = derive(snap.state);
-
-      $("#snapDetail").classList.remove("hidden");
-      $("#sdTitle").textContent = prettyTs(snap.ts);
-      $("#sdSub").textContent = (snap.reason || "snapshot").toUpperCase();
-
-      const diffNw = dSnap.netWorth - dNow.netWorth;
-      const diffEntries = (snap.state.entries?.length||0) - (state.entries?.length||0);
-
-      $("#sdBody").innerHTML = `
-        <div style="margin-bottom:10px;">
-          <div><b>Snapshot NW:</b> $${moneyFmt(dSnap.netWorth)}</div>
-          <div><b>Current NW:</b> $${moneyFmt(dNow.netWorth)}</div>
-          <div><b>Difference:</b> ${diffNw>=0?"+":"-"}$${moneyFmt(Math.abs(diffNw))}</div>
-        </div>
-        <div>
-          <div><b>Snapshot entries:</b> ${snap.state.entries?.length||0}</div>
-          <div><b>Current entries:</b> ${state.entries?.length||0}</div>
-          <div><b>Delta entries:</b> ${diffEntries>=0?"+":""}${diffEntries}</div>
-        </div>
-        <div style="margin-top:10px; opacity:.9;">
-          This restore will first create a safety snapshot of your current state.
-        </div>
-      `;
-
-      if(!silent) {
-        // scroll into view nicely
-        setTimeout(()=> $("#snapDetail").scrollIntoView({behavior:"smooth", block:"start"}), 30);
-      }
-    }
-
-    function syncRestoreControls(){
-      // switch
-      const sw = $("#swAuto");
-      if(!sw) return;
-      sw.classList.toggle("on", !!state.settings.autoSnapshots);
-
-      // cadence select
-      const cad = $("#cadence");
-      if(cad) cad.value = String(state.settings.cadenceMin || "off");
-    }
-
-    /***********************
-     * Bottom sheet
-     ***********************/
-    let sheetEntryId = null;
-
-    function openSheetForEntry(id){
-      const e = state.entries.find(x=>x.id===id);
-      if(!e) return;
-      sheetEntryId = id;
-
-      $("#sheetTitle").textContent = (e.label || "ENTRY").toUpperCase();
-      $("#sheetAmt").textContent = entryAmtText(e);
-
-      const kv = [];
-      kv.push(kvRow("Type", (e.kind||"").toUpperCase() + (e.kind==="iou" ? (e.side==="out" ? " (DEBT)" : " (IOU)") : "")));
-      kv.push(kvRow("Time", prettyTs(e.ts)));
-      if(e.bucket) kv.push(kvRow("Bucket", e.bucket));
-      if(e.kind==="goal") kv.push(kvRow("Goal", e.goal || e.label));
-      if(e.who) kv.push(kvRow("Who", e.who));
-      if(e.ref) kv.push(kvRow("Ref", e.ref));
-      $("#sheetKV").innerHTML = kv.join("");
-
-      $("#sheetScrim").classList.add("on");
-      $("#sheet").classList.add("on");
-    }
-
-    function closeSheet(){
-      $("#sheetScrim").classList.remove("on");
-      $("#sheet").classList.remove("on");
-      sheetEntryId = null;
-    }
-
-    function kvRow(l,r){
-      return `<div class="kv"><div class="kvL">${escapeHtml(l)}</div><div class="kvR">${escapeHtml(r)}</div></div>`;
-    }
-
-    /***********************
-     * Toast undo
-     ***********************/
-    let lastUndo = null;
-    let toastTimer = null;
-
-    function toast(msg, undoFn=null){
-      $("#toastTxt").textContent = msg;
-      lastUndo = undoFn;
-      $("#toastBtn").style.display = undoFn ? "inline-block" : "none";
-      $("#toast").classList.add("show");
-      if(toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=> $("#toast").classList.remove("show"), 3500);
-    }
-
-    $("#toastBtn").addEventListener("click", ()=>{
-      if(lastUndo) lastUndo();
-      $("#toast").classList.remove("show");
-      lastUndo = null;
-    });
-
-    /***********************
-     * Overlay helpers
-     ***********************/
-    function openOverlay(sel){
-      $(sel).classList.remove("hidden");
-    }
-    function closeOverlay(sel){
-      $(sel).classList.add("hidden");
-    }
-    window.openOverlay = openOverlay;
-
-    $$("[data-close]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        closeOverlay(btn.getAttribute("data-close"));
-      });
-    });
-
-    /***********************
-     * Escape helpers
-     ***********************/
-    function escapeHtml(s){
-      return String(s??"")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-    function escapeAttr(s){ return escapeHtml(s); }
-
-    /***********************
-     * Add overlay logic
-     ***********************/
-    let addKind = "in";
-
-    function setAddKind(k){
-      addKind = normalizeKind(k);
-      // update segment UI
-      $$("#addSeg button").forEach(b=> b.classList.toggle("on", b.getAttribute("data-kind") === addKind));
-      // hint
-      $("#hintKind").textContent = addKind.toUpperCase();
-      const impact = (addKind==="out" || (addKind==="iou" && $("#addWho").value && state.ui.addIouSide==="out")) ? "-" : "+";
-      $("#hintImpact").textContent = impact;
-    }
-
-    $$("#addSeg button").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        setAddKind(btn.getAttribute("data-kind"));
-      });
-    });
-
-    function resetAddForm(){
-      $("#addAmt").value = "";
-      $("#addLabel").value = "";
-      $("#addBucket").value = "";
-      $("#addWho").value = "";
-      $("#addRef").value = "";
-      setAddKind("in");
-      $("#addAmt").focus();
-    }
-
-    $("#addSave").addEventListener("click", ()=>{
+    async function hashPin(pin){
       try{
-        const amt = parseFloat(String($("#addAmt").value||"").replace(/,/g,""));
-        const label = $("#addLabel").value;
-        const bucket = $("#addBucket").value;
-        const who = $("#addWho").value;
-        const ref = $("#addRef").value;
-
-        const payload = { kind:addKind, amt, label, bucket, who, ref };
-
-        if(addKind === "iou"){
-          // quick heuristic: if label contains "owe" or "debt" -> out
-          const hint = `${label} ${ref}`.toLowerCase();
-          payload.side = (hint.includes("i owe") || hint.includes("owe ") || hint.includes("debt")) ? "out" : "in";
-        }
-
-        if(addKind === "goal"){
-          payload.goal = (label||"").trim() || "Goal";
-        }
-
-        const entry = addEntry(payload);
-        toast(`Committed`, ()=>{
-          deleteEntry(entry.id);
-          saveState();
-          renderAll();
-          toast(`Undone`);
-        });
-
-        closeOverlay("#ovAdd");
-        resetAddForm();
-        renderAll();
-      } catch(err){
-        toast(err.message || "Failed");
+        const enc = new TextEncoder().encode(pin);
+        const buf = await crypto.subtle.digest("SHA-256", enc);
+        const arr = Array.from(new Uint8Array(buf));
+        return arr.map(b => b.toString(16).padStart(2,"0")).join("");
+      } catch {
+        return btoa(pin.split("").reverse().join(""));
       }
-    });
-
-    /***********************
-     * Menu actions
-     ***********************/
-    $("#btnMenu").addEventListener("click", ()=> openOverlay("#ovMenu"));
-    $("#btnCloseMenu2").addEventListener("click", ()=> closeOverlay("#ovMenu"));
-
-    $("#fab").addEventListener("click", ()=>{
-      resetAddForm();
-      openOverlay("#ovAdd");
-    });
-
-    $("#btnOpenGoals").addEventListener("click", ()=>{
-      closeOverlay("#ovMenu");
-      openOverlay("#ovGoals");
-      renderAll();
-    });
-
-    $("#btnOpenRestore").addEventListener("click", ()=>{
-      closeOverlay("#ovMenu");
-      openOverlay("#ovRestore");
-      renderAll();
-    });
-
-    $("#btnExport").addEventListener("click", ()=>{
-      const payload = {
-        exportedAt: nowTs(),
-        schema: SCHEMA,
-        state,
-        snaps
-      };
-      const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `sovereign_v88_export_${yyyyMmDd(nowTs())}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      toast("Exported");
-    });
-
-    $("#btnImport").addEventListener("click", ()=>{
-      const inp = document.createElement("input");
-      inp.type = "file";
-      inp.accept = "application/json";
-      inp.onchange = ()=>{
-        const file = inp.files && inp.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = ()=>{
-          try{
-            const data = JSON.parse(reader.result);
-            if(data && data.state && data.state.entries){
-              // safety snapshot first
-              forceSnapshot("pre-import");
-              state = data.state;
-              snaps = Array.isArray(data.snaps) ? data.snaps : snaps;
-              saveState();
-              saveSnaps();
-              startCadence();
-              renderAll();
-              toast("Imported");
-            } else {
-              toast("Invalid file");
-            }
-          } catch {
-            toast("Invalid JSON");
-          }
-        };
-        reader.readAsText(file);
-      };
-      inp.click();
-    });
-
-    $("#btnReset").addEventListener("click", ()=>{
-      const ok = confirm("Reset everything? This cannot be undone.");
-      if(!ok) return;
-      localStorage.removeItem(KEY_STATE);
-      localStorage.removeItem(KEY_SNAPS);
-      state = freshState();
-      snaps = [];
-      saveState();
-      saveSnaps();
-      startCadence();
-      renderAll();
-      toast("Reset");
-      closeOverlay("#ovMenu");
-    });
-
-    /***********************
-     * Goals meta save + quick actions
-     ***********************/
-    $("#gmSave").addEventListener("click", ()=>{
-      const name = String($("#gmName").value||"").trim();
-      if(!name) return toast("Goal name required");
-      const targetRaw = String($("#gmTarget").value||"").trim();
-      const due = String($("#gmDue").value||"").trim();
-      const note = String($("#gmNote").value||"").trim();
-      const meta = state.goalsMeta[name] || {};
-
-      if(targetRaw){
-        const t = parseFloat(targetRaw.replace(/,/g,""));
-        if(!Number.isFinite(t) || t<=0) return toast("Target must be a number");
-        meta.target = t;
-      } else {
-        delete meta.target;
-      }
-
-      if(due){
-        if(!/^\d{4}-\d{2}-\d{2}$/.test(due)) return toast("Due date must be YYYY-MM-DD");
-        meta.due = due;
-      } else {
-        delete meta.due;
-      }
-
-      if(note) meta.note = note;
-      else delete meta.note;
-
-      state.goalsMeta[name] = meta;
-      pushSnapshot("state-change");
-      saveState();
-      renderAll();
-      toast("Saved");
-      openGoalDetail(name);
-    });
-
-    $("#goalsPostBtn").addEventListener("click", ()=>{
-      closeOverlay("#ovGoals");
-      resetAddForm();
-      setAddKind("goal");
-      openOverlay("#ovAdd");
-      $("#addLabel").value = $("#gmName").value || "";
-      $("#addLabel").focus();
-    });
-
-    $("#goalsMetaBtn").addEventListener("click", ()=>{
-      const name = String($("#gmName").value||"").trim();
-      if(!name) return toast("Type a goal name first");
-      openGoalDetail(name);
-      toast("Loaded");
-    });
-
-    /***********************
-     * Restore controls
-     ***********************/
-    $("#swAuto").addEventListener("click", ()=>{
-      state.settings.autoSnapshots = !state.settings.autoSnapshots;
-      saveState();
-      syncRestoreControls();
-      toast(state.settings.autoSnapshots ? "Auto snapshots on" : "Auto snapshots off");
-    });
-
-    $("#cadence").addEventListener("change", ()=>{
-      state.settings.cadenceMin = $("#cadence").value;
-      saveState();
-      startCadence();
-      toast("Cadence set");
-    });
-
-    $("#btnMakeSnap").addEventListener("click", ()=> forceSnapshot("manual"));
-
-    $("#btnClearSnaps").addEventListener("click", ()=>{
-      const ok = confirm("Clear all snapshots?");
-      if(!ok) return;
-      snaps = [];
-      saveSnaps();
-      selectedSnapId = null;
-      renderAll();
-      toast("Cleared");
-    });
-
-    $("#btnRestoreNow").addEventListener("click", ()=>{
-      if(!selectedSnapId) return toast("Select a snapshot");
-      const snap = snaps.find(s=>s.id===selectedSnapId);
-      if(!snap) return toast("Snapshot missing");
-      const ok = confirm("Restore this snapshot? A safety snapshot will be created first.");
-      if(!ok) return;
-
-      // safety snapshot (even if auto off)
-      const safety = snapshotPayload();
-      safety.reason = "pre-restore";
-      snaps.unshift(safety);
-      if(snaps.length > SNAP_LIMIT) snaps.length = SNAP_LIMIT;
-
-      // restore
-      state = snap.state;
-      // log restore as an entry (audit-visible)
-      state.entries.unshift({
-        id: uid(),
-        ts: nowTs(),
-        kind: "restore",
-        amt: 0,
-        label: "Restore",
-        bucket: "",
-        who: "",
-        ref: `Restored snapshot ${prettyTs(snap.ts)}`
-      });
-
-      saveState();
-      saveSnaps();
-      startCadence();
-      renderAll();
-      toast("Restored");
-      // keep restore screen open
-      openOverlay("#ovRestore");
-    });
-
-    /***********************
-     * Stealth toggle
-     ***********************/
-    $("#btnStealth").addEventListener("click", ()=>{
-      state.settings.stealth = !state.settings.stealth;
-      pushSnapshot("state-change");
-      saveState();
-      renderAll();
-      toast(state.settings.stealth ? "Stealth on" : "Stealth off");
-    });
-
-    /***********************
-     * Mini taps (open deep dives)
-     ***********************/
-    $("#tapMiniCash").addEventListener("click", ()=>{
-      state.ui.ledgerOpen = "liquidity";
-      saveState(); renderAll();
-      document.querySelector("[data-ledger-body='liquidity']")?.scrollIntoView({behavior:"smooth", block:"start"});
-    });
-    $("#tapMiniAssets").addEventListener("click", ()=>{
-      state.ui.ledgerOpen = "assets";
-      saveState(); renderAll();
-      document.querySelector("[data-ledger-body='assets']")?.scrollIntoView({behavior:"smooth", block:"start"});
-    });
-    $("#tapMiniDebt").addEventListener("click", ()=>{
-      state.ui.ledgerOpen = "iou";
-      saveState(); renderAll();
-      document.querySelector("[data-ledger-body='iou']")?.scrollIntoView({behavior:"smooth", block:"start"});
-    });
-
-    /***********************
-     * Sheet buttons
-     ***********************/
-    $("#sheetScrim").addEventListener("click", closeSheet);
-    $("#sheetClose").addEventListener("click", closeSheet);
-    $("#sheetDelete").addEventListener("click", ()=>{
-      if(!sheetEntryId) return;
-      const ok = confirm("Delete this entry?");
-      if(!ok) return;
-      const removed = deleteEntry(sheetEntryId);
-      closeSheet();
-      if(removed){
-        toast("Deleted", ()=>{
-          state.entries.unshift(removed);
-          saveState();
-          renderAll();
-          toast("Undone");
-        });
-      }
-      renderAll();
-    });
-
-    /***********************
-     * Ledger drill buttons (simple: open Add with right kind or open menu)
-     ***********************/
-    window.__openLedgerDrill = (k)=>{
-      // for now: open audit day automatically to today and scroll, keeping it simple
-      state.ui.auditOpenDay = yyyyMmDd(nowTs());
-      saveState();
-      renderAll();
-      document.querySelector("#audit")?.scrollIntoView({behavior:"smooth", block:"start"});
-      toast("Deep dive: use Audit grouped by date");
-    };
-
-    /***********************
-     * Prevent iOS keyboard collapse issues:
-     * - no auto blur
-     * - stop overlay clicks from stealing focus
-     ***********************/
-    $$(".overlay").forEach(ov=>{
-      ov.addEventListener("click", (e)=>{
-        const t = e.target;
-        if(t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.closest(".btn") || t.closest(".tile") || t.closest(".tightRow") || t.closest(".listItem") || t.closest(".seg"))) return;
-        // do nothing; no blur
-      });
-    });
-
-    // initial safety snapshot if none exist and entries exist (uses what you already store)
-    if(!snaps.length && state.entries.length){
-      const s = snapshotPayload();
-      s.reason = "bootstrap";
-      snaps.unshift(s);
-      saveSnaps();
     }
 
-    // initial render
-    renderAll();
+    // ---------- Backup / Restore ----------
+    function backup(manual=false){
+      const payload = JSON.stringify(state, null, 2);
+      const blob = new Blob([payload], { type:"application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `sovereign_v87_backup_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+
+      if(manual){
+        state.settings.lastManualBackupTs = Date.now();
+        state.settings.lastReminderTs = 0;
+        saveState("manual_backup");
+      }
+      toast("Backup downloaded");
+    }
+
+    async function restoreFile(file){
+      if(!file) return;
+
+      // Snapshot current state BEFORE doing anything
+      try{
+        localStorage.setItem(AUTO_KEYS.preRestore, JSON.stringify(state));
+      }catch{}
+
+      try{
+        const text = await file.text();
+        const raw = JSON.parse(text);
+
+        const migrated = migrateState(raw);
+        const valid = validateState(migrated);
+        if(!valid.ok){
+          toast("Invalid backup: " + valid.reason);
+          return;
+        }
+
+        // persist + refresh
+        persistState(migrated, { reason: "restore" });
+        toast("Restored");
+        // reset file inputs so same file can be selected again
+        try{ el.file.value = ""; }catch{}
+        try{ el.file2.value = ""; }catch{}
+        location.reload();
+      } catch (err) {
+        toast("Restore failed: " + (err?.message || "unknown"));
+        try{ el.file.value = ""; }catch{}
+        try{ el.file2.value = ""; }catch{}
+      }
+    }
+
+    function wipeState(){
+      [...STORE_KEYS, AUTO_KEYS.lastGood, AUTO_KEYS.preRestore, AUTO_KEYS.ringIndex]
+        .forEach(k => localStorage.removeItem(k));
+      for(let i=0;i<AUTO_RING_SIZE;i++){
+        localStorage.removeItem(AUTO_KEYS.ringPrefix + i);
+      }
+    }
+
+    // ---------- Storage + Safety ----------
+    function loadState(){
+      for(const k of STORE_KEYS){
+        const raw = localStorage.getItem(k);
+        if(!raw) continue;
+        try{
+          const obj = JSON.parse(raw);
+          const migrated = migrateState(obj);
+          const valid = validateState(migrated);
+          if(valid.ok) return migrated;
+        }catch{}
+      }
+
+      // Try last-good snapshot
+      try{
+        const lg = localStorage.getItem(AUTO_KEYS.lastGood);
+        if(lg){
+          const obj = JSON.parse(lg);
+          const migrated = migrateState(obj);
+          const valid = validateState(migrated);
+          if(valid.ok) return migrated;
+        }
+      }catch{}
+
+      return normalizeState({
+        schema: SCHEMA_VERSION,
+        entries: [],
+        settings: {
+          stealth:false,
+          requirePin:false,
+          pinHash:null,
+          allowOverdraft:false,
+          backupCadence:"off",
+          lastManualBackupTs: 0,
+          lastReminderTs: 0
+        },
+        ui: { searchType:"all", lastAccount:"spend", inflowSplitMode:"off" }
+      });
+    }
+
+    function migrateState(s){
+      const base = (s && typeof s === "object") ? s : {};
+      const out = normalizeState({
+        schema: SCHEMA_VERSION,
+        entries: Array.isArray(base.entries) ? base.entries : [],
+        settings: base.settings || {},
+        ui: base.ui || {}
+      });
+      out.schema = SCHEMA_VERSION;
+      return out;
+    }
+
+    function normalizeState(s){
+      const out = {
+        schema: SCHEMA_VERSION,
+        entries: Array.isArray(s.entries) ? s.entries.map(normalizeEntry) : [],
+        settings: {
+          stealth: !!(s.settings?.stealth),
+          requirePin: !!(s.settings?.requirePin),
+          pinHash: s.settings?.pinHash || null,
+
+          allowOverdraft: !!(s.settings?.allowOverdraft),
+          backupCadence: s.settings?.backupCadence || "off",
+          lastManualBackupTs: Number(s.settings?.lastManualBackupTs || 0),
+          lastReminderTs: Number(s.settings?.lastReminderTs || 0)
+        },
+        ui: {
+          searchType: s.ui?.searchType || "all",
+          lastAccount: s.ui?.lastAccount || "spend",
+          lastAsset: s.ui?.lastAsset || "",
+          lastPerson: s.ui?.lastPerson || "",
+          lastGoal: s.ui?.lastGoal || "",
+          lastPerson2: s.ui?.lastPerson2 || "",
+          debtDetail: s.ui?.debtDetail || null,
+          assetDetailName: s.ui?.assetDetailName || null,
+
+          inflowSplitMode: s.ui?.inflowSplitMode || "off"
+        }
+      };
+      return out;
+    }
+
+    function normalizeEntry(e){
+      const meta = e.meta || {};
+      const kind = (typeof e.kind === "string" ? e.kind : "log");
+      return {
+        id: e.id || uid(),
+        ts: typeof e.ts === "number" ? e.ts : Date.now(),
+        kind,
+        amount: safeNum(e.amount),
+        desc: e.desc || "",
+        note: e.note || "",
+        meta: {
+          ...meta,
+          rate: (meta.rate === null || meta.rate === undefined || meta.rate === "") ? null : safeNum(meta.rate),
+          issuedTs: meta.issuedTs ? Number(meta.issuedTs) : null,
+          dueTs: meta.dueTs ? Number(meta.dueTs) : null
+        },
+        status: e.status || "active",
+        supersedesId: e.supersedesId || null
+      };
+    }
+
+    function validateState(s){
+      if(!s || typeof s !== "object") return { ok:false, reason:"not an object" };
+      if(!Array.isArray(s.entries)) return { ok:false, reason:"entries missing" };
+      if(!s.settings || typeof s.settings !== "object") return { ok:false, reason:"settings missing" };
+      if(!s.ui || typeof s.ui !== "object") return { ok:false, reason:"ui missing" };
+
+      for(const e of s.entries.slice(0, 5000)){
+        if(!e || typeof e !== "object") return { ok:false, reason:"bad entry" };
+        if(!e.id || typeof e.id !== "string") return { ok:false, reason:"entry id missing" };
+        if(typeof e.ts !== "number") return { ok:false, reason:"entry ts missing" };
+        if(typeof e.amount !== "number" || !isFinite(e.amount)) return { ok:false, reason:"entry amount invalid" };
+      }
+      return { ok:true };
+    }
+
+    function saveState(reason="save"){
+      persistState(state, { reason });
+    }
+
+    function persistState(s, meta={}){
+      const payload = JSON.stringify(s);
+      try{ localStorage.setItem(STORE_KEYS[0], payload); }catch{}
+
+      for(let i=1;i<STORE_KEYS.length;i++){
+        try{ localStorage.setItem(STORE_KEYS[i], payload); }catch{}
+      }
+
+      // ✅ snapshot the state being saved (NOT the global 'state' reference)
+      autoSnapshot(s, meta.reason || "change");
+
+      try{ localStorage.setItem(AUTO_KEYS.lastGood, payload); }catch{}
+    }
+
+    function autoSnapshot(s, reason="change"){
+      if(!saneAutoEnabled()) return;
+
+      try{
+        const idx = Number(localStorage.getItem(AUTO_KEYS.ringIndex) || "0") % AUTO_RING_SIZE;
+        const stamp = {
+          schema: SCHEMA_VERSION,
+          reason,
+          at: Date.now(),
+          state: s
+        };
+        localStorage.setItem(AUTO_KEYS.ringPrefix + idx, JSON.stringify(stamp));
+        localStorage.setItem(AUTO_KEYS.ringIndex, String((idx + 1) % AUTO_RING_SIZE));
+      }catch{}
+    }
+
+    function saneAutoEnabled(){ return true; }
+
+    function startPeriodicSafety(){
+      setInterval(() => {
+        autoSnapshot(state, "periodic");
+      }, PERIODIC_SNAPSHOT_MS);
+
+      setInterval(() => {
+        checkBackupReminder();
+      }, REMINDER_CHECK_MS);
+    }
+
+    function checkBackupReminder(){
+      const cadence = state.settings.backupCadence || "off";
+      if(cadence === "off") return;
+
+      const now = Date.now();
+      const last = Number(state.settings.lastManualBackupTs || 0);
+      const lastNudge = Number(state.settings.lastReminderTs || 0);
+
+      const interval = cadence === "daily" ? 24*3600*1000
+                    : cadence === "weekly" ? 7*24*3600*1000
+                    : cadence === "monthly" ? 30*24*3600*1000
+                    : 0;
+      if(!interval) return;
+
+      if(last && now - last < interval) return;
+      if(lastNudge && (now - lastNudge) < 6*3600*1000) return;
+
+      state.settings.lastReminderTs = now;
+      saveState("backup_reminder");
+      toast(`Backup reminder: export a backup (${cadence})`);
+    }
+
+    function getEntryById(id){
+      return state.entries.find(e => e.id === id) || null;
+    }
+
+    // ---------- Formatting ----------
+    function money(n){
+      const x = safeNum(n);
+      const sign = (x < 0) ? "-" : "";
+      const abs = Math.abs(x);
+      return sign + "₦" + abs.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    }
+
+    function pct(x){
+      if(!isFinite(x)) return "0%";
+      return (x*100).toFixed(1).replace(/\.0$/,"") + "%";
+    }
+
+    function fmtDate(ts){
+      const d = new Date(ts);
+      const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const yy = d.getFullYear();
+      return `${dd}-${mm}-${yy}`;
+    }
+
+    function fmtISODate(ts){
+      const d = new Date(ts);
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const day = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function fmtDateTime(ts){
+      const d = new Date(ts);
+      const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const yy = d.getFullYear();
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mi = String(d.getMinutes()).padStart(2,"0");
+      return `${dd}-${mm}-${yy} ${hh}:${mi}`;
+    }
+
+    function uid(){
+      return "e_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+    }
+
+    function esc(s){
+      return String(s ?? "").replace(/[&<>"']/g, (m) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+    function escAttr(s){
+      return esc(s).replace(/"/g,"&quot;");
+    }
+
+    // ---------- Toast ----------
+    let toastTimer = null;
+    function toast(msg){
+      el.toastText.textContent = msg;
+      el.toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.toast.classList.remove("show"), 1800);
+    }
+
+    // ---------- Long press ----------
+    function setupLongPress(node, fn){
+      let t = null;
+      let moved = false;
+
+      const start = () => {
+        moved = false;
+        clearTimeout(t);
+        t = setTimeout(() => { if(!moved) fn(); }, 520);
+      };
+      const end = () => clearTimeout(t);
+
+      node.addEventListener("touchstart", start, {passive:true});
+      node.addEventListener("touchmove", () => { moved = true; }, {passive:true});
+      node.addEventListener("touchend", end, {passive:true});
+      node.addEventListener("touchcancel", end, {passive:true});
+
+      node.addEventListener("mousedown", start);
+      node.addEventListener("mousemove", () => { moved = true; });
+      node.addEventListener("mouseup", end);
+      node.addEventListener("mouseleave", end);
+    }
+
+    // ---------- Service worker (best effort) ----------
+    async function registerSW(){
+  if(!("serviceWorker" in navigator)) return;
+  try{
+    await navigator.serviceWorker.register("./sw.js");
+  } catch {}
+}
+
+    // ---------- Utils ----------
+    function safeNum(x){
+      if(x === null || x === undefined) return 0;
+      const s = String(x).replace(/,/g,"").trim();
+      const n = Number(s);
+      return (isFinite(n) ? n : 0);
+    }
+
+    function parseNum(x){
+      if(x === null || x === undefined) return null;
+      const s = String(x).trim();
+      if(s === "") return null;
+      const n = Number(s);
+      return isFinite(n) ? n : null;
+    }
+
+    function clampNum(n, lo, hi){
+      if(!isFinite(n)) return lo;
+      return Math.max(lo, Math.min(hi, n));
+    }
+
+    function round2(n){
+      return Math.round((n + Number.EPSILON) * 100) / 100;
+    }
   </script>
 </body>
 </html>
